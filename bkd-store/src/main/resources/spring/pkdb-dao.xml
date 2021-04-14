@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="
+      http://www.springframework.org/schema/beans 
+      http://www.springframework.org/schema/beans/spring-beans.xsd
+    
+      http://www.springframework.org/schema/tx 
+      http://www.springframework.org/schema/tx/spring-tx.xsd
+      
+      http://www.springframework.org/schema/aop 
+      http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+<!-- imxdip dao: db connection -->
+
+  <bean id="pkdbSessionFactory"
+        class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+    <property name="dataSource" ref="pkdbSource"/>
+    <!--
+    <property name="mappingResources">
+      <list>
+        <value>imxdip.hbm.xml</value>
+      </list>
+    </property>
+    -->
+    <property name="packagesToScan" value="edu.ucla.mbi.pkdb.store"/>
+    
+    <property name="hibernateProperties">
+      <props>
+        <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+        <prop key="hibernate.current_session_context_class">thread</prop>
+        <prop key="hibernate.show_sql">false</prop>
+      </props>
+    </property>
+  </bean>
+
+  <bean id="pkdbSource" scope="singleton"
+        class="org.springframework.jndi.JndiObjectFactoryBean" >
+
+    <property name="jndiName" value="java:comp/env/jdbc/pkdb" />
+    <property name="resourceRef" value="true"/>
+  </bean>
+
+ <!-- data access objects -->
+
+  <bean id="pkdbNodeDao" class="edu.ucla.mbi.pkdb.store.dao.NodeDao">
+    <property name="sessionFactory" ref="pkdbSessionFactory"/>
+  </bean>
+  
+  <bean id="pkdbIdGenDao" class="edu.ucla.mbi.pkdb.store.dao.IdGenDao">
+    <property name="sessionFactory" ref="pkdbSessionFactory"/>
+  </bean>
+
+<!--  
+  <bean id="pkdbTaxonDao" class="edu.ucla.mbi.dip.database.imxdip.dao.TaxonDao">
+    <property name="sessionFactory" ref="imxdipSessionFactory"/>
+  </bean>
+
+  <bean id="imxdipTypeDao" class="edu.ucla.mbi.dip.database.imxdip.dao.TypeDao">
+    <property name="sessionFactory" ref="imxdipSessionFactory"/>
+  </bean>
+
+  <bean id="imxdipCvTermDao" class="edu.ucla.mbi.dip.database.imxdip.dao.CvTermDao">
+    <property name="sessionFactory" ref="imxdipSessionFactory"/>
+  </bean>
+  
+  <bean id="imxdipSourceDao" class="edu.ucla.mbi.dip.database.imxdip.dao.SourceDao">
+    <property name="sessionFactory" ref="imxdipSessionFactory"/>
+  </bean>
+
+  <bean id="imxdipExptDao" class="edu.ucla.mbi.dip.database.imxdip.dao.ExptDao">
+    <property name="sessionFactory" ref="imxdipSessionFactory"/>
+  </bean>
+
+  <bean id="imxdipEvidDao" class="edu.ucla.mbi.dip.database.imxdip.dao.EvidDao">
+    <property name="sessionFactory" ref="imxdipSessionFactory"/>
+  </bean>
+
+  <bean id="imxdipEdgeDao" class="edu.ucla.mbi.dip.database.imxdip.dao.EdgeDao">
+    <property name="sessionFactory" ref="imxdipSessionFactory"/>
+  </bean>
+
+
+  <bean id="imxdipProdDao" class="edu.ucla.mbi.dip.database.imxdip.dao.ProdDao">
+    <property name="sessionFactory" ref="imxdipSessionFactory"/>
+  </bean>
+
+  <bean id="imexDao" class="edu.ucla.mbi.dip.database.imxdip.dao.ImexDao">
+    <property name="sessionFactory" ref="imxdipSessionFactory"/>
+  </bean>
+-->
+
+  <bean id="pkdbDaoContext" class=".edu.ucla.mbi.pkdb.store.dao.Context">
+    <property name="nodeDao"  ref="pkdbNodeDao"/>
+    <!--    
+      <property name="sourceDao" ref="imxdipSourceDao"/>
+      <property name="prodDao" ref="imxdipProdDao"/>
+      <property name="taxonDao" ref="imxdipTaxonDao"/>
+      <property name="exptDao" ref="imxdipExptDao"/>
+      <property name="evidDao" ref="imxdipEvidDao"/>
+      <property name="edgeDao" ref="imxdipEdgeDao"/>
+      <property name="typeDao" ref="imxdipTypeDao"/>
+      <property name="idGenDao" ref="imxdipIdGenDao"/>
+      <property name="termDao" ref="imxdipCvTermDao"/>    
+      <property name="imexDao" ref="imexDao"/>
+    -->
+  </bean>
+  
+  <!-- Record Manager -->
+<!--
+  <bean id="pkdbExptRecordManager" class="edu.ucla.mbi.dip.database.ImxdipExptRecordManager"
+        init-method="initialize">
+     <property name="daoContext" ref="imxdipDaoContext" />
+  </bean>
+
+  <bean id="imxdipEvidRecordManager" class="edu.ucla.mbi.dip.database.ImxdipEvidRecordManager"
+        init-method="initialize">
+     <property name="daoContext" ref="imxdipDaoContext" />
+  </bean>
+
+  <bean id="imxdipEdgeRecordManager" class="edu.ucla.mbi.dip.database.ImxdipEdgeRecordManager"
+        init-method="initialize">
+     <property name="daoContext" ref="imxdipDaoContext" />
+  </bean>
+  
+  <bean id="imxdipRecordManager" class="edu.ucla.mbi.dip.database.ImxdipRecordManager"
+        init-method="initialize">
+
+    <property name="daoContext" ref="imxdipDaoContext" />
+
+    <property name="exptRecordManager" ref="imxdipExptRecordManager"/>
+    <property name="evidRecordManager" ref="imxdipEvidRecordManager"/>
+    <property name="edgeRecordManager" ref="imxdipEdgeRecordManager"/>
+    
+    <property name="nodeDao"  ref="imxdipNodeDao"/>
+    <property name="sourceDao" ref="imxdipSourceDao"/>
+    <property name="taxonDao" ref="imxdipTaxonDao"/>
+    <property name="exptDao" ref="imxdipExptDao"/>
+    <property name="evidDao" ref="imxdipEvidDao"/>
+    <property name="edgeDao" ref="imxdipEdgeDao"/>
+    <property name="typeDao" ref="imxdipTypeDao"/>
+    <property name="idGenDao" ref="imxdipIdGenDao"/>
+    <property name="cvTermDao" ref="imxdipCvTermDao"/>
+     
+ </bean>
+-->  
+ <!-- Query Manager -->
+
+<!--  
+ <bean id="imxdipQueryManager" class="edu.ucla.mbi.dip.database.ImxdipQueryManager"
+       init-method="initialize" >
+    <!-- <property name="nodeDao"  ref="nodeDao"/> -->
+  </bean>
+-->
+</beans>

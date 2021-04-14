@@ -1,0 +1,282 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>edu.ucla.mbi.bkd</groupId>
+  <artifactId>bkd-server</artifactId>
+  <packaging>war</packaging>
+  <version>1.0.0</version>
+  <name>BKD Data Store</name>
+  
+  <url>http://dip.mbi.ucla.edu/bkd</url>
+
+  <parent>
+    <groupId>edu.ucla.mbi.bkd</groupId>
+    <artifactId>bkd</artifactId>
+    <version>1.0.0</version>
+  </parent>
+   
+  <properties>
+    <service.version>${project.version}</service.version> 
+    <service.copyright>Copyright 1999-2021, UCLA</service.copyright> 
+    <service.bld>$Rev$</service.bld> 
+    <service.wsver>1.0</service.wsver>
+
+    <service.css>bkd.css</service.css>
+
+    <service.jdbc>jdbc/bkd</service.jdbc>
+    <service.esindex.url>http://10.1.6.4:9200/ucvdb</service.esindex.url>
+    <service.esindex.active>true</service.esindex.active>
+    
+    <!-- library dependenciens -->
+
+    <bkd-api.version>1.0.0</bkd-api.version>
+    <bkd-store.version>1.0.0</bkd-store.version>
+    <spring.version>5.1.9.RELEASE</spring.version>
+    <aspectj.version>1.9.4</aspectj.version>
+    <cglib.version>3.3.0</cglib.version>
+    <cxf.version>3.4.3</cxf.version>
+    <slf4j.version>1.7.28</slf4j.version>
+    <hibernate.version>5.4.4.Final</hibernate.version>
+    <c3p0.version>0.9.5.4</c3p0.version>
+    <postgresql.version>42.2.6</postgresql.version>
+    <json.version>20190722</json.version>
+    
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>edu.ucla.mbi.bkd</groupId>
+      <artifactId>bkd-api</artifactId>
+      <version>${bkd-api.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>edu.ucla.mbi.bkd</groupId>
+      <artifactId>bkd-store</artifactId>
+      <version>${bkd-store.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.17</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>${json.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-core</artifactId>
+      <version>${hibernate.version}</version>
+
+    </dependency>
+    
+    <dependency>
+      <groupId>com.mchange</groupId>
+      <artifactId>c3p0</artifactId>
+      <version>${c3p0.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>${postgresql.version}</version>
+    </dependency>
+    
+    
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-orm</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-aop</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>cglib</groupId>
+      <artifactId>cglib</artifactId>
+      <version>${cglib.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjrt</artifactId>
+      <version>${aspectj.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjweaver</artifactId>
+      <version>${aspectj.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!--
+    <dependency>
+      <groupId>org.jvnet.jax-ws-commons.spring</groupId>
+      <artifactId>jaxws-spring</artifactId>
+      <version>1.9</version>
+    </dependency>
+    -->
+
+
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-frontend-jaxws</artifactId>
+      <version>${cxf.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+      <version>${cxf.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-transports-http</artifactId>
+      <version>${cxf.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-transports-http-jetty</artifactId>
+      <version>${cxf.version}</version>
+    </dependency>
+    
+  </dependencies>
+
+  <build>
+    <finalName>bkd-server</finalName>
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <verbose>true</verbose>
+          <fork>true</fork>
+          <source>11</source>
+          <target>11</target>
+          <sourcepath>target/generated-sources</sourcepath>
+        </configuration>
+      </plugin>                                                                                                                                                                                                                            
+      
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+
+          <webResources>
+
+             <resource>
+              <directory>${basedir}/src/main/resources</directory>
+              <targetPath>WEB-INF</targetPath>
+              <filtering>true</filtering>
+              <includes>
+            <include>sun-jaxws.xml</include>   
+                <include>jetty-web.xml</include>
+              </includes>
+            </resource>
+            
+            <resource>
+              <directory>${basedir}/../bkd-api/src/wsdl</directory>
+              <targetPath>WEB-INF/wsdl</targetPath>
+              <filtering>true</filtering>
+              <includes>
+                <include>bkd-services-1.0.wsdl</include>
+                <include>DXF1.5.xsd</include>
+              </includes>
+            </resource>
+
+            <resource>
+              <directory>${basedir}/../bkd-api/src/wsdl</directory>
+              <targetPath>service</targetPath>
+              <filtering>true</filtering>
+              <includes>
+                <include>bkd-services-1.0.wsdl</include>
+                <include>DXF1.5.xsd</include>               
+              </includes>
+            </resource>
+           
+            <resource>
+              <directory>${basedir}/src/main/resources</directory>
+              <targetPath>WEB-INF/classes</targetPath>
+              <filtering>true</filtering>
+              <includes>
+                <include>applicationContext.xml</include>
+                <include>log4j.properties</include>
+              </includes>
+            </resource>
+            
+          </webResources>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.eclipse.jetty</groupId>
+         <artifactId>jetty-maven-plugin</artifactId>
+<!--         <version>9.4.19.v20190610</version> -->     
+         <version>9.4.39.v20210325</version> 
+<!--          <version>11.0.2</version>  -->
+
+         <configuration>
+           <webApp>
+             <contextPath>/bkdev</contextPath>
+           </webApp>
+           
+           <systemProperty>
+               <name>log4j2.configuration</name>
+              <value>file:../etc/jetty/log4j2.xml</value>
+           </systemProperty>           
+           
+         </configuration>
+
+      </plugin>
+      
+    </plugins>
+  </build>
+  
+</project>
+

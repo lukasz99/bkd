@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<endpoints xmlns="http://java.sun.com/xml/ns/jax-ws/ri/runtime" version="2.0">
+
+ <endpoint name="bkd"
+  interface="edu.ucla.mbi.bkd.services.soap.BkdServicePort"
+  implementation="edu.ucla.mbi.bkd.server.soap.BkdPortImpl"
+  wsdl="WEB-INF/wsdl/bkd-services-1.0.wsdl"
+  url-pattern="/soap"/>
+
+
+ 
+</endpoints>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- $Id::                                                                 $ -->
+
+<bindings wsdlLocation="../wsdl/bkd-services-1.0.wsdl"
+    xmlns="http://java.sun.com/xml/ns/jaxws"
+    xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" >
+
+ <bindings node="wsdl:definitions">
+  <package name="edu.ucla.mbi.bkd.services.soap"/>
+ </bindings>
+<!--
+  <bindings node="wsdl:definitions/wsdl:portType/wsdl:operation[@name='createPublication']/wsdl:fault">
+   <class name="IcentralFault" >
+    <javadoc>ImexCentral fault</javadoc>
+   </class>
+  </bindings>
+
+  <bindings node="wsdl:definitions/wsdl:portType/wsdl:operation[@name='createPublicationById']/wsdl:fault">
+   <class name="IcentralFault">
+    <javadoc>ImexCentral fault</javadoc>
+   </class>
+  </bindings>
+  <bindings node="wsdl:definitions/wsdl:portType/wsdl:operation[@name='getPublicationById']/wsdl:fault">
+   <class name="IcentralFault">
+    <javadoc>ImexCentral fault</javadoc>
+   </class>
+  </bindings>
+  <bindings node="wsdl:definitions/wsdl:portType/wsdl:operation[@name='getPublicationByOwner']/wsdl:fault">
+   <class name="IcentralFault">
+    <javadoc>ImexCentral fault</javadoc>
+   </class>
+  </bindings>
+  <bindings node="wsdl:definitions/wsdl:portType/wsdl:operation[@name='getPublicationByStatus']/wsdl:fault">
+   <class name="IcentralFault">
+    <javadoc>ImexCentral fault</javadoc>
+   </class>
+  </bindings>
+
+  <bindings node="wsdl:definitions/wsdl:portType/wsdl:operation[@name='updatePublicationStatus']/wsdl:fault">
+   <class name="IcentralFault">
+    <javadoc>ImexCentral fault</javadoc>
+   </class>
+  </bindings>
+
+  <bindings node="wsdl:definitions/wsdl:portType/wsdl:operation[@name='updatePublicationAdminUser']/wsdl:fault">
+   <class name="IcentralFault">
+    <javadoc>ImexCentral fault</javadoc>
+   </class>
+  </bindings>
+
+  <bindings node="wsdl:definitions/wsdl:portType/wsdl:operation[@name='updatePublicationAdminGroup']/wsdl:fault">
+   <class name="IcentralFault">
+    <javadoc>ImexCentral fault</javadoc>
+   </class>
+  </bindings>
+
+  <bindings node="wsdl:definitions/wsdl:portType/wsdl:operation[@name='getPublicationImexAccession']/wsdl:fault">
+   <class name="IcentralFault">
+    <javadoc>ImexCentral fault</javadoc>
+   </class>
+  </bindings>
+
+  <bindings node="wsdl:definitions/wsdl:portType/wsdl:operation[@name='getServerStatus']/wsdl:fault">
+   <class name="IcentralFault">
+    <javadoc>ImexCentral fault</javadoc>
+   </class>
+  </bindings>
+  -->
+  
+ <bindings node="wsdl:definitions/wsdl:service[@name='BkdService']">
+  <class name="BkdService"/>
+ </bindings>
+
+ <bindings node="wsdl:definitions/wsdl:portType[@name='BkdServicePort']">
+  <class name="BkdPort"/>
+ </bindings>
+
+</bindings>

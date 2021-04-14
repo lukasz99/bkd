@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+
+    xmlns:ws="http://jax-ws.dev.java.net/spring/core"
+    xmlns:wss="http://jax-ws.dev.java.net/spring/servlet"
+
+    xmlns:jaxws="http://cxf.apache.org/jaxws"
+    xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+
+
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/tx 
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop 
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+
+        http://jax-ws.dev.java.net/spring/core
+        http://jax-ws.dev.java.net/spring/core.xsd
+        http://jax-ws.dev.java.net/spring/servlet
+        http://jax-ws.dev.java.net/spring/servlet.xsd
+
+        http://cxf.apache.org/jaxws
+           http://cxf.apache.org/schemas/jaxws.xsd
+        http://cxf.apache.org/jaxrs
+           http://cxf.apache.org/schemas/jaxrs.xsd">
+
+  <bean id="bkd-builder"
+        class="edu.ucla.mbi.bkd.server.soap.BkdBuilder" >   
+    <property name="recordManager" ref="bkdRecordManager"/>
+  </bean>
+  
+  <bean id="bkd-soap-bean" init-method="initialize"
+        class="edu.ucla.mbi.bkd.server.soap.BkdPortImpl" >
+
+    <property name="builder" ref="bkd-builder"/>
+    <property name="recordManager" ref="bkdRecordManager"/>
+    <!--    <property name="queryManager" ref="bkdQueryManager"/> -->
+  </bean>
+
+  <ws:service  id="bkd-service" bean="#bkd-soap-bean"/> 
+  <wss:binding url="/service/soap" service="#bkd-service" />
+
+  <!-- 
+  <jaxws:endpoint id="classImpl"
+    implementor="#bkd-soap-bean"
+    endpointName="e:HelloEndpointCustomized"
+    serviceName="s:HelloServiceCustomized"
+    address="http://localhost:8080/test"
+    xmlns:e="http://service.jaxws.cxf.apache.org/endpoint"
+    xmlns:s="http://service.jaxws.cxf.apache.org/service"/>
+   -->
+  <jaxws:endpoint id="bkd-cxf-service" address="/soap"                 
+                  implementor="#bkd-soap-bean" />
+
+
+  
+
+</beans>

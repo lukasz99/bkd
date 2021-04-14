@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+
+    xmlns:ws="http://jax-ws.dev.java.net/spring/core"
+    xmlns:wss="http://jax-ws.dev.java.net/spring/servlet"
+
+    xmlns:jaxws="http://cxf.apache.org/jaxws"
+    xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+
+
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/tx 
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop 
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+
+        http://jax-ws.dev.java.net/spring/core
+        http://jax-ws.dev.java.net/spring/core.xsd
+        http://jax-ws.dev.java.net/spring/servlet
+        http://jax-ws.dev.java.net/spring/servlet.xsd
+
+        http://cxf.apache.org/jaxws
+           http://cxf.apache.org/schemas/jaxws.xsd
+        http://cxf.apache.org/jaxrs
+           http://cxf.apache.org/schemas/jaxrs.xsd">
+
+    <import resource="classpath:META-INF/cxf/cxf.xml" />
+    <!-- <import resource="classpath:META-INF/cxf/cxf-extension-xml.xml" /> -->
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+  
+  <!-- ======================================================= DATABASE ACCESS -->
+
+  <!-- bkdRecordManager, bkdQueryManager --> 
+  <import resource="spring/bkd-dao.xml" />
+
+  <!-- ========================================================= CXF SERVICES -->
+
+  <import resource="spring/cxf-services.xml" /> 
+
+  <!-- <import resource="spring/soap.xml" /> -->
+
+</beans>

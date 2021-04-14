@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+
+    xmlns:ws="http://jax-ws.dev.java.net/spring/core"
+    xmlns:wss="http://jax-ws.dev.java.net/spring/servlet"
+
+    xmlns:jaxws="http://cxf.apache.org/jaxws"
+    xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+
+
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/tx 
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop 
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+
+        http://jax-ws.dev.java.net/spring/core
+        http://jax-ws.dev.java.net/spring/core.xsd
+        http://jax-ws.dev.java.net/spring/servlet
+        http://jax-ws.dev.java.net/spring/servlet.xsd
+
+        http://cxf.apache.org/jaxws
+           http://cxf.apache.org/schemas/jaxws.xsd
+        http://cxf.apache.org/jaxrs
+           http://cxf.apache.org/schemas/jaxrs.xsd">
+
+<!-- legacy rest server -->
+  
+ <bean id="legacy-rest-bean" init-method="initialize"
+         class="edu.ucla.mbi.dip.services.rest.cxf.LegacyRestServiceImpl"
+         scope="prototype" >
+
+  <property name="recordManager" ref="legacyRecordManager"/>
+  <property name="queryManager" ref="legacyQueryManager"/>
+  
+ </bean>
+
+ <jaxrs:server id="legacy-rest-server" address="/legacy">
+    <jaxrs:serviceBeans>
+      <ref bean="legacy-rest-bean" />
+    </jaxrs:serviceBeans>
+  </jaxrs:server>
+
+<!--  rest server -->
+  
+ <bean id="imxdip-rest-bean" init-method="initialize"
+         class="edu.ucla.mbi.dip.services.rest.cxf.ImxdipRestServiceImpl"
+         scope="prototype" >
+
+  <property name="recordManager" ref="imxdipRecordManager"/>
+  <property name="queryManager" ref="imxdipQueryManager"/>
+  
+ </bean>
+
+ <jaxrs:server id="imxdip-rest-server" address="/">
+    <jaxrs:serviceBeans>
+      <ref bean="imxdip-rest-bean" />
+    </jaxrs:serviceBeans>
+  </jaxrs:server>
+
+</beans>

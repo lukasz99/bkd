@@ -1,0 +1,927 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" 
+             targetNamespace="http://mbi.ucla.edu/bkd/services/soap" 
+             xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+             xmlns:dxf="http://dip.doe-mbi.ucla.edu/services/dxf15" 
+             xmlns:bkd="http://mbi.ucla.edu/bkd/services/soap" 
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+             xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <types>
+
+    <xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" 
+               targetNamespace="http://mbi.ucla.edu/bkd/services/soap">
+      
+      <xs:import namespace="http://dip.doe-mbi.ucla.edu/services/dxf15"
+                 schemaLocation="DXF1.5.xsd"/>
+      
+      <xs:element name="query">
+       <xs:annotation>
+        <xs:documentation>BKD Query</xs:documentation>
+       </xs:annotation>
+       <xs:complexType>
+        <xs:sequence>
+          <xs:element name="query"  type="xs:string" />
+          <xs:element name="detail" type="xs:string" default="stub" />
+          <xs:element name="format" type="xs:string" default="dxf"  />
+        </xs:sequence>
+       </xs:complexType>
+      </xs:element>
+
+      <xs:element name="status">
+        <xs:annotation>
+          <xs:documentation>Get server status</xs:documentation>
+        </xs:annotation>
+       <xs:complexType>
+         <xs:sequence>
+           <xs:element name="detail" type="xs:string" default="stub" />
+           <xs:element name="format" type="xs:string" default="dxf"  />
+         </xs:sequence>
+       </xs:complexType>
+      </xs:element>
+
+      <xs:element name="getCounts">
+        <xs:annotation>
+          <xs:documentation>Get Record Count</xs:documentation>
+        </xs:annotation>
+       <xs:complexType>
+         <xs:sequence>
+           <xs:element name="ns"     type="xs:string" default="psi-mi" />
+           <xs:element name="ac"     type="xs:string" default="MI:0465"/>
+           <xs:element name="match"  type="xs:string" default="exact"/>
+           <xs:element name="detail" type="xs:string" default="stub" />
+         <xs:element name="format" type="xs:string" default="dxf"  />
+         </xs:sequence>
+       </xs:complexType>
+      </xs:element>
+      
+      <xs:element name="getCrossRef">
+        <xs:annotation>
+          <xs:documentation>Get Refs for the Record</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ns"     type="xs:string" default="psi-mi" />
+            <xs:element name="ac"     type="xs:string" default="MI:0465"/>
+            <xs:element name="match"  type="xs:string" default="exact"/>
+            <xs:element name="detail" type="xs:string" default="stub" />
+            <xs:element name="format" type="xs:string" default="dxf"  />
+        </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      
+      <xs:element name="getSourceBounds">
+        <xs:annotation>
+          <xs:documentation>Get Source Bounds</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="detail" type="xs:string" default="stub"/>
+            <xs:element name="format" type="xs:string" default="dxf"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      
+      <xs:element name="getSourceRange">
+        <xs:annotation>
+          <xs:documentation>Get Sources within ID range</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="fr"     type="xs:long"   default="-1"/>
+            <xs:element name="to"     type="xs:long"   default="-1"/>
+            <xs:element name="detail" type="xs:string" default="stub"/>
+            <xs:element name="format" type="xs:string" default="dxf"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      
+      <xs:element name="getSource">
+        <xs:annotation>
+          <xs:documentation>Get BkdSource</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+         <xs:element name="ns"     type="xs:string" default="dip" />
+         <xs:element name="ac"     type="xs:string"/>
+         <xs:element name="match"  type="xs:string" default="exact"/>
+         <xs:element name="detail" type="xs:string" default="stub" />
+         <xs:element name="format" type="xs:string" default="dxf"  />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      
+      <xs:element name="dropSource">
+        <xs:annotation>
+          <xs:documentation>Get BkdSource</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ns"     type="xs:string" default="dip" />
+         <xs:element name="ac"     type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      
+      <xs:element name="getSourceList">
+        <xs:annotation>
+          <xs:documentation>Get BkdSource</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ns"     type="xs:string" default="dip" />
+            <xs:element name="ac"     type="xs:string"/>
+            <xs:element name="match"  type="xs:string" default="exact"/>
+            <xs:element name="detail" type="xs:string" default="stub" />
+            <xs:element name="format" type="xs:string" default="dxf"  />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      
+      <xs:element name="getNodeBounds">
+        <xs:annotation>
+          <xs:documentation>Get Node Bounds</xs:documentation>
+        </xs:annotation>
+	<xs:complexType>
+	  <xs:sequence> 
+	    <xs:element name="detail" type="xs:string" default="stub"/>
+	    <xs:element name="format" type="xs:string" default="dxf"/>
+	  </xs:sequence>
+	</xs:complexType>
+      </xs:element>
+      
+      <xs:element name="getNodeRange">
+        <xs:annotation>
+          <xs:documentation>Get Nodes within ID range</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+	  <xs:sequence> 
+            <xs:element name="fr"     type="xs:long"   default="-1"/>
+            <xs:element name="to"     type="xs:long"   default="-1"/>
+            <xs:element name="detail" type="xs:string" default="stub"/>
+	    <xs:element name="format" type="xs:string" default="dxf"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element name="getNode">
+        <xs:annotation>
+	  <xs:documentation>Get Node</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ns"        type="xs:string" default="dip" />
+            <xs:element name="ac"        type="xs:string"  minOccurs="0"/>
+            <xs:element name="sequence"  type="xs:string"  minOccurs="0"/>
+            <xs:element name="match"  type="xs:string" default="exact"/>
+            <xs:element name="detail" type="xs:string" default="stub" />
+            <xs:element name="format" type="xs:string" default="dxf"  />
+          </xs:sequence>
+        </xs:complexType>
+        
+      </xs:element>
+      
+      <xs:element name="getNodeList">
+        <xs:annotation>
+          <xs:documentation>Get Nodes </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ns"     type="xs:string" default="dip" />
+            <xs:element name="ac"     type="xs:string"/>
+            <xs:element name="match"  type="xs:string" default="exact"/>
+            <xs:element name="detail" type="xs:string" default="stub" />
+            <xs:element name="format" type="xs:string" default="dxf"  />
+          </xs:sequence>
+        </xs:complexType>
+        
+      </xs:element>
+      
+      <xs:element name="matchNode">
+        <xs:annotation>
+	  <xs:documentation>Match Node</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+	  <xs:sequence>
+	    <xs:element name="dataset" type="dxf:datasetType" />
+	    <xs:element name="match"   type="xs:string"  default="exact"/>
+	    <xs:element name="detail"  type="xs:string"   default="stub"/>
+	    <xs:element name="format"  type="xs:string" default="dxf"/>
+	  </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      
+      <xs:complexType name="argType">
+	<xs:sequence>
+	  <xs:element name="name"  type="xs:string" />
+	  <xs:element name="value" type="xs:string" />
+	</xs:sequence>
+      </xs:complexType>
+      
+      <xs:complexType name="operationType">
+	<xs:sequence>
+	  <xs:element name="opName" type="xs:string" />
+	  <xs:element name="opArg"  type="bkd:argType" minOccurs="0"/>
+	</xs:sequence>
+      </xs:complexType>
+      
+      <xs:element name="transform">
+        <xs:annotation>
+	  <xs:documentation>Transform a Dataset</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+	  <xs:sequence>
+	    <xs:element name="dataset"    type="dxf:datasetType" />
+	    <xs:element name="detail"     type="xs:string"  default="stub"/>
+	    <xs:element name="format"     type="xs:string"  default="dxf"/>
+	    <xs:element name="expand"     type="xs:string"  default="0"/>
+	    <xs:element name="operation"  type="bkd:operationType" minOccurs="0"/>
+	    <xs:element name="limit"      type="xs:string" minOccurs="0"/>
+	  </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      
+      <xs:element name="getLinkBounds">
+        <xs:annotation>
+	  <xs:documentation>Get Link Bounds</xs:documentation>
+        </xs:annotation>
+       <xs:complexType>
+	 <xs:sequence>
+	   <xs:element name="detail" type="xs:string" default="stub"/>
+	   <xs:element name="format" type="xs:string" default="dxf"/>
+	 </xs:sequence>
+       </xs:complexType>
+      </xs:element>
+      
+      <xs:element name="getLinkRange">
+        <xs:annotation>
+	  <xs:documentation>Get Links within ID range</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+	  <xs:sequence>
+	    <xs:element name="fr"     type="xs:long"   default="-1"/>
+	    <xs:element name="to"     type="xs:long"   default="-1"/>
+	    <xs:element name="detail" type="xs:string" default="stub"/>
+	    <xs:element name="format" type="xs:string" default="dxf"/>
+	  </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      
+      <xs:element name="getLink">
+        <xs:annotation>
+	  <xs:documentation>Get Link</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ns"     type="xs:string" default="dip" />
+            <xs:element name="ac"     type="xs:string"/>
+            <xs:element name="match"  type="xs:string" default="exact"/>
+            <xs:element name="detail" type="xs:string" default="stub" />
+            <xs:element name="format" type="xs:string" default="dxf"  />
+          </xs:sequence>
+        </xs:complexType>
+        
+      </xs:element>
+      
+      <xs:element name="getLinkList">
+        <xs:annotation>
+	  <xs:documentation>Get a list of Link</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ns"     type="xs:string" default="dip" />
+            <xs:element name="ac"     type="xs:string"/>
+            <xs:element name="match"  type="xs:string" default="exact"/>
+            <xs:element name="detail" type="xs:string" default="stub" />
+            <xs:element name="format" type="xs:string" default="dxf"  />
+          </xs:sequence>
+        </xs:complexType>
+        
+      </xs:element>
+      
+      <xs:element name="getEvidence">
+        <xs:annotation>
+	  <xs:documentation>Get Evidence</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ns"     type="xs:string" default="dip" />
+            <xs:element name="ac"     type="xs:string"/>
+            <xs:element name="match"  type="xs:string" default="exact"/>
+            <xs:element name="detail" type="xs:string" default="stub" />
+            <xs:element name="format" type="xs:string" default="dxf"  />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      
+      <xs:element name="dropEvidence">
+        <xs:annotation>
+	  <xs:documentation>Drop Evidence</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ns"     type="xs:string" default="dip" />
+            <xs:element name="ac"     type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      
+      <xs:element name="getEvidenceList">
+        <xs:annotation>
+	  <xs:documentation>Get a list of Evidences</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ns"     type="xs:string" default="dip" />
+            <xs:element name="ac"     type="xs:string"/>
+            <xs:element name="match"  type="xs:string" default="exact"/>
+            <xs:element name="detail" type="xs:string" default="stub" />
+            <xs:element name="format" type="xs:string" default="dxf"  />
+          </xs:sequence>
+        </xs:complexType>
+        
+      </xs:element>
+
+      <xs:element name="setNode">
+        <xs:annotation>
+          <xs:documentation>Add/Update Node Records</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="dataset" type="dxf:datasetType" minOccurs="1" />
+            <xs:element name="mode" type="xs:string" minOccurs="1" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      
+
+      <xs:element name="setLink">
+        <xs:annotation>
+          <xs:documentation>Add/Update Link Records</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="dataset" type="dxf:datasetType" minOccurs="1" />
+            <xs:element name="mode" type="xs:string" minOccurs="1" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      
+      <xs:element name="setEvidence">
+        <xs:annotation>
+          <xs:documentation>Add/Update Evidence Records</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="dataset" type="dxf:datasetType" minOccurs="1" />
+            <xs:element name="mode" type="xs:string" minOccurs="1" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      
+      <xs:element name="setSource">
+        <xs:annotation>
+          <xs:documentation>Add/Update Source Records</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="dataset" type="dxf:datasetType" minOccurs="1" />
+            <xs:element name="mode" type="xs:string" minOccurs="0" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      
+      <xs:element name="getLinksByNodeSet">
+        <xs:annotation>
+	  <xs:documentation>Get Link By Node Set </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+	  <xs:sequence>
+	    <xs:element name="dataset" type="dxf:datasetType"/> 
+	    <xs:element name="match"   type="xs:string" default="exact"/>
+	    <xs:element name="detail"  type="xs:string" default="stub"/>
+	    <xs:element name="format"  type="xs:string" default="dxf"/>
+	  </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      
+      <xs:element name="response">
+        <xs:annotation>
+	  <xs:documentation>response</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+	  <xs:sequence>
+	    <xs:element name="dxfset" type="dxf:datasetType" minOccurs="0" /> 
+	    <xs:element name="strset" type="xs:string"       minOccurs="0"/>
+	  </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      
+      <xs:element name="xrefList">
+        <xs:annotation>
+	  <xs:documentation>xref list</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+	  <xs:sequence>
+	    <xs:element name="xref" type="dxf:xrefType" minOccurs="0" maxOccurs="unbounded"/> 
+	  </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      
+      <xs:element name="ServiceFailedException">
+        <xs:annotation>
+	  <xs:documentation>Exception if something goes wrong</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+	  <xs:sequence>
+	    <xs:element name="messageType" type="xs:string"/>
+	    <xs:element name="message"     type="xs:string"/>
+	  </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
+  </types>
+  
+  <message name="getCountsReq">
+    <part element="bkd:getCounts" name="request"/>
+  </message>
+  
+  <message name="getCrossRefReq">
+    <part element="bkd:getCrossRef" name="request"/>
+  </message>
+  
+  <message name="getSourceBoundsReq">
+    <part element="bkd:getSourceBounds" name="request"/>
+  </message>
+  
+  <message name="getSourceRangeReq">
+    <part element="bkd:getSourceRange" name="request"/>
+  </message>
+  
+  <message name="getSourceReq">
+    <part element="bkd:getSource" name="request"/>
+  </message>
+  
+  <message name="getSourceListReq">
+    <part element="bkd:getSourceList" name="request"/>
+  </message>
+  
+  <message name="getNodeBoundsReq">
+    <part element="bkd:getNodeBounds" name="request"/>
+  </message>
+  
+  <message name="getNodeRangeReq">
+    <part element="bkd:getNodeRange" name="request"/>
+  </message>
+  
+  <message name="getNodeReq">
+    <part element="bkd:getNode" name="request"/>
+  </message>
+ 
+  <message name="getNodeListReq">
+    <part element="bkd:getNodeList" name="request"/>
+  </message>
+  
+  <message name="matchNodeReq">
+    <part element="bkd:matchNode" name="request"/>
+  </message>
+  
+  <message name="getLinkBoundsReq">
+    <part element="bkd:getLinkBounds" name="request"/>
+  </message>
+  
+  <message name="getLinkRangeReq">
+    <part element="bkd:getLinkRange" name="request"/>
+  </message>
+  
+  <message name="getLinkReq">
+    <part element="bkd:getLink" name="request"/>
+  </message>
+  
+  <message name="getLinkListReq">
+    <part element="bkd:getLinkList" name="request"/>
+  </message>
+  
+  <message name="getEvidenceReq">
+    <part element="bkd:getEvidence" name="request"/>
+  </message>
+  
+  <message name="getEvidenceRes">
+    <part element="dxf:dataset" name="response"/>
+  </message>
+
+  <message name="getEvidenceListReq">
+    <part element="bkd:getEvidenceList" name="request"/>
+  </message>
+    
+  <message name="getLinksByNodeSetReq">
+    <part element="bkd:getLinksByNodeSet" name="request"/>
+  </message>
+  
+  <message name="getCountsRes">
+    <part element="dxf:dataset" name="response"/>
+  </message>
+  
+  <message name="getCrossRefRes">
+    <part element="dxf:dataset" name="response"/>
+  </message>
+  
+  <message name="getSourceBoundsRes">
+    <part element="dxf:dataset" name="response"/>
+  </message>
+  
+  <message name="getSourceRangeRes">
+    <part element="dxf:dataset" name="response"/>
+  </message>
+  
+  <message name="getSourceRes">
+    <part element="dxf:dataset" name="response"/>
+  </message>
+
+  <message name="getSourceListRes">
+    <part element="bkd:xrefList" name="response"/>
+  </message>
+  
+  <message name="getNodeRes">
+    <part element="dxf:dataset" name="response"/>
+  </message>
+  
+  <message name="getNodeListRes">
+    <part element="bkd:xrefList" name="response"/>
+  </message>
+  
+  <message name="matchNodeRes">
+    <part element="dxf:dataset" name="response"/>
+  </message>
+  
+  <message name="getLinkRes">
+    <part element="dxf:dataset" name="response"/>
+  </message>
+  
+  <message name="getLinkListRes">
+    <part element="bkd:xrefList" name="response"/>
+  </message>
+  
+  <message name="getEvidenceListRes">
+    <part element="bkd:xrefList" name="response"/>
+  </message>
+    
+  <message name="transformReq">
+    <part element="bkd:transform" name="request"/>
+  </message>
+
+  <message name="transformRes">
+    <part element="dxf:dataset" name="response"/>
+  </message>
+
+  <message name="queryReq">
+    <part element="bkd:query" name="request"/>
+  </message>
+  
+  <message name="queryRes">
+    <part element="dxf:dataset" name="response"/>
+  </message>
+
+  <message name="statusReq">
+    <part element="bkd:status" name="request"/>
+  </message>
+  
+  <message name="statusRes">
+    <part element="dxf:dataset" name="response"/>
+  </message>
+
+  <message name="setNodeReq">
+    <part element="bkd:setNode" name="request"/>
+  </message>
+
+  <message name="setNodeRes">
+    <part element="dxf:dataset" name="response"/>
+  </message>
+  
+  <message name="setLinkReq">
+    <part element="bkd:setLink" name="request"/>
+  </message>
+  
+  <message name="setLinkRes">
+    <part element="dxf:dataset" name="response"/>
+  </message>
+  
+  <message name="setEvidenceReq">
+    <part element="bkd:setEvidence" name="request"/>
+  </message>
+  
+  <message name="setEvidenceRes">
+    <part element="dxf:dataset" name="request"/>
+  </message>
+    
+  <message name="dropEvidenceReq">
+    <part element="bkd:dropEvidence" name="request"/>
+  </message>
+  
+  <message name="dropEvidenceRes">
+    <part element="dxf:dataset" name="request"/>
+  </message>
+  
+  <message name="setSourceReq">
+    <part element="bkd:setSource" name="request"/>
+  </message>
+  
+  <message name="setSourceRes">
+    <part element="dxf:dataset" name="request"/>
+  </message>
+  
+  <message name="dropSourceReq">
+   <part element="bkd:dropSource" name="request"/>
+  </message>
+
+  <message name="dropSourceRes">
+   <part element="dxf:dataset" name="request"/>
+  </message>
+    
+  <portType name="BkdServicePort">
+    
+    <operation name="getCounts">
+      <input  message="bkd:getCountsReq"/>
+      <output message="bkd:getCountsRes"/>
+    </operation>
+    
+    <operation name="getCrossRefList">
+      <input  message="bkd:getCrossRefReq"/>
+      <output message="bkd:getCrossRefRes"/>
+    </operation>
+    
+    <operation name="getSource">
+      <input  message="bkd:getSourceReq"/>
+      <output message="bkd:getSourceRes"/>
+    </operation>
+    
+    <operation name="getSourceList">
+      <input  message="bkd:getSourceListReq"/>
+      <output message="bkd:getSourceListRes"/>
+    </operation>
+    
+    <operation name="getSourceBounds">
+      <input  message="bkd:getSourceBoundsReq"/>
+      <output message="bkd:getSourceBoundsRes"/>
+    </operation>
+    
+    <operation name="getSourceRange">
+      <input  message="bkd:getSourceRangeReq"/>
+      <output message="bkd:getSourceRangeRes"/>
+    </operation>
+    
+    <operation name="getNode">
+      <input  message="bkd:getNodeReq"/>
+      <output message="bkd:getNodeRes"/>
+    </operation>
+   
+    <operation name="getNodeList">
+      <input  message="bkd:getNodeListReq"/>
+      <output message="bkd:getNodeListRes"/>
+    </operation>
+    
+    <operation name="matchNode">
+      <input  message="bkd:matchNodeReq"/>
+      <output message="bkd:matchNodeRes"/>
+    </operation>
+    
+    <operation name="getNodeBounds">
+      <input  message="bkd:getNodeBoundsReq"/>
+      <output message="bkd:getNodeRes"/>
+    </operation>
+    
+    <operation name="getNodeRange">
+      <input  message="bkd:getNodeRangeReq"/>
+      <output message="bkd:getNodeRes"/>
+    </operation>
+
+    <operation name="getLinkBounds">
+      <input  message="bkd:getLinkBoundsReq"/>
+      <output message="bkd:getLinkRes"/>
+    </operation>
+    
+    <operation name="getLinkRange">
+      <input  message="bkd:getLinkRangeReq"/>
+      <output message="bkd:getLinkRes"/>
+    </operation>
+    
+    <operation name="getLink">
+      <input  message="bkd:getLinkReq"/>
+      <output message="bkd:getLinkRes"/>
+    </operation>
+    
+    <operation name="getLinkList">
+      <input  message="bkd:getLinkListReq"/>
+      <output message="bkd:getLinkListRes"/>
+    </operation>
+    
+    <operation name="getEvidence">
+      <input  message="bkd:getEvidenceReq"/>
+      <output message="bkd:getEvidenceRes"/>
+    </operation>
+    
+    <operation name="getEvidenceList">
+      <input  message="bkd:getEvidenceListReq"/>
+      <output message="bkd:getEvidenceListRes"/>
+    </operation>
+        
+    <operation name="getLinksByNodeSet">
+      <input  message="bkd:getLinksByNodeSetReq"/>
+      <output message="bkd:getLinkRes"/>
+    </operation>
+    
+    <operation name="transform">
+      <input  message="bkd:transformReq"/>
+      <output message="bkd:transformRes"/>
+    </operation>
+    
+    <operation name="query">
+      <input  message="bkd:queryReq"/>
+      <output message="bkd:queryRes"/>
+    </operation>
+
+    <operation name="status">
+      <input  message="bkd:statusReq"/>
+      <output message="bkd:statusRes"/>
+    </operation>
+
+    <operation name="setNode">
+      <input  message="bkd:setNodeReq"/>
+      <output message="bkd:setNodeRes"/>
+    </operation>
+
+    <operation name="setLink">
+      <input  message="bkd:setLinkReq"/>
+      <output message="bkd:setLinkRes"/>
+    </operation>
+    
+    <operation name="setEvidence">
+      <input  message="bkd:setEvidenceReq"/>
+      <output message="bkd:setEvidenceRes"/>
+    </operation>
+    
+    <operation name="dropEvidence">
+      <input  message="bkd:dropEvidenceReq"/>
+      <output message="bkd:dropEvidenceRes"/>
+    </operation>
+    
+    <operation name="setSource">
+      <input  message="bkd:setSourceReq"/>
+      <output message="bkd:setSourceRes"/>
+    </operation>
+    
+    <operation name="dropSource">
+      <input  message="bkd:dropSourceReq"/>
+      <output message="bkd:dropSourceRes"/>
+    </operation>
+        
+  </portType>
+  
+  <binding name="BkdServiceBinding" type="bkd:BkdServicePort">
+    
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    
+    <operation name="getCrossRefList">
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    
+    <operation name="getCounts">
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    
+    <operation name="getSourceBounds">
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    
+    <operation name="getSourceRange">
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    
+    <operation name="getSource">
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    
+    <operation name="getSourceList">
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    
+    <operation name="getNodeBounds">
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    
+    <operation name="getNodeRange">
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+
+    <operation name="getNode">
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    
+    <operation name="getNodeList">
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    
+    <operation name="matchNode">
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    
+    <operation name="getLinkBounds">
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    
+    <operation name="getLinkRange">
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    
+    <operation name="getLink">
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    
+    <operation name="getLinkList">
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    
+    <operation name="getEvidence">
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    
+    <operation name="getEvidenceList">
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+        
+    <operation name="getLinksByNodeSet">
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    
+    <operation name="transform">
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    
+    <operation name="query">
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+
+    <operation name="status">
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+  
+    <operation name="setNode">
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+   
+    <operation name="setLink">
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    
+    <operation name="setEvidence">
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    
+    <operation name="dropEvidence">
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    
+    <operation name="setSource">
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    
+    <operation name="dropSource">
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+        
+  </binding>
+  
+  <service name="BkdService">
+    <port binding="bkd:BkdServiceBinding" name="BkdServicePort">
+      <soap:address location=""/> 
+    </port>
+  </service>
+
+</definitions>

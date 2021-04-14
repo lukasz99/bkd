@@ -1,0 +1,163 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>edu.ucla.mbi.bkd</groupId>
+  <artifactId>bkd-api</artifactId>
+  <packaging>jar</packaging>
+  <version>1.0.0</version>
+  <name>BKD Web Service API module</name>
+  
+  <url>http://dip.mbi.ucla.edu/bkd</url>
+
+  <parent>
+   <groupId>edu.ucla.mbi.bkd</groupId>
+   <artifactId>bkd</artifactId>
+   <version>1.0.0</version>
+  </parent>
+  
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <reportDir>/opt/www</reportDir>
+    <project.timestamp>${maven.build.timestamp}</project.timestamp>
+    <dip-util.version>2.0.0</dip-util.version>
+    <spring.version>5.1.0.RELEASE</spring.version>
+    <aspectj.version>1.9.1</aspectj.version>
+    <postgresql.version>42.2.5</postgresql.version>
+    <c3p0.version>0.9.5.3</c3p0.version>
+    <elasticsearch.version>6.0.1</elasticsearch.version>
+    <jaxws-rt.version>2.3.0</jaxws-rt.version>
+    <commons-logging.version>1.2</commons-logging.version>
+    <log4j.version>2.9.1</log4j.version>
+    <junit.version>4.12</junit.version>
+    <cglib.version>3.2.5</cglib.version>
+    <json.version>20170516</json.version>
+    <slf4j.version>1.7.28</slf4j.version>
+  </properties>
+  
+  <!-- library dependencies -->
+  
+  <dependencies>  
+    <dependency>
+      <groupId>com.sun.xml.ws</groupId>
+      <artifactId>jaxws-rt</artifactId>
+      <version>${jaxws-rt.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-frontend-jaxws</artifactId>
+      <version>${cxf.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+      <version>${cxf.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-transports-http</artifactId>
+      <version>${cxf.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-transports-http-jetty</artifactId>
+      <version>${cxf.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    
+  </dependencies>
+  
+  <build>
+    <finalName>bkd-api</finalName>
+<!--    <sourceDirectory>src/main/java, target/generated-sources</sourceDirectory>    -->
+
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-codegen-plugin</artifactId>
+        
+        <version>${cxf.version}</version> 
+        <executions>
+          
+          <execution>
+            <id>bkd-1.0</id>
+            <phase>generate-sources</phase>
+            <configuration> 
+              <wsdlOptions>
+                <wsdlOption>
+                  <wsdl>${project.basedir}/src/wsdl/bkd-services-1.0.wsdl</wsdl>
+                  <wsdlLocation>classpath:wsdl/bkd-services-1.0.wsdl</wsdlLocation> 
+                  <bindingFiles>
+                    <bindingFile>src/jaxws/bkd-services-1.0.jxb</bindingFile>  
+                    <bindingFile>src/jaxws/DXF1.5.jxb</bindingFile> 
+                  </bindingFiles>  
+                </wsdlOption>
+              </wsdlOptions>
+            </configuration>
+            <goals>
+              <goal>wsdl2java</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+                  
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+
+        <configuration>
+          <verbose>true</verbose>
+          <fork>true</fork>
+          <source>11</source>
+          <target>11</target>
+          <sourcepath>target/generated-sources</sourcepath>
+        </configuration>
+      </plugin>
+      
+      <plugin>      
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>create-source</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            
+            <configuration>
+              <descriptorRefs>
+                <descriptorRef>src</descriptorRef>
+              </descriptorRefs>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      
+    </plugins>
+<!--   
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-webdav-jackrabbit</artifactId>
+        < ! - - <version>1.0-beta-2</version> - - >
+        <version>3.0.0</version>
+      </extension>
+    </extensions>
+ -->
+  </build>
+
+  
+</project>
+

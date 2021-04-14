@@ -1,0 +1,360 @@
+package edu.ucla.mbi.uvdb.services.soap;
+
+import javax.jws.WebMethod;
+import javax.jws.WebParam;
+import javax.jws.WebResult;
+import javax.jws.WebService;
+import javax.jws.soap.SOAPBinding;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.ws.RequestWrapper;
+import javax.xml.ws.ResponseWrapper;
+
+public UvdbPortImpl implements UvdbPort {
+    public java.util.List<edu.ucla.mbi.dxf15.NodeType> getLink(
+        java.lang.String ns,
+        java.lang.String ac,
+        java.lang.String match,
+        java.lang.String detail,
+        java.lang.String format
+    );
+
+    public java.util.List<edu.ucla.mbi.dxf15.XrefType> getSourceList(
+        @WebParam(name = "ns", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String ns,
+        @WebParam(name = "ac", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String ac,
+        @WebParam(name = "match", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String match,
+        @WebParam(name = "detail", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String detail,
+        @WebParam(name = "format", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String format
+    );
+
+    @WebMethod
+    @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
+    @WebResult(name = "dataset", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15", partName = "response")
+    public edu.ucla.mbi.dxf15.DatasetType getCrossRefList(
+        @WebParam(partName = "request", name = "getCrossRef", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        GetCrossRef request
+    );
+
+    @WebMethod
+    @RequestWrapper(localName = "setLink", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap", className = "edu.ucla.mbi.uvdb.services.soap.SetLink")
+    @ResponseWrapper(localName = "dataset", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15", className = "edu.ucla.mbi.dxf15.DatasetType")
+    @WebResult(name = "node", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15")
+    public java.util.List<edu.ucla.mbi.dxf15.NodeType> setLink(
+        @WebParam(name = "dataset", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        edu.ucla.mbi.dxf15.DatasetType dataset,
+        @WebParam(name = "mode", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String mode
+    );
+
+    @WebMethod
+    @RequestWrapper(localName = "getNodeList", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap", className = "edu.ucla.mbi.uvdb.services.soap.GetNodeList")
+    @ResponseWrapper(localName = "xrefList", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap", className = "edu.ucla.mbi.uvdb.services.soap.XrefList")
+    @WebResult(name = "xref", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+    public java.util.List<edu.ucla.mbi.dxf15.XrefType> getNodeList(
+        @WebParam(name = "ns", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String ns,
+        @WebParam(name = "ac", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String ac,
+        @WebParam(name = "match", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String match,
+        @WebParam(name = "detail", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String detail,
+        @WebParam(name = "format", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String format
+    );
+
+    @WebMethod
+    @RequestWrapper(localName = "matchNode", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap", className = "edu.ucla.mbi.uvdb.services.soap.MatchNode")
+    @ResponseWrapper(localName = "dataset", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15", className = "edu.ucla.mbi.dxf15.DatasetType")
+    @WebResult(name = "node", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15")
+    public java.util.List<edu.ucla.mbi.dxf15.NodeType> matchNode(
+        @WebParam(name = "dataset", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        edu.ucla.mbi.dxf15.DatasetType dataset,
+        @WebParam(name = "match", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String match,
+        @WebParam(name = "detail", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String detail,
+        @WebParam(name = "format", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String format
+    );
+
+    @WebMethod
+    @RequestWrapper(localName = "getLinkRange", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap", className = "edu.ucla.mbi.uvdb.services.soap.GetLinkRange")
+    @ResponseWrapper(localName = "dataset", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15", className = "edu.ucla.mbi.dxf15.DatasetType")
+    @WebResult(name = "node", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15")
+    public java.util.List<edu.ucla.mbi.dxf15.NodeType> getLinkRange(
+        @WebParam(name = "fr", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        long fr,
+        @WebParam(name = "to", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        long to,
+        @WebParam(name = "detail", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String detail,
+        @WebParam(name = "format", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String format
+    );
+
+    @WebMethod
+    @RequestWrapper(localName = "getSource", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap", className = "edu.ucla.mbi.uvdb.services.soap.GetSource")
+    @ResponseWrapper(localName = "dataset", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15", className = "edu.ucla.mbi.dxf15.DatasetType")
+    @WebResult(name = "node", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15")
+    public java.util.List<edu.ucla.mbi.dxf15.NodeType> getSource(
+        @WebParam(name = "ns", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String ns,
+        @WebParam(name = "ac", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String ac,
+        @WebParam(name = "match", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String match,
+        @WebParam(name = "detail", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String detail,
+        @WebParam(name = "format", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String format
+    );
+
+    @WebMethod
+    @RequestWrapper(localName = "getSourceBounds", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap", className = "edu.ucla.mbi.uvdb.services.soap.GetSourceBounds")
+    @ResponseWrapper(localName = "dataset", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15", className = "edu.ucla.mbi.dxf15.DatasetType")
+    @WebResult(name = "node", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15")
+    public java.util.List<edu.ucla.mbi.dxf15.NodeType> getSourceBounds(
+        @WebParam(name = "detail", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String detail,
+        @WebParam(name = "format", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String format
+    );
+
+    @WebMethod
+    @RequestWrapper(localName = "getNodeBounds", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap", className = "edu.ucla.mbi.uvdb.services.soap.GetNodeBounds")
+    @ResponseWrapper(localName = "dataset", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15", className = "edu.ucla.mbi.dxf15.DatasetType")
+    @WebResult(name = "node", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15")
+    public java.util.List<edu.ucla.mbi.dxf15.NodeType> getNodeBounds(
+        @WebParam(name = "detail", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String detail,
+        @WebParam(name = "format", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String format
+    );
+
+    @WebMethod
+    @RequestWrapper(localName = "getLinkBounds", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap", className = "edu.ucla.mbi.uvdb.services.soap.GetLinkBounds")
+    @ResponseWrapper(localName = "dataset", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15", className = "edu.ucla.mbi.dxf15.DatasetType")
+    @WebResult(name = "node", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15")
+    public java.util.List<edu.ucla.mbi.dxf15.NodeType> getLinkBounds(
+        @WebParam(name = "detail", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String detail,
+        @WebParam(name = "format", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String format
+    );
+
+    @WebMethod
+    @RequestWrapper(localName = "getEvidenceList", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap", className = "edu.ucla.mbi.uvdb.services.soap.GetEvidenceList")
+    @ResponseWrapper(localName = "xrefList", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap", className = "edu.ucla.mbi.uvdb.services.soap.XrefList")
+    @WebResult(name = "xref", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+    public java.util.List<edu.ucla.mbi.dxf15.XrefType> getEvidenceList(
+        @WebParam(name = "ns", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String ns,
+        @WebParam(name = "ac", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String ac,
+        @WebParam(name = "match", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String match,
+        @WebParam(name = "detail", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String detail,
+        @WebParam(name = "format", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String format
+    );
+
+    @WebMethod
+    @RequestWrapper(localName = "status", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap", className = "edu.ucla.mbi.uvdb.services.soap.Status")
+    @ResponseWrapper(localName = "dataset", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15", className = "edu.ucla.mbi.dxf15.DatasetType")
+    @WebResult(name = "node", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15")
+    public java.util.List<edu.ucla.mbi.dxf15.NodeType> status(
+        @WebParam(name = "detail", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String detail,
+        @WebParam(name = "format", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String format
+    );
+
+    @WebMethod
+    @RequestWrapper(localName = "setEvidence", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap", className = "edu.ucla.mbi.uvdb.services.soap.SetEvidence")
+    @ResponseWrapper(localName = "dataset", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15", className = "edu.ucla.mbi.dxf15.DatasetType")
+    @WebResult(name = "node", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15")
+    public java.util.List<edu.ucla.mbi.dxf15.NodeType> setEvidence(
+        @WebParam(name = "dataset", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        edu.ucla.mbi.dxf15.DatasetType dataset,
+        @WebParam(name = "mode", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String mode
+    );
+
+    @WebMethod
+    @RequestWrapper(localName = "getCounts", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap", className = "edu.ucla.mbi.uvdb.services.soap.GetCounts")
+    @ResponseWrapper(localName = "dataset", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15", className = "edu.ucla.mbi.dxf15.DatasetType")
+    @WebResult(name = "node", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15")
+    public java.util.List<edu.ucla.mbi.dxf15.NodeType> getCounts(
+        @WebParam(name = "ns", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String ns,
+        @WebParam(name = "ac", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String ac,
+        @WebParam(name = "match", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String match,
+        @WebParam(name = "detail", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String detail,
+        @WebParam(name = "format", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String format
+    );
+
+    @WebMethod
+    @RequestWrapper(localName = "getEvidence", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap", className = "edu.ucla.mbi.uvdb.services.soap.GetEvidence")
+    @ResponseWrapper(localName = "dataset", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15", className = "edu.ucla.mbi.dxf15.DatasetType")
+    @WebResult(name = "node", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15")
+    public java.util.List<edu.ucla.mbi.dxf15.NodeType> getEvidence(
+        @WebParam(name = "ns", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String ns,
+        @WebParam(name = "ac", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String ac,
+        @WebParam(name = "match", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String match,
+        @WebParam(name = "detail", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String detail,
+        @WebParam(name = "format", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String format
+    );
+
+    @WebMethod
+    @RequestWrapper(localName = "getSourceRange", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap", className = "edu.ucla.mbi.uvdb.services.soap.GetSourceRange")
+    @ResponseWrapper(localName = "dataset", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15", className = "edu.ucla.mbi.dxf15.DatasetType")
+    @WebResult(name = "node", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15")
+    public java.util.List<edu.ucla.mbi.dxf15.NodeType> getSourceRange(
+        @WebParam(name = "fr", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        long fr,
+        @WebParam(name = "to", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        long to,
+        @WebParam(name = "detail", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String detail,
+        @WebParam(name = "format", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String format
+    );
+
+    @WebMethod
+    @RequestWrapper(localName = "query", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap", className = "edu.ucla.mbi.uvdb.services.soap.Query")
+    @ResponseWrapper(localName = "dataset", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15", className = "edu.ucla.mbi.dxf15.DatasetType")
+    @WebResult(name = "node", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15")
+    public java.util.List<edu.ucla.mbi.dxf15.NodeType> query(
+        @WebParam(name = "query", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String query,
+        @WebParam(name = "detail", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String detail,
+        @WebParam(name = "format", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String format
+    );
+
+    @WebMethod
+    @RequestWrapper(localName = "getLinkList", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap", className = "edu.ucla.mbi.uvdb.services.soap.GetLinkList")
+    @ResponseWrapper(localName = "xrefList", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap", className = "edu.ucla.mbi.uvdb.services.soap.XrefList")
+    @WebResult(name = "xref", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+    public java.util.List<edu.ucla.mbi.dxf15.XrefType> getLinkList(
+        @WebParam(name = "ns", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String ns,
+        @WebParam(name = "ac", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String ac,
+        @WebParam(name = "match", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String match,
+        @WebParam(name = "detail", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String detail,
+        @WebParam(name = "format", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String format
+    );
+
+    @WebMethod
+    @RequestWrapper(localName = "transform", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap", className = "edu.ucla.mbi.uvdb.services.soap.Transform")
+    @ResponseWrapper(localName = "dataset", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15", className = "edu.ucla.mbi.dxf15.DatasetType")
+    @WebResult(name = "node", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15")
+    public java.util.List<edu.ucla.mbi.dxf15.NodeType> transform(
+        @WebParam(name = "dataset", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        edu.ucla.mbi.dxf15.DatasetType dataset,
+        @WebParam(name = "detail", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String detail,
+        @WebParam(name = "format", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String format,
+        @WebParam(name = "expand", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String expand,
+        @WebParam(name = "operation", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        edu.ucla.mbi.uvdb.services.soap.OperationType operation,
+        @WebParam(name = "limit", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String limit
+    );
+
+    @WebMethod
+    @RequestWrapper(localName = "dropSource", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap", className = "edu.ucla.mbi.uvdb.services.soap.DropSource")
+    @ResponseWrapper(localName = "dataset", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15", className = "edu.ucla.mbi.dxf15.DatasetType")
+    @WebResult(name = "node", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15")
+    public java.util.List<edu.ucla.mbi.dxf15.NodeType> dropSource(
+        @WebParam(name = "ns", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String ns,
+        @WebParam(name = "ac", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String ac
+    );
+
+    @WebMethod
+    @RequestWrapper(localName = "getNodeRange", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap", className = "edu.ucla.mbi.uvdb.services.soap.GetNodeRange")
+    @ResponseWrapper(localName = "dataset", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15", className = "edu.ucla.mbi.dxf15.DatasetType")
+    @WebResult(name = "node", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15")
+    public java.util.List<edu.ucla.mbi.dxf15.NodeType> getNodeRange(
+        @WebParam(name = "fr", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        long fr,
+        @WebParam(name = "to", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        long to,
+        @WebParam(name = "detail", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String detail,
+        @WebParam(name = "format", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String format
+    );
+
+    @WebMethod
+    @RequestWrapper(localName = "dropEvidence", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap", className = "edu.ucla.mbi.uvdb.services.soap.DropEvidence")
+    @ResponseWrapper(localName = "dataset", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15", className = "edu.ucla.mbi.dxf15.DatasetType")
+    @WebResult(name = "node", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15")
+    public java.util.List<edu.ucla.mbi.dxf15.NodeType> dropEvidence(
+        @WebParam(name = "ns", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String ns,
+        @WebParam(name = "ac", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String ac
+    );
+
+    @WebMethod
+    @RequestWrapper(localName = "setSource", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap", className = "edu.ucla.mbi.uvdb.services.soap.SetSource")
+    @ResponseWrapper(localName = "dataset", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15", className = "edu.ucla.mbi.dxf15.DatasetType")
+    @WebResult(name = "node", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15")
+    public java.util.List<edu.ucla.mbi.dxf15.NodeType> setSource(
+        @WebParam(name = "dataset", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        edu.ucla.mbi.dxf15.DatasetType dataset,
+        @WebParam(name = "mode", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String mode
+    );
+
+    @WebMethod
+    @RequestWrapper(localName = "getLinksByNodeSet", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap", className = "edu.ucla.mbi.uvdb.services.soap.GetLinksByNodeSet")
+    @ResponseWrapper(localName = "dataset", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15", className = "edu.ucla.mbi.dxf15.DatasetType")
+    @WebResult(name = "node", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15")
+    public java.util.List<edu.ucla.mbi.dxf15.NodeType> getLinksByNodeSet(
+        @WebParam(name = "dataset", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        edu.ucla.mbi.dxf15.DatasetType dataset,
+        @WebParam(name = "match", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String match,
+        @WebParam(name = "detail", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String detail,
+        @WebParam(name = "format", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String format
+    );
+
+    @WebMethod
+    @RequestWrapper(localName = "setNode", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap", className = "edu.ucla.mbi.uvdb.services.soap.SetNode")
+    @ResponseWrapper(localName = "dataset", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15", className = "edu.ucla.mbi.dxf15.DatasetType")
+    @WebResult(name = "node", targetNamespace = "http://dip.doe-mbi.ucla.edu/services/dxf15")
+    public java.util.List<edu.ucla.mbi.dxf15.NodeType> setNode(
+        @WebParam(name = "dataset", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        edu.ucla.mbi.dxf15.DatasetType dataset,
+        @WebParam(name = "mode", targetNamespace = "http://mbi.ucla.edu/uvdb/services/soap")
+        java.lang.String mode
+    );
+}
