@@ -26,7 +26,8 @@ class BkdClient():
         url = 'https://imexcentral.org/bkdev/services/soap?wsdl'
  
         if mode == 'dev':
-            url = 'https://imexcentral.org/bkdev/services/soap?wsdl'
+            #url = 'https://imexcentral.org/bkdev/services/soap?wsdl'
+            url = 'http://localhost:9999/bkdev/services/soap?wsdl'
             
         if self.debug:
             print(url)
@@ -123,5 +124,27 @@ class BkdClient():
              print( e )
         return None
 
-    
+    def setnode( self, zdtsnode, mode = "add", debug = False ):
+        print("BkdClinet.addnode: input node=" + str(zdtsnode))
+        
+        if zdtsnode is not None:
+            client = self._zclient
+            #try:
 
+            if debug:
+                print( ET.tostring(client.create_message(client.service,'setNode', dataset= zdtsnode, mode="add"), pretty_print=True )  )
+            else:
+                with client.settings(raw_response=True):
+                    res = client.service.setNode( zdtsnode, mode )
+                    restree = ET.fromstring(res.text)
+                    dset = restree.xpath('//dxf:dataset',namespaces = self.dxfns )
+                    print(ET.tostring(dset[0]) )
+                    if dset:
+                        return dset[0]
+            
+        return None
+    
+print("BkdClient: import")
+
+
+    

@@ -1,7 +1,7 @@
 package edu.ucla.mbi.bkd.server.soap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 
@@ -10,8 +10,8 @@ import edu.ucla.mbi.bkd.store.*;
             
 public class BkdBuilder {
     
-    private static final Logger log
-        = LoggerFactory.getLogger( BkdBuilder.class );
+    private static final Logger logger
+        = LogManager.getLogger( BkdBuilder.class );
 
     BkdRecordManager recordManager;
 

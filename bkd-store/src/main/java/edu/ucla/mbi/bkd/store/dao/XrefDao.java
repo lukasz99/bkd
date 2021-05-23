@@ -9,8 +9,9 @@ import java.util.*;
 import org.hibernate.*;
 import edu.ucla.mbi.bkd.store.*;
 
-public class CvTermDao extends AbstractDAO {
+public class XrefDao extends AbstractDAO {
     
+    /**
     public CvTerm getByPkey( int pkey ) { 
         
         Logger log = LogManager.getLogger( this.getClass() );
@@ -112,8 +113,10 @@ public class CvTermDao extends AbstractDAO {
     
     //---------------------------------------------------------------------
 
-    public CvTerm updateCvTerm( CvTerm term ){         
-        super.saveOrUpdate( term );
-        return term;
+    **/
+
+    public Xref updateXref( Xref xref ){         
+        super.saveOrUpdate( xref );
+        return xref;
     }
 }

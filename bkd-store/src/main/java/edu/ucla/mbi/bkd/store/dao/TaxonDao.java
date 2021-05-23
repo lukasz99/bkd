@@ -1,7 +1,7 @@
 package edu.ucla.mbi.bkd.store.dao;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.*;
 import java.util.*;
@@ -13,7 +13,7 @@ public class TaxonDao extends AbstractDAO {
     
     public Taxon getByPkey( int pkey ) { 
         
-        Logger log = LoggerFactory.getLogger( this.getClass() );
+        Logger log = LogManager.getLogger( this.getClass() );
         log.info( "TaxonDao->getTaxon: pkey(int)=" + pkey  );
         
         try{
@@ -41,10 +41,15 @@ public class TaxonDao extends AbstractDAO {
             query.setParameter("taxid", taxid );
             query.setFirstResult( 0 );
             taxon = (Taxon) query.uniqueResult();
+	    Logger log = LogManager.getLogger( this.getClass() );
+            log.info( taxon );
+	    
             tx.commit();
         } catch ( HibernateException e ) {
             handleException( e );
-            // log error ?
+            // log error
+	    Logger log = LogManager.getLogger( this.getClass() );
+	    log.error( "-> getByTaxid: " + e );
         } finally {
             session.close();
         }
@@ -76,7 +81,10 @@ public class TaxonDao extends AbstractDAO {
     //---------------------------------------------------------------------
 
     public Taxon updateTaxon( Taxon taxon ) { 
-        
+
+	Logger log = LogManager.getLogger( this.getClass() );
+        log.info( "->updateTaxon: taxon=" + taxon  );
+	
         super.saveOrUpdate( taxon );
         return taxon;
     }

@@ -1,7 +1,7 @@
 package edu.ucla.mbi.bkd.server.rest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 //import edu.ucla.mbi.bkd.index.*;
 import edu.ucla.mbi.bkd.store.*;
@@ -19,14 +19,14 @@ public class BkdRestServiceImpl implements BkdRestService{
     public BkdRestServiceImpl(){ }
 
     public void initialize(){
-         Logger log = LoggerFactory.getLogger( this.getClass() );
+	Logger log = LogManager.getLogger( this.getClass() );
          log.info( "ImxdipRestServiceImpl: initialize" );
    }     
 
     public void setRecordManager( BkdRecordManager manager ){
 
         this.recordManager = manager;
-        Logger log = LoggerFactory.getLogger( this.getClass() );
+        Logger log = LogManager.getLogger( this.getClass() );
         log.info( "BkdRestServiceImpl: RecordManager set" );
     }
 
@@ -35,7 +35,7 @@ public class BkdRestServiceImpl implements BkdRestService{
     public void setQueryManager( BkdQueryManager manager ){
 
         this.queryManager = manager;
-        Logger log = LoggerFactory.getLogger( this.getClass() );
+        Logger log = LogManager.getLogger( this.getClass() );
         log.info( "BkdRestServiceImpl: QueryManager set" );        
     }
 

@@ -1,7 +1,7 @@
 package edu.ucla.mbi.bkd.store;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.persistence.*;
 
@@ -23,10 +23,10 @@ public class IdGenerator{
     @Column(name = "idmax")
     int idmax;
 
-    @Column(name = "prefix")
+    @Column(name = "prfix")
     String prefix;
 
-    @Column(name = "pstfix")
+    @Column(name = "ptfix")
     String pstfix;
 
     IdGenerator() { }

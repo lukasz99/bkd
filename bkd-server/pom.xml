@@ -246,7 +246,7 @@
               <filtering>true</filtering>
               <includes>
                 <include>applicationContext.xml</include>
-                <include>log4j.properties</include>
+                <include>log4j2.xml</include>
               </includes>
             </resource>
             

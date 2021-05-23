@@ -782,136 +782,163 @@
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
     
     <operation name="getCrossRefList">
+      <soap:operation style="document" soapAction="petition" soapActionRequired="true"/>
       <input><soap:body use="literal"/></input>
       <output><soap:body use="literal"/></output>
     </operation>
     
     <operation name="getCounts">
+      <soap:operation style="document" soapAction="petition" soapActionRequired="true"/>
       <input><soap:body use="literal"/></input>
       <output><soap:body use="literal"/></output>
     </operation>
     
     <operation name="getSourceBounds">
+      <soap:operation style="document" soapAction="petition" soapActionRequired="true"/>
       <input><soap:body use="literal"/></input>
       <output><soap:body use="literal"/></output>
     </operation>
     
     <operation name="getSourceRange">
+      <soap:operation style="document" soapAction="petition" soapActionRequired="true"/>
       <input><soap:body use="literal"/></input>
       <output><soap:body use="literal"/></output>
     </operation>
     
     <operation name="getSource">
+      <soap:operation style="document" soapAction="petition" soapActionRequired="true"/>
       <input><soap:body use="literal"/></input>
       <output><soap:body use="literal"/></output>
     </operation>
     
     <operation name="getSourceList">
+      <soap:operation style="document" soapAction="petition" soapActionRequired="true"/>
       <input><soap:body use="literal"/></input>
       <output><soap:body use="literal"/></output>
     </operation>
     
     <operation name="getNodeBounds">
+      <soap:operation style="document" soapAction="petition" soapActionRequired="true"/>
       <input><soap:body use="literal"/></input>
       <output><soap:body use="literal"/></output>
     </operation>
     
     <operation name="getNodeRange">
+      <soap:operation style="document" soapAction="petition" soapActionRequired="true"/>
       <input><soap:body use="literal"/></input>
       <output><soap:body use="literal"/></output>
     </operation>
 
     <operation name="getNode">
+      <soap:operation style="document" soapAction="petition" soapActionRequired="true"/>
       <input><soap:body use="literal"/></input>
       <output><soap:body use="literal"/></output>
     </operation>
     
     <operation name="getNodeList">
+      <soap:operation style="document" soapAction="petition" soapActionRequired="true"/>
       <input><soap:body use="literal"/></input>
       <output><soap:body use="literal"/></output>
     </operation>
     
     <operation name="matchNode">
+      <soap:operation style="document" soapAction="petition" soapActionRequired="true"/>
       <input><soap:body use="literal"/></input>
       <output><soap:body use="literal"/></output>
     </operation>
     
     <operation name="getLinkBounds">
+      <soap:operation style="document" soapAction="petition" soapActionRequired="true"/>
       <input><soap:body use="literal"/></input>
       <output><soap:body use="literal"/></output>
     </operation>
     
     <operation name="getLinkRange">
+      <soap:operation style="document" soapAction="petition" soapActionRequired="true"/>
       <input><soap:body use="literal"/></input>
       <output><soap:body use="literal"/></output>
     </operation>
     
     <operation name="getLink">
+      <soap:operation style="document" soapAction="petition" soapActionRequired="true"/>
       <input><soap:body use="literal"/></input>
       <output><soap:body use="literal"/></output>
     </operation>
     
     <operation name="getLinkList">
+      <soap:operation style="document" soapAction="petition" soapActionRequired="true"/>
       <input><soap:body use="literal"/></input>
       <output><soap:body use="literal"/></output>
     </operation>
     
     <operation name="getEvidence">
+      <soap:operation style="document" soapAction="petition" soapActionRequired="true"/>
       <input><soap:body use="literal"/></input>
       <output><soap:body use="literal"/></output>
     </operation>
     
     <operation name="getEvidenceList">
+      <soap:operation style="document" soapAction="petition" soapActionRequired="true"/>
       <input><soap:body use="literal"/></input>
       <output><soap:body use="literal"/></output>
     </operation>
         
     <operation name="getLinksByNodeSet">
+      <soap:operation style="document" soapAction="petition" soapActionRequired="true"/>
       <input><soap:body use="literal"/></input>
       <output><soap:body use="literal"/></output>
     </operation>
     
     <operation name="transform">
+      <soap:operation style="document" soapAction="petition" soapActionRequired="true"/>
       <input><soap:body use="literal"/></input>
       <output><soap:body use="literal"/></output>
     </operation>
     
     <operation name="query">
+      <soap:operation style="document" soapAction="petition" soapActionRequired="true"/>
       <input><soap:body use="literal"/></input>
       <output><soap:body use="literal"/></output>
     </operation>
 
     <operation name="status">
+      <soap:operation style="document" soapAction="petition" soapActionRequired="true"/>
       <input><soap:body use="literal"/></input>
       <output><soap:body use="literal"/></output>
     </operation>
   
     <operation name="setNode">
+      <soap:operation style="document" soapAction="petition" soapActionRequired="true"/>
       <input><soap:body use="literal"/></input>
       <output><soap:body use="literal"/></output>
     </operation>
    
     <operation name="setLink">
+      <soap:operation style="document" soapAction="petition" soapActionRequired="true"/>
       <input><soap:body use="literal"/></input>
       <output><soap:body use="literal"/></output>
     </operation>
     
     <operation name="setEvidence">
+      <soap:operation style="document" soapAction="petition" soapActionRequired="true"/>
       <input><soap:body use="literal"/></input>
       <output><soap:body use="literal"/></output>
     </operation>
     
     <operation name="dropEvidence">
+      <soap:operation style="document" soapAction="petition" soapActionRequired="true"/>
       <input><soap:body use="literal"/></input>
       <output><soap:body use="literal"/></output>
     </operation>
     
     <operation name="setSource">
+      <soap:operation style="document" soapAction="petition" soapActionRequired="true"/>
       <input><soap:body use="literal"/></input>
       <output><soap:body use="literal"/></output>
     </operation>
     
     <operation name="dropSource">
+      <soap:operation style="document" soapAction="petition" soapActionRequired="true"/>
       <input><soap:body use="literal"/></input>
       <output><soap:body use="literal"/></output>
     </operation>
@@ -919,7 +946,7 @@
   </binding>
   
   <service name="BkdService">
-    <port binding="bkd:BkdServiceBinding" name="BkdServicePort">
+    <port binding="bkd:BkdServiceBinding" name="BkdServicePort">      
       <soap:address location=""/> 
     </port>
   </service>

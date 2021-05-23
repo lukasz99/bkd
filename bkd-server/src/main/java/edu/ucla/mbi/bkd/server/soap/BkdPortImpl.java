@@ -1,5 +1,8 @@
 package edu.ucla.mbi.bkd.server.soap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
@@ -8,6 +11,9 @@ import javax.jws.soap.SOAPBinding;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.ws.RequestWrapper;
 import javax.xml.ws.ResponseWrapper;
+
+import java.util.List;
+import java.util.ArrayList;
 
 import edu.ucla.mbi.bkd.store.*;
 import edu.ucla.mbi.bkd.services.soap.*;
@@ -19,23 +25,31 @@ import edu.ucla.mbi.bkd.services.soap.*;
             targetNamespace = "http://mbi.ucla.edu/bkd/services/soap")
 public class BkdPortImpl implements BkdPort {
 
-    BkdBuilder builder;
+    private edu.ucla.mbi.dxf15.ObjectFactory dxfFactory
+	= new edu.ucla.mbi.dxf15.ObjectFactory();
+
+    private Logger logger = null;
+    
+    BkdBuilder builder = null;
     
     public void setBuilder(BkdBuilder builder){
         this.builder = builder;
     }
 
-    BkdRecordManager recordManager;
+    BkdNodeManager nodeManager= null;
 
-    public void setRecordManager( BkdRecordManager recordManager ){
-        this.recordManager = recordManager;
+    public void setNodeManager( BkdNodeManager nodeManager ){
+        this.nodeManager = nodeManager;
     }
 
     public void initialize(){
+
+	logger = LogManager.getLogger( BkdPortImpl.class );	
         System.out.println( "BkdPortImpl: initialize");
+	logger.info( "BkdPortImpl: initialize");
     }
 
-
+    
     public java.util.List<edu.ucla.mbi.dxf15.NodeType>
         getNode( java.lang.String ns,
                  java.lang.String ac,
@@ -240,7 +254,47 @@ public class BkdPortImpl implements BkdPort {
     public java.util.List<edu.ucla.mbi.dxf15.NodeType>
         setNode( edu.ucla.mbi.dxf15.DatasetType dataset,
                  java.lang.String mode ){
-        return null;
+
+	Logger log = LogManager.getLogger( BkdPortImpl.class );	
+	log.info( "setNode" );
+       
+	List<edu.ucla.mbi.dxf15.NodeType> nList = dataset.getNode();
+	List<edu.ucla.mbi.dxf15.NodeType> rList = new <edu.ucla.mbi.dxf15.NodeType>ArrayList();    
+
+	for(edu.ucla.mbi.dxf15.NodeType nd: nList){
+	    edu.ucla.mbi.dxf15.TypeDefType ntp = nd.getType();
+
+	    //String name = ntp.getNs();
+	    //String ns = ntp.getNs();
+
+	    String ac = ntp.getAc();
+	    log.info( "setNode: node type: " + ntp.getName() );
+
+	    edu.ucla.mbi.dxf15.NodeType rnode = null;
+	    
+	    switch (ac) {
+	    case "dxf:0003":  rnode = nodeManager.processProteinNode( nd, mode );
+		    break;
+	    case "dxf:0053":  rnode = nodeManager.processTranscriptNode( nd, mode );
+		    break;
+	    case "dxf:0025":  rnode = nodeManager.processGeneNode( nd, mode );
+		    break;
+	    case "dxf:0017":  rnode = nodeManager.processTaxonNode( nd, mode );
+		    break;
+	    case "dxf:0001":  rnode = nodeManager.processProteinNode(nd,mode);
+		    break;
+	    default: rnode = null;
+		break;
+	    }
+	    log.info(rnode);
+	    if( rnode != null){
+		rList.add( rnode );
+	    }
+	}
+	if(rList.size() > 0){
+	    return rList;
+	}
+	return null;
     }
     
 }

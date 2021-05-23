@@ -43,6 +43,4 @@
 
   <import resource="spring/cxf-services.xml" /> 
 
-  <!-- <import resource="spring/soap.xml" /> -->
-
 </beans>

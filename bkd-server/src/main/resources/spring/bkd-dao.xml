@@ -13,12 +13,28 @@
       http://www.springframework.org/schema/aop 
       http://www.springframework.org/schema/aop/spring-aop.xsd">
 
-<!-- imxdip dao: db connection -->
+  <!-- imxdip dao: db connection -->
 
-  <bean id="bkdSessionFactory"
+  <bean id="bkdFlipSessionFactory"
+	class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+    <property name="dataSource" ref="bkdFlipSource"/>
+    
+    <property name="packagesToScan"
+              value="edu.ucla.mbi.bkd.store"/>
+    
+    <property name="hibernateProperties">
+      <props>
+	<prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+	<prop key="hibernate.current_session_context_class">thread</prop>
+	<prop key="hibernate.show_sql">false</prop>
+      </props>
+    </property>
+  </bean>
+  
+  <bean id="bkdFlopSessionFactory"
         class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
-    <property name="dataSource" ref="bkdSource"/>
-
+    <property name="dataSource" ref="bkdFlopSource"/>
+    
     <property name="packagesToScan"
               value="edu.ucla.mbi.bkd.store"/>
     
@@ -31,34 +47,31 @@
     </property>
   </bean>
 
-  <bean id="bkdSource" scope="singleton"
+  <bean id="bkdFlipSource" scope="singleton"
         class="org.springframework.jndi.JndiObjectFactoryBean" >
 
-    <property name="jndiName" value="java:comp/env/jdbc/bkd" />
+    <property name="jndiName" value="java:comp/env/jdbc/bkd_flip" />
     <property name="resourceRef" value="true"/>
   </bean>
-
- <!-- data access objects -->
-
-  <bean id="bkdNodeDao" class="edu.ucla.mbi.bkd.store.dao.NodeDao">
-    <property name="sessionFactory" ref="bkdSessionFactory"/>
-  </bean>
-
-  <bean id="bkdTaxonDao" class="edu.ucla.mbi.bkd.store.dao.TaxonDao">
-    <property name="sessionFactory" ref="bkdSessionFactory"/>
-  </bean>
-
-  <bean id="bkdCvTermDao" class="edu.ucla.mbi.bkd.store.dao.CvTermDao">
-    <property name="sessionFactory" ref="bkdSessionFactory"/>
+  
+  <bean id="bkdFlopSource" scope="singleton"
+        class="org.springframework.jndi.JndiObjectFactoryBean" >
+    
+    <property name="jndiName" value="java:comp/env/jdbc/bkd_flop" />
+    <property name="resourceRef" value="true"/>
   </bean>
   
-  <bean id="bkdIdGenDao" class="edu.ucla.mbi.bkd.store.dao.IdGenDao">
-    <property name="sessionFactory" ref="bkdSessionFactory"/>
-  </bean>
-
+  <!-- data access objects -->
+  
+  <bean id="bkdNodeDao" class="edu.ucla.mbi.bkd.store.dao.NodeDao"/>
+  <bean id="bkdTaxonDao" class="edu.ucla.mbi.bkd.store.dao.TaxonDao"/>
+  <bean id="bkdCvTermDao" class="edu.ucla.mbi.bkd.store.dao.CvTermDao"/>
+  <bean id="bkdXrefDao" class="edu.ucla.mbi.bkd.store.dao.XrefDao"/>
+  <bean id="bkdIdGenDao" class="edu.ucla.mbi.bkd.store.dao.IdGenDao"/>
+  <bean id="bkdSourceDao" class="edu.ucla.mbi.bkd.store.dao.SourceDao"/>
   
   <!--
-  <bean id="imxdipSourceDao" class="edu.ucla.mbi.dip.database.imxdip.dao.SourceDao">
+      <bean id="imxdipSourceDao" class="edu.ucla.mbi.dip.database.imxdip.dao.SourceDao">
     <property name="sessionFactory" ref="imxdipSessionFactory"/>
   </bean>
 
@@ -88,11 +101,20 @@
 -->
 
   <bean id="bkdDaoContext" class="edu.ucla.mbi.bkd.store.BkdDaoContext">
+    
+    <property name="state" value="flip"/>
+    
+    <property name="flipSF" ref="bkdFlipSessionFactory"/>
+    <property name="flopSF" ref="bkdFlopSessionFactory"/>
+    
     <property name="idGenDao" ref="bkdIdGenDao"/>
-
-    <property name="termDao" ref="bkdCvTermDao"/>
+    <property name="cvTermDao" ref="bkdCvTermDao"/>
     <property name="taxonDao" ref="bkdTaxonDao"/>
     <property name="nodeDao"  ref="bkdNodeDao"/>
+    <property name="xrefDao"  ref="bkdXrefDao"/>
+    <property name="sourceDao"  ref="bkdSourceDao"/>
+    
+  </bean>
 
 <!--    
     <property name="sourceDao" ref="imxdipSourceDao"/>
@@ -104,7 +126,7 @@
     <property name="idGenDao" ref="imxdipIdGenDao"/>
     <property name="imexDao" ref="imexDao"/>    
 -->
-  </bean>
+  
   
   <!-- Record Manager -->
 
@@ -125,10 +147,10 @@
   </bean>
 -->
 
-  <bean id="bkdRecordManager" class="edu.ucla.mbi.bkd.store.BkdRecordManager"
+   <bean id="bkdRecordManager" class="edu.ucla.mbi.bkd.store.BkdRecordManager"
         init-method="initialize">
 
-    <property name="daoContext" ref="bkdDaoContext" />
+     <property name="daoContext" ref="bkdDaoContext" />
 
 <!--
     <property name="exptRecordManager" ref="imxdipExptRecordManager"/>
@@ -146,11 +168,11 @@
     <property name="cvTermDao" ref="imxdipCvTermDao"/>
 -->
 
- </bean>  
- <!-- Query Manager -->
+   </bean>  
+   <!-- Query Manager -->
 
- <bean id="bkdQueryManager" class="edu.ucla.mbi.bkd.store.BkdQueryManager"
+   <bean id="bkdQueryManager" class="edu.ucla.mbi.bkd.store.BkdQueryManager"
        init-method="initialize" >
-    <!-- <property name="nodeDao"  ref="nodeDao"/> -->
-  </bean>
-</beans>
+     <!-- <property name="nodeDao"  ref="nodeDao"/> -->
+   </bean>
+ </beans>

@@ -1,8 +1,7 @@
 package edu.ucla.mbi.bkd.store;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Date;
 import java.util.List;
@@ -11,7 +10,33 @@ import java.util.ArrayList;
 import edu.ucla.mbi.bkd.store.*;
 import edu.ucla.mbi.bkd.store.dao.*;
 
+import org.hibernate.*;
+
 public class BkdDaoContext{
+
+    String state ="flip";
+
+    SessionFactory flipSF = null;
+    SessionFactory flopSF = null;
+   
+    public void setFlipSF( SessionFactory factory ){
+	flipSF = factory;
+    }
+
+    public void setFlopSF( SessionFactory factory ){
+	flopSF = factory;
+    }
+
+    public void setState(String state){
+	if(state.equalsIgnoreCase("flop") ){
+	    this.state = "flop";
+	} else {
+	    this.state = "flip";
+	}
+    }
+    public String getState(){
+	return state;
+    }
     
     // Node
     //-----
@@ -23,10 +48,14 @@ public class BkdDaoContext{
     }
 
     public NodeDao getNodeDao(){
-        return this.nodeDao;
+	if( this.state.equals("flip") ){
+	    nodeDao.setSessionFactory( flipSF );
+	} else{
+	    nodeDao.setSessionFactory( flopSF );
+	}
+	return this.nodeDao;
     }
-
-    /**
+    
     // Source
     //-------
     
@@ -37,9 +66,15 @@ public class BkdDaoContext{
     }
 
     public SourceDao getSourceDao(){
-        return this.sourceDao;
+	if( this.state.equals("flip") ){
+	    sourceDao.setSessionFactory( flipSF );
+        } else{
+            sourceDao.setSessionFactory( flopSF );
+        }
+	return this.sourceDao;
     }
-   
+    
+    /*
     // Producer
     //-------
     
@@ -64,7 +99,13 @@ public class BkdDaoContext{
     }
 
     public TaxonDao getTaxonDao(){
-        return this.taxonDao;
+        
+	if( this.state.equals("flip") ){
+	    this.taxonDao.setSessionFactory(flipSF);
+	} else{
+	    this.taxonDao.setSessionFactory(flopSF);
+	}
+	return this.taxonDao;
     }
 
     // CvTerm 
@@ -72,12 +113,35 @@ public class BkdDaoContext{
     
     CvTermDao termDao;
     
-    public void setTermDao( CvTermDao dao ){
+    public void setCvTermDao( CvTermDao dao ){
         this.termDao = dao;
     }
 
-    public CvTermDao getTermDao(){
-        return this.termDao;
+    public CvTermDao getCvTermDao(){       
+	if( this.state.equals("flip") ){
+	    this.termDao.setSessionFactory( flipSF );
+	} else{
+	    this.termDao.setSessionFactory( flopSF );
+	}
+	return this.termDao;
+    }
+
+    // Xref 
+    //-----
+    
+    XrefDao xrefDao;
+    
+    public void setXrefDao( XrefDao dao ){
+        this.xrefDao = dao;
+    }
+
+    public XrefDao getXrefDao(){       
+	if( this.state.equals("flip") ){
+	    this.xrefDao.setSessionFactory( flipSF );
+	} else{
+	    this.xrefDao.setSessionFactory( flopSF );
+	}
+	return this.xrefDao;
     }
     
     // IdGen
@@ -89,8 +153,13 @@ public class BkdDaoContext{
         this.idGenDao = dao;
     }
 
-    public IdGenDao getIdGenDao(){
-        return this.idGenDao;
+    public IdGenDao getIdGenDao(){        
+	if( this.state.equals("flip") ){
+	    this.idGenDao.setSessionFactory( flipSF );
+	} else{
+	    this.idGenDao.setSessionFactory( flopSF );
+	}
+	return this.idGenDao;
     }
     
     /**

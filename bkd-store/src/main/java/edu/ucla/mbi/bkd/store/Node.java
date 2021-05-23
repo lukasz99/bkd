@@ -1,7 +1,7 @@
 package edu.ucla.mbi.bkd.store;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.StringWriter;
 
@@ -14,10 +14,13 @@ import javax.xml.bind.JAXB;
 import javax.persistence.*;
 
 @Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn (name="node_type", 
+                      discriminatorType = DiscriminatorType.STRING)
 @Table(name = "node")
 public class Node implements Comparable<Node>{
 
-    private static String generator = "protein";
+    private static String generator = "node";
     
     @Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="node_pkey_seq")
@@ -26,27 +29,18 @@ public class Node implements Comparable<Node>{
     @Column(name = "pkey")
     private long pkey;
 
-    String prefix = "BKD-";
+    protected static String prefix = "BKD";
     
     @Column(name = "ndid")
-    private long ndid;
+    protected long ndid = 0;
 
     @ManyToOne
-    @JoinColumn(name = "cvterm")
-    CvTerm cvterm;
-    
-    @Column(name = "dip")
-    String dip;
-    
-    @Column(name = "uprot")
-    String uprot ="";
-
-    @Column(name = "rfseq")
-    String rfseq ="";
-    
-    @Column(name = "genid")
-    String genid = "";
-    
+    @JoinColumn(name = "cvtype")
+    CvTerm cvtype;
+        
+    @Column(name = "version")
+    String version = "";
+        
     @Column(name = "name")
     String name = "";
     
@@ -57,6 +51,9 @@ public class Node implements Comparable<Node>{
     @JoinColumn(name = "taxon")
     Taxon taxon;
 
+    @OneToMany(mappedBy="node")
+    private Set<NodeXref> xrefs;
+    
     @Column(name = "comment")
     String comment ="";
 
@@ -72,18 +69,26 @@ public class Node implements Comparable<Node>{
     @Column(name = "t_mod")
     Date utime;
     
-    public int compareTo( Node o){
-        return dip.compareTo( o.getDip() );        
+    public int compareTo( Node o ){
+        return this.getAc().compareTo( o.getAc() );        
     }
         
     public Node() { }
-        
-    public void setDip( String dip ){
-        this.dip = dip;
+
+    public static String generator(){
+        return generator;
+    }
+    
+    public static String getPrefix(){
+	return prefix;
+    }
+    
+    public void setId(long id ){        
+        this.ndid = id;
     }
 
-    public String getDip(){
-        return dip;
+    public long  getId(){
+        return ndid;
     }
     
     public String getNs(){
@@ -93,29 +98,21 @@ public class Node implements Comparable<Node>{
     public String getAc(){
         return prefix + "-"+ Long.toString(ndid) + "N";
     }
-        
-    public void setUprot( String uprot ){
-        this.uprot = uprot;
+
+    public String getVersion(){
+	return this.version;
     }
 
-    public String getUprot(){
-        return uprot == null ? "" : uprot;
+    public String setVersion(String version){
+	return this.version = version;
     }
     
-    public void setRfseq( String rfseq ){
-        this.rfseq = rfseq;
+    public CvTerm getCvType(){
+        return cvtype;
     }
 
-    public String getRfseq(){
-        return rfseq == null ?  "" : rfseq;
-    }
-    
-    public void setGenid( String genid ){
-        this.genid = genid;
-    }
-    
-    public String getGenid(){
-        return genid == null ? "" : genid;
+    public CvTerm setCvType(CvTerm cvtype ){
+        return this.cvtype = cvtype;
     }
     
     public void setName( String name ){        
@@ -142,8 +139,14 @@ public class Node implements Comparable<Node>{
         this.taxon = taxon;
     }
 
-    public void setCvTerm( CvTerm cvterm ){
-        this.cvterm = cvterm;
+    public Set<NodeXref> getXrefs(){
+	if(this.xrefs == null)
+	    this.xrefs = new HashSet<NodeXref>();	
+        return this.xrefs;
+    }
+
+    public void setXrefs(Set<NodeXref> xrefs){
+        this.xrefs = xrefs;
     }
     
     public void setComment( String comment ){

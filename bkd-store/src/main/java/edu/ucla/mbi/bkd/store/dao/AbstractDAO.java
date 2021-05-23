@@ -1,7 +1,7 @@
 package edu.ucla.mbi.bkd.store.dao;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.hibernate.*;
 
@@ -20,9 +20,9 @@ public abstract class AbstractDAO {
         this.sessionFactory = sessionFactory;
     }
 
-
-    public void setSessionFactory( SessionFactory sessionFactory ){
+    public AbstractDAO setSessionFactory( SessionFactory sessionFactory ){
         this.sessionFactory = sessionFactory;
+	return this;
     }
 
     public SessionFactory getSessionFactory(){
@@ -73,6 +73,11 @@ public abstract class AbstractDAO {
             session.saveOrUpdate( obj );
             tx.commit();
         } catch ( HibernateException e ) {
+
+	    Logger log = LogManager.getLogger( this.getClass() );                                                                                                          
+	    log.info( "saveOrUpdate exception" + e  );                                                                                                          
+
+	    
             handleException( e, tx );
         } finally {
             session.close();

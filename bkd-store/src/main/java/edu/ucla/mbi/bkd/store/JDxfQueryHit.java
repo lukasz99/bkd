@@ -1,5 +1,8 @@
 package edu.ucla.mbi.bkd.store;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.*;
 import java.text.NumberFormat;
 

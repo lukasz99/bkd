@@ -1,7 +1,7 @@
 package edu.ucla.mbi.bkd.store;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.StringWriter;
 
@@ -83,7 +83,7 @@ public class CvTerm{
     }
 
     public String toString(){
-        return  "CV[" + ns + ":" + ac + "(" + name + ")]";
+        return  "CV[" + ns + "|" + ac + "(" + name + ")]";
     }
 }
 

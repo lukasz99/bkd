@@ -1,7 +1,7 @@
 package edu.ucla.mbi.bkd.store;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 import java.text.NumberFormat;
@@ -14,7 +14,7 @@ public class BkdQueryManager extends QueryManager{
     public edu.ucla.mbi.dxf15.DatasetType
         query( String query, String detail ) {
 	
-	Logger log = LoggerFactory.getLogger( this.getClass() );
+	Logger log = LogManager.getLogger( this.getClass() );
 	log.info( "DipQueryManager: query called" );
         log.info( "DipQueryManager: query= " + query );
         log.info( "DipQueryManager: detail=" + detail );
@@ -31,7 +31,7 @@ public class BkdQueryManager extends QueryManager{
             //    query = mf.process( query );
             //     miqlx = mf.getMiqlx();
             //}
-            
+	    
             log.info("query:" + query +":mqlx:" + miqlx + ":");
             
 	    try {

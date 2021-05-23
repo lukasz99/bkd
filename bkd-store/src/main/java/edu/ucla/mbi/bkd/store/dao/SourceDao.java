@@ -10,22 +10,55 @@ import org.hibernate.*;
 
 import edu.ucla.mbi.bkd.store.*;
 
-public class NodeDao extends AbstractDAO {
-    
-    public Node getByPkey( int pk ){ 
+public class SourceDao extends AbstractDAO {
+
+    public Source getByPkey( int pk ){ 
 
         Logger log = LogManager.getLogger( this.getClass() );
-        log.debug( "NodeDao->getNode: pkey(int)=" + pk  );
+        log.debug( "SourceDao->getByPkey: pkey(int)=" + pk  );
         
         try{
-            Node node = (Node) super.find( Node.class, new Integer( pk ) );
-            log.debug( "NodeDao->getNode: pk=" + pk + " ::DONE"  );
-            return node;
+            Source source = (Source) super.find( Source.class, new Integer( pk ) );
+            log.debug( "sourceDao->getByPkey: pk=" + pk + " ::DONE"  );
+            return source;
         } catch( Exception ex ){
             return null;
         } 
     }
     
+    public Source getByName( String name ){ 
+
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.debug( "sourceDao->getSource: name=" + name  );
+
+	Source source = null;
+        
+        Session session = getCurrentSession();
+        Transaction tx = session.beginTransaction();
+        
+        try {
+            
+            Query query =
+                session.createQuery( "from Source s where " +
+                                     " s.name = :name ");
+            query.setParameter( "name", name );
+            query.setFirstResult( 0 );
+            source = (Source) query.uniqueResult();
+            tx.commit();  
+            
+        } catch( HibernateException e ) {
+            handleException( e );
+	    log.info("getByName " + e);
+            // log error ?
+        } finally {
+            session.close();
+        }
+	
+        log.info( "SourceDao-> found: " + source );
+        return source; 
+
+    }
+    /*
     //--------------------------------------------------------------------------
     
     public Node getByDip( String id ){ 
@@ -191,9 +224,9 @@ public class NodeDao extends AbstractDAO {
         }
         return node; 
     }
-    
+    */    
     //--------------------------------------------------------------------------
-    /**    
+    /*    
     public List<Node> getByXref( String ns, String acc ){ 
         
         List<Node> nodes =  null;
@@ -230,9 +263,9 @@ public class NodeDao extends AbstractDAO {
             return new ArrayList<Node>();
         }
     }
-    **/
+    */
     //--------------------------------------------------------------------------
-    
+    /*    
     public List<Node> getBySequence( String sequence ){ 
         
         List<Node> nodes =  null;
@@ -292,28 +325,19 @@ public class NodeDao extends AbstractDAO {
     }
     
     //---------------------------------------------------------------------
-
-    public Node updateNode( Node node ) { 
+    */
+    public Source updateSource( Source source ) { 
 
         Logger log = LogManager.getLogger( this.getClass() );
-        log.info( "->updateNode: " + node.toString()  );
+        log.info( "->updateSource: " + source.toString()  );
 	
-        if( node == null ) return null;
+        if( source == null ) return null;
 
         //for(NodeXref x: node.getXrefList() ){
         //    x.setOwner(node);
         //}
 	
-        if( node.getLabel() != null ){
-            if( node.getLabel().length() > 32 ){
-                String slabel = node.getLabel().substring(0,28) + "..";
-                node.setLabel( slabel );
-            }
-        } else {
-            node.setLabel( "" );
-        }
-        
-        super.saveOrUpdate( node );
-        return node;
+        super.saveOrUpdate( source );
+        return source;
     }
 }
