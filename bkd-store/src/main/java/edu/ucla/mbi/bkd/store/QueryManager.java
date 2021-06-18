@@ -3,7 +3,7 @@ package edu.ucla.mbi.bkd.store;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import edu.ucla.mbi.dxf15.*;
+import edu.ucla.mbi.dxf20.*;
 
 public abstract class QueryManager extends JDxfQuerySupport{
 
@@ -12,7 +12,7 @@ public abstract class QueryManager extends JDxfQuerySupport{
         log.info( "BkdQueryManager: initialize" );
     }
 
-    public abstract edu.ucla.mbi.dxf15.DatasetType
+    public abstract edu.ucla.mbi.dxf20.DatasetType
         query( String query, String detail );
     
 }

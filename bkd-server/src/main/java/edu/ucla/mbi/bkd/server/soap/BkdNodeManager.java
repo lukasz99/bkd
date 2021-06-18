@@ -5,13 +5,13 @@ import org.apache.logging.log4j.Logger;
  
 import java.util.*;
 
-import edu.ucla.mbi.dxf15.*;
+import edu.ucla.mbi.dxf20.*;
 import edu.ucla.mbi.bkd.store.*;
             
 public class BkdNodeManager {
     
-    private edu.ucla.mbi.dxf15.ObjectFactory dxfFactory
-	= new edu.ucla.mbi.dxf15.ObjectFactory();
+    private edu.ucla.mbi.dxf20.ObjectFactory dxfFactory
+	= new edu.ucla.mbi.dxf20.ObjectFactory();
     
     BkdRecordManager recordManager;
 

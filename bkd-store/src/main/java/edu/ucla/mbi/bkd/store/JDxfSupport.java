@@ -8,7 +8,7 @@ import java.io.StringWriter;
 import java.util.*;
 import org.json.*;
 
-import edu.ucla.mbi.dxf15.*;
+import edu.ucla.mbi.dxf20.*;
 //import org.hupo.psi.mi.mif.*; 
 //import org.hupo.psi.mi.mif300.*; 
 
@@ -16,8 +16,8 @@ import javax.xml.bind.JAXB;
  
 public abstract class JDxfSupport{
 
-    protected edu.ucla.mbi.dxf15.ObjectFactory dxfFactory
-        = new edu.ucla.mbi.dxf15.ObjectFactory();
+    protected edu.ucla.mbi.dxf20.ObjectFactory dxfFactory
+        = new edu.ucla.mbi.dxf20.ObjectFactory();
 
     //protected org.hupo.psi.mi.mif.ObjectFactory mifFactory
     //    = new org.hupo.psi.mi.mif.ObjectFactory();
@@ -118,7 +118,7 @@ public abstract class JDxfSupport{
     //--------------------------------------------------------------------------
 
 
-    protected edu.ucla.mbi.dxf15.XrefType
+    protected edu.ucla.mbi.dxf20.XrefType
         createXref( String type, String typeNs, String typeAc,
                     String ns, String ac ){
         
@@ -127,11 +127,11 @@ public abstract class JDxfSupport{
 
     //--------------------------------------------------------------------------
 
-    protected edu.ucla.mbi.dxf15.XrefType
+    protected edu.ucla.mbi.dxf20.XrefType
         createXref( String type, String typeNs, String typeAc,
                     String ns, String ac, NodeType node ){
         
-        edu.ucla.mbi.dxf15.XrefType xref = dxfFactory.createXrefType();
+        edu.ucla.mbi.dxf20.XrefType xref = dxfFactory.createXrefType();
         xref.setType( type );
         xref.setTypeNs( typeNs );
         xref.setTypeAc( typeAc );
@@ -157,11 +157,11 @@ public abstract class JDxfSupport{
     
     //--------------------------------------------------------------------------
 
-    protected edu.ucla.mbi.dxf15.XrefType createXref( String type,
+    protected edu.ucla.mbi.dxf20.XrefType createXref( String type,
                                                       String typeNs, String typeAc,
                                                       String ns, String ac ){
         
-        edu.ucla.mbi.dxf15.XrefType xref = dxfFactory.createXrefType();
+        edu.ucla.mbi.dxf20.XrefType xref = dxfFactory.createXrefType();
         xref.setType( type );
         xref.setTypeNs( typeNs );
         xref.setTypeAc( typeAc );

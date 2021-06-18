@@ -1,0 +1,39 @@
+.yui-skin-sam .yui-navset .yui-content {
+    background: #FFFFFF;
+     
+    /*height: 450px;*/
+}
+
+.yui-skin-sam .yui-navset .selected {
+  background-color :#DDDDDD ;
+  color:#FFFFFF;
+}
+
+
+.yui-skin-sam .yui-navset .yui-nav a, 
+.yui-skin-sam .yui-navset .yui-navset-top 
+.yui-nav a {
+  background:#F8F8F8;
+  color:#000000;
+}
+
+
+.yui-skin-sam .yui-navset .yui-nav .selected a, 
+.yui-skin-sam .yui-navset .yui-nav .selected a:focus, 
+.yui-skin-sam .yui-navset .yui-nav .selected a:hover {
+  background: #D8D8D8;
+  color:#000000;
+}
+
+.yui-skin-sam .yui-navset .yui-nav a, 
+.yui-skin-sam .yui-navset .yui-navset-top .yui-nav a {
+  background: #E4E4E4
+  color:#404040; 
+}
+
+.yui-skin-sam .yui-navset .yui-nav, 
+.yui-skin-sam .yui-navset .yui-navset-top .yui-nav {
+  border-color:#D8D8D8;
+  border-style:solid;
+  border-width:0 0 5px;
+}

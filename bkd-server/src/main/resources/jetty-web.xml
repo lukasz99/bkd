@@ -6,11 +6,9 @@
         <Arg>java:comp/env/jdbc/bkd_flip</Arg>
         <Arg>
             <New class="com.mchange.v2.c3p0.ComboPooledDataSource">
-              <!-- <Set name="JdbcUrl">jdbc:postgresql://10.1.6.1:5432/ucvdb</Set> -->
-	      <Set name="JdbcUrl">jdbc:postgresql://192.168.1.144:5432/ucvdb_flip</Set>
-                <Set name="User">uvdb</Set>
-                <Set name="Password">444uvdb444</Set>
-
+                <Set name="JdbcUrl">jdbc:postgresql://10.1.7.101:5432/bkd_flip</Set>	          
+                <Set name="User">bkd</Set>
+                <Set name="Password">444bkd444</Set>
             </New>
         </Arg>
     </New>
@@ -19,10 +17,9 @@
         <Arg>java:comp/env/jdbc/bkd_flop</Arg>
         <Arg>
             <New class="com.mchange.v2.c3p0.ComboPooledDataSource">
-              <!-- <Set name="JdbcUrl">jdbc:postgresql://10.1.6.1:5432/ucvdb</Set> -->
-	      <Set name="JdbcUrl">jdbc:postgresql://192.168.1.144:5432/ucvdb_flop</Set>
-                <Set name="User">uvdb</Set>
-                <Set name="Password">444uvdb444</Set>
+              <Set name="JdbcUrl">jdbc:postgresql://10.1.7.101:5432/bkd_flop</Set>
+	            <Set name="User">bkd</Set>
+                <Set name="Password">444bkd444</Set>
             </New>
         </Arg>
     </New>

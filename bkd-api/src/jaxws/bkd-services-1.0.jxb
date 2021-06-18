@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- $Id::                                                                 $ -->
-
 <bindings wsdlLocation="../wsdl/bkd-services-1.0.wsdl"
     xmlns="http://java.sun.com/xml/ns/jaxws"
     xmlns:jxb="http://java.sun.com/xml/ns/jaxb"

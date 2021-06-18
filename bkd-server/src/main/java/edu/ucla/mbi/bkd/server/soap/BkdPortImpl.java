@@ -25,8 +25,8 @@ import edu.ucla.mbi.bkd.services.soap.*;
             targetNamespace = "http://mbi.ucla.edu/bkd/services/soap")
 public class BkdPortImpl implements BkdPort {
 
-    private edu.ucla.mbi.dxf15.ObjectFactory dxfFactory
-	= new edu.ucla.mbi.dxf15.ObjectFactory();
+    private edu.ucla.mbi.dxf20.ObjectFactory dxfFactory
+	= new edu.ucla.mbi.dxf20.ObjectFactory();
 
     private Logger logger = null;
     
@@ -50,7 +50,7 @@ public class BkdPortImpl implements BkdPort {
     }
 
     
-    public java.util.List<edu.ucla.mbi.dxf15.NodeType>
+    public java.util.List<edu.ucla.mbi.dxf20.NodeType>
         getNode( java.lang.String ns,
                  java.lang.String ac,
                  java.lang.String sequence,
@@ -63,7 +63,7 @@ public class BkdPortImpl implements BkdPort {
         return null;
     }
     
-    public java.util.List<edu.ucla.mbi.dxf15.NodeType>
+    public java.util.List<edu.ucla.mbi.dxf20.NodeType>
         getLink( java.lang.String ns,
                  java.lang.String ac,
                  java.lang.String match,
@@ -72,7 +72,7 @@ public class BkdPortImpl implements BkdPort {
         return null;
     }
     
-    public java.util.List<edu.ucla.mbi.dxf15.XrefType>
+    public java.util.List<edu.ucla.mbi.dxf20.XrefType>
         getSourceList( java.lang.String ns,
                        java.lang.String ac,
                        java.lang.String match,
@@ -81,18 +81,18 @@ public class BkdPortImpl implements BkdPort {
         return null;        
     }
     
-    public edu.ucla.mbi.dxf15.DatasetType
+    public edu.ucla.mbi.dxf20.DatasetType
         getCrossRefList( GetCrossRef request ){
         return null;        
     }
 
-    public java.util.List<edu.ucla.mbi.dxf15.NodeType>
-        setLink( edu.ucla.mbi.dxf15.DatasetType dataset,
+    public java.util.List<edu.ucla.mbi.dxf20.NodeType>
+        setLink( edu.ucla.mbi.dxf20.DatasetType dataset,
                  java.lang.String mode ){
         return null;
     }
 
-    public java.util.List<edu.ucla.mbi.dxf15.XrefType>
+    public java.util.List<edu.ucla.mbi.dxf20.XrefType>
         getNodeList( java.lang.String ns,
                      java.lang.String ac,
                      java.lang.String match,
@@ -101,15 +101,15 @@ public class BkdPortImpl implements BkdPort {
         return null;
     }
 
-    public java.util.List<edu.ucla.mbi.dxf15.NodeType>
-        matchNode( edu.ucla.mbi.dxf15.DatasetType dataset,
+    public java.util.List<edu.ucla.mbi.dxf20.NodeType>
+        matchNode( edu.ucla.mbi.dxf20.DatasetType dataset,
                    java.lang.String match,
                    java.lang.String detail,
                    java.lang.String format){
         return null;
     }
     
-    public java.util.List<edu.ucla.mbi.dxf15.NodeType>
+    public java.util.List<edu.ucla.mbi.dxf20.NodeType>
         getLinkRange( long fr,
                       long to,
                       java.lang.String detail,
@@ -117,7 +117,7 @@ public class BkdPortImpl implements BkdPort {
         return null;
     }
     
-    public java.util.List<edu.ucla.mbi.dxf15.NodeType>
+    public java.util.List<edu.ucla.mbi.dxf20.NodeType>
         getSource( java.lang.String ns,
                    java.lang.String ac,
                    java.lang.String match,
@@ -126,25 +126,25 @@ public class BkdPortImpl implements BkdPort {
         return null;
     }
                        
-    public java.util.List<edu.ucla.mbi.dxf15.NodeType>
+    public java.util.List<edu.ucla.mbi.dxf20.NodeType>
         getSourceBounds( java.lang.String detail,
                          java.lang.String format ){
         return null;
     }
     
-    public java.util.List<edu.ucla.mbi.dxf15.NodeType>
+    public java.util.List<edu.ucla.mbi.dxf20.NodeType>
         getNodeBounds( java.lang.String detail,
                        java.lang.String format ){
         return null;
     }
 
-    public java.util.List<edu.ucla.mbi.dxf15.NodeType>
+    public java.util.List<edu.ucla.mbi.dxf20.NodeType>
         getLinkBounds( java.lang.String detail,
                        java.lang.String format ){
         return null;
     }
 
-    public java.util.List<edu.ucla.mbi.dxf15.XrefType>
+    public java.util.List<edu.ucla.mbi.dxf20.XrefType>
         getEvidenceList( java.lang.String ns,
                          java.lang.String ac,
                          java.lang.String match,
@@ -153,19 +153,19 @@ public class BkdPortImpl implements BkdPort {
         return null;
     }
     
-    public java.util.List<edu.ucla.mbi.dxf15.NodeType>
+    public java.util.List<edu.ucla.mbi.dxf20.NodeType>
         status( java.lang.String detail,
                 java.lang.String format ){
         return null;
     }
     
-    public java.util.List<edu.ucla.mbi.dxf15.NodeType>
-        setEvidence( edu.ucla.mbi.dxf15.DatasetType dataset,
+    public java.util.List<edu.ucla.mbi.dxf20.NodeType>
+        setEvidence( edu.ucla.mbi.dxf20.DatasetType dataset,
                      java.lang.String mode ){
         return null;
     }
     
-    public java.util.List<edu.ucla.mbi.dxf15.NodeType>
+    public java.util.List<edu.ucla.mbi.dxf20.NodeType>
         getCounts( java.lang.String ns,
                    java.lang.String ac,
                    java.lang.String match,
@@ -174,7 +174,7 @@ public class BkdPortImpl implements BkdPort {
         return null;
     }
     
-    public java.util.List<edu.ucla.mbi.dxf15.NodeType>
+    public java.util.List<edu.ucla.mbi.dxf20.NodeType>
         getEvidence( java.lang.String ns,
                      java.lang.String ac,
                      java.lang.String match,
@@ -183,7 +183,7 @@ public class BkdPortImpl implements BkdPort {
         return null;
     }
     
-    public java.util.List<edu.ucla.mbi.dxf15.NodeType>
+    public java.util.List<edu.ucla.mbi.dxf20.NodeType>
         getSourceRange( long fr,
                         long to,
                         java.lang.String detail,
@@ -191,14 +191,14 @@ public class BkdPortImpl implements BkdPort {
         return null;
     }
     
-    public java.util.List<edu.ucla.mbi.dxf15.NodeType>
+    public java.util.List<edu.ucla.mbi.dxf20.NodeType>
         query( java.lang.String query,
                java.lang.String detail,
                java.lang.String format ){
         return null;
     }
     
-    public java.util.List<edu.ucla.mbi.dxf15.XrefType>
+    public java.util.List<edu.ucla.mbi.dxf20.XrefType>
         getLinkList( java.lang.String ns,
                      java.lang.String ac,
                      java.lang.String match,
@@ -207,8 +207,8 @@ public class BkdPortImpl implements BkdPort {
         return null;
     }
     
-    public java.util.List<edu.ucla.mbi.dxf15.NodeType>
-        transform( edu.ucla.mbi.dxf15.DatasetType dataset,
+    public java.util.List<edu.ucla.mbi.dxf20.NodeType>
+        transform( edu.ucla.mbi.dxf20.DatasetType dataset,
                    java.lang.String detail,
                    java.lang.String format,
                    java.lang.String expand,
@@ -217,13 +217,13 @@ public class BkdPortImpl implements BkdPort {
         return null;
     }
     
-    public java.util.List<edu.ucla.mbi.dxf15.NodeType>
+    public java.util.List<edu.ucla.mbi.dxf20.NodeType>
         dropSource( java.lang.String ns,
                     java.lang.String ac ){
         return null;
     }
     
-    public java.util.List<edu.ucla.mbi.dxf15.NodeType>
+    public java.util.List<edu.ucla.mbi.dxf20.NodeType>
         getNodeRange( long fr,
                       long to,
                       java.lang.String detail,
@@ -231,38 +231,38 @@ public class BkdPortImpl implements BkdPort {
         return null;
     }
     
-    public java.util.List<edu.ucla.mbi.dxf15.NodeType>
+    public java.util.List<edu.ucla.mbi.dxf20.NodeType>
         dropEvidence( java.lang.String ns,
                       java.lang.String ac ){
         return null;
     }
                     
-    public java.util.List<edu.ucla.mbi.dxf15.NodeType>
-        setSource( edu.ucla.mbi.dxf15.DatasetType dataset,
+    public java.util.List<edu.ucla.mbi.dxf20.NodeType>
+        setSource( edu.ucla.mbi.dxf20.DatasetType dataset,
                    java.lang.String mode ){
         return null;
     }
                     
-    public java.util.List<edu.ucla.mbi.dxf15.NodeType>
-        getLinksByNodeSet( edu.ucla.mbi.dxf15.DatasetType dataset,
+    public java.util.List<edu.ucla.mbi.dxf20.NodeType>
+        getLinksByNodeSet( edu.ucla.mbi.dxf20.DatasetType dataset,
                            java.lang.String match,
                            java.lang.String detail,
                            java.lang.String format ){
         return null;
     }
     
-    public java.util.List<edu.ucla.mbi.dxf15.NodeType>
-        setNode( edu.ucla.mbi.dxf15.DatasetType dataset,
+    public java.util.List<edu.ucla.mbi.dxf20.NodeType>
+        setNode( edu.ucla.mbi.dxf20.DatasetType dataset,
                  java.lang.String mode ){
 
 	Logger log = LogManager.getLogger( BkdPortImpl.class );	
 	log.info( "setNode" );
        
-	List<edu.ucla.mbi.dxf15.NodeType> nList = dataset.getNode();
-	List<edu.ucla.mbi.dxf15.NodeType> rList = new <edu.ucla.mbi.dxf15.NodeType>ArrayList();    
+	List<edu.ucla.mbi.dxf20.NodeType> nList = dataset.getNode();
+	List<edu.ucla.mbi.dxf20.NodeType> rList = new <edu.ucla.mbi.dxf20.NodeType>ArrayList();    
 
-	for(edu.ucla.mbi.dxf15.NodeType nd: nList){
-	    edu.ucla.mbi.dxf15.TypeDefType ntp = nd.getType();
+	for(edu.ucla.mbi.dxf20.NodeType nd: nList){
+	    edu.ucla.mbi.dxf20.TypeDefType ntp = nd.getType();
 
 	    //String name = ntp.getNs();
 	    //String ns = ntp.getNs();
@@ -270,7 +270,7 @@ public class BkdPortImpl implements BkdPort {
 	    String ac = ntp.getAc();
 	    log.info( "setNode: node type: " + ntp.getName() );
 
-	    edu.ucla.mbi.dxf15.NodeType rnode = null;
+	    edu.ucla.mbi.dxf20.NodeType rnode = null;
 	    
 	    switch (ac) {
 	    case "dxf:0003":  rnode = nodeManager.processProteinNode( nd, mode );

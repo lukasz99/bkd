@@ -1,0 +1,6 @@
+{"op-log":{
+    "pubmgr":["add","drop"],
+    "aclmgr":["add","drop"]
+  }
+}
+

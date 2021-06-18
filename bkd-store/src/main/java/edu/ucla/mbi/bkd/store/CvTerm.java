@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.StringWriter;
 
-import edu.ucla.mbi.dxf15.*;
+import edu.ucla.mbi.dxf20.*;
 
 import javax.xml.bind.JAXB;
 import javax.persistence.*;

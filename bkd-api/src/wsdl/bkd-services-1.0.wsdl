@@ -3,7 +3,7 @@
 <definitions xmlns="http://schemas.xmlsoap.org/wsdl/" 
              targetNamespace="http://mbi.ucla.edu/bkd/services/soap" 
              xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
-             xmlns:dxf="http://dip.doe-mbi.ucla.edu/services/dxf15" 
+             xmlns:dxf="http://dip.doe-mbi.ucla.edu/services/dxf20" 
              xmlns:bkd="http://mbi.ucla.edu/bkd/services/soap" 
              xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
              xmlns:xs="http://www.w3.org/2001/XMLSchema">
@@ -12,8 +12,8 @@
     <xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" 
                targetNamespace="http://mbi.ucla.edu/bkd/services/soap">
       
-      <xs:import namespace="http://dip.doe-mbi.ucla.edu/services/dxf15"
-                 schemaLocation="DXF1.5.xsd"/>
+      <xs:import namespace="http://dip.doe-mbi.ucla.edu/services/dxf20"
+                 schemaLocation="DXF2.0.xsd"/>
       
       <xs:element name="query">
        <xs:annotation>

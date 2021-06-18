@@ -6,7 +6,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.*;
 import java.text.NumberFormat;
 
-import edu.ucla.mbi.dxf15.*;
+import edu.ucla.mbi.dxf20.*;
 
 public class JDxfQueryHit {
 

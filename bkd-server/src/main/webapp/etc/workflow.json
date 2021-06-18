@@ -1,0 +1,56 @@
+{
+ "state":[
+  {"name":"NEW","comments":""},
+  {"name":"RESERVED","comments":""},
+  {"name":"INPROGRESS","comments":""},
+  {"name":"RELEASED","comments":""},
+  {"name":"DISCARDED","comments":""},
+  {"name":"INCOMPLETE","comments":""},
+  {"name":"PROCESSED","comments":""},
+  {"name":"REQUEST","comments":""},
+  {"name":"RETRACTED","comments":""},
+  {"name":"REVIEW","comments":""}
+ ],
+ "transition":[
+   {"name":"reserve","from":"NEW","to":"RESERVED",
+    "comments":""
+   },
+   {"name":"process","from":"RESERVED","to":"INPROGRESS",
+    "comments":""
+   },
+   {"name":"release","from":"INPROGRESS","to":"RELEASED",
+    "comments":""
+   }
+ ],
+ "admin-role-unique":["IMEx partner"],
+
+ "stage":[
+    {"name":"PREQUEUE",
+     "comments":"",
+     "status-allowed":["NEW","REQUEST","DISCARDED"]
+    },
+    {"name":"QUEUE",
+     "comments":"",
+     "status-allowed":["NEW","REQUEST","DISCARDED"]
+    },
+    {"name":"CURATION",
+     "comments":"",
+     "status-allowed":["RESERVED","INPROGRESS","INCOMPLETE","PROCESSED","DISCARDED","REVIEW"]
+    },
+    {"name":"RELEASE",
+     "comments":"",
+     "status-allowed":["RELEASED","RETRACTED"]
+    } 
+ ],
+
+ "stage-list":["PREQUEUE","QUEUE","CURATION","RELEASE"],
+
+
+ "status-allowed":{
+    "PREQUEUE":["NEW","REQUEST","DISCARDED"],    
+    "QUEUE":["NEW","REQUEST","DISCARDED"],
+    "CURATION":["RESERVED","INPROGRESS","INCOMPLETE","PROCESSED","DISCARDED","REVIEW"],
+    "RELEASE":["RELEASED","RETRACTED"]
+ }
+}
+     

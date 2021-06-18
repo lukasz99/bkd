@@ -7,11 +7,11 @@ import java.util.*;
 import java.text.NumberFormat;
 
 import edu.ucla.mbi.bkd.store.dao.*;
-import edu.ucla.mbi.dxf15.*;
+import edu.ucla.mbi.dxf20.*;
 
 public class BkdQueryManager extends QueryManager{
     
-    public edu.ucla.mbi.dxf15.DatasetType
+    public edu.ucla.mbi.dxf20.DatasetType
         query( String query, String detail ) {
 	
 	Logger log = LogManager.getLogger( this.getClass() );

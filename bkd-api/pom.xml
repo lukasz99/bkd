@@ -99,7 +99,7 @@
                   <wsdlLocation>classpath:wsdl/bkd-services-1.0.wsdl</wsdlLocation> 
                   <bindingFiles>
                     <bindingFile>src/jaxws/bkd-services-1.0.jxb</bindingFile>  
-                    <bindingFile>src/jaxws/DXF1.5.jxb</bindingFile> 
+                    <bindingFile>src/jaxws/DXF2.0.jxb</bindingFile> 
                   </bindingFiles>  
                 </wsdlOption>
               </wsdlOptions>

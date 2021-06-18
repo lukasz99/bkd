@@ -33,14 +33,25 @@
     <import resource="classpath:META-INF/cxf/cxf.xml" />
     <!-- <import resource="classpath:META-INF/cxf/cxf-extension-xml.xml" /> -->
     <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
-  
-  <!-- ======================================================= DATABASE ACCESS -->
+
+  <!-- ======================================================= CPNFIGURATION -->
+    
+  <bean id="applicationContextProvider"
+        class="edu.ucla.mbi.util.context.ApplicationContextProvider" />
+
+  <import resource="spring/context.xml" />
+    
+  <!-- ===================================================== DATABASE ACCESS -->
 
   <!-- bkdRecordManager, bkdQueryManager --> 
   <import resource="spring/bkd-dao.xml" />
 
-  <!-- ========================================================= CXF SERVICES -->
+  <!-- ======================================================== CXF SERVICES -->
 
-  <import resource="spring/cxf-services.xml" /> 
+  <import resource="spring/cxf-services.xml" />
+
+  <!-- ====================================================== SPRING ACTIONS -->
+
+  <import resource="spring/actions.xml" /> 
 
 </beans>

@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="
+      http://www.springframework.org/schema/beans 
+      http://www.springframework.org/schema/beans/spring-beans.xsd
+    
+      http://www.springframework.org/schema/tx 
+      http://www.springframework.org/schema/tx/spring-tx.xsd
+      
+      http://www.springframework.org/schema/aop 
+      http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+<!-- static content -->
+ 
+  <bean id="pageAction" scope="prototype"
+        class="edu.ucla.mbi.bkd.struts.action.PageAction">
+    <property name="pageContext"         ref="pageContext"/>
+    <property name="menuContext"         ref="menuContext"/>
+  </bean>
+<!--
+  <bean id="editAction" scope="prototype"
+        class="edu.ucla.mbi.imex.central.struts.action.EditAction">
+    <property name="menuContext"         ref="menuContext"/>
+    <property name="pageContext"         ref="pageContext"/>
+  </bean>
+
+  <bean id="imageAction" scope="prototype"
+        class="edu.ucla.mbi.imex.central.struts.action.ImageMgrAction">
+    <property name="portalContext"       ref="portalContext"/>
+    <property name="sknDef" value="icentral"/>
+    <property name="siteDef" value="icentral"/>
+  </bean>
+-->
+<!-- user/feedback management -->
+
+<!--
+  <bean id="userManager" scope="prototype"
+       class="edu.ucla.mbi.imex.central.UserManager">
+  </bean>
+
+  <bean id="captcha" scope="prototype"
+        class="edu.ucla.mbi.util.struts.captcha.Recaptcha2">
+    
+    <property name="active" value="true"/>
+    <property name="config">
+      <map>
+        <entry key="url" value="${icentral.recaptcha.verifyURL}" />
+        <entry key="secureSSL" value="false" value-type="java.lang.Boolean"/>
+        <entry key="secret" value="${icentral.recaptcha.privateKey}" />        
+      </map>
+    </property>
+  </bean>
+-->
+  
+ <!-- actions -->
+<!--
+  <bean id="userAction" scope="prototype"
+      class="edu.ucla.mbi.imex.central.struts.action.UserAction">
+    
+    <property name="menuContext" ref="menuContext"/>
+    <property name="userContext" ref="userContext"/>
+    <property name="userManager" ref="userManager"/>
+    <property name="mst" value="4:1"/>
+    
+    <property name="notifyFrom" value="dip@mbi.ucla.edu" />
+    <property name="notifyServer" value="banach.mbi.ucla.edu" />
+
+    <property name="Captcha" ref="captcha"/>  
+
+  </bean>
+  
+  <bean id="feedbackAction" scope="prototype"
+      class="edu.ucla.mbi.imex.central.struts.action.FeedbackAction">
+    
+    <property name="menuContext" ref="menuContext"/>
+    <property name="userContext" ref="userContext"/>
+    <property name="feedbackManager" ref="feedbackManager"/>
+
+    <property name="mst" value="1:1"/>
+    
+    <property name="Captcha" ref="captcha"/>  
+    
+  </bean>
+
+  <bean id="feedbackManager" scope="prototype"
+       class="edu.ucla.mbi.imex.central.FeedbackManager">
+   
+    <property name="userContext" ref="userContext"/>
+
+    <property name="adminMail" value="dip@mbi.ucla.edu" />
+    <property name="mailServer" value="banach.mbi.ucla.edu" />
+  </bean>
+-->
+  <!-- news display/editing -->
+<!--
+  <bean id="newsAction" scope="prototype"
+        class="edu.ucla.mbi.imex.central.struts.action.NewsAction">
+    <property name="mst" value="5:3"/>
+    <property name="newsManager"         ref="newsManager"/>
+    <property name="newsContext"         ref="newsContext"/>
+    <property name="userContext"         ref="userContext"/>
+    <property name="portalContext"       ref="portalContext"/>
+    <property name="sknDef" value="icentral"/>
+    <property name="siteDef" value="icentral"/>
+  </bean>
+-->
+  <!-- access control list/interceptor -->
+<!--
+  <bean id="aclInterceptor"      
+        class="edu.ucla.mbi.util.struts.interceptor.AclInterceptor">
+    <property name="aclContext" ref="aclContext"/>
+    <property name="aclValidator" ref="aclVal"/>
+  </bean>
+-->
+ <!-- access control list/interceptor -->
+<!--
+  <bean id="logInterceptor"
+        class="edu.ucla.mbi.util.struts.interceptor.LogInterceptor">
+    <property name="logContext" ref="logContext"/>
+  </bean>
+-->
+  <!-- user management actions -->
+<!--
+  <bean id="userMgrAction" scope="prototype"
+      class="edu.ucla.mbi.imex.central.struts.action.UserMgrAction">
+
+    <property name="menuContext" ref="menuContext"/>
+    <property name="userContext" ref="userContext"/>
+    <property name="mst" value="3:1:1"/>
+
+    <property name="firstRecord" value="1"/>
+    <property name="blockSize" value="20"/>
+  </bean>
+
+  <bean id="groupMgrAction" scope="prototype"
+      class="edu.ucla.mbi.imex.central.struts.action.GroupMgrAction">
+
+    <property name="menuContext" ref="menuContext"/>
+    <property name="userContext" ref="userContext"/>
+    <property name="mst" value="3:1:2"/>
+  </bean>
+
+  <bean id="roleMgrAction" scope="prototype"
+      class="edu.ucla.mbi.imex.central.struts.action.RoleMgrAction">
+
+    <property name="menuContext" ref="menuContext"/>
+    <property name="userContext" ref="userContext"/>
+    <property name="mst" value="3:1:3"/>
+  </bean>
+
+ <bean id="aclMgrAction" scope="prototype"
+      class="edu.ucla.mbi.imex.central.struts.action.AclMgrAction">
+
+    <property name="menuContext" ref="menuContext"/>
+    <property name="userContext" ref="userContext"/>
+    <property name="mst" value="3:4:1"/>
+
+    <property name="aclContext" ref="aclContext"/>
+ </bean>
+
+ <bean id="uprefMgrAction" scope="prototype"
+       class="edu.ucla.mbi.imex.central.struts.action.UserPrefMgrAction">
+
+    <property name="userPrefManager" ref="uprefManager"/>
+
+   <property name="menuContext" ref="menuContext"/>
+   <property name="userContext" ref="userContext"/>
+   <property name="watchManager" ref="watchManager"/>
+   <property name="mst" value="4:1:0"/>
+
+ </bean>
+
+ <bean id="watchMgrAction" scope="prototype"
+       class="edu.ucla.mbi.imex.central.struts.action.WatchMgrAction">
+
+   <property name="watchManager" ref="watchManager"/>
+   <property name="userContext" ref="userContext"/>
+
+   <property name="menuContext" ref="menuContext"/>
+   <property name="mst" value="4:2:0"/>
+
+ </bean>
+
+ <bean id="indexMgrAction" scope="prototype"
+       class="edu.ucla.mbi.imex.central.struts.action.IndexMgrAction">
+
+   <property name="indexManager" ref="indexManager"/>
+   <property name="entryManager" ref="entryManager"/>
+
+   <property name="tracContext" ref="tracContext"/>
+   <property name="userContext" ref="userContext"/>
+   <property name="menuContext" ref="menuContext"/>
+   
+   <property name="mst" value="3:3:3"/>
+
+ </bean>
+-->
+</beans>

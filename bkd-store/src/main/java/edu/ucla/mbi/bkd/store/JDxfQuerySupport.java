@@ -6,22 +6,22 @@ import org.apache.logging.log4j.Logger;
 import java.util.*;
 import java.text.NumberFormat;
 
-import edu.ucla.mbi.dxf15.*;
+import edu.ucla.mbi.dxf20.*;
 
 public abstract class JDxfQuerySupport {
     
-    edu.ucla.mbi.dxf15.ObjectFactory dxfFactory
-	= new edu.ucla.mbi.dxf15.ObjectFactory();
+    edu.ucla.mbi.dxf20.ObjectFactory dxfFactory
+	= new edu.ucla.mbi.dxf20.ObjectFactory();
     
-    public abstract edu.ucla.mbi.dxf15.DatasetType
+    public abstract edu.ucla.mbi.dxf20.DatasetType
         query( String query, String detail );
     
     //--------------------------------------------------------------------------
     
-    protected edu.ucla.mbi.dxf15.DatasetType
+    protected edu.ucla.mbi.dxf20.DatasetType
         dxfResult( String query, List<JDxfQueryHit> hits ){
 
-        edu.ucla.mbi.dxf15.NodeType resNode = dxfFactory.createNodeType();
+        edu.ucla.mbi.dxf20.NodeType resNode = dxfFactory.createNodeType();
         
         resNode.setLabel( "Text Search Report" );
         
@@ -44,7 +44,7 @@ public abstract class JDxfQuerySupport {
         
         al.getAttr().add( at );
         
-        edu.ucla.mbi.dxf15.NodeType.PartList 
+        edu.ucla.mbi.dxf20.NodeType.PartList 
             part_list= dxfFactory.createNodeTypePartList();
         resNode.setPartList( part_list );
         
@@ -57,7 +57,7 @@ public abstract class JDxfQuerySupport {
             NodeType hitNode = hit.getNode();
             Float score = hit.getScore();
             
-            edu.ucla.mbi.dxf15.NodeType.PartList.Part
+            edu.ucla.mbi.dxf20.NodeType.PartList.Part
                 part = dxfFactory.createNodeTypePartListPart();
             
             part_list.getPart().add( part );
@@ -85,7 +85,7 @@ public abstract class JDxfQuerySupport {
             }
             hit_attr_list.getAttr().add(hit_attr);
             
-            edu.ucla.mbi.dxf15.NodeType result_node=
+            edu.ucla.mbi.dxf20.NodeType result_node=
                 result_node= dxfFactory.createNodeType();
             part.setNode( result_node );
             
@@ -118,11 +118,11 @@ public abstract class JDxfQuerySupport {
 
     /*
     
-    private static edu.ucla.mbi.dxf15.NodeType
+    private static edu.ucla.mbi.dxf20.NodeType
         dxfFacet( String query, List<String> facetFieldList, 
                   Map<String,String> facet ){
                   
-        edu.ucla.mbi.dxf15.NodeType resNode = dof.createNodeType();
+        edu.ucla.mbi.dxf20.NodeType resNode = dof.createNodeType();
         
         resNode.setLabel( "Facet Report" );
         
@@ -162,7 +162,7 @@ public abstract class JDxfQuerySupport {
             return null;
         }
         
-        edu.ucla.mbi.dxf15.NodeType.PartList
+        edu.ucla.mbi.dxf20.NodeType.PartList
             part_list= dof.createNodeTypePartList();
         resNode.setPartList( part_list );
 
@@ -174,7 +174,7 @@ public abstract class JDxfQuerySupport {
             String cnt = val.substring( 0, val.indexOf( ":" ) );
             String name = val.substring( val.indexOf( ":" ) + 1 );
             
-            edu.ucla.mbi.dxf15.NodeType.PartList.Part
+            edu.ucla.mbi.dxf20.NodeType.PartList.Part
                 part= dof.createNodeTypePartListPart();
             part_list.getPart().add(part);
             

@@ -7,7 +7,7 @@ import java.io.StringWriter;
 
 import java.util.*;
 
-import edu.ucla.mbi.dxf15.*;
+import edu.ucla.mbi.dxf20.*;
 
 import javax.xml.bind.JAXB;
 

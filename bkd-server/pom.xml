@@ -6,7 +6,7 @@
   <artifactId>bkd-server</artifactId>
   <packaging>war</packaging>
   <version>1.0.0</version>
-  <name>BKD Data Store</name>
+  <name>CVUS Server</name>
   
   <url>http://dip.mbi.ucla.edu/bkd</url>
 
@@ -41,6 +41,11 @@
     <c3p0.version>0.9.5.4</c3p0.version>
     <postgresql.version>42.2.6</postgresql.version>
     <json.version>20190722</json.version>
+
+
+    <dip-util.version>3.0.0</dip-util.version>
+    <dip-proxy.version>1.0.0</dip-proxy.version>
+
     
   </properties>
 
@@ -57,6 +62,12 @@
       <version>${bkd-store.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>edu.ucla.mbi.dip</groupId>
+      <artifactId>dip-util-struts</artifactId>
+      <version>${dip-util.version}</version>
+    </dependency>
+    
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
@@ -215,8 +226,9 @@
               <targetPath>WEB-INF</targetPath>
               <filtering>true</filtering>
               <includes>
-            <include>sun-jaxws.xml</include>   
+                <include>sun-jaxws.xml</include>   
                 <include>jetty-web.xml</include>
+                <include>tiles.xml</include>
               </includes>
             </resource>
             
@@ -236,7 +248,7 @@
               <filtering>true</filtering>
               <includes>
                 <include>bkd-services-1.0.wsdl</include>
-                <include>DXF1.5.xsd</include>               
+                <include>DXF2.0.xsd</include>               
               </includes>
             </resource>
            
@@ -263,9 +275,13 @@
 
          <configuration>
            <webApp>
-             <contextPath>/bkdev</contextPath>
+             <contextPath>/bkdev</contextPath>             
            </webApp>
-           
+           <httpConnector>
+             <!--host>localhost</host-->
+             <port>9999</port>
+           </httpConnector>
+
            <systemProperty>
                <name>log4j2.configuration</name>
               <value>file:../etc/jetty/log4j2.xml</value>

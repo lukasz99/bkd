@@ -1,0 +1,4 @@
+{
+ "keyspace":[
+  {"name":"imex","prefix":"IM-","postfix":"",comments:"IMEx Accession"}]
+}

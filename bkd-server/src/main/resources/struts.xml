@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+  <constant name="struts.objectFactory" value="spring" />
+  <constant name="struts.devMode" value="true" />
+  <constant name="struts.action.excludePattern" 
+            value="/ws.*,/imex/.*,/map/.*,/service/.*"/>
+
+  <!-- user/user preferences/watch mamagement -->
+
+  <!-- include file="usermgr.xml"/ -->
+
+  <!-- index mamagement -->
+
+  <!-- include file="indexmgr.xml"/ -->  
+
+
+  <package name="icentral" extends="json-default" namespace="">
+
+   <!-- ============================================================ Results -->
+
+    <result-types>
+      <result-type name="tiles"
+        class="org.apache.struts2.views.tiles.TilesResult"/>
+
+      <result-type name="redirect-action"
+        class="org.apache.struts2.result.ServletActionRedirectResult" />
+
+    </result-types>
+
+   <!-- ======================================================= Interceptors -->
+   
+    <interceptors>
+     <interceptor name="menu"
+         class="edu.ucla.mbi.util.struts.interceptor.MenuInterceptor"/>
+
+     <interceptor name="acl" class="aclInterceptor"/>
+
+     <interceptor-stack name="mgrStack">
+       <interceptor-ref name="exception"/>
+       <interceptor-ref name="alias"/>
+       <interceptor-ref name="servletConfig"/>
+       <interceptor-ref name="prepare"/>
+       <interceptor-ref name="i18n"/>
+       <interceptor-ref name="chain"/>
+       <interceptor-ref name="debugging"/>
+       <interceptor-ref name="profiling"/>
+       <interceptor-ref name="scopedModelDriven"/>
+       <interceptor-ref name="modelDriven"/>
+       <interceptor-ref name="fileUpload">
+         <param name="maximumSize">5000000</param>
+         <param name="allowedTypes"> image/jpeg,image/gif,image/png</param>
+       </interceptor-ref>
+       <interceptor-ref name="checkbox"/>
+       <interceptor-ref name="staticParams"/>
+       <interceptor-ref name="params">
+        <param name="excludeParams">dojo\..*</param>
+       </interceptor-ref>
+       <interceptor-ref name="conversionError"/>
+
+       <interceptor-ref name="menu"/>
+       <interceptor-ref name="acl"/>
+
+       <interceptor-ref name="validation">
+         <param name="excludeMethods">input,back,cancel,browse</param>
+       </interceptor-ref>
+       <interceptor-ref name="workflow">
+         <param name="excludeMethods">input,back,cancel,browse</param>
+       </interceptor-ref>
+     </interceptor-stack>
+
+    </interceptors>
+   
+   <!-- ============================================================ Actions -->
+
+   <!-- welcome page -->
+    
+    <action name="">
+      <result>/index.jsp</result>
+    </action>
+
+   <!-- static pages -->
+
+    <action name="page" class="pageAction" >
+      <interceptor-ref name="defaultStack"/>
+      <interceptor-ref name="timer"/>
+      <interceptor-ref name="menu"/>
+
+      <result name="success" type="tiles">page</result>
+      <result name="input" type="tiles">page</result>
+      <result name="body" type="tiles">body</result>
+
+      <result name="json"  type="json">
+        <param name="includeProperties">
+          menu.*
+        </param>
+      </result>
+    </action>
+<!--
+    <action name="edit" class="editAction" >
+     <interceptor-ref name="defaultStack"/>
+     <interceptor-ref name="timer"/>
+     <interceptor-ref name="menu"/>
+
+     <result name="page" type="redirectAction">
+      <param name="actionName">page</param>
+      <param name="namespace"></param>
+      <param name="parse">true</param>
+      <param name="id">${pageid}</param>
+     </result>
+     
+     <result name="menu">menuedit.jsp</result>
+     
+     <result name="error" type="redirectAction">
+      <param name="actionName">page</param>
+      <param name="namespace"></param>
+      <param name="parse">true</param>
+      <param name="id">${pageid}</param>
+     </result>
+    </action>
+
+    <action name="image" class="imageAction">
+     <interceptor-ref name="mgrStack"/>
+     <interceptor-ref name="timer"/>
+     <interceptor-ref name="menu"/>
+
+     <result name="imap"  type="json">
+       <param name="ignoreHierarchy">false</param>
+       <param name="noCache">true</param>
+
+       <param name="includeProperties">
+        imageMap.*
+      </param>
+     </result>
+
+     <result name="preview" type="tiles">ipreview</result>
+
+     <result name="page" type="redirectAction">
+       <param name="actionName">page</param>
+       <param name="namespace"></param>
+       <param name="parse">true</param>
+       <param name="id">${pageid}</param>
+       <param name="site">icentral</param>
+       <param name="skn">icentral</param>
+     </result>
+    </action>
+-->
+    <!-- news -->
+<!--
+    <action name="news" class="newsAction">
+     <interceptor-ref name="defaultStack"/>
+     <interceptor-ref name="timer"/>
+     <interceptor-ref name="menu"/>
+
+     <result name="success" type="tiles">news</result>
+     <result name="input" type="tiles">news</result>
+     <result name="list" type="tiles">newscontent</result>
+
+     <result name="ylist"  type="json">
+      <param name="includeProperties">
+       years.*
+      </param>
+     </result>
+     <result name="nbox"  type="json">
+      <param name="includeProperties">
+       years.*, nbox.*
+      </param>
+     </result>
+    </action>
+
+    <action name="newsedit" class="newsAction">
+     <interceptor-ref name="mgrStack"/>
+
+     <result name="success" type="tiles">news</result>
+     <result name="input" type="tiles">news</result>
+     <result name="list" type="tiles">newscontent</result>
+
+     <result name="ylist"  type="json">
+      <param name="includeProperties">
+       years.*
+      </param>
+     </result>
+     <result name="nbox"  type="json">
+      <param name="includeProperties">
+       years.*, nbox.*
+      </param>
+     </result>
+     <result name="acl_error" type="tiles">aclerror</result>
+     <result name="acl_page" type="tiles">aclerror</result>
+   </action>
+-->
+
+  <!-- user management -->
+<!--    
+    <action name="user" class="userAction" >
+     <interceptor-ref name="mgrStack"/>
+     <interceptor-ref name="timer"/>
+     <interceptor-ref name="menu"/>
+     
+     <result name="success" type="tiles">register</result>
+     <result name="input" type="tiles">register</result>
+     <result name="home" type="redirect">/</result>
+     <result name="uedit" type="tiles">uedit</result>
+     <result name="activate" type="tiles">activate</result>
+     
+     <result name="logf" type="tiles">login</result>
+     <result name="regf" type="tiles">register</result>
+     
+     <result name="redirect" type="redirect">${rurl}</result>
+
+     <result name="json"  type="json">
+       <param name="ignoreHierarchy">false</param>
+ 
+      <param name="root">user</param>
+       <param name="includeProperties">
+        prefs
+       </param>
+       <param name="noCache">true</param>
+     </result>
+-->
+     <!-- jq.*,menu.*,user.* -->
+
+<!--
+    </action>
+-->
+<!--
+    <action name="register" class="userAction" >
+     <interceptor-ref name="defaultStack"/>
+     <interceptor-ref name="timer"/>
+     <interceptor-ref name="menu"/>
+     
+     <result name="success" type="tiles">register</result>
+     <result name="input" type="tiles">register</result>
+     <result name="activate" type="tiles">activate</result>
+    </action>
+
+    <action name="uedit" class="userAction" >
+     <interceptor-ref name="defaultStack"/>
+     <interceptor-ref name="timer"/>
+     <interceptor-ref name="menu"/>
+
+     <result name="success">index.jsp</result>
+     <result name="input">uedit.jsp</result> 
+     <result name="uedit" type="tiles">uedit</result>
+     <result name="home">index.jsp</result>
+    </action>
+-->
+  <!-- contact -->
+<!--
+   <action name="feedback" class="feedbackAction" >
+     <interceptor-ref name="defaultStack"/>
+     <interceptor-ref name="params">
+       <param name="excludeParams">dojo\..*</param>
+     </interceptor-ref>
+     <interceptor-ref name="timer"/>
+    <interceptor-ref name="menu"/>
+
+    <result name="success" type="tiles">feedback</result>
+    <result name="input" type="tiles">feedback</result>
+    <result name="accepted" type="tiles">feedback-ack</result>
+   </action>
+-->
+  <!-- stats -->
+<!--
+   <action name="stats" class="statsAction" >
+    <interceptor-ref name="defaultStack"/>
+    <interceptor-ref name="timer"/>
+    <interceptor-ref name="menu"/>
+
+    <result name="success" type="tiles">stats</result>
+
+     <result name="json"  type="json">
+       <param name="includeProperties">
+        counts.*,partnerCounts.*
+       </param>
+       <param name="noCache">true</param>
+     </result>
+     
+   </action>
+
+   <action name="acom" class="acomAction" >
+    <interceptor-ref name="defaultStack"/>
+    <interceptor-ref name="timer"/>
+
+     <result name="json"  type="json">
+       <param name="includeProperties">
+        acom.*
+       </param>
+       <param name="noCache">true</param>
+     </result>
+     
+   </action>
+-->
+  <!-- admin action -->
+<!--
+   <action name="admin" class="adminAction">
+     <interceptor-ref name="defaultStack"/>
+     <interceptor-ref name="timer"/>
+     <result name="json" type="json">
+       <param name="includeProperties">
+         result.*
+       </param>
+       <param name="noCache">true</param>
+     </result>
+   </action>
+-->
+ </package>
+
+</struts>
