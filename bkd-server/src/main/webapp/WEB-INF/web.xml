@@ -31,7 +31,7 @@
       org.apache.struts2.dispatcher.filter.StrutsPrepareAndExecuteFilter
     </filter-class>
   </filter>
-
+  
   <!-- NOTE: check struts.xml for the pattern exclusion list !!! -->
 
   <filter-mapping>
