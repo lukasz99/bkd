@@ -115,7 +115,13 @@ public class XrefDao extends AbstractDAO {
 
     **/
 
-    public Xref updateXref( Xref xref ){         
+    public Xref updateXref( Xref xref ){
+
+        if(xref.getCTime() == null){
+            xref.setCTime(new Date());
+        }
+        xref.setUTime(new Date());
+
         super.saveOrUpdate( xref );
         return xref;
     }

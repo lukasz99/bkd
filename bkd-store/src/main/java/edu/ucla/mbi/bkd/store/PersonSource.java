@@ -44,23 +44,40 @@ public class PersonSource extends Source{
     String orcid = "";
         
     public String getOrcid(){
-	if( orcid.length() > 0 ){
-	    return "https://orcid.org/"+orcid;
-	} else {
-	    return "";
-	}
+        if( orcid.length() > 0 ){
+            return "https://orcid.org/"+orcid;
+        } else {
+            return "";
+        }
     }
 
     public void setOrcid( String orcid ){
-	try{
-	    String norcid = orcid.replaceAll("https://orcid.org/","");
-	    this.orcid = orcid;
-	} catch(Exception ex){
-	    // shouldn't happen
-	}
+        try{
+            String norcid = orcid.replaceAll("https://orcid.org/","");
+            this.orcid = orcid;
+        } catch(Exception ex){
+            // shouldn't happen
+        }
     }
 
+    
+    @Column(name = "email")
+    String email = "";
+    
+    public String getEmail(){
+        return email;
+    }
 
+    public void setEmail( String email ){
+        this.email = email;
+    }
+
+    public String toString(){
+        return "PersonSource: [ORCID=" + this.getOrcid() + "]";
+    }
+
+    
+    
 }
 
 

@@ -14,21 +14,12 @@ import javax.xml.bind.JAXB;
 import javax.persistence.*;
 
 @Entity
-@DiscriminatorValue("node")
-public class NodeXref extends Xref{
+@DiscriminatorValue("database")
+public class DatabaseSource extends Source{
 
-    @ManyToOne
-    @JoinColumn(name="fk_node", nullable=false)
-    private Node node;
-
-    public void setNode(Node node){
-	this.node = node;
+    public String toString(){
+        return "PubSource: [NAME=" + this.getName() + "]";
     }
-
-    public Node getNode(){
-	return this.node;
-    }
-    
 
 }
 

@@ -16,7 +16,7 @@ import javax.persistence.*;
 @Entity
 
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn (name="xref_type",
+@DiscriminatorColumn (name="sclass",
                       discriminatorType = DiscriminatorType.STRING)
 
 @Table(name = "xref")
@@ -32,8 +32,9 @@ public abstract class Xref{
     /**
        CREATE TABLE xref (
        pkey bigint DEFAULT nextval(('"xref_pkey_seq"'::text)::regclass) NOT NULL CONSTRAINT xref_fk PRIMARY KEY,
-       xref_type character varying(32) DEFAULT ''::character varying,  -- node/experiment/evidence/... 
-       fkey bigint DEFAULT 0 NOT NULL,   -- foreign key (parent)                                                                                                                    
+       sclass character varying(32) DEFAULT ''::character varying,  -- node/experiment/evidence/... 
+       node_fk bigint DEFAULT 0 NOT NULL,   -- foreign key (parent)                                                                                                                    
+       feature_fk bigint DEFAULT 0 NOT NULL,   -- foreign key (parent)                                                                                                                    
        cvtype bigint DEFAULT 0 NOT NULL, -- unspecified xref type                                                                                                                   
        srckey DEFAULT 0 NOT NULL,        -- xref source                                                                                                                             
        ns character varying(8) DEFAULT ''::character varying NOT NULL,
@@ -45,11 +46,11 @@ public abstract class Xref{
        );
     **/
     
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "fk_cvtype")
     CvTerm cvtype;
         
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "fk_source")
     Source source;
         
@@ -143,7 +144,7 @@ public abstract class Xref{
     }
 
     public String toString(){
-        return "NS:" + ns + " AC:" + ac +"]";
+        return "[NS:" + ns + " AC:" + ac +"]";
     }        
 }
 

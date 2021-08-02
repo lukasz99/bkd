@@ -10,64 +10,27 @@ import org.hibernate.*;
 
 import edu.ucla.mbi.bkd.store.*;
 
-public class NodeDao extends AbstractDAO {
+public class ReportDao extends AbstractDAO {
     
-    public Node getByPkey( int pk ){ 
+    public Report getByPkey( int pk ){ 
 
         Logger log = LogManager.getLogger( this.getClass() );
-        log.debug( "NodeDao->getNode: pkey(int)=" + pk  );
+        log.debug( "ReportDao->getReport: pkey(int)=" + pk  );
         
         try{
-            Node node = (Node) super.find( Node.class, new Integer( pk ) );
-            log.debug( "NodeDao->getNode: pk=" + pk + " ::DONE"  );
-            return node;
+            Report report = (Report) super.find( Report.class, new Integer( pk ) );
+            log.debug( "ReportDao->getReport: pk=" + pk + " ::DONE"  );
+            return report;
         } catch( Exception ex ){
             return null;
         } 
     }
-    
-    //--------------------------------------------------------------------------
-    
-    public Node getByDip( String id ){ 
-
-        Logger log = LogManager.getLogger( this.getClass() );
-        log.info( "NodeDao->getNode: dip(int)=" + id  );
-
-               
-        Node node = null;
-        
-        Session session = getCurrentSession();
-        Transaction tx = session.beginTransaction();
-        
-        try {
-            
-            Query query =
-                session.createQuery( "from Node n where " +
-                                     " n.dip = :id");
-            query.setParameter( "id", id );
-            query.setFirstResult( 0 );
-            node = (Node) query.uniqueResult();
-            tx.commit();
-            
-        } catch( NumberFormatException ne ){
-
-            // wrong accession fromat
-            
-        } catch( HibernateException e ) {
-            handleException( e );
-            // log error ?
-        } finally {
-            session.close();
-        }
-        log.info( "NodeDao-> found: " + node );
-        return node; 
-    }
 
     //--------------------------------------------------------------------------
 
-    public Node getById( String ns, String sid ){ 
+    public Report getById( String ns, String sid ){ 
         
-        Node node = null;
+        Report report = null;
         
         Session session = getCurrentSession();
         Transaction tx = session.beginTransaction();
@@ -75,13 +38,14 @@ public class NodeDao extends AbstractDAO {
         Logger log = LogManager.getLogger( this.getClass() );
         log.info( "-> getById: ns=" + ns + " ac=" + sid);
 	
-        try {	    
-            Query query =  null;            
+        try {
             
-            if( sid.startsWith( Node.getPrefix() ) ){
+            Query query =  null;            
+	    
+            if( sid.startsWith( Report.getPrefix() ) ){
 
                 query =
-                    session.createQuery( "from Node n where " +
+                    session.createQuery( "from Report n where " +
                                          " n.id = :id order by n.id desc JOIN FETCH n.cvtype");
                 try{
                     sid = sid.replaceAll( "[^0-9\\-]", "" );
@@ -94,22 +58,10 @@ public class NodeDao extends AbstractDAO {
                     
                     // should not happen
                 }
-                
+            
             } else {
-                
-                if( "upr".equalsIgnoreCase( ns ) ){
-                    query =
-                        session.createQuery( "from Node n where " +
-                                             " n.upr = :id order by n.id desc");
-                }
-                
-                if( "rsq".equalsIgnoreCase( ns ) ){                   
-                    query =
-                        session.createQuery( "from Node n where " +
-                                             " n.rsq = :id order by n.id desc");
-                }
-                
-                
+
+                /*
                 if( "dip".equalsIgnoreCase( ns ) ){
                     query =
                         session.createQuery( "from Node n where " +
@@ -123,30 +75,31 @@ public class NodeDao extends AbstractDAO {
                 }
                 
                 query.setParameter( "id", sid );
+                */
             }
             query.setFirstResult( 0 );
             
-            List<Node> nodes= (List<Node>) query.list();            
-
-            if( nodes.size() > 0 ){
-                node = nodes.get(0);
+            List<Report> reps= (List<Report>) query.list();            
+            
+            if( reps.size() > 0 ){
+                report = reps.get(0);
             }
             
             tx.commit();
             
         } catch( HibernateException e ) {
             log.error(e);                        
-	    handleException( e );           
-	}catch( Exception ex){
-	    log.error( ex );
-	} finally {
+            handleException( e );           
+        }catch( Exception ex){
+            log.error( ex );
+        } finally {
             session.close();
         }
-        return node; 
+        return report; 
     }
     
     //--------------------------------------------------------------------------
-
+    /*
     public Node getByAccession( String accession ) { 
         
         Node node = null;
@@ -190,7 +143,7 @@ public class NodeDao extends AbstractDAO {
         }
         return node; 
     }
-    
+    */
     //--------------------------------------------------------------------------
     /**    
     public List<Node> getByXref( String ns, String acc ){ 
@@ -232,42 +185,6 @@ public class NodeDao extends AbstractDAO {
     **/
     //--------------------------------------------------------------------------
     
-    public List<Node> getBySequence( String sequence ){ 
-        
-        List<Node> nodes =  null;
-        
-        Session session = getCurrentSession();
-        Transaction tx = session.beginTransaction();
-        
-        try {
-            Query query =
-                session.createQuery( "select n from Node n " + 
-                                     "where n.sequence =:seq" );
-            
-            query.setParameter( "seq", sequence );
-            
-            query.setFirstResult( 0 );
-            nodes= (List<Node>) query.list();
-            tx.commit();
-
-        } catch( NumberFormatException ne ){
-
-            // wrong accession fromat
-            
-        } catch( HibernateException e ) {
-            handleException( e );
-            // log error ?
-        } finally {
-            session.close();
-        }
-
-        if( nodes != null ){
-            return nodes;
-        } else {
-            return new ArrayList<Node>();
-        }
-    }
-    
     //--------------------------------------------------------------------------
     
     public long getCount() {
@@ -278,7 +195,7 @@ public class NodeDao extends AbstractDAO {
         Transaction tx = session.beginTransaction();
         
         try {           
-            Query query = session.createQuery( "select count(n) from Node n" );
+            Query query = session.createQuery( "select count(n) from Report n" );
             count  = (Long) query.uniqueResult();
             tx.commit();
         } catch ( HibernateException e ) {
@@ -291,33 +208,29 @@ public class NodeDao extends AbstractDAO {
     }
     
     //---------------------------------------------------------------------
-
-    public Node updateNode( Node node ) { 
+    
+    public Report updateReport( Report report ) { 
 
         Logger log = LogManager.getLogger( this.getClass() );
-        log.info( "->updateNode: " + node.toString()  );
-	
-        if( node == null ) return null;
-
-        //for(NodeXref x: node.getXrefList() ){
-        //    x.setOwner(node);
-        //}
-	
-        if( node.getLabel() != null ){
-            if( node.getLabel().length() > 32 ){
-                String slabel = node.getLabel().substring(0,28) + "..";
-                node.setLabel( slabel );
-            }
-        } else {
-            node.setLabel( "" );
-        }
-
-        if(node.getCTime() == null){
-            node.setCTime(new Date());
-        }
-        node.setUTime(new Date());
+        log.info( "->updateReport: " + report.toString()  );
         
-        super.saveOrUpdate( node );
-        return node;
+        if( report == null ) return null;
+        
+        if( report.getLabel() == null ){
+            report.setLabel("Report " + report.getAc() );
+        }
+        
+        if( report.getLabel().length() > 32 ){
+            String slabel = report.getLabel().substring(0,28) + "..";
+            report.setLabel( slabel );
+        }
+        
+        if(report.getCTime() == null){
+            report.setCTime(new Date());
+        }
+        report.setUTime(new Date());
+        
+        super.saveOrUpdate( report );
+        return report;
     }
 }

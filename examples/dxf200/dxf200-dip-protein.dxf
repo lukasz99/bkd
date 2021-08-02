@@ -1,0 +1,51 @@
+<dataset xmlns="http://dip.doe-mbi.ucla.edu/services/dxf200">
+  <node id="1" ns="" ac="">
+    <type ns="dxf" name="protein" ac="dxf:0003"/>
+    <label>Beta ig-h3</label>
+    <name>Transforming growth factor-beta-induced protein ig-h3</name>
+    <xrefList>
+      <xref ns="upr" ac="Q15582-1.209" type="identical-to" typeNs="dxf" typeAc="dxf:0009"/>
+      <xref ns="rsq" ac="NP_000349.1" type="identical-to" typeNs="dxf" typeAc="dxf:0009"/>
+      <xref ns="rsq" ac="NM_000358.2" type="translated-from" typeNs="dxf" typeAc="dxf:0080"/>
+      <xref ns="geneid" ac="7045" type="encoded-by" typeNs="dxf" typeAc="dxf:0022"/>
+      <xref ns="taxid" ac="9606" type="produced-by" typeNs="dxf" typeAc="dxf:0007">
+        <node id="1" ns="taxid"" ac="9606">
+          <type ns="dxf" name="taxon" ac="dxf:0017"/>
+          <label>Homo sapiens></label>
+          <name>Human</name>
+        </node>
+      </xref>
+      <xref ns="mim"    ac="121820"    type="has-phenotype" typeNs="dxf" typeAc="dxf:0077"/>
+      <xref ns="mim"    ac="121900"    type="has-phenotype" typeNs="dxf" typeAc="dxf:0077"/>
+      <xref ns="mim"    ac="122200"    type="has-phenotype" typeNs="dxf" typeAc="dxf:0077"/>
+      <xref ns="mim"    ac="601692"    type="has-phenotype" typeNs="dxf" typeAc="dxf:0077"/>
+      <xref ns="mim"    ac="602082"    type="has-phenotype" typeNs="dxf" typeAc="dxf:0077"/>
+      <xref ns="mim"    ac="607541"    type="has-phenotype" typeNs="dxf" typeAc="dxf:0077"/>
+      <xref ns="mim"    ac="608470"    type="has-phenotype" typeNs="dxf" typeAc="dxf:0077"/>
+      <xref ns="mim"    ac="608471"    type="has-phenotype" typeNs="dxf" typeAc="dxf:0077"/>
+      <xref ns="wwpdb"  ac="1col"      type="has-structure" typeNs="dxf" typeAc="dxf:0081"/>
+      <xref ns="intact" ac="EBI-12345" type="has-links"     typeNs="dxf" typeAc="dxf:0082"/>
+      <xref ns="mint"   ac="xxx"       type="has-links"     typeNs="dxf" typeAc="dxf:0082"/>
+      <xref ns="dip"    ac="DIP-1234N" type="has-links"     typeNs="dxf" typeAc="dxf:0082"/>
+
+    </xrefList>
+    <attrList>
+      <attr name="sequence" ns="dxf" ac="dxf:0071">
+        <value>
+          MALFVRLLALALALALGPAATLAGPAKSPYQLVLQHSRLRGRQHGPNVCAVQKVIGTNRK
+          YFTNCKQWYQRKICGKSTVISYECCPGYEKVPGEKGCPAALPLSNLYETLGVVGSTTTQL
+          YTDRTEKLRPEMEGPGSFTIFAPSNEAWASLPAEVLDSLVSNVNIELLNALRYHMVGRRV
+          LTDELKHGMTLTSMYQNSNIQIHHYPNGIVTVNCARLLKADHHATNGVVHLIDKVISTIT
+          NNIQQIIEIEDTFETLRAAVAASGLNTMLEGNGQYTLLAPTNEAFEKIPSETLNRILGDP
+          EALRDLLNNHILKSAMCAEAIVAGLSVETLEGTTLEVGCSGDMLTINGKAIISNKDILAT
+          NGVIHYIDELLIPDSAKTLFELAAESDVSTAIDLFRQAGLGNHLSGSERLTLLAPLNSVF
+          KDGTPPIDAHTRNLLRNHIIKDQLASKYLYHGQTLETLGGKKLRVFVYRNSLCIENSCIA
+          AHDKRGRYGTLFTMDRVLTPPMGTVMDVLKGDNRFSMLVAAIQSAGLTETLNREGVYTVF
+          APTNEAFRALPPRERSRLLGDAKELANILKYHIGDEILVSGGIGALVRLKSLQGDKLEVS
+          LKNNVVSVNKEPVAEPDIMATNGVVHVITNVLQPPANRPQERGDELADSALEIFKQASAF
+          SRASQRSVRLAPVYQKLLERMKH
+        </value>
+      </attr>
+    </attrList>
+  </node>
+</dataset>

@@ -336,7 +336,12 @@ public class SourceDao extends AbstractDAO {
         //for(NodeXref x: node.getXrefList() ){
         //    x.setOwner(node);
         //}
-	
+
+        if(source.getCTime() == null){
+            source.setCTime(new Date());
+        }
+        source.setUTime(new Date());
+        
         super.saveOrUpdate( source );
         return source;
     }

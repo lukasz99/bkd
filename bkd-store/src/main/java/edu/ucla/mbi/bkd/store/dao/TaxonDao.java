@@ -84,7 +84,8 @@ public class TaxonDao extends AbstractDAO {
 
 	Logger log = LogManager.getLogger( this.getClass() );
         log.info( "->updateTaxon: taxon=" + taxon  );
-	
+
+        
         super.saveOrUpdate( taxon );
         return taxon;
     }

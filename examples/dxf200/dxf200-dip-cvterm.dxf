@@ -1,0 +1,25 @@
+<dataset xmlns="http://dip.doe-mbi.ucla.edu/services/dxf200">
+
+  <node id="1" ns="mesh" ac="D000595">
+    <type ns="dxf" name="cv-term" ac="dxf:0030"/>
+    <label>Amino Acid Sequence</label>    
+  </node>
+
+  <node id="2" ns="mi" ac="MI:0496">
+    <type ns="dxf" name="cv-term" ac="dxf:0030"/>
+    <label>bait</label>
+    <xrefList>
+      <xref ns="mi" ac="MI:0914" type="is-a" typeNs="dxf" typeAc="dxf:0034"/>
+   </xrefList> 
+    <attributeList>
+     <attribute name="definition" ns="dxf" ac="dxf:0032">
+       <value>
+          Molecule experimentally treated to capture its interacting partners.
+       </value>
+     <attribute>  
+    </attributeList>
+  </node>
+  
+</dataset>
+
+

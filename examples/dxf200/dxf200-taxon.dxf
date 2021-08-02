@@ -1,0 +1,7 @@
+<dataset xmlns="http://dip.doe-mbi.ucla.edu/services/dxf200">
+  <node id="1" ns="taxid"" ac="9606">
+    <type ns="dxf" name="taxon" ac="dxf:0017"/>
+    <label>Homo sapiens</label>
+    <name>Human</name>
+   </node>
+</dataset>

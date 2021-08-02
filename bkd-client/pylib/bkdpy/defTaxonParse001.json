@@ -1,0 +1,12 @@
+{
+    "@NS":"",
+    "*": { "*":{"complex":true, "name": null, "store":"direct", "ikey":"@id",
+		        "reference":null, "wrapper": false } },
+    "xaSet":{"*":{"wrapper":true}},
+    "xon":{"*":{"store":"list","name":"taxon"}},
+    "xId":{"*":{"store":"direct","complex":false,"name":"taxid"}},
+    "ientificName":{"*":{"store":"direct","complex":false,"name":"sci-name"}},
+    "herNames":{"*":{"wrapper":true}},
+    "nbankCommonName":{"*":{"store":"direct","complex":false,"name":"common-name"}}
+    
+}

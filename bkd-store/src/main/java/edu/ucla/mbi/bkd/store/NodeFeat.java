@@ -14,22 +14,18 @@ import javax.xml.bind.JAXB;
 import javax.persistence.*;
 
 @Entity
-@DiscriminatorValue("node")
-public class NodeXref extends Xref{
+@DiscriminatorValue("nfeature")
+public class NodeFeat extends Feature{
 
     @ManyToOne
     @JoinColumn(name="fk_node", nullable=false)
     private Node node;
 
     public void setNode(Node node){
-	this.node = node;
+        this.node = node;
     }
 
     public Node getNode(){
-	return this.node;
+        return this.node;
     }
-    
-
 }
-
-

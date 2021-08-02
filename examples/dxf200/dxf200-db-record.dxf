@@ -1,0 +1,9 @@
+<dataset xmlns="http://dip.doe-mbi.ucla.edu/services/dxf200">
+  <node id="1" ns="upr" ac="P60010.1">
+    <type ns="dxf" name="database-record" ac="dxf:0057"/>
+    <label>ACT_YEAST</label>   
+    <xrefList>
+      <xref ns="mi" ac="MI:0486" type="published-by" typeNs="dxf" typeAc="dxf:0040"/>
+    </xrefList>
+  </node>
+</dataset>

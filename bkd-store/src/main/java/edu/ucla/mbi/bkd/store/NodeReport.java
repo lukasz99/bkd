@@ -14,8 +14,8 @@ import javax.xml.bind.JAXB;
 import javax.persistence.*;
 
 @Entity
-@DiscriminatorValue("node")
-public class NodeXref extends Xref{
+@DiscriminatorValue("nrep")
+public class NodeReport extends Report{
 
     @ManyToOne
     @JoinColumn(name="fk_node", nullable=false)
@@ -31,5 +31,4 @@ public class NodeXref extends Xref{
     
 
 }
-
 

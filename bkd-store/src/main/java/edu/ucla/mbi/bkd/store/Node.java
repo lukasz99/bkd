@@ -1,5 +1,5 @@
 package edu.ucla.mbi.bkd.store;
-
+ 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,7 +15,7 @@ import javax.persistence.*;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn (name="node_type", 
+@DiscriminatorColumn (name="sclass", 
                       discriminatorType = DiscriminatorType.STRING)
 @Table(name = "node")
 public class Node implements Comparable<Node>{
@@ -29,12 +29,12 @@ public class Node implements Comparable<Node>{
     @Column(name = "pkey")
     private long pkey;
 
-    protected static String prefix = "BKD";
+    protected static String prefix = "CVDB";
     
     @Column(name = "ndid")
     protected long ndid = 0;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "cvtype")
     CvTerm cvtype;
         
@@ -47,12 +47,21 @@ public class Node implements Comparable<Node>{
     @Column(name = "label")
     String label = "";
     
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "taxon")
     Taxon taxon;
 
-    @OneToMany(mappedBy="node")
+    @OneToMany(mappedBy="node", fetch = FetchType.EAGER)
+    private Set<NodeAlias> alias;
+    
+    @OneToMany(mappedBy="node",fetch = FetchType.EAGER)
     private Set<NodeXref> xrefs;
+
+    @OneToMany(mappedBy="node",fetch = FetchType.EAGER)
+    private Set<NodeReport> reps;
+
+    @OneToMany(mappedBy="node",fetch = FetchType.EAGER)   
+    private Set<NodeFeat> feats;
     
     @Column(name = "comment")
     String comment ="";
@@ -139,14 +148,41 @@ public class Node implements Comparable<Node>{
         this.taxon = taxon;
     }
 
+    public Set<NodeAlias> getAlias(){
+	if(this.alias == null)
+	    this.alias = new HashSet<NodeAlias>();	
+        return this.alias;
+    }
+
+    public void setXrefs(Set<NodeXref> xrefs){
+        this.xrefs = xrefs;
+    }
+
     public Set<NodeXref> getXrefs(){
 	if(this.xrefs == null)
 	    this.xrefs = new HashSet<NodeXref>();	
         return this.xrefs;
     }
 
-    public void setXrefs(Set<NodeXref> xrefs){
-        this.xrefs = xrefs;
+
+    public Set<NodeReport> getReps(){
+	if(this.reps == null)
+	    this.reps = new HashSet<NodeReport>();	
+        return this.reps;
+    }
+
+    public void setProps(Set<NodeReport> reps){
+        this.reps = reps;
+    }
+
+    public Set<NodeFeat> getFeats(){
+	if(this.feats == null)
+	    this.feats = new HashSet<NodeFeat>();	
+        return this.feats;
+    }
+
+    public void setFeats(Set<NodeFeat> feats){
+        this.feats = feats;
     }
     
     public void setComment( String comment ){

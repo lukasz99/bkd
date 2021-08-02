@@ -46,6 +46,9 @@ public class PubSource extends Source{
     @Column(name = "jtitle")
     String jtitle = "";
 
+    @Column(name = "citation")
+    String citation = "";
+
     @Column(name = "abstract")
     String abstr = "";
 
@@ -63,57 +66,70 @@ public class PubSource extends Source{
     }
 
     public void setATitle( String atitle ){
-	this.atitle = atitle;
+        this.atitle = atitle;
     }
-
+    
     public String getJTitle(){
-	return jtitle;
+        return jtitle;
     }
-
+    
     public void setJTitle( String jtitle ){
-	this.jtitle = jtitle;
+        this.jtitle = jtitle;
     }
-
+    
+    public String getCitation(){
+        return citation;
+    }
+    
+    public void setCitation( String citation ){
+        this.jtitle = citation;
+    }
+    
     public String getAbstract(){
-	return abstr;
+        return abstr;
     }
-
+    
     public void setAbstract( String abstr ){
-	this.abstr = abstr;
+        this.abstr = abstr;
     }
-
+    
     public String getNlmid(){
-	return nlmid;
+        return nlmid;
     }
-
+    
     public void setNlmid( String nlmid ){
-	this.nlmid = nlmid;
+        this.nlmid = nlmid;
     }
-
+    
     public String getPmid(){
-	return pmid;
+        return pmid;
     }
-
+    
     public void setPmid( String pmid ){
-	this.pmid = pmid;
+        this.pmid = pmid;
     }
     
     public String getDoi(){
-	if( doi.length() > 0 ){
+        if( doi.length() > 0 ){
 	    return "https://doi.org/"+doi;
 	} else {
-	    return "";
-	}
+            return "";
+        }
+    }
+    
+    public void setDoi( String doi ){
+        try{
+            String ndoi = doi.replaceAll("https://doi.org/","");
+            this.doi = ndoi;
+        } catch(Exception ex){
+            // shouldn't happen
+        }
     }
 
-    public void setDoi( String doi ){
-	try{
-	    String ndoi = doi.replaceAll("https://doi.org/","");
-	    this.doi = ndoi;
-	} catch(Exception ex){
-	    // shouldn't happen
-	}
+    public String toString(){
+        return "PubSource: [PMID=" + this.getPmid() + " DOI=" + this.getDoi() + "]";
     }
+    
 }
 
 

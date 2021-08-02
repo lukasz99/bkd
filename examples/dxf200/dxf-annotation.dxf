@@ -1,0 +1,49 @@
+<dataset xmlns="http://dip.doe-mbi.ucla.edu/services/dxf200">
+  <node id="1" ns="cvus" ac="CVUS-1234G">
+    <type ns="dxf" name="gene" ac="dxf:0000"/>
+    <label>TGFBI</label>
+    <featureList>
+      <feature>
+        <type ns="mi" name="mutation" ac="MI:0118"/>   <!-- mutation -->
+        <label>p.[Val113Ile]
+        <locationList>
+          <location>
+            <begin><position>113</position></begin>
+            <end><position>113</position></end>
+          </location>
+        </locationList>    
+        <attrList>
+          <attr name="resulting sequence" ns="mi" ac="MI:1308">
+            <value>I</value>
+          </attr>
+          
+          <attr name="source" ns="dxf" ac="dxf:0000">           
+            <value ns="orcid" ac="http://.../0000-0000-0000-0000" type="person" typeNs="dxf" typeAc="dxf:0000"/>
+          </attr>
+          
+          <attr name="annotation" ns="dxf" ac="dxf:0000">
+            <type name="clinical report" />
+            <node id="1" ns="" ac="">
+              <type ... />
+              <label>...</label>
+              <attrList>
+                <attr name="...." ns="dxf" ac="dxf:0000">
+                  <value>...</value>
+                </attr>
+                <attr name="...." ns="dxf" ac="dxf:0000">
+                  <value>...</value>
+                </attr>
+                <attr name="...." ns="dxf" ac="dxf:0000">
+                  <value>...</value>
+                </attr>
+              </attrList>
+            </node>
+          </attr>
+        </attrList>
+      </feature>
+    </featureList>
+    <xrefList>
+      <xref ns="" ac="" type="identical-to" typeNs="" typeAc=""/>
+    </xrefList>
+  </node>
+</dataset>

@@ -1,0 +1,57 @@
+<dataset xmlns="http://dip.doe-mbi.ucla.edu/services/dxf200">
+  <node id="1" ns="pubmed" ac="28988748">
+    <type ns="dxf" name="article" ac="dxf:0055"/>
+    <label>García-Castellanos2017</label>   
+    <xrefList>
+      <xref ns="doi" ac="10.1016/j.str.2017.09.001" type="identical-to" typeNs="dxf" typeAc="dxf:0009"/>
+      <xref ns="pii" ac="S0969-2126(17)30292-7" type="identical-to" typeNs="dxf" typeAc="dxf:0009"/>      
+    </xrefList>
+    <attrList>
+       <attr name="title" ns="dxf" ac="dxf:0061">
+          <value>Structural and Functional Implications of Human Transforming Growth Factor β-Induced Protein, TGFBIp, in Corneal Dystrophies</value>
+       </attr>
+       <attr name="author-list" ns="dxf" ac="dxf:0070">
+          <value>García-Castellanos R, Nielsen NS, Runager K, Thøgersen IB, Lukassen MV,  Poulsen ET, Goulas T, Enghild JJ,  Gomis-Rüth FX</value>
+       </attr>
+       <attr name="name-journal" ns="dxf" ac="dxf:0066">
+          <value>Structure</value>
+       </attr>
+       <attr name="volume" ns="dxf" ac="dxf:0063">
+          <value>Structure</value>
+       </attr>
+       <attr name="issue" ns="dxf" ac="dxf:0064">
+          <value>Structure</value>
+       </attr>
+       <attr name="pages" ns="dxf" ac="dxf:0069">
+          <value>1740-1750</value>
+       </attr>
+       <attr name="year" ns="dxf" ac="dxf:0065">  <!-- publication year -->
+          <value>2017</value>
+       </attr>       
+       <attr name="abstract" ns="dxf" ac="dxf:0062">
+          <value>
+            A major cause of visual impairment, corneal dystrophies result
+            from accumulation of protein deposits in the cornea. One of the proteins
+            involved is transforming growth factor β-induced protein (TGFBIp), an
+            extracellular matrix component that interacts with integrins but also
+            produces corneal deposits when mutated. Human TGFBIp is a multi-domain
+            683-residue protein, which contains one CROPT domain and four FAS1 domains.
+            Its structure spans ∼120 Å and reveals that vicinal domains FAS1-1/FAS1-2
+            and FAS1-3/FAS1-4 tightly interact in an equivalent manner. The FAS1 domains
+            are sandwiches of two orthogonal four-stranded β sheets decorated with two
+            three-helix insertions. The N-terminal FAS1 dimer forms a compact moiety
+            with the structurally novel CROPT domain, which is a five-stranded all-β
+            cysteine-knot solely found in TGFBIp and periostin. The overall TGFBIp
+            architecture discloses regions for integrin binding and that most dystrophic
+            mutations cluster at both molecule ends, within domains FAS1-1 and FAS1-4.
+          </value>
+       </attr>
+       <attr name="keyword" ns="dxf" ac="dxf:0085">  <!-- publication year -->
+          <value>2017</value>
+       </attr>       
+
+    </attrList>    
+  </node>
+</dataset>
+
+

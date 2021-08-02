@@ -1,0 +1,42 @@
+<dataset xmlns="http://dip.doe-mbi.ucla.edu/services/dxf200">
+  <node id="1" ns="pubmed" ac="28988748">
+    <type ns="dxf" name="article" ac="dxf:0055"/>
+    <label>García-Castellanos2017</label>   
+    <xrefList>
+      <xref ns="doi" ac="10.1016/j.str.2017.09.001" type="identical-to" typeNs="dxf" typeAc="dxf:0009"/>
+      <xref ns="pii" ac="S0969-2126(17)30292-7" type="identical-to" typeNs="dxf" typeAc="dxf:0009"/>      
+    </xref>
+    </xrefList>
+    <attrList>
+       <attr name="title" ns="dxf" ac="dxf:0061">
+          <value>Structural and Functional Implications of Human Transforming Growth Factor β-Induced Protein, TGFBIp, in Corneal Dystrophies</value>
+       </attr>
+       <attr name="author-list" ns="dxf" ac="dxf:0070">
+          <value>García-Castellanos R, Nielsen NS, Runager K, Thøgersen IB, Lukassen MV,  Poulsen ET, Goulas T, Enghild JJ,  Gomis-Rüth FX</value>
+       </attr>
+       <attr name="name-journal" ns="dxf" ac="dxf:0066">
+          <value>Structure</value>
+       </attr>
+       <attr name="volume" ns="dxf" ac="dxf:0063">
+          <value>Structure</value>
+       </attr>
+       <attr name="issue" ns="dxf" ac="dxf:0064">
+          <value>Structure</value>
+       </attr>
+       <attr name="pages" ns="dxf" ac="dxf:0069">
+          <value>1740-1750</value>
+       </attr>
+       <attr name="year" ns="dxf" ac="dxf:0065">
+          <value>2017</value>
+       </attr>
+       <attr name="keyword" ns="dxf" ac="dxf:0086">  <!-- mesh headings -->
+        <value ns="mesh" ac="D000595">Amino Acid Sequence</value>
+       </attr>
+       <attr name="keyword" ns="dxf" ac="dxf:0086">
+        <value ns="mesh" ac="D016326">Extracellular Matrix Proteins</value>
+       </attr>       
+    </attrList>    
+  </node>
+</dataset>
+
+

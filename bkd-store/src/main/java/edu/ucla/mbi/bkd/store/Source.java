@@ -15,7 +15,7 @@ import javax.persistence.*;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn (name="source_type", 
+@DiscriminatorColumn (name="sclass", 
                       discriminatorType = DiscriminatorType.STRING)
 @Table(name = "source")
 public abstract class Source{
@@ -28,9 +28,9 @@ public abstract class Source{
     private long pkey;
 
     /**
-       CREATE TABLE source (   -- person/publication/database
+       CREATE TABLE source (   -- person/publication/online-record/institution
        pkey bigint DEFAULT nextval(('"source_pkey_seq"'::text)::regclass) NOT NULL CONSTRAINT xref_fk PRIMARY KEY,
-       source_type character varying(32) DEFAULT ''::character varying,
+       sclass character varying(32) DEFAULT ''::character varying,
        fk_cvtype bigint DEFAULT 0 NOT NULL, -- unspecified source type		
        name character varying(256) DEFAULT ''::character varying NOT NULL,
        url character varying(128) DEFAULT ''::character varying NOT NULL,	
@@ -43,6 +43,9 @@ public abstract class Source{
        orcid character varying(32) DEFAULT ''::character varying NOT NULL,   -- skips https://orcid.org/
        doi character varying(32) DEFAULT ''::character varying NOT NULL,     -- skips https://doi.org/
        pmid character varying(16) DEFAULT ''::character varying NOT NULL,
+
+       ns character varying(16) DEFAULT ''::character varying NOT NULL,  
+       ac character varying(32) DEFAULT ''::character varying NOT NULL,
 
        comment text DEFAULT ''::text NOT NULL,
        t_cr timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone,
@@ -60,6 +63,7 @@ public abstract class Source{
     @Column(name = "url")
     String url = "";
 
+
     @Column(name = "comment")
     String comment ="";
 
@@ -70,6 +74,9 @@ public abstract class Source{
     Date utime;
             
     public Source() { }
+
+    public abstract String toString();
+
     
     public String getName(){
         return name;
@@ -94,7 +101,7 @@ public abstract class Source{
     public void setUrl( String url ){
         this.url = url;
     }
-   
+      
     public String getComment(){
         return comment;
     }

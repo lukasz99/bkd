@@ -1,0 +1,19 @@
+<dataset xmlns="http://dip.doe-mbi.ucla.edu/services/dxf200">
+  <node id="1" ns="orcid" ac="https://orcid.org/0000-0003-4522-1969">
+    <type ns="dxf" name="person" ac="dxf:0056"/>
+    <label>L Salwinski</label>
+    <xrefList>
+      <xref ns="orcid" ac="https://orcid.org/0000-0003-4522-1969" type="identical-to" ns="dxf" ac="dxf:0009"/>
+    </xrefList>
+    <attrList>
+       <attr name="name-family" ns="dxf" ac="dxf:0067">
+          <value>Salwinski</value>
+       </attr> 
+       <attr name="name-first" ns="dxf" ac="dxf:0068">
+          <value>Lukasz</value>
+       </attr>
+    </attrList>    
+  </node>
+</dataset>
+
+
