@@ -49,6 +49,34 @@
     
   </properties>
 
+  <profiles>
+   <profile>
+     <id>bkdev0</id>
+     <activation>
+      <activeByDefault>false</activeByDefault>
+     </activation>
+     <properties>
+       <bkd.ver>bkdev0</bkd.ver>       
+     </properties>
+     <build>
+      <finalName>bkdev0</finalName>
+     </build>
+   </profile>
+   
+   <profile>
+     <id>bkdev2</id>
+     <activation>
+      <activeByDefault>false</activeByDefault>
+     </activation>
+     <properties>
+       <bkd.ver>bkdev2</bkd.ver>       
+     </properties>
+     <build>
+      <finalName>bkdev2</finalName>
+     </build>     
+   </profile>
+  </profiles>
+  
   <dependencies>
     <dependency>
       <groupId>edu.ucla.mbi.bkd</groupId>
@@ -275,7 +303,8 @@
 
          <configuration>
            <webApp>
-             <contextPath>/bkdev</contextPath>             
+             <!-- contextPath>/bkd-server</contextPath -->
+             <contextPath>/${bkd.ver}</contextPath>
            </webApp>
            <httpConnector>
              <!--host>localhost</host-->

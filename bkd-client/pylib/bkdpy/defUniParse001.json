@@ -14,7 +14,7 @@
     "recommendedName":{"protein":{"wrapper":true},"*":{}},
     "alternativeName":{"protein":{"wrapper":true},"*":{}},
     
-    "fullName":{"protein":{"wrapper":false,"name":"name","complex":false,"store":"list"},
+    "fullName":{"protein":{"wrapper":false,"name":"name","complex":true,"store":"list"},
 		"*":{}},
 
     "gene":{"*":{"wrapper":false}},
@@ -35,6 +35,8 @@
     "source":{"entry":{"store":"list"},"*":{}},
     "property":{"dbReference":{"store":"list"},"*":{}},
     "isoform":{"*":{"store":"list"}},
-    "event":{"*":{"store":"list"}}
+    "event":{"*":{"store":"list"}},
+    "evidence":{"*":{"store":"list"}},
+    "feature":{"*":{"store":"list"}}
     
 }

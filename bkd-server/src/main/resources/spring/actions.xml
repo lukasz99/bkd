@@ -20,8 +20,10 @@
     <property name="pageContext"         ref="pageContext"/>
     <property name="menuContext"         ref="menuContext"/>
   </bean>
+
+
 <!--
-  <bean id="editAction" scope="prototype"
+    <bean id="editAction" scope="prototype"
         class="edu.ucla.mbi.imex.central.struts.action.EditAction">
     <property name="menuContext"         ref="menuContext"/>
     <property name="pageContext"         ref="pageContext"/>
@@ -55,7 +57,23 @@
   </bean>
 -->
   
- <!-- actions -->
+<!-- actions -->
+               
+  <bean id="reportAction" scope="prototype"
+        class="edu.ucla.mbi.bkd.struts.action.ReportAction">
+    <property name="recordManager"       ref="bkdRecordManager"/>
+    <property name="menuContext"         ref="menuContext"/>
+  </bean>
+
+
+
+
+
+  
+
+
+
+
 <!--
   <bean id="userAction" scope="prototype"
       class="edu.ucla.mbi.imex.central.struts.action.UserAction">

@@ -44,13 +44,18 @@ public class ReportDao extends AbstractDAO {
 	    
             if( sid.startsWith( Report.getPrefix() ) ){
 
+                //query =
+                //    session.createQuery( "from Report n where " +
+                //                         " n.id = :id order by n.id desc JOIN FETCH n.cvtype");
                 query =
                     session.createQuery( "from Report n where " +
-                                         " n.id = :id order by n.id desc JOIN FETCH n.cvtype");
+                                         " n.id = :id order by n.id desc");
                 try{
-                    sid = sid.replaceAll( "[^0-9\\-]", "" );
+                    sid = sid.replaceAll( "[^0-9]", "" );
+                    System.out.println("sid=" + sid);
                     if(sid.length() > 0){
                         long lid = Long.parseLong( sid );
+                        log.info("id=" + String.valueOf(lid));
                         query.setParameter( "id", lid );
                     }
                 } catch(Exception ex){		    

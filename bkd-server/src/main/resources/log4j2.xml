@@ -3,7 +3,7 @@
 <Configuration>
 
   <Properties>
-    <Property name="baseDir">/home/lukasz/git/bkd/bkd-server/jetty-log</Property> 
+    <Property name="baseDir">/var/tmp/${bkd.ver}</Property> 
     <Property name="logFile">bkd-server.log</Property>
   </Properties>
 
@@ -12,7 +12,7 @@
     <RollingFile name="RollingFile" fileName="${baseDir}/${logFile}"
                  filePattern="${baseDir}/$${date:yyyy-MM}/${logFile}-%d{MM-dd-yyyy}-%i.log.gz">
       <PatternLayout>
-        <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+        <Pattern>%d %p %c{1.} [%t] (%F:%L) %m%n</Pattern>
       </PatternLayout>
       <Policies>
         <TimeBasedTriggeringPolicy />

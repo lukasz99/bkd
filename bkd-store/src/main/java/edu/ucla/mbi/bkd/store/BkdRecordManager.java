@@ -3,6 +3,8 @@ package edu.ucla.mbi.bkd.store;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.*;
+
 import edu.ucla.mbi.bkd.store.dao.*;
 
 public class BkdRecordManager {
@@ -440,6 +442,40 @@ public class BkdRecordManager {
     //Report Management
     //-----------------
 
+    public Report getReport( String ns, String ac ) {
+
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( " getReport -> ns=" + ns + " ac=" + ac );
+        
+        Report report =  daoContext.getReportDao().getById( ns, ac );
+        return report;
+    }
+    
+    public  Map<String, Object> getReportMap( String ns, String ac ) {
+
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( " getReportMap -> ns=" + ns + " ac=" + ac );
+        
+        Report rep = this.getReport( ns, ac );
+
+           
+        
+        Map<String, Object> map = new HashMap<String,Object>();
+
+        if( rep == null ) return map;
+        
+        map.put( "report", rep);
+               
+        //Map<String,Map<String,String>> rval = ;
+            
+        map.put( "report-value", rep.getJvalMap() );
+                        
+        return map;
+    }
+
+
+
+    
     public Report addReport( Report report) {
 	
         Logger log = LogManager.getLogger( this.getClass() );

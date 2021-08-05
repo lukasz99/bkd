@@ -47,7 +47,7 @@
     <hibernate.version>5.4.4.Final</hibernate.version>
     <c3p0.version>0.9.5.4</c3p0.version>
     <postgresql.version>42.2.6</postgresql.version>
-    <json.version>20190722</json.version>
+    <json.version>20210307</json.version>
 
     <commons-logging.version>1.2</commons-logging.version>
     <log4j.version>2.14.1</log4j.version>

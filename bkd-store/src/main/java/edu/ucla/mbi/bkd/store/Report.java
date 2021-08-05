@@ -4,8 +4,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.StringWriter;
-
 import java.util.*;
+
+import org.json.*;
 
 import edu.ucla.mbi.dxf20.*;
 
@@ -210,9 +211,33 @@ public abstract class Report{
         sbuff.append(" Label=" + this.getLabel()+"\n");
         
         return sbuff.toString();
-        
     }
-    
+
+    public Map<String,Map<String,String>> getJvalMap(){
+        Map<String, Map<String,String>> jmap = null;
+        
+        try{
+            
+            JSONObject jom = new JSONObject( this.jval );
+            jmap = new HashMap<String, Map<String,String>>();
+            
+            for( Iterator<String> i = jom.keys(); i.hasNext();){ 
+                String key = i.next();
+                JSONObject cjo = (JSONObject) jom.get(key);                    
+                Map<String,String> cval = new HashMap<String, String>();
+                for( Iterator<String> ci = cjo.keys(); ci.hasNext();){
+                    String ckey = ci.next();
+                    String ccval = cjo.getString(ckey); 
+                    cval.put( ckey, ccval );
+                }
+                jmap.put(key,cval);
+            }
+            return jmap;
+        }catch( JSONException jx ){
+            // should not happen
+        }
+        return new HashMap<String, Map<String,String>>();
+    }    
 }
 
 

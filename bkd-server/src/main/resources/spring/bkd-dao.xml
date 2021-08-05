@@ -64,6 +64,9 @@
   <!-- data access objects -->
   
   <bean id="bkdNodeDao" class="edu.ucla.mbi.bkd.store.dao.NodeDao"/>
+  <bean id="bkdReportDao" class="edu.ucla.mbi.bkd.store.dao.ReportDao"/>
+  <bean id="bkdFeatureDao" class="edu.ucla.mbi.bkd.store.dao.FeatureDao"/>
+  <bean id="bkdRangeDao" class="edu.ucla.mbi.bkd.store.dao.RangeDao"/>
   <bean id="bkdTaxonDao" class="edu.ucla.mbi.bkd.store.dao.TaxonDao"/>
   <bean id="bkdCvTermDao" class="edu.ucla.mbi.bkd.store.dao.CvTermDao"/>
   <bean id="bkdXrefDao" class="edu.ucla.mbi.bkd.store.dao.XrefDao"/>
@@ -100,7 +103,7 @@
   </bean>
 -->
 
-  <bean id="bkdDaoContext" class="edu.ucla.mbi.bkd.store.BkdDaoContext">
+  <bean id="bkdDaoContext" class="edu.ucla.mbi.bkd.store.dao.BkdDaoContext">
     
     <property name="state" value="flip"/>
     
@@ -111,6 +114,9 @@
     <property name="cvTermDao" ref="bkdCvTermDao"/>
     <property name="taxonDao" ref="bkdTaxonDao"/>
     <property name="nodeDao"  ref="bkdNodeDao"/>
+    <property name="reportDao"  ref="bkdReportDao"/>
+    <property name="featureDao"  ref="bkdFeatureDao"/>
+    <property name="rangeDao"  ref="bkdRangeDao"/>
     <property name="xrefDao"  ref="bkdXrefDao"/>
     <property name="sourceDao"  ref="bkdSourceDao"/>
     

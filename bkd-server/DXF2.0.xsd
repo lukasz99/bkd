@@ -3,16 +3,19 @@
            xmlns:dxf="http://dip.doe-mbi.ucla.edu/services/dxf20"
            targetNamespace="http://dip.doe-mbi.ucla.edu/services/dxf20"
            elementFormDefault="qualified" attributeFormDefault="unqualified">
+
   <xs:element name="dataset" type="dxf:datasetType">
     <xs:annotation>
       <xs:documentation>root element</xs:documentation>
     </xs:annotation>
   </xs:element>
+
   <xs:complexType name="datasetType">
     <xs:sequence>
       <xs:element name="node" type="dxf:nodeType" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>
+
   <xs:complexType name="nodeType">
     <xs:choice>
       <xs:sequence>
@@ -60,6 +63,7 @@
     <xs:attribute name="ns" type="xs:string" use="required"/>
     <xs:attribute name="ac" type="xs:string" use="required"/>
   </xs:complexType>
+  
   <xs:complexType name="typeDefType">
     <xs:sequence minOccurs="0">
       <xs:element name="typeDef" type="dxf:nodeType"/>
@@ -68,6 +72,7 @@
     <xs:attribute name="ac" type="xs:string" use="required"/>
     <xs:attribute name="name" type="xs:string" use="optional"/>
   </xs:complexType>
+  
   <xs:complexType name="xrefType">
     <xs:sequence minOccurs="0">
       <xs:element name="node" type="dxf:nodeType"/>
@@ -85,6 +90,7 @@
     <xs:attribute name="typeAc" type="xs:string" use="required"/>
     <xs:attribute name="type" type="xs:string" use="optional"/>
   </xs:complexType>
+  
   <xs:complexType name="attrType">
     <xs:sequence>
       <xs:choice>
@@ -125,6 +131,7 @@
     <xs:attribute name="ac" type="xs:string" use="required"/>
     <xs:attribute name="name" type="xs:string" use="required"/>
   </xs:complexType>
+  
   <xs:complexType name="partType">
     <xs:sequence>
       <xs:element name="type" type="dxf:typeDefType"/>
@@ -154,19 +161,7 @@
     <xs:attribute name="name" type="xs:string" use="required"/>
     <xs:attribute name="id" type="xs:long" use="required"/>
   </xs:complexType>
-  <xs:complexType name="locationType">
-    <xs:sequence>
-      <xs:element name="attrList">
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="attr" type="dxf:attrType" maxOccurs="unbounded"/>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="position" type="xs:long" minOccurs="0"/>
-      <xs:element name="range" type="xs:long" minOccurs="0"/>
-    </xs:sequence>
-  </xs:complexType>
+    
   <xs:complexType name="featureType">
     <xs:sequence>
       <xs:element name="type" type="dxf:typeDefType"/>
@@ -174,18 +169,12 @@
       <xs:element name="name" type="xs:string" minOccurs="0"/>      
       <xs:element name="locationList" minOccurs="0">
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded">
-            <xs:element name="location">
-              <xs:complexType>
-                <xs:sequence>
-                  <xs:element name="begin" type="dxf:locationType"/>
-                  <xs:element name="end" type="dxf:locationType"/>
-                </xs:sequence>
-              </xs:complexType>
-            </xs:element>
+          <xs:sequence>
+            <xs:element name="location" type="dxf:locationType" maxOccurs="unbounded"/>
           </xs:sequence>
         </xs:complexType>
       </xs:element>
+
       <xs:element name="xrefList" minOccurs="0">
         <xs:complexType>
           <xs:sequence>
@@ -193,6 +182,7 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
+
       <xs:element name="attrList" minOccurs="0">
         <xs:complexType>
           <xs:sequence>
@@ -202,4 +192,19 @@
       </xs:element>
     </xs:sequence>
   </xs:complexType>
+ 
+  <xs:complexType name="locationType">
+    <xs:sequence>      
+      <xs:element name="begin" type="xs:string"/>
+      <xs:element name="end" type="xs:string"/>
+      <xs:element name="attrList" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="attr" type="dxf:attrType" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
 </xs:schema>
