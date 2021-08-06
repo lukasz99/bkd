@@ -3,8 +3,8 @@
 <Configuration>
 
   <Properties>
-    <Property name="baseDir">/var/tmp/${bkd.ver}</Property> 
-    <Property name="logFile">bkd-server.log</Property>
+    <Property name="baseDir">/var/tmp/${srv.ver}</Property> 
+    <Property name="logFile">server.log</Property>
   </Properties>
 
   <Appenders>

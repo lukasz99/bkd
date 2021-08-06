@@ -6,7 +6,7 @@
         <Arg>java:comp/env/jdbc/bkd_flip</Arg>
         <Arg>
             <New class="com.mchange.v2.c3p0.ComboPooledDataSource">
-                <Set name="JdbcUrl">jdbc:postgresql://10.1.7.101:5432/bkd_flip</Set>	          
+                <Set name="JdbcUrl">jdbc:postgresql://${service.dbip}:5432/${db.ver}_flip</Set>	          
                 <Set name="User">bkd</Set>
                 <Set name="Password">444bkd444</Set>
             </New>
@@ -17,7 +17,7 @@
         <Arg>java:comp/env/jdbc/bkd_flop</Arg>
         <Arg>
             <New class="com.mchange.v2.c3p0.ComboPooledDataSource">
-              <Set name="JdbcUrl">jdbc:postgresql://10.1.7.101:5432/bkd_flop</Set>
+              <Set name="JdbcUrl">jdbc:postgresql://${service.dbip}:5432/${db.ver}_flop</Set>
 	            <Set name="User">bkd</Set>
                 <Set name="Password">444bkd444</Set>
             </New>

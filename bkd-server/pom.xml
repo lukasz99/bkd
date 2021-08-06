@@ -15,7 +15,7 @@
     <artifactId>bkd</artifactId>
     <version>1.0.0</version>
   </parent>
-   
+    
   <properties>
     <service.version>${project.version}</service.version> 
     <service.copyright>Copyright 1999-2021, UCLA</service.copyright> 
@@ -25,8 +25,12 @@
     <service.css>bkd.css</service.css>
 
     <service.jdbc>jdbc/bkd</service.jdbc>
+    <service.dbip>10.1.7.101</service.dbip>
     <service.esindex.url>http://10.1.6.4:9200/ucvdb</service.esindex.url>
     <service.esindex.active>true</service.esindex.active>
+
+
+    
     
     <!-- library dependenciens -->
 
@@ -42,37 +46,66 @@
     <postgresql.version>42.2.6</postgresql.version>
     <json.version>20190722</json.version>
 
-
     <dip-util.version>3.0.0</dip-util.version>
     <dip-proxy.version>1.0.0</dip-proxy.version>
-
     
   </properties>
 
   <profiles>
-   <profile>
-     <id>bkdev0</id>
+    <profile>
+      <id>dipdev0</id>
+      <activation>
+       <activeByDefault>false</activeByDefault>
+      </activation>
+      <properties>
+        <site>dip</site>
+        <srv.ver>dipdev0</srv.ver>
+        <db.ver>dip</db.ver>
+      </properties>
+      <build>
+       <finalName>dipdev0</finalName>
+      </build>
+    </profile>
+    <profile>
+     <id>dipdev2</id>
      <activation>
       <activeByDefault>false</activeByDefault>
      </activation>
      <properties>
-       <bkd.ver>bkdev0</bkd.ver>       
+       <site>dip</site>
+       <srv.ver>dipdev2</srv.ver>
+       <db.ver>dip</db.ver>
      </properties>
      <build>
-      <finalName>bkdev0</finalName>
+      <finalName>dipdev2</finalName>
      </build>
-   </profile>
-   
-   <profile>
-     <id>bkdev2</id>
+    </profile>
+    <profile>
+     <id>cvdbdev0</id>
      <activation>
       <activeByDefault>false</activeByDefault>
      </activation>
      <properties>
-       <bkd.ver>bkdev2</bkd.ver>       
+       <site>cvdb</site>
+       <srv.ver>cvdbdev0</srv.ver>
+       <db.ver>cvdb</db.ver>
      </properties>
      <build>
-      <finalName>bkdev2</finalName>
+      <finalName>cvdbdev2</finalName>
+     </build>
+    </profile>
+    <profile>     
+     <id>cvdbdev2</id>
+     <activation>
+      <activeByDefault>false</activeByDefault>
+     </activation>
+     <properties>
+       <site>cvdb</site>
+       <srv.ver>cvdbdev2</srv.ver>
+       <db.ver>cvdb</db.ver>
+     </properties>
+     <build>
+      <finalName>cvdbdev2</finalName>
      </build>     
    </profile>
   </profiles>
@@ -251,6 +284,15 @@
 
              <resource>
               <directory>${basedir}/src/main/resources</directory>
+              <targetPath>tiles</targetPath>
+              <filtering>true</filtering>
+              <includes>
+                <include>header.jsp</include>   
+              </includes>
+            </resource>
+
+            <resource>
+              <directory>${basedir}/src/main/resources</directory>
               <targetPath>WEB-INF</targetPath>
               <filtering>true</filtering>
               <includes>
@@ -304,7 +346,7 @@
          <configuration>
            <webApp>
              <!-- contextPath>/bkd-server</contextPath -->
-             <contextPath>/${bkd.ver}</contextPath>
+             <contextPath>/${srv.ver}</contextPath>
            </webApp>
            <httpConnector>
              <!--host>localhost</host-->
