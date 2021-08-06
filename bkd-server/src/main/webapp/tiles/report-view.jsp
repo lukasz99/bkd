@@ -10,6 +10,17 @@
   <t:insertDefinition name="htmlhead"/>  
   <script src="js/modal-yui.js" type="text/javascript" language="JavaScript"></script>
   <%-- <script src="js/help-yui.js" type="text/javascript" language="JavaScript"></script> --%>
+  <script src="jq/jquery-3.6.0.js" type="text/javascript" language="JavaScript"></script>
+ 
+  <script type="text/javascript">
+    $( function(){
+           alert("loaded!!!");
+           $.ajax({url:"cvdbdev0/report?ns=cvdb&ac=CVDB-2R"}).done(function(res){alert(res)});
+           alert("completed");  
+      });
+  </script>
+
+  
  </head>
  <body class="yui-skin-sam" onLoad="var nos = document.getElementById('noscript'); if ( nos !== null ) { nos.innerHTML='';}">
   <center>
@@ -40,8 +51,9 @@
         <br/><br/><br/><br/>
       </td>
     </tr>
-    
   </table>
+
+  <div id="followme">follow me..</div>
   <s:if test="big">
    <t:insertTemplate template="/tiles/footer.jsp" flush="true"/>
   </s:if>
