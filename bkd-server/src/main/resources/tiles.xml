@@ -36,6 +36,7 @@
  <definition name="main" template="/tiles/main.jsp"/>
 
  <definition name="page" template="/tiles/page.jsp"/>
+ <definition name="report-search" template="/tiles/report-search.jsp"/>
  <definition name="report-view" template="/tiles/report-view.jsp"/>
  <definition name="report-edit" template="/tiles/report-edit.jsp"/>
 

@@ -455,22 +455,46 @@ public class BkdRecordManager {
 
         Logger log = LogManager.getLogger( this.getClass() );
         log.info( " getReportMap -> ns=" + ns + " ac=" + ac );
-        
-        Report rep = this.getReport( ns, ac );
 
-           
-        
-        Map<String, Object> map = new HashMap<String,Object>();
+        if( "upr".equalsIgnoreCase(ns) ){  
 
-        if( rep == null ) return map;
-        
-        map.put( "report", rep);
-               
-        //Map<String,Map<String,String>> rval = ;
+            ProteinNode pn = (ProteinNode) daoContext.getNodeDao().getById( ns, ac );
+
+            FeatureReport protRep = new FeatureReport();
+            NodeFeat nfeat = new NodeFeat();
+            nfeat.setNode(pn);
+            protRep.setFeature(nfeat);
+
+          
+            Map<String, Object> map = new HashMap<String,Object>();
             
-        map.put( "report-value", rep.getJvalMap() );
+            if( protRep == null ) return map;
+        
+            map.put( "report", protRep);
+               
+            //Map<String,Map<String,String>>
+            
+            map.put( "report-value", protRep.getJvalMap() );
                         
-        return map;
+            return map;            
+            
+        } else {
+            
+            Report rep = this.getReport( ns, ac );
+
+                   
+            Map<String, Object> map = new HashMap<String,Object>();
+
+            if( rep == null ) return map;
+        
+            map.put( "report", rep);
+               
+            //Map<String,Map<String,String>> rval = ;
+            
+            map.put( "report-value", rep.getJvalMap() );
+                        
+            return map;
+        }
     }
 
 
@@ -482,9 +506,9 @@ public class BkdRecordManager {
         log.info( " add report -> report=" + report.toString() );
         log.info( "Jval= " + report.getJval() ); 
         
-        if( report.getId() == 0 ){ 
+        if( report.getRpid() == 0 ){ 
             long rid = daoContext.getIdGenDao().getNextId( Report.generator() );
-            report.setId( rid );	    
+            report.setRpid( rid );	    
         }
         
         if( report instanceof NodeReport){
@@ -620,7 +644,7 @@ public class BkdRecordManager {
                     
         report = daoContext.getReportDao().updateReport( report );
         
-        log.info(" Report updated:" + report.getId());
+        log.info(" Report updated:" + report.getRpid());
             
         // xrefs - persist xterm and components if needed
         //-----------------------------------------------           

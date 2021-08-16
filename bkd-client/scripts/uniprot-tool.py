@@ -39,7 +39,7 @@ ucl = BK.unirecord.UniRecord()
 ucr = ucl.getRecord(args.upr)
 #print(json.dumps(ucr.root,indent=1))
 
-du = BK.DxfUtils('http://10.1.7.100:9999/bkd-server/services/soap?wsdl')
+du = BK.DxfUtils('http://10.1.7.100:9999/cvdbdev0/services/soap?wsdl')
 
 znode = du.buildUniprotZnode( ucr )
 

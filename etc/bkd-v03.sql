@@ -169,15 +169,17 @@ CREATE INDEX xref_03 ON xref USING btree (ac,fk_cvtype);
 CREATE INDEX xref_04 ON xref USING btree (fk_cvtype);
 CREATE INDEX xref_05 ON xref USING btree (fk_source);
 
-CREATE TABLE source (   -- person/publication/database       
+CREATE TABLE source (   -- person/publication/institution       
        pkey bigint DEFAULT nextval(('"source_pkey_seq"'::text)::regclass) NOT NULL CONSTRAINT source_pk PRIMARY KEY,                                                     
        source_type character varying(32) DEFAULT ''::character varying,                                                                                                
        fk_cvtype bigint DEFAULT 0 NOT NULL, -- unspecified source type                                                                                                 
        name character varying(256) DEFAULT ''::character varying NOT NULL,                                                                                             
        url character varying(128) DEFAULT ''::character varying NOT NULL,                                                                                              
+       email character varying(128) DEFAULT ''::character varying NOT NULL, -- LS: added
                                                                                                                                                                        
        atitle character varying(256) DEFAULT ''::character varying NOT NULL,                                                                                           
-       jtitle  character varying(64) DEFAULT ''::character varying NOT NULL,                                                                                           
+       jtitle  character varying(64) DEFAULT ''::character varying NOT NULL,
+       citation character varying(64) DEFAULT ''::character varying NOT NULL,
        abstract text DEFAULT ''::text NOT NULL,                                                                                                                        
        nlmid character varying(16) DEFAULT ''::character varying NOT NULL,                                                                                             
                                                                                                                                                                        
@@ -208,12 +210,33 @@ CREATE INDEX source_09 ON source USING btree (pmid);
 --      t_cr timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone,
 --       t_mod timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone,
 
+--TABLE property: property/feature  --  
+
+CREATE TABLE property (
+    pkey bigint DEFAULT nextval(('"prop_pkey_seq"'::text)::regclass) NOT NULL CONSTRAINT xref_pk PRIMARY KEY,
+    prop_type character varying(32) DEFAULT ''::character varying,  -- nprop/nfeature...
+    fkey bigint DEFAULT 0 NOT NULL,   -- foreign key (parent)
+    fk_source bigint DEFAULT 0 NOT NULL,  -- unspecified property source       
+    fk_cval bigint DEFAULT 0 NOT NULL,    -- cv value
+    jval text DEFAULT ''::text NOT NULL,  -- json value
+    comment text DEFAULT ''::text NOT NULL,                                                                                                                         
+    t_cr timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone,                                                                               
+    t_mod timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone
+);
 
 
---TABLE property  --  
-
-
---TABLE feature  -- feature
+CREATE TABLE range (
+    pkey bigint DEFAULT nextval(('"range_pkey_seq"'::text)::regclass) NOT NULL CONSTRAINT xref_pk PRIMARY KEY,
+    range_type character varying(32) DEFAULT ''::character varying,  -- nfrange/...       
+    fkey bigint DEFAULT 0 NOT NULL,   -- foreign key (property)
+    beg int DEFAULT 0 NOT NULL,
+    fk_cvbeg bigint DEFAULT 0 NOT NULL, -- unspecified beg type
+    end DEFAULT 0 NOT NULL,
+    fk_cvend bigint DEFAULT 0 NOT NULL, -- unspecified end type
+    sequence text DEFAULT ''::text NOT NULL,
+    t_cr timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone,                                                                               
+    t_mod timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone
+);
 
 
 --TABLE evidence -- 

@@ -1,0 +1,54 @@
+#bkd-report-search {
+ border-style: solid;
+  border-color: #A8A8A8;
+  border-width: 1px;
+  margin: 5px;
+  padding: 5px;
+
+}
+
+#bkd-report-target {
+ border-style: solid;
+  border-color: #A8A8A8;
+  border-width: 1px;
+  margin: 5px;
+  padding: 5px;
+
+}
+
+#bkd-report-value {
+  border-style: solid;
+  border-color: #A8A8A8;
+  border-width: 1px;
+  margin: 5px;
+  padding: 5px;
+
+}
+
+.bkd-rep-fld {
+  border-style: solid;
+  border-color: #A8A8A8;
+  border-width: 1px;
+  margin: 10px;
+}
+
+.bkd-rep-fld > .name{
+  border-style: solid;
+  border-color: #A8A8A8;
+  border-width: 0px;
+  margin: 5px;
+  text-align: left;
+  font-size: larger;
+  font-weight: bold;
+}
+
+.bkd-rep-fld > .value{    
+  border-style: solid;
+  border-color: #A8A8A8;
+  border-width: 0px;
+  margin: 5px 5px 5px 20px;
+  text-align: left;
+}
+
+
+

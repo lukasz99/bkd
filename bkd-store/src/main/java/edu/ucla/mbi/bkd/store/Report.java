@@ -73,12 +73,12 @@ public abstract class Report{
         return prefix;
     }
     
-    public void setId(long id ){        
+    public void setRpid(long id ){        
         this.rpid = id;
     }
 
-    public long  getId(){
-        return rpid;
+    public long  getRpid(){
+        return this.rpid;
     }
     
     public String getNs(){

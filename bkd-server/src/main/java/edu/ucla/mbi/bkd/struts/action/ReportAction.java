@@ -64,8 +64,19 @@ public class ReportAction extends PortalSupport{
             record = manager.getReportMap(ns,ac);
             
         }
+
+        if( this.getQuery() != null && this.getQuery().length() > 0){
+
+            if( "protein".equalsIgnoreCase( this.getQmode() ) ){ 
+                record = manager.getReportMap("upr", query);
+            }
+
+            if( "report".equalsIgnoreCase( this.getQmode() ) ){ 
+                record = manager.getReportMap("cvdb", query);
+           }
             
-        
+        }
+                    
         if ( getRet() == null || getRet().equals( "view" ) ) {
                
             return SUCCESS;
@@ -111,6 +122,16 @@ public class ReportAction extends PortalSupport{
         return this.ac;
     }
 
+    String mode = "view";
+    
+    public void setMode( String mode){
+        this.mode = mode;
+    }
+
+    public String getMode(){
+        return this.mode;
+    }
+
     Object record = null;
     
     public void setRecord( Object record){
@@ -120,4 +141,59 @@ public class ReportAction extends PortalSupport{
     public Object getRecord(){
         return this.record;
     }
+
+    String query = "";
+    
+    public void setQuery( String query){
+        this.query = query;
+    }
+
+    public String getQuery(){
+        return this.query;
+    }
+
+    String qmode = "report";
+    
+    public void setQmode( String mode){
+        this.qmode = mode;
+    }
+
+    public String getQmode(){
+        return this.qmode;
+    }
+
+
+    String op="";
+    
+    public void setOp(String op){
+        System.out.println(op);
+        this.op = op;                                     
+    }
+    
+    public String getOp(){
+        return this.op;                                  
+    }
+
+    String repJson = null;
+    
+    public void setReportJson( String report ){
+        System.out.println(report);
+
+        
+        try{
+            Report jrep = FeatureReport.fromJsonForm(report);     
+
+        } catch(Exception ex){
+            
+        }
+
+        
+        this.repJson=report;                   
+    }
+    
+    public String getReportJson(){
+        return this.repJson;                                  
+    }
+
+    
 }

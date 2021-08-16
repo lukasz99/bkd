@@ -82,7 +82,12 @@ public class NodeDao extends AbstractDAO {
 
                 query =
                     session.createQuery( "from Node n where " +
-                                         " n.id = :id order by n.id desc JOIN FETCH n.cvtype");
+                                         " n.id = :id  JOIN FETCH n.cvtype order by n.id desc");
+
+                //query =
+                //   session.createQuery( "from Node n where " +
+                //                         " n.id = :id order by n.id desc");
+                
                 try{
                     sid = sid.replaceAll( "[^0-9\\-]", "" );
                     if(sid.length() > 0){

@@ -45,11 +45,12 @@ public class ReportDao extends AbstractDAO {
             if( sid.startsWith( Report.getPrefix() ) ){
 
                 //query =
-                //    session.createQuery( "from Report n where " +
-                //                         " n.id = :id order by n.id desc JOIN FETCH n.cvtype");
+                //session.createQuery( "from Report n where " +
+                //" n.id = :id order by n.id desc JOIN FETCH n.cvtype");
+
                 query =
                     session.createQuery( "from Report n where " +
-                                         " n.id = :id order by n.id desc");
+                                         " n.rpid = :id order by n.rpid desc");
                 try{
                     sid = sid.replaceAll( "[^0-9]", "" );
                     System.out.println("sid=" + sid);
@@ -60,37 +61,30 @@ public class ReportDao extends AbstractDAO {
                     }
                 } catch(Exception ex){		    
                     log.info( ex );
-                    
+                    System.out.println(ex);
                     // should not happen
                 }
             
             } else {
-
-                /*
-                if( "dip".equalsIgnoreCase( ns ) ){
-                    query =
-                        session.createQuery( "from Node n where " +
-                                             " n.dip = :id order by n.id desc");
-                }
+                // by xrefs  ?
                 
-                if( "gid".equalsIgnoreCase( ns ) ){
-                    query =
-                        session.createQuery( "from Node n where " +
-                                             " n.gid = :id order by n.id desc");
-                }
-                
-                query.setParameter( "id", sid );
-                */
             }
             query.setFirstResult( 0 );
-            
+
+                        
             List<Report> reps= (List<Report>) query.list();            
+
+            System.out.println("size");
+            System.out.println(reps.size());
+            System.out.println("...");
+
             
+
             if( reps.size() > 0 ){
                 report = reps.get(0);
-            }
-            
+            }            
             tx.commit();
+            System.out.println(report);
             
         } catch( HibernateException e ) {
             log.error(e);                        
