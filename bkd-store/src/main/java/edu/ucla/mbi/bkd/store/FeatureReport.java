@@ -19,7 +19,7 @@ import org.json.*;
 @DiscriminatorValue("frep")
 public class FeatureReport extends Report{
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     @JoinColumn(name="fk_feat", nullable=false)
     private Feature feature;
 
@@ -31,10 +31,18 @@ public class FeatureReport extends Report{
 	return this.feature;
     }
 
-    public static FeatureReport fromJsonForm( String form ){
+    public static FeatureReport fromJsonForm( String form,
+                                              CvTerm freportType,
+                                              Source source ){
+
+        Logger log = LogManager.getLogger( FeatureReport.class );
 
         FeatureReport report = new FeatureReport();
-        
+        report.setCvType( freportType );
+        report.setSource( source );
+
+        String tgtAc = "";
+        String rac = "";
         try{
             JSONObject jform = new JSONObject( form );
 
@@ -105,25 +113,23 @@ public class FeatureReport extends Report{
                         if( vname.contains("_") ){
                             String [] cols = vname.split( "_", 2 );
                             
-                            System.out.println( "Ranges: " + cols[0] + " ::: " + cols[1] );
+                            System.out.println( "Ranges: " + cols[0] + " ::: " + cols[1]  + " val=" + val);
 
-                            if(! rangeMap.containsKey( cols[0] ) ){
-                                
-                                rangeMap.put( cols[0], new Range() );
-                                
-                            } else if( "start".equalsIgnoreCase( cols[1] ) ){
-                                
-                                rangeMap.get( cols[0] ).setStart( Integer.parseInt( val ) );
-                                
-                            } else if( "stop".equalsIgnoreCase( cols[1] ) ){
-                                
-                                rangeMap.get( cols[0] ).setStop( Integer.parseInt(val) );
-                                
+                            if(! rangeMap.containsKey( cols[0] ) ){                                
+                                rangeMap.put( cols[0], new Range() );                                
+                            }
+
+                            if( "from".equalsIgnoreCase( cols[1] ) ){
+                                System.out.println( "  start=" + val + " ::: " + Integer.parseInt( val ));
+                                rangeMap.get( cols[0] ).setStart( Integer.parseInt( val ) );                                
+                            } else if( "to".equalsIgnoreCase( cols[1] ) ){
+                                System.out.println( "  stop=" + val + " ::: " + Integer.parseInt( val ));
+                                rangeMap.get( cols[0] ).setStop( Integer.parseInt(val) );                                
                             } else if( "sequence".equalsIgnoreCase( cols[1] ) ){
-                                
-                                rangeMap.get( cols[0] ).setSequence( val );
-                                
-                            }                            
+                                System.out.println( "  seq=" + val );
+                                rangeMap.get( cols[0] ).setSequence( val );                                
+                            }
+                            
                         }                        
                     }
 
@@ -143,24 +149,18 @@ public class FeatureReport extends Report{
                                 xrefMap.get( cols[0] ).setCvType( new CvTerm() );
                             }
 
-                            if( "ns".equalsIgnoreCase( cols[1] ) ){
-                                
+                            if( "ns".equalsIgnoreCase( cols[1] ) ){                                
                                 xrefMap.get( cols[0] ).setNs( val );
-                                
-                            }else if( "ac".equalsIgnoreCase( cols[1] ) ){
-                                
-                                xrefMap.get( cols[0] ).setAc( val );
-                                
+                            }else if( "ac".equalsIgnoreCase( cols[1] ) ){ 
+                                xrefMap.get( cols[0] ).setAc( val );                                
                             }else if( "tns".equalsIgnoreCase( cols[1] ) ){
-                                
                                 xrefMap.get( cols[0] ).getCvType().setNs( val );
-                                
-                            }else if( "tac".equalsIgnoreCase( cols[1] ) ){
-                                
-                                xrefMap.get( cols[0] ).getCvType().setAc( val );
-                                
-                            }                                                         
-                        }                        
+                            }else if( "tac".equalsIgnoreCase( cols[1] ) ){                                
+                                xrefMap.get( cols[0] ).getCvType().setAc( val );                                
+                            }else if( "tname".equalsIgnoreCase( cols[1] ) ){                                
+                                xrefMap.get( cols[0] ).getCvType().setName( val );                                
+                            }
+                        }                    
                     }
                                         
                 } else if( key.startsWith("report_target_") ){
@@ -180,19 +180,64 @@ public class FeatureReport extends Report{
                         if("ac".equalsIgnoreCase( vname ) ){
                             // target accession in val
                             System.out.println( " target ac = " + val );
+                            tgtAc = val;                                                        
                         }
                            
                     } catch(Exception ex ){
                         
                     }
-                }                
+                } else if(  key.startsWith("report_ac") ){
+                    rac = val;
+                    System.out.println( " report ac = " + val );
+
+                    
+                    
+
+                }
             }
 
+            // report ac
+
+            try{
+                String rid = rac.replaceAll( "[^0-9]", "" );
+                long lrid = Long.parseLong( rid );
+                report.setRpid( lrid );
+                log.info("report id set to -> " + report.getAc());
+
+            } catch( Exception ex ){
+                // shouldn't happen                
+            }
+            
+
+            
+            
+            // report target
+            
+            
             System.out.println( "JVAL:  " + jval.toString() );
             report.setJval( jval.toString() );
 
-            report.setFeature( new NodeFeat() );
+            NodeFeat tgtFeat = new NodeFeat();
+            tgtFeat.setNode( new Node() );
             
+            
+            try{
+                String sid = tgtAc.replaceAll( "[^0-9]", "" );
+                long lid = Long.parseLong( sid );
+                tgtFeat.getNode().setId( lid );
+                System.out.println(lid );
+                System.out.println( "tgt node:  " + tgtFeat.getNode().toString() );                
+                log.info("feature: tgtnode set to -> " + tgtFeat.getNode());
+
+            } catch( Exception ex ){
+                // shouldn't happen                
+            }
+            
+            report.setFeature( tgtFeat );
+            CvTerm cvt = new CvTerm( "psi-mi", "mi:0118", "mutation" );            
+            report.getFeature().setCvType( cvt );
+            report.getFeature().setSource( source );
+
             
             System.out.println( "RMAP:  " + rangeMap );
             
@@ -200,7 +245,8 @@ public class FeatureReport extends Report{
                  ikey.hasNext(); ){
 
                 Range r = rangeMap.get(ikey.next());
-                report.getFeature().getRanges().add(r);                                
+                report.getFeature().getRanges().add(r);
+                System.out.println( r );
             }
             
             System.out.println( "XMAP:  " + xrefMap );
@@ -211,9 +257,7 @@ public class FeatureReport extends Report{
                 FeatureXref r = xrefMap.get(ikey.next());
                 report.getFeature().getXrefs().add(r);                                
             }
-            
-            
-
+             
         } catch( JSONException jx ){
             // shouldn't happen
         }

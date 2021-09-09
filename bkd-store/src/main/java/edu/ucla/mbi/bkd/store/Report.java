@@ -43,7 +43,6 @@ public abstract class Report{
          t_mod timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone
        );
     **/
-
     protected static String prefix = "CVDB";
     private static String generator = "report";
     

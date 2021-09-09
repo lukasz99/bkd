@@ -39,10 +39,10 @@ public class PersonSource extends Source{
        t_mod timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone,
       );
     **/
-        
+
     @Column(name = "orcid")
     String orcid = "";
-        
+
     public String getOrcid(){
         if( orcid.length() > 0 ){
             return "https://orcid.org/"+orcid;

@@ -179,9 +179,12 @@ public class ReportAction extends PortalSupport{
     public void setReportJson( String report ){
         System.out.println(report);
 
-        
         try{
-            Report jrep = FeatureReport.fromJsonForm(report);     
+
+            CvTerm rtype = new CvTerm("dxf","dxf:0094","phenotype-report");
+            PersonSource src = new PersonSource();
+            src.setOrcid("0000-0003-4522-1969");
+            Report jrep = FeatureReport.fromJsonForm(report,rtype,src);     
 
         } catch(Exception ex){
             

@@ -73,7 +73,7 @@ public class NodeDao extends AbstractDAO {
         Transaction tx = session.beginTransaction();
 
         Logger log = LogManager.getLogger( this.getClass() );
-        log.info( "-> getById: ns=" + ns + " ac=" + sid);
+        log.info( "-> getById: ns=" + ns + " ac=" + sid + " prefix: " + Node.getPrefix());
 	
         try {	    
             Query query =  null;            
@@ -81,18 +81,20 @@ public class NodeDao extends AbstractDAO {
             if( sid.startsWith( Node.getPrefix() ) ){
 
                 query =
-                    session.createQuery( "from Node n where " +
-                                         " n.id = :id  JOIN FETCH n.cvtype order by n.id desc");
+                    session.createQuery( "from Node n JOIN FETCH n.cvtype" +
+                                         " where n.ndid = :id order by n.id desc");
 
                 //query =
                 //   session.createQuery( "from Node n where " +
                 //                         " n.id = :id order by n.id desc");
                 
                 try{
-                    sid = sid.replaceAll( "[^0-9\\-]", "" );
+                    sid = sid.replaceAll( "[^0-9]", "" );
                     if(sid.length() > 0){
                         long lid = Long.parseLong( sid );
                         query.setParameter( "id", lid );
+                        log.info( "-> getById: lid=" + lid );
+
                     }
                 } catch(Exception ex){		    
                     log.info( ex );
@@ -136,8 +138,9 @@ public class NodeDao extends AbstractDAO {
             if( nodes.size() > 0 ){
                 node = nodes.get(0);
             }
-            
+
             tx.commit();
+            log.info("found node: " + node);
             
         } catch( HibernateException e ) {
             log.error(e);                        
@@ -194,6 +197,46 @@ public class NodeDao extends AbstractDAO {
             session.close();
         }
         return node; 
+    }
+
+    public List<Object> getListById( String ns, String ac,
+                                     String ndtype, String sort ){
+        
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( "NodeDao->getListById: ns=" + ns + " ac=" + ac  );
+        log.info( " type=" + ndtype + " sort=" + sort  );
+        
+        List<Object> rlist = null;
+
+        Session session = getCurrentSession();           
+        Transaction tx = session.beginTransaction();
+        
+        try {
+            
+            Query query =
+                session.createQuery( "from Node n where " +
+                                     " n.dip = :id");
+            query.setParameter( "id", ac );
+            query.setFirstResult( 0 );
+            rlist = (List<Object>) query.list();
+            tx.commit();
+            
+        } catch( NumberFormatException ne ){
+
+            // wrong accession fromat
+            
+        } catch( HibernateException e ) {
+            handleException( e );
+            // log error ?
+        } finally {
+            session.close();
+        }
+
+        if( rlist != null){
+            return rlist;
+        } else {
+            return new ArrayList<Object>();
+        }
     }
     
     //--------------------------------------------------------------------------

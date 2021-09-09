@@ -131,7 +131,7 @@ public class Range{
     }
 
     public String toString(){
-        return "start=" + String.valueOf(this.start) + " end=" + String.valueOf(stop);
+        return "start=" + String.valueOf(this.start) + " end=" + String.valueOf(stop) + "seq=" + sequence;
     }
 }
 

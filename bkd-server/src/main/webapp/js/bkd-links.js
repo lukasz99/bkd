@@ -18,6 +18,14 @@ BKDlink  = {
         "PDB":{"has-structure":{
                  "url":"https://www.rcsb.org/structure/%%AC%%",
                  "type":"structure"}},
+        "pubmed":{"described-by":{
+                 "url":"https://pubmed.ncbi.nlm.nih.gov/%%AC%%",
+                 "type":"source"}
+                 },
+        "PubMed":{"described-by":{
+                 "url":"https://pubmed.ncbi.nlm.nih.gov/%%AC%%",
+                 "type":"source"}
+                 },
         "dbSNP":{"mutation":{
                  "url":"https://www.ncbi.nlm.nih.gov/snp/%%AC%%",
                  "type":" sequence variant"}}
@@ -47,10 +55,10 @@ BKDlink  = {
    var tp = xref.cvType.name;
 
    var el = null;
-
+   console.log("XREF: " + JSON.stringify(xref));
    // format:
    //ns:<a>ac</ac> (type)
-   
+   console.log("x.ns:" + ns + " x.ns.tp:"+ tp);
    if( this.url[ns] ){
      if( this.url[ns][tp] ){
       

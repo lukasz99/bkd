@@ -64,15 +64,13 @@
     <property name="recordManager"       ref="bkdRecordManager"/>
     <property name="menuContext"         ref="menuContext"/>
   </bean>
-
-
-
-
-
   
-
-
-
+  <bean id="searchAction" scope="prototype"
+        class="edu.ucla.mbi.bkd.struts.action.SearchAction">
+    <property name="recordManager"       ref="bkdRecordManager"/>
+    <property name="queryManager"        ref="bkdQueryManager"/>
+    <property name="menuContext"         ref="menuContext"/>
+  </bean>
 
 <!--
   <bean id="userAction" scope="prototype"

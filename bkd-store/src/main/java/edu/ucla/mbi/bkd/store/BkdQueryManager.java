@@ -10,22 +10,65 @@ import edu.ucla.mbi.bkd.store.dao.*;
 import edu.ucla.mbi.dxf20.*;
 
 public class BkdQueryManager extends QueryManager{
+
+    //--------------------------------------------------------------------------
+    // DaoContext
+    //-----------
+    
+    BkdDaoContext daoContext;
+    
+    public void setDaoContext( BkdDaoContext daoContext ){
+        this.daoContext = daoContext;
+    }
+
+    //--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
+    
+    public List<Object> getReportList( String ns, String ac, String sort){
+
+        // returns reports with ns/ac target
+        
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( " getReportList -> ns=" + ns + " ac=" + ac );
+        
+        return daoContext.getReportDao().getListByTarget( ns, ac, sort );
+    }
+
+    public List<Object> getReportList( String query, String sort){
+        
+        return new ArrayList<Object>();
+    }
+
+    public List<Object> getNodeList( String ns, String ac, String ndtype, String sort){
+
+        // returns nodes of qmode type matching ns/ac 
+
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( " getNodeList -> ns=" + ns + " ac=" + ac + " type=" + ndtype );
+
+        return daoContext.getNodeDao().getListById( ns, ac, ndtype, sort );        
+    }
+
+    public List<Object> getNodeList(String query, String qmode, String sort){
+
+        return new ArrayList<Object>();
+    }
     
     public edu.ucla.mbi.dxf20.DatasetType
         query( String query, String detail ) {
-	
-	Logger log = LogManager.getLogger( this.getClass() );
-	log.info( "DipQueryManager: query called" );
-        log.info( "DipQueryManager: query= " + query );
-        log.info( "DipQueryManager: detail=" + detail );
-       
-	if( query != null ) {
-
+        
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( "BkdQueryManager: query called" );
+        log.info( "BkdQueryManager: query= " + query );
+        log.info( "BkdQueryManager: detail=" + detail );
+        
+        if( query != null ) {
+            
             // MIQLX
             //------
-
+            
             Map<String,List<String>> miqlx = null;
-
+            
             //if( query != null && query.indexOf( " Miqlx" ) > -1 ){
             //    MiqlxFilter mf = new MiqlxFilter();
             //    query = mf.process( query );
@@ -34,17 +77,14 @@ public class BkdQueryManager extends QueryManager{
 	    
             log.info("query:" + query +":mqlx:" + miqlx + ":");
             
-	    try {
+            try {
 
                 // run query
-                
-
-
                 
                 // build hit list
                 
                 List<JDxfQueryHit> hits = new ArrayList<JDxfQueryHit>();
-
+                
                 // return results
                 
                 return dxfResult( query, hits );
@@ -52,8 +92,8 @@ public class BkdQueryManager extends QueryManager{
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-	}
-	return null;
+        }
+        return null;
     }
     
 }

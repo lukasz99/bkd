@@ -455,7 +455,7 @@ public class BkdRecordManager {
 
         Logger log = LogManager.getLogger( this.getClass() );
         log.info( " getReportMap -> ns=" + ns + " ac=" + ac );
-
+        
         if( "upr".equalsIgnoreCase(ns) ){  
 
             ProteinNode pn = (ProteinNode) daoContext.getNodeDao().getById( ns, ac );
@@ -496,15 +496,12 @@ public class BkdRecordManager {
             return map;
         }
     }
-
-
-
     
     public Report addReport( Report report) {
-	
+        
         Logger log = LogManager.getLogger( this.getClass() );
-        log.info( " add report -> report=" + report.toString() );
-        log.info( "Jval= " + report.getJval() ); 
+        log.info( "addReport -> report=" + report.toString() );
+        log.info( "addReport -> Jval= " + report.getJval() ); 
         
         if( report.getRpid() == 0 ){ 
             long rid = daoContext.getIdGenDao().getNextId( Report.generator() );
@@ -512,13 +509,12 @@ public class BkdRecordManager {
         }
         
         if( report instanceof NodeReport){
+            log.info( "addReport -> NodeReport here...");
+            log.info(((NodeReport) report).getNode()); // node must preexist !!!
+            
+        } else if( report instanceof FeatureReport){
 
-            log.info(((NodeReport) report).getNode()); // node preexists !!!
-
-        }
-
-        if( report instanceof FeatureReport){
-
+            log.info( "addReport -> FeatureReport here...");
             log.info(((FeatureReport) report).getFeature());  // feature is new !!! 
             
             // commit feature here
@@ -526,8 +522,8 @@ public class BkdRecordManager {
             
             log.info( ((NodeFeat) ((FeatureReport) report).getFeature()).getNode() );
 
-            // feature type: commit if needed
-            //-------------------------------
+            // feature cv type: commit if needed
+            //----------------------------------
             
             CvTerm fcvt = ((FeatureReport) report).getFeature().getCvType();
             fcvt = daoContext.getCvTermDao().getByAccession(fcvt.getAc());
@@ -542,8 +538,9 @@ public class BkdRecordManager {
             
             Source fsrc = ((FeatureReport) report).getFeature().getSource();
 
-            // source type
-             
+            // source cv type
+            //----------------
+            
             CvTerm scvt = fsrc.getCvType();
             scvt = daoContext.getCvTermDao().getByAccession( scvt.getAc() );
             if( scvt == null ){
@@ -554,7 +551,8 @@ public class BkdRecordManager {
             fsrc.setCvType(scvt);            
                         
             // source
-            
+            //-------
+                       
             fsrc = daoContext.getSourceDao().updateSource( fsrc );
             ((FeatureReport) report).getFeature().setSource( fsrc );          
 
@@ -562,14 +560,19 @@ public class BkdRecordManager {
             //--------------
             
             Node rnode = ((NodeFeat) ((FeatureReport) report).getFeature()).getNode();
-            log.info("RNODE:" + rnode);
+            log.info("feature node:" + rnode);
+            log.info("feature node: ns=" + rnode.getNs() + "ac=" + rnode.getAc());
             
-            //Node oldNode = (Node) daoContext.getNodeDao().getById( rnode.getNs(), rnode.getAc() );
-            //((NodeFeat) ((FeatureReport) report).getFeature()).setNode( rnode );
+            Node testNode = (Node) daoContext.getNodeDao().getById( rnode.getNs(), rnode.getAc() );
+            
+            log.info("feature node(test):" + testNode);  // node must exist
+            ((NodeFeat) ((FeatureReport) report).getFeature()).setNode( testNode );
 
             Feature rfeature = ((FeatureReport) report).getFeature();
             rfeature = daoContext.getFeatureDao().updateFeature( rfeature );
-
+            
+            ((FeatureReport) report).setFeature( rfeature );
+            
             for(Range r: rfeature.getRanges() ){
                 log.info("R: "+r);
 
@@ -593,6 +596,8 @@ public class BkdRecordManager {
             //--------------
             
             for( FeatureXref x: rfeature.getXrefs()){
+                log.info(x);
+                
                 CvTerm xcvtype = daoContext
                     .getCvTermDao().getByAccession( x.getCvType().getAc() );
                     
@@ -607,9 +612,7 @@ public class BkdRecordManager {
                 daoContext.getXrefDao().updateXref( x );                                    
             }
             log.info("Feature XREFs: update DONE");
-                                        
-            ((FeatureReport) report).setFeature( rfeature );
-            
+                                                    
         }
             
         // cvtype - persist if needed
@@ -641,11 +644,13 @@ public class BkdRecordManager {
         Source rsource = daoContext
             .getSourceDao().updateSource( report.getSource() );
         report.setSource(rsource);
-                    
+
+        
         report = daoContext.getReportDao().updateReport( report );
         
         log.info(" Report updated:" + report.getRpid());
-            
+        
+        
         // xrefs - persist xterm and components if needed
         //-----------------------------------------------           
             

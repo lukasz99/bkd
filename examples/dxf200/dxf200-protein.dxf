@@ -1,5 +1,5 @@
 <dataset xmlns="http://dip.doe-mbi.ucla.edu/services/dxf200">
-  <node id="1" ns="cvus" ac="CVUS-1234P">
+  <node id="1" ns="" ac="">
     <type ns="dxf" name="protein" ac="dxf:0003"/>
     <label>Beta ig-h3</label>
     <name>Transforming growth factor-beta-induced protein ig-h3</name>
@@ -10,8 +10,8 @@
         <locationList>
           <location>
             <begin>1</begin>
-            <end><positon>23</end>
-          <location>
+            <end>23</end>
+          </location>
         </locationList>        
       </feature>
       <feature>
@@ -21,7 +21,7 @@
           <location>
             <begin>37</begin>
             <end>37</end>
-          <location>
+          </location>
         </locationList>        
       </feature>
       <feature>
@@ -30,33 +30,33 @@
           <location>
             <begin>74</begin>
             <end>74</end>
-          <location>
+          </location>
           <location>
             <begin>339</begin>
             <end>339</end>
-          <location>
+          </location>
         </locationList>        
       </feature>
       <feature>
         <type ns="mi" name="mutation" ac="MI:0118"/>   <!-- mutation -->
-        <label>p.[Val113Ile]
+        <label>p.[Val113Ile]</label>
         <locationList>
           <location>
             <begin>113</begin>
             <end>113</end>
-            <attrlist>
+            <attrList>
               <attr name="resulting sequence" ns="mi" ac="MI:1308">
                 <value>I</value>
               </attr>
             </attrList>
-          <location>
+          </location>
         </locationList>
         <xrefList>
           <xref ns="dbSNP" ac="rs:757933370" type="mutation" typeAc="MI:0118" typeNs="mi"/>
           <xref ns="pubmed" ac="16636649" type="described-by" typeAc="dxf" typeNs="dxf:0014"/>
           <!-- <xref ns="mim" ac="" type="has-phenotype" typeAc="" typeNs=""/> -->          
         </xrefList>
-        <attrlist>          
+        <attrList>          
           <attr name="data-source" ns="dxf" ac="dxf:0016">
             <type ns="dxf"  name="publication" ac="dxf:0055"/>
             <node id="1" ns="pubmed" ac="16636649">
@@ -67,7 +67,7 @@
               <value ns="upr" ac="Q15582.209" type="online-record" typeNs="dxf" typeAc="dxf:0057"/>
             </attr>
           </attr>          
-        <attrlist>        
+        </attrList>        
       </feature>
     </featureList>
     <xrefList>
@@ -76,7 +76,7 @@
       <xref ns="rsq" ac="NM_000358.2" type="translated-from" typeNs="dxf" typeAc="dxf:0080"/>
       <xref ns="geneid" ac="7045" type="encoded-by" typeNs="dxf" typeAc="dxf:0022"/>
       <xref ns="taxid" ac="9606" type="produced-by" typeNs="dxf" typeAc="dxf:0007">
-        <node id="1" ns="taxid"" ac="9606">
+        <node id="1" ns="taxid" ac="9606">
           <type ns="dxf" name="taxon" ac="dxf:0017"/>
           <label>Homo sapiens></label>
           <name>Human</name>
@@ -92,9 +92,6 @@
       <xref ns="mim"    ac="608471"    type="has-phenotype" typeNs="dxf" typeAc="dxf:0077"/>
       <xref ns="wwpdb"  ac="1col"      type="has-structure" typeNs="dxf" typeAc="dxf:0081"/>
       <xref ns="intact" ac="EBI-12345" type="has-links"     typeNs="dxf" typeAc="dxf:0082"/>
-      <xref ns="mint"   ac="xxx"       type="has-links"     typeNs="dxf" typeAc="dxf:0082"/>
-      <xref ns="dip"    ac="DIP-1234N" type="has-links"     typeNs="dxf" typeAc="dxf:0082"/>
-
     </xrefList>
     <attrList>
       <attr name="sequence" ns="dxf" ac="dxf:0071">

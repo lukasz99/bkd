@@ -121,64 +121,18 @@
     <property name="sourceDao"  ref="bkdSourceDao"/>
     
   </bean>
-
-<!--    
-    <property name="sourceDao" ref="imxdipSourceDao"/>
-    <property name="prodDao" ref="imxdipProdDao"/>
-    <property name="exptDao" ref="imxdipExptDao"/>
-    <property name="evidDao" ref="imxdipEvidDao"/>
-    <property name="edgeDao" ref="imxdipEdgeDao"/>
-    <property name="typeDao" ref="imxdipTypeDao"/>
-    <property name="idGenDao" ref="imxdipIdGenDao"/>
-    <property name="imexDao" ref="imexDao"/>    
--->
   
-  
-  <!-- Record Manager -->
-
-<!--  
-  <bean id="imxdipExptRecordManager" class="edu.ucla.mbi.dip.database.ImxdipExptRecordManager"
-        init-method="initialize">
-     <property name="daoContext" ref="imxdipDaoContext" />
-  </bean>
-
-  <bean id="imxdipEvidRecordManager" class="edu.ucla.mbi.dip.database.ImxdipEvidRecordManager"
-        init-method="initialize">
-     <property name="daoContext" ref="imxdipDaoContext" />
-  </bean>
-
-  <bean id="imxdipEdgeRecordManager" class="edu.ucla.mbi.dip.database.ImxdipEdgeRecordManager"
-        init-method="initialize">
-     <property name="daoContext" ref="imxdipDaoContext" />
-  </bean>
--->
+   <!-- Record Manager -->
 
    <bean id="bkdRecordManager" class="edu.ucla.mbi.bkd.store.BkdRecordManager"
-        init-method="initialize">
-
+         init-method="initialize">
      <property name="daoContext" ref="bkdDaoContext" />
-
-<!--
-    <property name="exptRecordManager" ref="imxdipExptRecordManager"/>
-    <property name="evidRecordManager" ref="imxdipEvidRecordManager"/>
-    <property name="edgeRecordManager" ref="imxdipEdgeRecordManager"/>
-    
-    <property name="nodeDao"  ref="imxdipNodeDao"/>
-    <property name="sourceDao" ref="imxdipSourceDao"/>
-    <property name="taxonDao" ref="imxdipTaxonDao"/>
-    <property name="exptDao" ref="imxdipExptDao"/>
-    <property name="evidDao" ref="imxdipEvidDao"/>
-    <property name="edgeDao" ref="imxdipEdgeDao"/>
-    <property name="typeDao" ref="imxdipTypeDao"/>
-    <property name="idGenDao" ref="imxdipIdGenDao"/>
-    <property name="cvTermDao" ref="imxdipCvTermDao"/>
--->
-
-   </bean>  
+   </bean>
+   
    <!-- Query Manager -->
 
    <bean id="bkdQueryManager" class="edu.ucla.mbi.bkd.store.BkdQueryManager"
-       init-method="initialize" >
-     <!-- <property name="nodeDao"  ref="nodeDao"/> -->
+         init-method="initialize" >
+     <property name="daoContext" ref="bkdDaoContext" />
    </bean>
  </beans>

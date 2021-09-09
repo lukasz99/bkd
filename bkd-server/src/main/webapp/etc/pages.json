@@ -33,6 +33,14 @@
                             "viewtype":"file-html",
                             "viewpath":"/pages/variant-protein.html"
                           },
+        "view-protein":{ "active":"true",
+                         "title":"Channel VUS: Protein view",
+                         "menusel":"1:3:2",
+                         "urlindex":"pages/test-index.html",
+                         "showindex":"false",
+                         "viewtype":"file-html",
+                         "viewpath":"/pages/view-protein.html"
+                       },
 
       browse:{
         active:true,

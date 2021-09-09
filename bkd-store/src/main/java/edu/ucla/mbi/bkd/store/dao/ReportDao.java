@@ -28,6 +28,50 @@ public class ReportDao extends AbstractDAO {
 
     //--------------------------------------------------------------------------
 
+    public Report getById( long rid ){ 
+        
+        Report report = null;
+        
+        Session session = getCurrentSession();
+        Transaction tx = session.beginTransaction();
+
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( "-> getById(long): rid=" + rid );
+        
+        try {
+            
+            Query query =
+                session.createQuery( "from Report n where " +
+                                     " n.rpid = :id order by n.rpid desc");
+            
+            query.setParameter( "id", rid );
+            
+            query.setFirstResult( 0 );
+            
+            List<Report> reps= (List<Report>) query.list();            
+            
+            log.info("-> getById(long): count=" + reps.size() );
+            
+            if( reps.size() > 0 ){
+                report = reps.get(0);
+            }            
+            tx.commit();
+            
+        } catch( HibernateException e ) {
+            log.error(e);                        
+            handleException( e );           
+        }catch( Exception ex){
+            log.error( ex );
+        } finally {
+            session.close();
+        }
+        return report; 
+    }
+    
+    
+    //--------------------------------------------------------------------------
+            
+
     public Report getById( String ns, String sid ){ 
         
         Report report = null;
@@ -77,9 +121,7 @@ public class ReportDao extends AbstractDAO {
             System.out.println("size");
             System.out.println(reps.size());
             System.out.println("...");
-
-            
-
+           
             if( reps.size() > 0 ){
                 report = reps.get(0);
             }            
@@ -96,94 +138,67 @@ public class ReportDao extends AbstractDAO {
         }
         return report; 
     }
-    
+
     //--------------------------------------------------------------------------
-    /*
-    public Node getByAccession( String accession ) { 
-        
-        Node node = null;
-        
-        Session session = getCurrentSession();
-        Transaction tx = session.beginTransaction();
-        
-        try {
 
-            // convert accession to uid
+    public List<Object> getListByTarget( String ns, String ac, String sort ){
+
+        if( ns!=null && ac != null ){
             
-            int id = 0;
+            List<Object>  rlist = null;
+        
+            Session session = getCurrentSession();
+            Transaction tx = session.beginTransaction();
+            
+            Logger log = LogManager.getLogger( this.getClass() );
+            log.info( "-> getListByTarget: ns=" + ns + " ac=" + ac );
+        
+            try {
 
-            if( accession.startsWith("DIP-") ){
-                accession = accession.substring(4);
+                // find features
+                                
+                Query nfquery =
+                    session.createQuery( "from NodeFeat nf where " +
+                                         " nf.node.ns = :ns and nf.node.ac = :ac ");
+                
+                nfquery.setParameter( "ns", ns );
+                nfquery.setParameter( "ac", ac );
+                nfquery.setFirstResult( 0 );
+                
+                List<NodeFeat> nflist = (List<NodeFeat>) nfquery.list();            
+
+                if( nflist != null && nflist.size() > 0 ){
+                    
+                    Query rquery =
+                        session.createQuery( "from FeatureReport fr where " +
+                                             " fr.feature in :nfl " +
+                                             " order by fr.rpid desc" );
+               
+                    rquery.setParameter( "nfl", nflist );
+                    rquery.setFirstResult( 0 );
+                    
+                    rlist = (List<Object>) rquery.list(); 
+                }
+                    
+                tx.commit();
+            
+            } catch( HibernateException e ) {
+                log.error(e);                        
+                handleException( e );           
+            }catch( Exception ex){
+                log.error( ex );
+            } finally {
+                session.close();
             }
-
-            if( accession.endsWith("N") ){
-                accession = accession.substring(0,accession.length()-1);
-            }
-
-            id = Integer.parseInt( accession );
-                      
-            Query query =
-                session.createQuery( "from Node n where " +
-                                     " n.dip = :id ");
-            query.setParameter( "id", id );
-            query.setFirstResult( 0 );
-            node = (Node) query.uniqueResult();
-            tx.commit();
-
-        } catch( NumberFormatException ne ){
-
-            // wrong accession fromat
+        
+            if( rlist != null ) return rlist;
             
-        } catch( HibernateException e ) {
-            handleException( e );
-            // log error ?
-        } finally {
-            session.close();
         }
-        return node; 
+        
+        return new ArrayList<Object>();
+        
     }
-    */
-    //--------------------------------------------------------------------------
-    /**    
-    public List<Node> getByXref( String ns, String acc ){ 
         
-        List<Node> nodes =  null;
-        
-        Session session = getCurrentSession();
-        Transaction tx = session.beginTransaction();
-        
-        try {
-            Query query =
-                session.createQuery( "select n from Node n join n.xrefs x " + 
-                                     "where x.ac=:acc and x.ns =:ns" );
-            
-            query.setParameter( "ns", ns );
-            query.setParameter( "ac", acc );
-            
-            query.setFirstResult( 0 );
-            nodes= (List<Node>) query.list();
-            tx.commit();
-
-        } catch( NumberFormatException ne ){
-
-            // wrong accession fromat
-            
-        } catch( HibernateException e ) {
-            handleException( e );
-            // log error ?
-        } finally {
-            session.close();
-        }
-
-        if( nodes != null ){
-            return nodes;
-        } else {
-            return new ArrayList<Node>();
-        }
-    }
-    **/
-    //--------------------------------------------------------------------------
-    
     //--------------------------------------------------------------------------
     
     public long getCount() {
@@ -212,24 +227,118 @@ public class ReportDao extends AbstractDAO {
 
         Logger log = LogManager.getLogger( this.getClass() );
         log.info( "->updateReport: " + report.toString()  );
+        log.info( "->updateReport: class" + report.getClass()  );
         
-        if( report == null ) return null;
+                
+        // quit if no persisted report 
+        
+        if( report == null || report.getRpid() == 0) return null;
+                   
+        Report oldRep = this.getById( report.getRpid() );
+
+
+        /*
+
+        if( oldRep != null &&
+            oldRep.getRpid() != report.getRpid() ) return null;
+
+        // reports exists: update all the fields
+
+        // label
         
         if( report.getLabel() == null ){
-            report.setLabel("Report " + report.getAc() );
+            oldRep.setLabel("Report " + report.getAc() );
+        } else{
+            oldRep.setLabel( report.getLabel() );
         }
         
-        if( report.getLabel().length() > 32 ){
-            String slabel = report.getLabel().substring(0,28) + "..";
-            report.setLabel( slabel );
+        if( oldRep.getLabel().length() > 32 ){
+            String slabel = oldRep.getLabel().substring(0,28) + "..";
+            oldRep.setLabel( slabel );
+        }
+
+        //version
+        oldRep.setVersion( report.getVersion() );
+
+        //name
+        oldRep.setName( report.getName() );
+
+        // jvals
+        oldRep.setJval( report.getJval() );
+        
+        //source
+        oldRep.setSource( report.getSource() );
+                
+        //xrefs
+        oldRep.setXrefs( report.getXrefs() );
+
+        //comment
+        oldRep.setComment( report.getComment() );
+
+        Feature ofeature = null;
+        
+        //NodeReport: update node
+        if( oldRep instanceof NodeReport) {
+            ((NodeReport)oldRep).setNode( ((NodeReport)report).getNode() );
+        } else if( oldRep instanceof FeatureReport){
+
+            / *
+            ofeature = ((FeatureReport)oldRep).getFeature();
+            Node onode = ((NodeFeat) ofeature).getNode();
+
+            // drop old feature            
+            //super.delete(((FeatureReport)oldRep).getFeature());            
+                        
+            // save new feature
+            
+            Feature nf = ((FeatureReport)report).getFeature();
+
+            // set old node
+            ((NodeFeat)nf).setNode(onode);
+            
+            for(Range range: nf.getRanges() ){
+                range.setFeature(nf);
+                range.setCTime(nf.getCTime());
+                range.setUTime(new Date());
+                super.saveOrUpdate( range );
+            }
+
+            for(FeatureXref f: nf.getXrefs()){
+                f.setFeature(nf);
+                f.setCTime(nf.getCTime());
+                f.setUTime(new Date());
+                super.saveOrUpdate( f );
+            }
+
+            if(nf.getCTime() == null){
+                nf.setCTime(new Date());
+            }
+            
+            nf.setUTime(new Date());            
+            
+            super.saveOrUpdate(nf);
+            
+            ((FeatureReport)oldRep).setFeature( nf );
+            * /
         }
         
-        if(report.getCTime() == null){
-            report.setCTime(new Date());
-        }
-        report.setUTime(new Date());
-        
+        // status
+        oldRep.setStatus( report.getStatus() );
+
+        // reset update time
+        oldRep.setUTime(new Date());
+        */
+
+            
+        //super.saveOrUpdate( oldRep );
+
         super.saveOrUpdate( report );
+        super.delete(oldRep);
+        //if(ofeature != null){
+        //    super.delete( ofeature );
+        //}
+        
+        //return oldRep;
         return report;
     }
 }

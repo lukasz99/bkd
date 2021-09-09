@@ -42,8 +42,7 @@ public abstract class Feature{
        );
     **/
 
-
-    @OneToMany(mappedBy="feature", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy="feature", fetch = FetchType.EAGER,cascade = CascadeType.REMOVE )
     private Set<Range> ranges;
 
     
@@ -186,16 +185,21 @@ public abstract class Feature{
     }
 
     public String toString(){
-        String ret = " Feat:[";
 
-        for( Range r: ranges ){
-            ret = ret + r.toString() + ";";
+        String ret = " Feature:";
+        if( ranges != null ){
+            ret = ret + "[";
+        
+            for( Range r: ranges ){
+                ret = ret + r.toString() + ";";
+            }
+            if( jval.length() > 0){
+                ret = ret +" jval=" + jval;
+            }
+            ret = ret + "]";
         }
-        if( jval.length() > 0){
-            ret = ret +" jval=" + jval;
-        }
-                    
-        return ret +"]";
+        
+        return ret;
     }
 
     public void dump(){

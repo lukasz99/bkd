@@ -125,6 +125,14 @@ public class FeatureDao extends AbstractDAO {
             feat.setCTime(new Date());
         }
         feat.setUTime(new Date());
+
+
+        // get/persist node
+        
+
+
+
+
         
         super.saveOrUpdate( feat );
 

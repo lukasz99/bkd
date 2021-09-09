@@ -112,14 +112,32 @@
         <param name="includeProperties">
           menu.*, record.*
         </param>
+        <param name="excludeProperties">
+          record.report.jval,record.report.feature.jval
+        </param>
+        
       </result>
     </action>
 
-    
+    <action name="search" class="searchAction" >
+      <interceptor-ref name="defaultStack"/>
+      <interceptor-ref name="timer"/>
+      <interceptor-ref name="menu"/>
 
+      <result name="success" type="tiles">report-view</result>
+      <result name="input" type="tiles">report-edit</result>
+      <result name="json"  type="json">
+        <param name="includeProperties">
+          menu.*, record.*, data.*
+        </param>
+        <param name="excludeProperties">
+          record.report.jval,record.report.feature.jval
+        </param>
+        
+      </result>
+    </action>
 
-
- 
+     
 <!--
     <action name="edit" class="editAction" >
      <interceptor-ref name="defaultStack"/>
