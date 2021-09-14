@@ -152,32 +152,57 @@ public class ReportDao extends AbstractDAO {
             
             Logger log = LogManager.getLogger( this.getClass() );
             log.info( "-> getListByTarget: ns=" + ns + " ac=" + ac );
-        
+
+
+            
             try {
+                
+                if( "upr".equalsIgnoreCase( ns ) ){
+                    
+                    // find target
+                    
+                    
+                    Query pnq = session
+                        .createQuery( "from ProteinNode pn where " +
+                                      " pn.upr = :ac ");
+                    
+                    pnq.setParameter( "ac", ac );
+                    pnq.setFirstResult( 0 );
 
-                // find features
+                    List<ProteinNode> pnlist = (List<ProteinNode>) pnq.list();
+
+                    log.info( "PNList" + pnlist );
+                    
+                    if( pnlist != null && pnlist.size() > 0 ){
+                    
+                        // find matching features
                                 
-                Query nfquery =
-                    session.createQuery( "from NodeFeat nf where " +
-                                         " nf.node.ns = :ns and nf.node.ac = :ac ");
+                        Query nfq = session
+                            .createQuery( "from NodeFeat nf where " +
+                                          " nf.node in ( :pnl ) ");
                 
-                nfquery.setParameter( "ns", ns );
-                nfquery.setParameter( "ac", ac );
-                nfquery.setFirstResult( 0 );
+                        nfq.setParameter( "pnl", pnlist );
+                        nfq.setFirstResult( 0 );
                 
-                List<NodeFeat> nflist = (List<NodeFeat>) nfquery.list();            
+                        List<NodeFeat> nflist = (List<NodeFeat>) nfq.list();
 
-                if( nflist != null && nflist.size() > 0 ){
+                        log.info( "NFlist: " + nflist );
+                        
+                        if( nflist != null && nflist.size() > 0 ){
                     
-                    Query rquery =
-                        session.createQuery( "from FeatureReport fr where " +
-                                             " fr.feature in :nfl " +
-                                             " order by fr.rpid desc" );
+                            Query rq = session
+                                .createQuery( "from FeatureReport fr where " +
+                                              " fr.feature in ( :nfl ) " +
+                                              " order by fr.rpid desc" );
                
-                    rquery.setParameter( "nfl", nflist );
-                    rquery.setFirstResult( 0 );
+                            rq.setParameter( "nfl", nflist );
+                            rq.setFirstResult( 0 );
                     
-                    rlist = (List<Object>) rquery.list(); 
+                            rlist = (List<Object>) rq.list();
+
+                            log.info( "RList:" + rlist );
+                        }
+                    }
                 }
                     
                 tx.commit();
@@ -190,7 +215,8 @@ public class ReportDao extends AbstractDAO {
             } finally {
                 session.close();
             }
-        
+
+            log.info( "RList:" + rlist );
             if( rlist != null ) return rlist;
             
         }

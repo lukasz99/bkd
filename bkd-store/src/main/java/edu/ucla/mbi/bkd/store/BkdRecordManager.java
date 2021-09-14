@@ -537,11 +537,17 @@ public class BkdRecordManager {
             //-----------------------------------
             
             Source fsrc = ((FeatureReport) report).getFeature().getSource();
-
+            log.info("fsrc= " + fsrc); 
             // source cv type
             //----------------
+
+            
             
             CvTerm scvt = fsrc.getCvType();
+
+
+            log.info("fsrc.type= " + scvt);
+            
             scvt = daoContext.getCvTermDao().getByAccession( scvt.getAc() );
             if( scvt == null ){
                 scvt = daoContext.getCvTermDao()

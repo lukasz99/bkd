@@ -119,6 +119,23 @@
       </result>
     </action>
 
+    <action name="node" class="nodeAction" >
+      <interceptor-ref name="defaultStack"/>
+      <interceptor-ref name="timer"/>
+      <interceptor-ref name="menu"/>
+
+      <result name="success" type="tiles">node-view</result>
+      <result name="json"  type="json">
+        <param name="includeProperties">
+          menu.*, node.*
+        </param>
+        <param name="excludeProperties">
+          record.report.jval,record.report.feature.jval
+        </param>
+        
+      </result>
+    </action>
+
     <action name="search" class="searchAction" >
       <interceptor-ref name="defaultStack"/>
       <interceptor-ref name="timer"/>
@@ -128,10 +145,10 @@
       <result name="input" type="tiles">report-edit</result>
       <result name="json"  type="json">
         <param name="includeProperties">
-          menu.*, record.*, data.*
+          menu.*, record.*, data.*, rdata.*
         </param>
         <param name="excludeProperties">
-          record.report.jval,record.report.feature.jval
+          record.report.jval,record.report.feature.jval,rdata.*.jval
         </param>
         
       </result>

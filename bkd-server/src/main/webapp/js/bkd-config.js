@@ -2,12 +2,13 @@ BKDconf = {
   "report": {     
      "feature":{
         "protein":{
-           "type":"protein-feature",
+           "type":"protein-report",
+           "label":"Protein report",
            "ac":{
               "id":"report_ac",
               "vpath":['ac'],
               "type":"hidden"},
-           "target":[
+              "target":[
                   {"name":"ac",
                    "vpath":['feature','node','ac'],
                    "id":"report_target_ac",
@@ -136,7 +137,8 @@ BKDconf = {
         },
 
         "protein-channel":{
-           "type":"protein-feature",
+           "type":"channel-report",
+           "label":"Channel report",
            "ac":{
               "id":"ac",
               "vpath":['ac'],
@@ -242,7 +244,8 @@ BKDconf = {
         },
 
         "protein-transporter":{
-           "type":"protein-feature",
+           "type":"transporter-report",
+           "label":"Transporter report",
            "ac":{
               "id":"ac",
               "vpath":['ac'],
@@ -347,20 +350,93 @@ BKDconf = {
                       "edit": true}]
         },
 
-
         "gene":{
+           "type":"gene-report",
+           "label":"Gene report",
+           "fld":[]
+        },
+        "clinical-report":{
+           "type":"clinical-report",
+           "label":"Clinical report",
            "fld":[]
         }
      }
   },
   "node":{
-        "protein":{
-           "fld":[]
-         },
-         "gene":{
-            "fld":[]
-         }
+     "protein":{
+        "type":{
+          "val":"protein",
+          "label":"Protein Record:",
+        },
+        "ac":{
+          "vpath":['ac'],
+          "id":"node_ac"
+        },       
+        "field":[
+          {"name":"Accession",
+           "vpath":['ac'],
+           "type":"text"},
+          {"name":"Short name",
+           "vpath":['label'],
+           "type":"text"},
+          {"name":"Recommended name",
+           "vpath":['name'],
+           "type":"text"},           
+          {"name":"Gene",
+           "vpath":['gene'],
+           "type":"text",
+           "miss":"%DROP%"},
+          {"name":"UniprotKB",
+           "vpath":['upr'],
+           "type":"link",
+           "url":"https://www.uniprot.org/uniprot/%%VAL%%",
+           "miss":"N/A"},
+           {"name":"RefSeq",
+           "vpath":['rsq'],
+           "type":"link",
+           "url":"https://www.ncbi.nlm.nih.gov/protein/%%VAL%%",
+           "miss":"N/A"
+          },
+           
+          {"name":"Taxon",
+           "vpath":['taxon'],
+           "type":"taxon",
+           "url":"https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=%%VAL%%"
+          },
+          
+          {name:"Sequence",
+           vpath:['sequence'],
+           type:"sequence",
+           header:true
+          },
+          
+          {name:"Features",
+           vpath:['feats'],
+           type:"feature",
+           header:true,
+           list:true,
+           miss: "%DROP%",
+           header:true
+          },
+           
+          {name:"Cross-references",
+           vpath:['xrefs'],
+           type:"xref",
+           header:true,
+           list:true,
+           miss: "%DROP%"
+          }
+         ],
+         "tab":[
+         ]
      },
+     "gene":{
+        "ac":{
+          "vpath":['ac']          
+        },
+        "fld":[]
+     },
+  },
      
   "xref-type":[{"ns":"psi-mi","ac":"MI:0000","value":"MI:0000",
                 "name":"--not specified--","label":"--not specified--"},

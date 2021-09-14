@@ -105,6 +105,7 @@ public class NodeDao extends AbstractDAO {
             } else {
                 
                 if( "upr".equalsIgnoreCase( ns ) ){
+                    log.info( "-> getById: upr=" + sid );
                     query =
                         session.createQuery( "from Node n where " +
                                              " n.upr = :id order by n.id desc");

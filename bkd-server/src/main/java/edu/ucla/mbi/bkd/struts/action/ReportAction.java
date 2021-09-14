@@ -58,27 +58,32 @@ public class ReportAction extends PortalSupport{
 
     public String dispatch() throws Exception {
 
-        if( this.getNs() != null && this.getNs().length() > 0 &&
-            this.getAc() != null && this.getAc().length() > 0 ){
-
-            record = manager.getReportMap(ns,ac);
+        if( "update".equalsIgnoreCase( getOp() ) &&
+            record != null ){ 
             
-        }
+            manager.addReport( (Report) record );
+            
+        } else {
+        
+            if( this.getNs() != null && this.getNs().length() > 0 &&
+                this.getAc() != null && this.getAc().length() > 0 ){
 
-        if( this.getQuery() != null && this.getQuery().length() > 0){
-
-            if( "protein".equalsIgnoreCase( this.getQmode() ) ){ 
-                record = manager.getReportMap("upr", query);
+                record = manager.getReportMap(ns,ac);            
             }
 
-            if( "report".equalsIgnoreCase( this.getQmode() ) ){ 
-                record = manager.getReportMap("cvdb", query);
-           }
+            if( this.getQuery() != null && this.getQuery().length() > 0){
+
+                if( "protein".equalsIgnoreCase( this.getQmode() ) ){ 
+                    record = manager.getReportMap("upr", query);
+                }
+
+                if( "report".equalsIgnoreCase( this.getQmode() ) ){ 
+                    record = manager.getReportMap("cvdb", query);
+                }
             
-        }
-                    
-        if ( getRet() == null || getRet().equals( "view" ) ) {
-               
+            }
+        }       
+        if ( getRet() == null || getRet().equals( "view" ) ) {    
             return SUCCESS;
         } else if ( getRet().equals( "edit" ) ) {
             return "input";
@@ -177,15 +182,17 @@ public class ReportAction extends PortalSupport{
     String repJson = null;
     
     public void setReportJson( String report ){
-        System.out.println(report);
-
+        
         try{
 
             CvTerm rtype = new CvTerm("dxf","dxf:0094","phenotype-report");
             PersonSource src = new PersonSource();
+            src.setCvType(new CvTerm("dxf","dxf:0056","person"));
             src.setOrcid("0000-0003-4522-1969");
-            Report jrep = FeatureReport.fromJsonForm(report,rtype,src);     
+            Report jrep = FeatureReport.fromJsonForm( report, rtype, src);     
 
+            this.record = jrep;
+            
         } catch(Exception ex){
             
         }
@@ -197,6 +204,5 @@ public class ReportAction extends PortalSupport{
     public String getReportJson(){
         return this.repJson;                                  
     }
-
     
 }
