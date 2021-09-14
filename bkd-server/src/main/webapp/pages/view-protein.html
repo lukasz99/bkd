@@ -1,0 +1,42 @@
+<link rel="stylesheet" href="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/jquery-ui.min.css">
+<link rel="stylesheet" href="https://www.ncbi.nlm.nih.gov/Structure/icn3d/icn3d.css">
+<script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/jquery.min.js"></script>
+<script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/jquery-ui.min.js"></script>
+<script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/threeClass.min.js"></script>
+<script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/icn3d.min.js"></script>
+
+</br></br></br></br></br></br></br></br>
+<div>
+  <h1>Protein View</h1>
+  <div class="protein">
+    
+   <div id="icn3dwrap"  style="width:600px;"></div>
+    
+
+
+  </div>    
+</div>
+</br></br></br></br></br></br></br></br>
+
+<script type="text/javascript">
+    $( document ).ready(function() {
+          var cfg = {
+              divid: 'icn3dwrap',
+              width: '500px',
+              height: '500px',
+              resize: true,
+              rotate: 'right',
+              mobilemenu: true,
+              showcommand: false,
+              showtitle: false
+          };
+          cfg['mmdbid'] = '1BL8';
+
+          var icn3dui = new icn3d.iCn3DUI(cfg);
+
+          //communicate with the 3D viewer with chained functions
+          $.when(icn3dui.show3DStructure()).then(function() {
+               //icn3dui.setOption('color', 'cyan');
+          });
+    });
+  </script>
