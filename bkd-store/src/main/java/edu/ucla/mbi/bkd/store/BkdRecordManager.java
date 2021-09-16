@@ -450,6 +450,21 @@ public class BkdRecordManager {
         Report report =  daoContext.getReportDao().getById( ns, ac );
         return report;
     }
+
+    public FeatureReport getNewFeatureReport( String tgtNs, String tgtAc ) {
+
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( " getNewFeatureReport -> tgt=" + tgtAc );
+        
+        Node tnode =  daoContext.getNodeDao().getById( tgtNs, tgtAc );
+        
+        FeatureReport report = new FeatureReport();
+        NodeFeat nfeat = new NodeFeat();
+        nfeat.setNode( tnode );
+        report.setFeature( nfeat );
+        
+        return report;
+    }
     
     public  Map<String, Object> getReportMap( String ns, String ac ) {
 

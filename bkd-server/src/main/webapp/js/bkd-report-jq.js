@@ -1,169 +1,215 @@
 BKDrep = {
-      srcAnchor: null,
-      tgtAnchor: null,
-      valAnchor: null,
+    srcAnchor: null,
+    tgtAnchor: null,
+    valAnchor: null,
+    
+    fxList: null,
+    frList: null,
 
-      fxList: null,
-      frList: null,
-
-      init: function( data, srcAnchor, tgtAnchor, valAnchor, mode){
-         BKDrep.view( data, srcAnchor, tgtAnchor, valAnchor, mode);
-      },
-
-      view: function(data, srcAnchor, tgtAnchor, valAnchor, mode){
+    init: function( data, srcAnchor, tgtAnchor, valAnchor, mode){
+        BKDrep.view( data, srcAnchor, tgtAnchor, valAnchor, mode);
+    },
+    
+    view: function(data, srcAnchor, tgtAnchor, valAnchor, mode){
          
-         this.srcAnchor=srcAnchor;
-         this.tgtAnchor=tgtAnchor;
-         this.valAnchor=valAnchor;
-         
-         if(data == null ){
+        this.srcAnchor=srcAnchor;
+        this.tgtAnchor=tgtAnchor;
+        this.valAnchor=valAnchor;
+        
+        if(data == null ){
             BKDrep.search( data, this.srcAnchor );
             $( tgtAnchor ).hide();
             BKDrep.valEdit(data, this.valAnchor);
-         } else{            
+        } else{            
             BKDrep.tgtView( data, this.tgtAnchor, mode );
             if( mode == 'edit'){
-              BKDrep.valEdit( data, this.valAnchor );
+                BKDrep.valEdit( data, this.valAnchor );
             } else {
-              BKDrep.valView( data, this.valAnchor );
+                BKDrep.valView( data, this.valAnchor );
             }
-         }
-      },
+        }
+    },
 
-      search: function( data, tgtAnchor ){
+    search: function( data, tgtAnchor ){
         
         $(tgtAnchor + " form").submit( function (event) {
-
-           var radioValue = $("input[name='smode']:checked").val();
-           if(radioValue){
-              //alert("Your are a - " + radioValue);
-           } else {
-              radioValue = 'protein';
-           }
-
-           var q = $("#bkdQuery").val();
-           var ns = "";
-           var ac = "";
-           var formData = {};
-           if(q.startsWith("upr:") ){
-              ns="upr";
-              ac=q.replace("upr:","");
-
-              formData = {
-               query: q,
-               ns: ns,
-               ac: ac,
-               qmode: radioValue,
-               ret: "data"
-              };
-           } else{
-              formData = {
-                query: q,
-                ns: ns,
-                ac: ac,
-                qmode: radioValue,
-                ret: "data"
-              };
-           }
-          
-           $.ajax({
-             type: "POST",
-             //url: "report",
-             url: "search",
-             data: formData,
-             dataType: "json",
-             encode: true,}).done(function (data) {
-
-             if( data.rdata != null && data.rdata.length > 0){
-                BKDrep.searchView( data.rdata, BKDrep.srcAnchor, "edit" );                   
-                  
-             }else if(data.record !== null){
-                BKDrep.tgtView( data.record, BKDrep.tgtAnchor, "edit" );
-                BKDrep.valEdit( data.record, BKDrep.valAnchor );
-             }
-          });
-
-        event.preventDefault();
-       });
-
-      },
-
-      searchView: function(data, srcAnchor, mode ){
-
-            var tid="bkd-search-table";
-            $('#' + tid).remove();
-            $(srcAnchor).append( "<div class='bkd-search'><hr/><table id='" + tid + "' class='bkd-search-table'></table></div>");
-            $('#' + tid).append("<tr> class='bkd-rep-fld'>"+
-                                  "<th width='5%'>Report ID</th>"+
-                                  "<th >Report Title</th>"+
-                                  "<th width='10%'>Report Type</th>"+
-                                  "<th width='10%'>Gene/Protein</th>"+
-                                  "<th width='15%'>Feature Type</th>"+
-                                  "<th width='15%'>Feature Name</th>"+
-                                  "<th width='5%'>&nbsp;</th>"+
-                                "</tr>");
-            for(var i=0; i<data.length; i++){
-               var cdata = data[i];
-               var rid = cdata.ac +'_Edit';
-               var crow = "<td>" + cdata.ac + "</td>" +
-                          "<td>" + cdata.name + "</td>" + 
-                          "<td align='center'>" + cdata.cvType.name + "</td>" +
-                          "<td align='center'>" + cdata.feature.node.label + "</td>" +
-                          "<td align='center'>" + cdata.feature.cvType.name + "</td>" +
-                          "<td align='center'>" + cdata.feature.label + "</td>" +
-                          "<td align='center'><input type='button' id='"+rid+"' value='Edit Report'/></td>";
-                          
-               $('#' + tid).append("<tr> class='bkd-rep-fld'>"+crow+"</tr>");
-
-               $( "#" + rid ).on( 'click', function(event){
-                    var prefix= event.currentTarget.id.replace('_Edit','');
-                    var elink="report?ns=cvdb&ac="+prefix+"&mode=edit";
-                    location.href = elink;
+            
+            var radioValue = $("input[name='smode']:checked").val();
+            if(radioValue){
+                //alert("Your are a - " + radioValue);
+            } else {
+                radioValue = 'protein';
+            }
+            
+            var q = $("#bkdQuery").val();
+            var ns = "";
+            var ac = "";
+            var formData = {};
+            if(q.startsWith("upr:") ){
+                ns="upr";
+                ac=q.replace("upr:","");
+                
+                formData = {
+                    query: q,
+                    ns: ns,
+                    ac: ac,
+                    qmode: radioValue,
+                    ret: "data"
+                };
+            } else{
+                formData = {
+                    query: q,
+                    ns: ns,
+                    ac: ac,
+                    qmode: radioValue,
+                    ret: "data"
+                };
+            }
+            
+            $.ajax({
+                type: "POST",
+                //url: "report",
+                url: "search",
+                data: formData,
+                dataType: "json",
+                encode: true,}).done(function (data) {
                     
-                  });
+                    if( data.rdata != null && data.rdata.length > 0){
+                        BKDrep.searchView( data.rdata, BKDrep.srcAnchor, "edit" );                   
+                        
+                    }else if(data.record !== null){
+                        BKDrep.tgtView( data.record, BKDrep.tgtAnchor, "edit" );
+                        BKDrep.valEdit( data.record, BKDrep.valAnchor );
+                    }
+                });
+            
+            event.preventDefault();
+        });
+        
+    },
+    
+    searchView: function(data, srcAnchor, mode ){
 
-            }
-            $('#' + tid).append("<tr> class='bkd-rep-fld'>" +
-                                " <td colspan='1'>&nbsp;</td>\n" +
-                                " <td colspan='1'></td>\n" +
-                                " <td colspan='1'>\n"+
-                                "  <select id='bkd_report_new_type'>\n"+
-                                "  </select>\n"+  
-                                "</td>n" +
-                                " <td colspan='1'>\n"+
-                                "  <select id='bkd_report_new_target'>\n"+
-                                "  </select>\n"+  
-                                "</td>n" +
-                                " <td colspan='2'></td>\n" +                                
-                                " <td><input type='button' id='bkd_report_new' value='New Report'/></td>\n"+
-                                "</tr>\n");
-            var reports = BKDconf.report.feature;                    
-            for(var r in reports ){
-              console.log(r);
-               $("#" + "bkd_report_new_type")
-                  .append( $('<option>',{ val:reports[r].type,
-                                          text:reports[r].label}));
-            }
-
-            console.log("DATA: "+ data);
-            for(var i =0; i< data.length; i++){
-              console.log(data[i].feature.node.ac);
-               $("#" + "bkd_report_new_target")
-                  .append( $('<option>',{ val:data[i].feature.node.ac,
-                                          text:data[i].feature.node.label}));
-            }
-
-            $( "#" + "bkd_report_new" ).on( 'click', function(event){
-               console.log( "Target: " + $("#" + "bkd_report_new_target").val() );
-               console.log( "Type: " + $("#" + "bkd_report_new_type").val() );
-               alert("New report");  
+        var tid="bkd-search-table";
+        $('#' + tid).remove();
+        $(srcAnchor).append( "<div class='bkd-search'><table id='" + tid + "' class='bkd-search-table'></table></div>");
+        $('#' + tid).append("<tr> class='bkd-rep-fld'>"+
+                            "<th width='5%'>Report ID</th>"+
+                            "<th >Report Title</th>"+
+                            "<th width='10%'>Report Type</th>"+
+                            "<th width='10%'>Gene/Protein</th>"+
+                            "<th width='15%'>Feature Type</th>"+
+                            "<th width='15%'>Feature Name</th>"+
+                            "<th width='5%'>&nbsp;</th>"+
+                            "</tr>");
+        for(var i=0; i<data.length; i++){
+            var cdata = data[i];
+            var rid = cdata.ac +'_Edit';
+            var crow = "<td>" + cdata.ac + "</td>" +
+                "<td>" + cdata.name + "</td>" + 
+                "<td align='center'>" + cdata.cvType.name + "</td>" +
+                "<td align='center'>" + cdata.feature.node.label + "</td>" +
+                "<td align='center'>" + cdata.feature.cvType.name + "</td>" +
+                "<td align='center'>" + cdata.feature.label + "</td>" +
+                "<td align='center'><input type='button' id='"+rid+"' value='Edit Report'/></td>";
+            
+            $('#' + tid).append("<tr> class='bkd-rep-fld'>"+crow+"</tr>");
+            
+            $( "#" + rid ).on( 'click', function(event){
+                var prefix= event.currentTarget.id.replace('_Edit','');
+                var elink="report?ns=cvdb&ac="+prefix+"&mode=edit";
+                location.href = elink;
+                
             });
+            
+        }
+        $('#' + tid).append("<tr> class='bkd-rep-fld'>" +
+                            " <td colspan='1'>&nbsp;</td>\n" +
+                            " <td colspan='1'></td>\n" +
+                            " <td colspan='1'>\n"+
+                            "  <select id='bkd_report_new_type'>\n"+
+                            "  </select>\n"+  
+                            "</td>n" +
+                            " <td colspan='1'>\n"+
+                            "  <select id='bkd_report_new_target'>\n"+
+                            "  </select>\n"+  
+                            "</td>n" +
+                            " <td colspan='2'></td>\n" +                                
+                            " <td><input type='button' id='bkd_report_new' value='New Report'/></td>\n"+
+                            "</tr>\n");
+        var reports = BKDconf.report.feature;                    
+        for(var r in reports ){
+            console.log(r);
+            $("#" + "bkd_report_new_type")
+                .append( $('<option>',{ val:reports[r].cvType.ac,
+                                        text:reports[r].label}));
+        }
+        
+        console.log("DATA: "+ data);
+        for(var i =0; i< data.length; i++){
+            console.log(data[i].feature.node.ac);
+            $("#" + "bkd_report_new_target")
+                .append( $('<option>',{ val:data[i].feature.node.ac,
+                                        text:data[i].feature.node.label}));
+        }
+        
+        $( "#" + "bkd_report_new" ).on( 'click', function(event){
+            console.log( "Target: " + $("#" + "bkd_report_new_target").val() );
+
+            var tgt = $("#" + "bkd_report_new_target").val();            
+            
+            var report = "report?ns=CVDB&ac="+tgt+"&op=new&ret=data&format=json";          
+            try{
+                $.ajax({
+                    type: "POST",               
+                    url: report
+                }).done(function (data) {
+                    if( data.record != null ){
+                       
+                       var nrep = data.record;
+
+                       // clear ns/ac 
+                       nrep.ns = null;
+                       nrep.ac = null;
+                       
+                       // set report type
+                       var tpa = $("#" + "bkd_report_new_type").val();            
+
+                       var reports = BKDconf.report.feature;
+                       for(var r in reports ){
+                          if(reports[r].cvType.ac == tpa){
+                             nrep.cvType = reports[r].cvType;
+                             break;
+                          }
+                       }
+
+                       console.log( "NEW Report:" + JSON.stringify(nrep) );                     
+
+                       //BKDrep.searchView( data.rdata, BKDrep.srcAnchor, "edit" );                   
+                    
+                        $(BKDrep.srcAnchor).hide();
+                        BKDrep.tgtView( {report:nrep}, BKDrep.tgtAnchor, "edit" );
+                        BKDrep.valEdit( {report:nrep}, BKDrep.valAnchor, "edit" );
+                        $(BKDrep.tgtAnchor).show();
+                        $(BKDrep.valAnchor).show();
+
+                    } else if(data.record !== null){
+                        //BKDrep.tgtView( data.record, BKDrep.tgtAnchor, "edit" );
+                        //BKDrep.valEdit( data.record, BKDrep.valAnchor );
+                    }
+                });
+
+                console.log("done...");
+            } catch(ex){
+                console.log( "error..");
+            }
+                
+        });
+        
+    },
 
 
-      },
-
-
-      tgtView: function(data, tgtAnchor, mode ){
+    tgtView: function(data, tgtAnchor, mode ){
         
         if( data == null ){
           $( tgtAnchor ).hide();
@@ -462,19 +508,41 @@ BKDrep = {
 
         $(valAnchor).append("<form id='rep-val' name='report'" +
                     " action='report.action' method='post'>"); 
+
         
-        var flist = BKDconf["report"]["feature"]["protein"]["value"];
-        var repTp = BKDconf["report"]["feature"]["protein"]["type"];
+        //var repTp = BKDconf["report"]["feature"]["protein"]["type"];
+       
+        
+        var flist = [];
+        if( data != null && data.report != null ){
+          var repTp = data.report.cvType;
+          var reports = BKDconf.report.feature;                    
+          for(var r in reports ){
+            console.log("tp: " + repTp +" r: "+ JSON.stringify(reports[r]) );
+
+            if( reports[r].cvType.name == repTp.name){
+               flist = reports[r].value;
+               console.log("flist(setting): "+ JSON.stringify(flist));
+               break;
+            }
+          }
+        }
+
+        console.log("flist(set): "+ JSON.stringify(flist));
+ 
+
+        //var flist = BKDconf["report"]["feature"]["protein"]["value"];
+        
         
         for( var i = 0; i < flist.length; i++){
           var flabel = flist[i].name;         
           var fname = flist[i].value;
           var fid = flist[i].id;
           var fdata = '';
-          if( data!== null && data['report-value'][flist[i].value] !=null ){
+          if( data!== null && data['report-value'] != null &&
+              data['report-value'][flist[i].value] !=null ){
               fdata = data['report-value'][flist[i].value]['value'];
-          }
-
+          }              
                                              
           if( flist[i].type == "label"){
 

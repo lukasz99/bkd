@@ -2,8 +2,9 @@ BKDconf = {
   "report": {     
      "feature":{
         "protein":{
-           "type":"protein-report",
-           "label":"Protein report",
+           type:"protein-report",
+           cvType:{ac:"dxf:0000",definition:"",name:"protein-report",ns:"dxf"},
+           label:"Protein report",
            "ac":{
               "id":"report_ac",
               "vpath":['ac'],
@@ -138,6 +139,7 @@ BKDconf = {
 
         "protein-channel":{
            "type":"channel-report",
+           cvType:{"ac":"dxf:0000","definition":"","name":"protein-report","ns":"dxf"},
            "label":"Channel report",
            "ac":{
               "id":"ac",
@@ -245,6 +247,7 @@ BKDconf = {
 
         "protein-transporter":{
            "type":"transporter-report",
+           cvType:{"ac":"dxf:0000","definition":"","name":"protein-report","ns":"dxf"},
            "label":"Transporter report",
            "ac":{
               "id":"ac",
@@ -351,11 +354,13 @@ BKDconf = {
         },
 
         "gene":{
+           cvType:{ac:"dxf:0000",definition:"",name:"protein-report",ns:"dxf"},
            "type":"gene-report",
            "label":"Gene report",
            "fld":[]
         },
         "clinical-report":{
+           cvType:{ac:"dxf:0000",definition:"",name:"protein-report",ns:"dxf"},
            "type":"clinical-report",
            "label":"Clinical report",
            "fld":[]
@@ -371,8 +376,60 @@ BKDconf = {
         "ac":{
           "vpath":['ac'],
           "id":"node_ac"
-        },       
-        "field":[
+        },
+        defpane: "function",
+        pane:[
+          {id:"function",
+           label:"Function",           
+           field:[]
+          },
+          {id:"sequence",
+           label:"Sequence",
+           field:[
+             {name:"Sequence",
+              vpath:['sequence'],
+              type:"sequence",
+              header:true
+             }]
+          },
+          {id:"variant",
+           label:"Variants",
+           field:[]
+          },
+          {id:"feature",
+           label:"Features",
+           field:[
+             {name:"Features",
+              vpath:['feats'],
+              type:"feature",
+              header:true,
+              list:true,
+              miss: "%DROP%",
+              header:true
+             }
+           ]
+          },
+          {id:"structure",
+           label:"Structure",
+           field:[]
+          },
+          {id:"medical",
+           label:"Medical",
+           field:[]
+          },
+          {id:"xrefs",
+           label:"Cross-Refs",
+           field:[
+             {name:"Cross-references",
+              vpath:['xrefs'],
+              type:"xref",
+              header:true,
+              list:true,
+              miss: "%DROP%"}
+            ]
+          }          
+        ],
+        field:[
           {"name":"Accession",
            "vpath":['ac'],
            "type":"text"},
@@ -402,29 +459,6 @@ BKDconf = {
            "vpath":['taxon'],
            "type":"taxon",
            "url":"https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=%%VAL%%"
-          },
-          
-          {name:"Sequence",
-           vpath:['sequence'],
-           type:"sequence",
-           header:true
-          },
-          
-          {name:"Features",
-           vpath:['feats'],
-           type:"feature",
-           header:true,
-           list:true,
-           miss: "%DROP%",
-           header:true
-          },
-           
-          {name:"Cross-references",
-           vpath:['xrefs'],
-           type:"xref",
-           header:true,
-           list:true,
-           miss: "%DROP%"
           }
          ],
          "tab":[

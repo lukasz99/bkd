@@ -63,6 +63,14 @@ public class ReportAction extends PortalSupport{
             
             manager.addReport( (Report) record );
             
+        } else if( "new".equalsIgnoreCase( getOp() ) ){
+            
+            if( this.getNs() != null && this.getNs().length() > 0 &&
+                this.getAc() != null && this.getAc().length() > 0 ){
+
+                record = manager.getNewFeatureReport(ns,ac);            
+            }
+            
         } else {
         
             if( this.getNs() != null && this.getNs().length() > 0 &&

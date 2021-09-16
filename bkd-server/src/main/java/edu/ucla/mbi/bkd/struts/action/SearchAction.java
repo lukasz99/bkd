@@ -72,6 +72,7 @@ public class SearchAction extends PortalSupport{
                 rdlist = qmngr.getReportList(ns, ac, sort);
             } else {
                 rdlist = qmngr.getNodeList(ns, ac, qmode, sort);
+                System.out.println("RDLIST: " + rdlist.size());
             }            
         } else if( this.getQuery() != null && this.getQuery().length() > 0){
             

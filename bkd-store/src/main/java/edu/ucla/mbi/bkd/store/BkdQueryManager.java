@@ -41,12 +41,19 @@ public class BkdQueryManager extends QueryManager{
 
     public List<Object> getNodeList( String ns, String ac, String ndtype, String sort){
 
-        // returns nodes of qmode type matching ns/ac 
+        // returns nodes of ndtype type matching ns/ac 
 
         Logger log = LogManager.getLogger( this.getClass() );
         log.info( " getNodeList -> ns=" + ns + " ac=" + ac + " type=" + ndtype );
-
-        return daoContext.getNodeDao().getListById( ns, ac, ndtype, sort );        
+        
+        List<Object> rlist = new ArrayList<Object>();
+        
+        Node rnode =  daoContext.getNodeDao().getById( ns, ac );        
+        
+        if(rnode != null){
+            rlist.add(rnode);
+        }
+        return rlist; 
     }
 
     public List<Object> getNodeList(String query, String qmode, String sort){

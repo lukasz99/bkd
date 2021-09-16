@@ -2,6 +2,7 @@ BKDnode = {
   nodeAnchor: null,
   srcAnchor: null,
   flist: null,
+  paneon: null,
 
   init: function( data, srcAnchor, nodeAnchor, flist, mode){
     BKDnode.view( data, srcAnchor, nodeAnchor, flist, mode);
@@ -120,6 +121,7 @@ BKDnode = {
     console.log( "NA: " + nodeAnchor );
     console.log( "FL: " + JSON.stringify(format) );
 
+    
     // node accession
     //---------------
         
@@ -134,7 +136,7 @@ BKDnode = {
     }
     
     if( rac["id"] != null){           
-      $(nodeAnchor).append( "<input id='" + rac["id"] + "'" +
+      $("#bkd-hv-field").append( "<input id='" + rac["id"] + "'" +
                             "class='bkd-report' />");
     
       cel = $("#" + rac["id"] )
@@ -143,7 +145,8 @@ BKDnode = {
     }
 
     // fields (if present)
-
+    //--------------------
+    
     if( format.field != null){
        for( var f = 0; f<format.field.length; f++){
          var cfield = format.field[f];
@@ -151,26 +154,26 @@ BKDnode = {
 
          switch( cfield.type ){
            case "text":
-             this.showText( nodeAnchor, cfield, data );    
+             this.showText( "#bkd-hv-field", cfield, data );    
              break;
            
            case "link":
-             this.showLink( nodeAnchor, cfield, data );    
+             this.showLink( "#bkd-hv-field", cfield, data );    
              break;
            
            case "xref":
-             this.showXref( nodeAnchor, cfield, data );    
+             this.showXref( "#bkd-hv-field", cfield, data );    
              break;
            
            case "taxon":
-             this.showTaxon( nodeAnchor, cfield, data );    
+             this.showTaxon( "#bkd-hv-field", cfield, data );    
              break;
 
            case "sequence":
-             this.showSequence( nodeAnchor, cfield, data );    
+             this.showSequence( "#bkd-hv-field", cfield, data );    
              break;
            case "feature":
-             this.showFeature( nodeAnchor, cfield, data );    
+             this.showFeature( "#bkd-hv-field", cfield, data );    
              break;
            
            default:
@@ -179,7 +182,80 @@ BKDnode = {
       }
     }
 
-     var flist = []
+    // panels/sidebar
+    //---------------
+
+    if( format.pane != null && format.pane.length > 0){  
+
+       BKDnode.paneon = format.defpane;
+
+       //add pane/sidebar entries
+       //------------------------
+       
+       for(var i=0; i< format.pane.length; i++ ){
+          var cid = format.pane[i].id;
+          var clbl = format.pane[i].label;
+
+          $("#bkd-sidebar").append("<div id='bkd-sb-"+cid+"' class='sidebar-entry'>"+
+                                       clbl+"</div>\n"); 
+
+          $("#bkd-nv-field").append("<div id='bkd-nv-"+cid+"' class='nv-field'>"+
+                                       clbl+"</div>\n");
+
+          // events
+          //-------
+
+          $("#bkd-sb-"+cid).mouseover( function(event){
+                 $(event.currentTarget).addClass("bkd-sb-entry-over");
+                 //if(event.currentTarget.id == BKDnode.paneon ){
+                 //  $(event.currentTarget).removeClass("bkd-sb-entry-on");
+                 //} else {
+                 //  $(event.currentTarget).removeClass("bkd-sb-entry-off");
+                 //}
+               });
+        
+          $("#bkd-sb-"+cid).mouseout( function(event){
+                 //if(event.currentTarget.id == BKDnode.paneon ){
+                 //  $(event.currentTarget).addClass("bkd-sb-entry-on");
+                 //} else {
+                 //  $(event.currentTarget).addClass("bkd-sb-entry-off");
+                 //}
+                 $(event.currentTarget).removeClass("bkd-sb-entry-over");
+                 
+               });
+                 
+          $("#bkd-sb-"+cid).click( function(event){
+                 $("#bkd-nv-" + BKDnode.paneon).hide();
+                 $("#bkd-sb-" + BKDnode.paneon).addClass("bkd-sb-entry-off");
+                 $("#bkd-sb-" + BKDnode.paneon).removeClass("bkd-sb-entry-on");
+                 BKDnode.paneon = event.currentTarget.id.replace("bkd-sb-","");
+                 $("#bkd-nv-" + BKDnode.paneon).show();
+                 $("#bkd-sb-" + BKDnode.paneon).addClass("bkd-sb-entry-on");
+                 $("#bkd-sb-" + BKDnode.paneon).removeClass("bkd-sb-entry-off");                 
+               });
+       
+          // build pane contents
+          //--------------------
+          
+          // select default pane    
+          if( cid == BKDnode.paneon ){  // select default pane
+             $( "#bkd-nv-" + cid ).show();
+             $( "#bkd-sb-" + cid ).addClass("bkd-sb-entry-on");   
+          } else{
+             $( "#bkd-nv-" + cid ).hide();
+             $( "#bkd-sb-" + cid ).addClass("bkd-sb-entry-off");
+          }
+       }
+
+       
+
+    } else {
+       // no panels: hide sidepanel
+
+    }
+
+
+    var flist = []
 
     // go over configuration
 
@@ -211,7 +287,7 @@ BKDnode = {
 
                 // header/body for value list
 
-                $(tgtAnchor).append("<div class='bkd-rep-fld'>\n"+
+                $("#bkd-hv-field").append("<div class='bkd-rep-fld'>\n"+
                                     " <div class='bkd-rep-fld' id='"+flist[i].id+"_head'>"+fname+"</div>\n"+
                                     " <div class='bkd-rep-fld' id='"+flist[i].id+"_body'/>\n"+
                                     "</div>");
@@ -245,7 +321,7 @@ BKDnode = {
               console.log(" feature: " + fname);
               // list header
                 
-              $(tgtAnchor).append("<div class='bkd-rep-fld'>\n"+
+              $("#bkd-hv-field").append("<div class='bkd-rep-fld'>\n"+
                                   " <div class='bkd-rep-fld'>" + fname + "</div>\n"+
                                   "</div>");
 
@@ -279,7 +355,7 @@ BKDnode = {
                   if( cval !== null ||
                     (flist[i].value[k].edit && mode == 'edit') ){  //edit 
 
-                    $( tgtAnchor + " >div:last")   
+                    $( "#bkd-hv-field >div:last")   
                        .append(" <div class='bkd-rep-fld' id='"+flist[i].value[k].id+"'>\n" +
                                "   <div class='bkd-rep-fld'>" + cname + "</div>\n" +
                                " </div>\n");
@@ -319,7 +395,7 @@ BKDnode = {
 
                           }
                         }else{                             
-                          $( tgtAnchor + " > div:last-child > div:last-child")   
+                          $( "#bkd-hv-field > div:last-child > div:last-child")   
                               .append(" <div class='bkd-rep-fld'>"+clist[m] +"</div>\n");
                         } 
                       }
@@ -342,7 +418,7 @@ BKDnode = {
                       }
                       cvtsel = cvtsel + "</select>";
 
-                      $( tgtAnchor + " > div:last-child ")   
+                      $( "#bkd-hv-field > div:last-child ")   
                           .append(" <div class='bkd-rep-fld'>" + cname +": " + 
                                   cvtsel + 
                                   " </div>\n");
@@ -355,20 +431,20 @@ BKDnode = {
                         $( "#" + flist[i].value[k].id +"_cvt" ).val(cvtvalue);
                       }
                     } else {
-                      $( tgtAnchor + " >div:last")
+                      $( "#bkd-hv-field >div:last")
                         .append(" <div class='bkd-rep-fld'>" + cname + ": <input type='text' id='"+cvid+"' class='bkd-report'/></div>\n");
                       $( '#' + cvid ).val(cval);
 
                     }
                   } else {                         
-                    $( tgtAnchor + " >div:last")
+                    $( "#bkd-hv-field >div:last")
                       .append(" <div class='bkd-rep-fld'>"+cname +": "+cval+"</div>\n");
                   }
                 }
               
                 if( flist[i].value[k].hidden ){
 
-                      $(tgtAnchor).append( "<input type='hidden' " +
+                      $("#bkd-hv-field").append( "<input type='hidden' " +
                                                   "class='bkd-rep-fld bkd-report' " + 
                                                   "id='"+flist[i].value[k].id+"'/>");
                       $("#" + flist[i].value[k].id).val(cval);
@@ -399,17 +475,17 @@ BKDnode = {
                if( flist[i].type ){
                  if(flist[i].type == 'taxon'){
                    var fval = BKDlink.taxid( fval );
-                   $(tgtAnchor).append("<div class='bkd-rep-fld'>"+fname+ ":"+ fval +"</div>");                 
+                   $("#bkd-hv-field").append("<div class='bkd-rep-fld'>"+fname+ ":"+ fval +"</div>");                 
                  }else if( flist[i].type == 'hidden'){
                    console.log("AC");
-                   $(tgtAnchor).append( "<input type='hidden' class='bkd-rep-fld bkd-report' id='"+flist[i].id+"'/>");
+                   $("#bkd-hv-field").append( "<input type='hidden' class='bkd-rep-fld bkd-report' id='"+flist[i].id+"'/>");
                    $("#" + flist[i].id).val(fval);
                  }
                } else {  // string value                 
                  if( flist[i].edit && mode == 'edit' ){
-                   $(tgtAnchor).append("<input type='text' size='32' maxlength='64' class='bkd-rep-fld'>"+fval+"</input>");   
+                   $("#bkd-hv-field").append("<input type='text' size='32' maxlength='64' class='bkd-rep-fld'>"+fval+"</input>");   
                  } else {
-                   $(tgtAnchor).append("<div class='bkd-rep-fld'>"+fname+ ": "+fval+"</div>");
+                   $("#bkd-hv-field").append("<div class='bkd-rep-fld'>"+fname+ ": "+fval+"</div>");
                  }
                }
              }

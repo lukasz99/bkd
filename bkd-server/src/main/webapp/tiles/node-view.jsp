@@ -42,42 +42,48 @@
   <s:if test="big">
    <t:insertTemplate template="/tiles/header.jsp" flush="true"/>
   </s:if>
-  <table class="pagebody" width="98%" cellspacing="0" cellpadding="0" border="0" >
+ 
+  <div id="bkd-sidebar"></div>  
+  <div id="bkd-main">    
+     <table class="pagebody" width="98%" cellspacing="0" cellpadding="0" border="0" >
+       <s:if test="hasActionErrors()">
+       <tr>
+        <td colspan="3">
+         <div  class="upage" id="errorDiv">
+          <span class="pgerror">
+           <s:iterator value="actionErrors">
+            <span class="errorMessage"><s:property escapeHtml="false" /></span>
+           </s:iterator>
+          </span>
+         </div>
+         <br/>
+        </td>
+       </tr>
+      </s:if>
+       <tr>
+         <td colspan="3">
+           <h1 id="bkd-main-name">Node</h1>           
+       </tr>
 
-    <s:if test="hasActionErrors()">
-    <tr>
-     <td colspan="3">
-      <div  class="upage" id="errorDiv">
-       <span class="pgerror">
-        <s:iterator value="actionErrors">
-         <span class="errorMessage"><s:property escapeHtml="false" /></span>
-        </s:iterator>
-       </span>
-      </div>
-      <br/>
-     </td>
-    </tr>
+   <s:if test="ac == null || ac.length == 0">
+       <tr>
+         <td colspan="3">
+    <t:insertDefinition name="node-search"/>
+         </td>
+       </tr>
    </s:if>
-    <tr>
-      <td colspan="3">
-        <br/><br/><br/><br/><br/><br/><br/>
-        <h1>Node</h1>
-        <br/>
-    </tr>
+       <tr>
+         <td colspan="3">
+           <div id="bkd-node-view">
+              <div id="bkd-hv-field"></div>
+              <div id="bkd-nv-field"></div>
+              <div id="bkd-fv-field"></div>             
+           </div> 
+         </td>
+       </tr>    
+     </table>
+  </div>
 
-<s:if test="ac == null || ac.length == 0">
-    <tr>
-      <td colspan="3">
- <t:insertDefinition name="node-search"/>
-      </td>
-    </tr>
-</s:if>
-    <tr>
-      <td colspan="3">
-        <div id="bkd-node-view"></div> 
-      </td>
-    </tr>    
-  </table>
   <s:if test="big">
    <t:insertTemplate template="/tiles/footer.jsp" flush="true"/>
   </s:if>
