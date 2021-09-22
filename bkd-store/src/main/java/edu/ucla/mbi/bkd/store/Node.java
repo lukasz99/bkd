@@ -51,8 +51,11 @@ public class Node implements Comparable<Node>{
     @JoinColumn(name = "taxon")
     Taxon taxon;
 
-    @OneToMany(mappedBy="node", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy="node", fetch = FetchType.EAGER )
     private Set<NodeAlias> alias;
+
+    @OneToMany(mappedBy="node", fetch = FetchType.EAGER)
+    private Set<NodeAttr> attrs;
     
     @OneToMany(mappedBy="node",fetch = FetchType.EAGER)
     private Set<NodeXref> xrefs;
@@ -154,6 +157,23 @@ public class Node implements Comparable<Node>{
         return this.alias;
     }
 
+    public void setAlias(Set<NodeAlias> alias){
+        this.alias = alias;
+    }
+
+    
+    public Set<NodeAttr> getAttrs(){
+	if(this.attrs == null)
+	    this.attrs = new HashSet<NodeAttr>();	
+        return this.attrs;
+    }
+
+    
+    public void setAttrs(Set<NodeAttr> attrs){
+        this.attrs = attrs;
+    }
+
+    
     public void setXrefs(Set<NodeXref> xrefs){
         this.xrefs = xrefs;
     }
@@ -163,7 +183,6 @@ public class Node implements Comparable<Node>{
 	    this.xrefs = new HashSet<NodeXref>();	
         return this.xrefs;
     }
-
 
     public Set<NodeReport> getReps(){
 	if(this.reps == null)

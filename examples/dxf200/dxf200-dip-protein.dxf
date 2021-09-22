@@ -46,6 +46,16 @@
           SRASQRSVRLAPVYQKLLERMKH
         </value>
       </attr>
+      <attr name="function" ns="dxf" ac="dxf:0000">
+        <value>
+          this is a very long story about function.... 
+        </value>
+        <attrList>          
+          <attr name="data-source" ns="dxf" ac="dxf:0016">
+            <value ns="orcid"  ac="orcid:1234-1234-1234" type="person" typeNs="dxf" typeAc="dxf:0056"/>
+          </attr>
+        </attrList>
+      </attr>
     </attrList>
   </node>
 </dataset>

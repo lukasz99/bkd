@@ -70,6 +70,8 @@
   <bean id="bkdTaxonDao" class="edu.ucla.mbi.bkd.store.dao.TaxonDao"/>
   <bean id="bkdCvTermDao" class="edu.ucla.mbi.bkd.store.dao.CvTermDao"/>
   <bean id="bkdXrefDao" class="edu.ucla.mbi.bkd.store.dao.XrefDao"/>
+  <bean id="bkdAliasDao" class="edu.ucla.mbi.bkd.store.dao.AliasDao"/>
+  <bean id="bkdAttrDao" class="edu.ucla.mbi.bkd.store.dao.AttributeDao"/>
   <bean id="bkdIdGenDao" class="edu.ucla.mbi.bkd.store.dao.IdGenDao"/>
   <bean id="bkdSourceDao" class="edu.ucla.mbi.bkd.store.dao.SourceDao"/>
   
@@ -105,7 +107,7 @@
 
   <bean id="bkdDaoContext" class="edu.ucla.mbi.bkd.store.dao.BkdDaoContext">
     
-    <property name="state" value="flip"/>
+    <property name="state" value="flop"/>
     
     <property name="flipSF" ref="bkdFlipSessionFactory"/>
     <property name="flopSF" ref="bkdFlopSessionFactory"/>
@@ -118,6 +120,8 @@
     <property name="featureDao"  ref="bkdFeatureDao"/>
     <property name="rangeDao"  ref="bkdRangeDao"/>
     <property name="xrefDao"  ref="bkdXrefDao"/>
+    <property name="aliasDao"  ref="bkdAliasDao"/>
+    <property name="attributeDao"  ref="bkdAttrDao"/>
     <property name="sourceDao"  ref="bkdSourceDao"/>
     
   </bean>

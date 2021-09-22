@@ -240,6 +240,9 @@ public class BkdNodeManager {
         //        <name></name>
         //      </node>
         //    </xref>
+
+        // <xref ns="upr" ac="A12345" typeNs="dxf" typeAc="dxf:0036" type="replaces">   <- secondary accession
+
         //  </xrefList>
         //  <attrList>
         //    <attr ns="dxf" ac="dxf:0000" name="sequence">
@@ -256,6 +259,30 @@ public class BkdNodeManager {
         //   <attr ns="dxf" ac="dxf:0000" name="comment">
         //      <value>my comment</value>
         //   </attr>
+
+
+        //   <attr ns="dxf" ac="dxf:0031" name="synonym">   
+        //      <value>alias</value>              -> alias
+        //   </attr>
+
+        //   <attr ns="dxf" ac="dxf:0102" name="gene-name">
+        //      <value>gene(primary)</value>      -> alias
+        //   </attr>
+
+        //   <attr ns="dxf" ac="dxf:0103" name="gene-synonym">
+        //      <value>gene(secondary)</value>    -> alias
+        //   </attr>
+
+        //   <attr ns="dxf" ac="dxf:0000" name="comment">
+        //      <value>my comment</value>         -> alias
+        //   </attr>       
+        
+        //   <attr ns="dxf" ac="dxf:1234" name="function">
+        //     <type ns="dxf" ac="dxf:0025" name="source"/>
+               
+        //
+        //   </attr>       
+        
         //   <attr ns="dxf" ac="dxf:0000" name="source">
         //     <type ns="dxf" ac="dxf:0025" name="source"/> 
         //     <node id="1" ns="" ac="">
@@ -312,6 +339,9 @@ public class BkdNodeManager {
 		
         // attribute scan
         //---------------
+
+        List<NodeAlias> aliasList = new ArrayList<NodeAlias>();
+        List<NodeAttr> attrList = new ArrayList<NodeAttr>();
         
         for( AttrType att: node.getAttrList().getAttr() ){
             
@@ -329,72 +359,37 @@ public class BkdNodeManager {
                 sequence = aval;
             } else if( att.getAc().equalsIgnoreCase("dxf:0087") ){ // comment
                 comment = aval;
+            } else if( att.getAc().equalsIgnoreCase("dxf:0031") ||  // synonym
+                       att.getAc().equalsIgnoreCase("dxf:0102") ||  // gene-name
+                       att.getAc().equalsIgnoreCase("dxf:0103")     // gene-synonym
+                       ){ 
+                
+                CvTerm cvtype = new CvTerm( "dxf", att.getAc(), att.getName() );                    
+                NodeAlias nal = new NodeAlias( cvtype, aval );
+
+                aliasList.add( nal );
+
+            } else if( att.getAc().equalsIgnoreCase("dxf:0104") ||  // function
+                       att.getAc().equalsIgnoreCase("dxf:0106") ||  // subcellular-location
+                       att.getAc().equalsIgnoreCase("dxf:0107") ||  // tissue-specificity
+                       att.getAc().equalsIgnoreCase("dxf:0109")     // activity-regulation
+                       ){ 
+                
+                CvTerm cvtype = new CvTerm( att.getNs(), att.getAc(), att.getName() );                    
+                NodeAttr nat = new NodeAttr( cvtype, aval );
+
+                // test for source and add if present ? 
+                
+                attrList.add( nat );
+                
             } else if( att.getAc().equalsIgnoreCase("dxf:0016") ){ // data-source
+                
                 log.info("Attribute: data-source");
-
-                source = this.buildSource( att ); 
-                /* 
-                AttrType.Value cval = att.getValue();
-                String  ctypeAc = cval.getTypeAc();
-                if( "dxf:0057".equalsIgnoreCase(ctypeAc) ){  // database-record 
-                                        
-                    DbRecordSource dsrc = new DbRecordSource();
-                    dsrc.setCvType( new CvTerm( "dxf", "dxf:0057",
-                                                "database-record" ) );
-
-                    dsrc.setNs( cval.getNs() );
-                    dsrc.setAc( cval.getAc() );
-                    source = dsrc;
-                    
-                } else if( "dxf:0055".equalsIgnoreCase(ctypeAc) ){ // publication
-
-                    PubSource psrc = new PubSource();
-                    psrc.setCvType( new CvTerm( "dxf", "dxf:0055",
-                                                "publication" ) );
-                    
-                    if( "pmid".equalsIgnoreCase(cval.getNs()) ){
-                        psrc.setPmid( cval.getAc() );
-                    } else if( "doi".equalsIgnoreCase(cval.getNs()) ){
-                        psrc.setDoi(cval.getAc());
-                    }
-
-                    source = psrc;
-                    
-                } else if( "dxf:0056".equalsIgnoreCase(ctypeAc) ){ // person
-
-                    PersonSource psrc = new PersonSource();
-                    psrc.setCvType( new CvTerm( "dxf", "dxf:0056",
-                                                "person" ) );
-                    
-                    if( "orcid".equalsIgnoreCase(cval.getNs()) ){
-                        psrc.setOrcid(cval.getAc());
-                    }
-                    
-                    source = psrc;
-                    
-                } else if( "dxf:0088".equalsIgnoreCase(ctypeAc) ){ // organization
-
-                    OrgSource osrc = new OrgSource();
-                    osrc.setCvType( new CvTerm( "dxf", "dxf:0088",
-                                                "organization" ) );
-                    
-                    if( "mail-to".equalsIgnoreCase(ctypeAc) ){
-                        osrc.setEmail(cval.getAc());
-                    }
-
-                    for( AttrType anatt: anode.getAttrList().getAttr() ){
-                        if ( anatt.getName().equalsIgnoreCase("url") ){
-                            osrc.setUrl( anatt.getValue().getValue() );
-                        }
-                    }
-                    source = osrc;
-                }
-                */   
+                source = this.buildSource( att );                    
             }
         }
 
         log.info("SRC: " + source);
-
         
         // xref scan
         //----------
@@ -414,9 +409,9 @@ public class BkdNodeManager {
                     nxref.setNs(x.getNs());
                     nxref.setAc(x.getAc());
                     
-                    CvTerm cvt = new CvTerm( "dxf", "dxf:0007", "produced-by" );
+                    CvTerm cvt = new CvTerm( "dxf", "dxf:0007", "produced-by" );  // persist if needed ? 
                     nxref.setCvType(cvt);
-                    nxref.setSource( source );  // test for local overwrite ?
+                    //nxref.setSource( source );  // test for local overwrite ?
                     
                     xrefList.add( nxref );
                     
@@ -426,18 +421,18 @@ public class BkdNodeManager {
                     nxref.setNs( x.getNs() );
                     nxref.setAc( x.getAc() );
                     
-                    CvTerm cvt = new CvTerm( "dxf", "dxf:0007", "produced-by" );
+                    CvTerm cvt = new CvTerm( "dxf", "dxf:0007", "produced-by" );   // persist if neded ?
                     nxref.setCvType( cvt );
-                    nxref.setSource( source );  // test for local overwrite ?
+                    //nxref.setSource( source );  // test for local overwrite ?
                     xrefList.add( nxref );                                       
                 }
             } else if( x.getTypeAc().equalsIgnoreCase( "dxf:0009" ) ){  // identical-to
                 NodeType xnode = x.getNode();
                 TypeDefType ntype = xnode.getType();
                 if(ntype.getAc().equalsIgnoreCase("dxf:0003") ){         // protein
-                    if( xnode.getNs().equalsIgnoreCase("rsq") ){             // refseq
+                    if( xnode.getNs().equalsIgnoreCase("rsq") ){         // refseq
                         rsq_prot = x.getAc();
-                    }else if( xnode.getNs().equalsIgnoreCase("upr") ){       // uniprot
+                    }else if( xnode.getNs().equalsIgnoreCase("upr") ){   // uniprot
                         upr = x.getAc();
                     }
                 }
@@ -447,9 +442,9 @@ public class BkdNodeManager {
                 nxref.setNs(x.getNs());
                 nxref.setAc(x.getAc());
                 
-                CvTerm cvt = new CvTerm( x.getTypeNs(), x.getTypeAc(), x.getType() );
+                CvTerm cvt = new CvTerm( x.getTypeNs(), x.getTypeAc(), x.getType() );  // persist if needed ? 
                 nxref.setCvType(cvt);
-                nxref.setSource( source );  // test for local overwrite ?
+                //nxref.setSource( source );  // test for local overwrite ?
                 
                 xrefList.add( nxref );
                                 
@@ -461,7 +456,7 @@ public class BkdNodeManager {
 
         List<NodeFeat> featureList = new ArrayList<NodeFeat>();
         
-        for( FeatureType cf: node.getFeatureList().getFeature() ){
+        for( FeatureType cf: node.getFeatureList().getFeature() ){  // go over dxf
 
             NodeFeat cnf = new NodeFeat();
             JSONObject jval = new JSONObject();
@@ -469,7 +464,7 @@ public class BkdNodeManager {
             // set source
             //-----------
 
-            cnf.setSource(source);  // test for locar overwrite ?
+            //cnf.setSource(source);  // test for local overwrite ?
             
             // set name/label
             //---------------
@@ -533,7 +528,7 @@ public class BkdNodeManager {
                         if( vns  != null && vac != null ){
 
                             // look for cv term, add if new
-                            
+                           
                             //CvTerm term = new CvTerm(vns, vac, "");
                             //term.setDefinition( "" );   
                             CvTerm term =
@@ -631,9 +626,9 @@ public class BkdNodeManager {
             }
                 
             cnf.setJval(jval.toString());
-            curNode.getFeats().add( cnf );                   
-        }
-         
+            //curNode.getFeats().add( cnf );
+            featureList.add(cnf); // ?????????
+        }         
         
         log.info( " Name: " + name + " Label: " + label + " Taxid: " + taxid );
         log.info( " Ns: " + ns + " Ac: " + ac );
@@ -669,11 +664,41 @@ public class BkdNodeManager {
         curNode.setSequence( sequence );
         curNode.setComment( comment );
         
-        for( NodeXref x: xrefList ){
-            x.setNode( curNode );
-            curNode.getXrefs().add( x );	   
+        for( NodeAlias nal: aliasList ){
+            nal.setNode( curNode );
+            curNode.getAlias().add( nal );	   
+        }
+        
+        for( NodeXref cxr: xrefList ){
+            cxr.setNode( curNode );
+            cxr.setSource( source );
+            curNode.getXrefs().add( cxr );	   
         }	   
         
+        for( NodeAttr cnat: attrList ){
+            cnat.setNode( curNode );
+            cnat.setSource( source );
+            //for( NodeAttr ccnat: cnat.getAttrList() ){
+            //    ccnat.setSource( source );
+            //}
+            
+            curNode.getAttrs().add( cnat );	   
+        }
+
+        for( NodeFeat cnft: featureList ){
+            cnft.setNode( curNode );
+            log.info("feature source: " + source);
+            cnft.setSource( source );
+            //for( NodeAttr ccnft: cnft.getAttrList() ){
+            //    ccnft.setSource( source );
+            //}
+            for( FeatureXref ccxft: cnft.getXrefs() ){
+                ccxft.setSource( source );
+            }
+            
+            curNode.getFeats().add( cnft );	   
+        }
+                
         curNode = (ProteinNode) recordManager.addNode( curNode );
         if( curNode == null ){
             return null;

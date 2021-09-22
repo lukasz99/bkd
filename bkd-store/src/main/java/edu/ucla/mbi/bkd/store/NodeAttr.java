@@ -14,19 +14,19 @@ import javax.xml.bind.JAXB;
 import javax.persistence.*;
 
 @Entity
-@DiscriminatorValue("nalias")
-public class NodeAlias extends Alias{
+@DiscriminatorValue("nattr")
+public class NodeAttr extends Attribute{
 
     @ManyToOne
     @JoinColumn(name="fk_node", nullable=false)
     private Node node;
 
-    public NodeAlias(){
+    public NodeAttr(){
         super();
     }
     
-    public NodeAlias( CvTerm cvtype, String alias ){
-        super(cvtype, alias);
+    public NodeAttr( CvTerm cvtype, String value ){
+        super( cvtype, value );
     }
     
     public void setNode(Node node){

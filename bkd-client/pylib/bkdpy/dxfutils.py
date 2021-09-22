@@ -38,6 +38,12 @@ class DxfUtils():
         
         self._dxfactory = self._zclient.type_factory('ns1')
         self._ssfactory = self._zclient.type_factory('ns0')
+
+        self._attmap = { "function":{"ns":"dxf","ac":"dxf:0104","name":"function"},
+                         "subcellular location":{"ns":"dxf","ac":"dxf:0106","name":"subcellular-location"},
+                         "tissue specificity":{"ns":"dxf","ac":"dxf:0107","name":"tissue-specificity"},
+                         "activity regulation":{"ns":"dxf","ac":"dxf:0109","name":"activity-regulation"} }
+
         
         if self.debug:
             print(self.zclient)
@@ -72,10 +78,7 @@ class DxfUtils():
             
             return zdts
         return znode
-
-
-        
-    
+          
     def buildCvTermZnode( self, term, cid = 1, wrap = True ):
   
         #<node id="1" ns="mi" ac="MI:0496">
@@ -107,7 +110,7 @@ class DxfUtils():
 
             dattr = self.zdxf.attrType( name = "definition", value = tdef,
                                         ns ="dxf", ac="dxf:0032" )                                    
-            znode.attrList['attr'].append(dattr)
+            znode.attrList.attr.append(dattr)
             
         if 'is_a' in term :
             if znode.xrefList is None:
@@ -117,7 +120,7 @@ class DxfUtils():
                                             type = "is-a",
                                             node = xsd.SkipValue,
                                             ns = "mi", ac = isa )            
-                znode.xrefList['xref'].append(txref)
+                znode.xrefList.xref.append(txref)
 
 
         # wrap into dataset
@@ -150,6 +153,15 @@ class DxfUtils():
         #  <attr name="data-source" ns="dxf" ac="dxf:0016">
         #   <value ns="upr" ac="Q15582.209" type="database-record" typeNs="dxf" typeAc="dxf:0057"/>
         #  </attr>
+        #  <attr ns="dxf" ac="dxf:0031" name="synonym">   
+        #     <value>alias</value>              -> alias
+        #  </attr>
+        #  <attr ns="dxf" ac="dxf:0102" name="gene-name">
+        #     <value>gene(primary)</value>      -> alias
+        #  </attr>
+        #  <attr ns="dxf" ac="dxf:0103" name="gene-synonym">
+        #     <value>gene(secondary)</value>    -> alias
+        #  </attr>        
         # </attrList>
         # <xrefList>
         #  <xref type="produced-by" typeNs="dxf" typeAc="dxf:0007" ns="taxid"   ac="$taxon"/>
@@ -164,7 +176,6 @@ class DxfUtils():
         ntype = self.getTypeDefType( "protein" )
 
         ent = node.root["uniprot"]["entry"][0] 
-
         
         print( ent["accession"][0] ) # ac
 
@@ -187,6 +198,7 @@ class DxfUtils():
         #xx
         znode = self.zdxf.nodeType( ns=nns, ac=nac, type=ntype, id=1,
                                     label=nlabel, name=nname,
+                                    featureList = None,
                                     xrefList = {'xref':[]},
                                     attrList = {'attr':[]} )
 
@@ -209,8 +221,6 @@ class DxfUtils():
         
         txnode = self.zdxf.nodeType( ns="taxid", ac=ntaxid, type=ntxtype, id=1,
                                      label=ntxlabel, name=ntxname)        
-
-
         
         txref = self.zdxf.xrefType( typeNs = "dxf", typeAc ="dxf:0007",
                                     type = "produced-by",
@@ -218,8 +228,6 @@ class DxfUtils():
                                     ns = "taxid", ac = ntaxid )
 
         znode.xrefList.xref.append(txref)
-
-        print(znode)
         
         nxref = ent['dbReference']
 
@@ -285,25 +293,40 @@ class DxfUtils():
                     znode.xrefList.xref.append(cxref)
                 
         if 'sequence' in ent:
-            if znode.attrList is None:
-                znode.attrList = {'attr':[]}
+            #if znode.attrList is None:
+            #    znode.attrList = {'attr':[]}
 
             sequence = ent['sequence']['value']
                       
-            cattr = self.zdxf.attrType( name = "sequence", value = sequence, ns ="dxf", ac="dxf:0071" )
-            znode.attrList['attr'].append( cattr )
+            #cattr = self.zdxf.attrType( name = "sequence", value = sequence, ns ="dxf", ac="dxf:0071" )
+            #znode.attrList['attr'].append( cattr )
+
+            #cattr = self.zdxf.attrType( name = "sequence", value = sequence, ns ="dxf", ac="dxf:0072" )
+            #znode.attrList.attr.append( cattr )
         
-        if "comment" in ent:
-            for ccm in ent['comment']:
+        if ent['protein']:
+            for n in ent['protein']['name']:
+                            
                 if znode.attrList is None:
                     znode.attrList = {'attr':[]}
-
-                #print(ccm)
-                #comment = ent["comment"]['value']
+                cattr = self.zdxf.attrType( name = "synonym", value = n['value'], ns ="dxf", ac="dxf:0031" )                
+                znode.attrList['attr'].append( cattr )
                 
-                #cattr = self.zdxf.attrType( value = comment, name = "comment", ns="dxf",ac ="dxf:0000" )
-                #znode.attrList['attr'].append( cattr )
-               
+                
+        if ent['gene']:
+            for g in ent['gene']['name']:
+                if g['type'] == 'primary':                
+                    if znode.attrList is None:
+                        znode.attrList = {'attr':[]}
+                    cattr = self.zdxf.attrType( name = "gene-name", value = g['value'], ns ="dxf", ac="dxf:0102" )
+                    znode.attrList['attr'].append( cattr )
+
+                if g['type'] == 'synonym':                    
+                    if znode.attrList is None:
+                        znode.attrList = {'attr':[]}
+                    cattr = self.zdxf.attrType( name = "gene-synonym", value = g['value'], ns ="dxf", ac="dxf:0103" )
+                    znode.attrList['attr'].append( cattr )
+                                
         if "source" in ent:
             src = ent["source"]
             if znode.attrList is None:
@@ -338,16 +361,58 @@ class DxfUtils():
             cattr = self.zdxf.attrType( name = "source", ns="dxf",ac ="dxf:0000",
                                         type = self.getTypeDefType( src["type"] ),
                                         node = snode )
-            znode.attrList["attr"].append( cattr )
+            znode.attrList.attr.append( cattr )
                             
 
         print("--comment--------------------")
-        for c in ent["comment"]:
-            print(c["type"])
 
-        print("--feature--------------------")
+        if "comment" in ent:
+            for ccm in ent['comment']:
+                
+                #if znode.attrList is None:
+                #    znode.attrList = {'attr':[]}
+                #print(ccm.keys())
+                if "type" in ccm:
+                    print(" Type: ",ccm["type"])
+                if "text" in ccm:
+                    print(" Text:", ccm["text"]["value"])
+                    if  "evidence"  in ccm["text"].keys():                   
+                        print("  Evidence", ccm["text"]["evidence"]    )
+
+                    print(ccm["type"])
+
+                    if ccm["type"] in self._attmap:
+
+                        print( "!!! ",ccm["type"] )
+
+                        ctp = self._attmap[ccm["type"]]
+                    
+                        
+
+                        cattr = self.zdxf.attrType( value = ccm["text"]["value"],
+                                                    name =  ctp["name"],
+                                                    ns=ctp["ns"], ac = ctp["ac"] )
+                        znode.attrList['attr'].append( cattr )
+                        
+                print("----")    
+                #comment = ent["comment"]['value']                
+                #cattr = self.zdxf.attrType( value = comment, name = "comment", ns="dxf",ac ="dxf:0000" )
+                #znode.attrList['attr'].append( cattr )
+
+
+
+
+
+
+
+
+
+            
+        print("--feature--------------------XX")
         for c in ent["feature"]:
+            
             if c["type"] in ["sequence variant","mutagenesis site","disease"]:
+                
                 feature = {"evidence":[]}
                 
                 feature["type"] = c["type"]
@@ -480,7 +545,7 @@ class DxfUtils():
         zdts = self.zdxf.datasetType([znode])
         zdts['level']= "2"
         zdts['version']= "0"
-       
+        
         return zdts
 
 
@@ -512,7 +577,8 @@ class DxfUtils():
                 fdes = feature["description"]
                     
             dattr = self.zdxf.attrType( name = "description", value = fdes,
-                                        ns ="dxf", ac="dxf:0089" )                                    
+                                        ns ="dxf", ac="dxf:0089" )
+            
             fzeep.attrList['attr'].append(dattr)               
                     
         if "location" in feature:

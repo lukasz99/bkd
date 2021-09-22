@@ -199,7 +199,44 @@ public class BkdDaoContext{
 	}
 	return this.xrefDao;
     }
+
+    // Alias 
+    //------
     
+    AliasDao aliasDao;
+    
+    public void setAliasDao( AliasDao dao ){
+        this.aliasDao = dao;
+    }
+
+    public AliasDao getAliasDao(){       
+        if( this.state.equals("flip") ){
+            this.aliasDao.setSessionFactory( flipSF );
+        } else{
+            this.aliasDao.setSessionFactory( flopSF );
+        }
+        return this.aliasDao;
+    }
+
+
+    // Attribute 
+    //----------
+    
+    AttributeDao attrDao;
+    
+    public void setAttributeDao( AttributeDao dao ){
+        this.attrDao = dao;
+    }
+
+    public AttributeDao getAttributeDao(){       
+        if( this.state.equals("flip") ){
+            this.attrDao.setSessionFactory( flipSF );
+        } else{
+            this.attrDao.setSessionFactory( flopSF );
+        }
+        return this.attrDao;
+    }
+       
     // IdGen
     //------
     

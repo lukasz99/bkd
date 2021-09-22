@@ -27,6 +27,14 @@ parser.add_argument('--mode', '-m', dest="mode", type=str,
                     required=False, default='get',
                     help='Mode.')
 
+parser.add_argument('--out', '-o', dest="out", type=str,
+                    required=False, default='',
+                    help='Output file.')
+
+parser.add_argument('--debug', '-d', dest="debug", type=bool,
+                    required=False, default=False,
+                    help='Debug option.')
+
 #spyder hack: add '-i' option only if present (as added by spyder)
 
 if '-i' in sys.argv:
@@ -43,12 +51,17 @@ du = BK.DxfUtils('http://10.1.7.100:9999/cvdbdev0/services/soap?wsdl')
 
 znode = du.buildUniprotZnode( ucr )
 
-
 bc = BK.BkdClient(user="bkd", password="444bkd444")
 
 if args.mode == "get":
-        zres = bc.getnode("upr", args.upr, debug=False)
+        zres = bc.getnode("upr", args.upr, debug=args.debug)
 else:
-        zres = bc.setnode(znode, mode=args.mode, debug=False)
+        zres = bc.setnode(znode, mode=args.mode, debug=args.debug)
 
-print(ET.tostring(zres, pretty_print=True).decode() )
+if not args.debug:
+    if len(args.out)  > 0:
+        with open( args.out, "w" ) as of:
+            of.write( ET.tostring(zres, pretty_print=True).decode() )
+            of.write( "\n" )
+    else:
+        print(ET.tostring(zres, pretty_print=True).decode() )

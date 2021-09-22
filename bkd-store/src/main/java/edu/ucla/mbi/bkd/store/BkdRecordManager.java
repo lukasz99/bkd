@@ -107,7 +107,7 @@ public class BkdRecordManager {
 
             log.info(" Node updated:" + node.getId());
             
-            // xrefs - persist xterm and components if needed
+            // xrefs - persist xrefs and components if needed
             //-----------------------------------------------           
             
             for( NodeXref x: node.getXrefs() ){
@@ -173,8 +173,8 @@ public class BkdRecordManager {
 
             log.info(" XREFs: updated");
             
-            // persist features
-            //-----------------
+            // features - persist fetures (and components if neeed)
+            //-----------------------------------------------------
             
             log.info(" FEATUREs: update");
 
@@ -183,6 +183,32 @@ public class BkdRecordManager {
 
                 feat.setNode(node);
 
+                // source
+                
+                Source fsource = null;
+                if( fsource == null ){
+
+                    CvTerm scvtype = daoContext
+                        .getCvTermDao().getByAccession( feat.getSource().getCvType().getAc() );
+
+                    if( scvtype == null ){
+                        scvtype = daoContext
+                            .getCvTermDao().updateCvTerm( feat.getSource().getCvType() );
+                    }
+                    log.info("scvtype: " + scvtype);
+                    feat.getSource().setCvType( scvtype );
+
+                    fsource = daoContext
+                        .getSourceDao().updateSource( feat.getSource() );
+                }
+                log.info(" feature source: " + fsource);
+
+                feat.setSource( fsource );
+
+                log.info(" feature source updated");
+
+                // feature type
+                
                 CvTerm fcvtype = daoContext
                     .getCvTermDao().getByAccession( feat.getCvType().getAc() );
                 
@@ -235,9 +261,91 @@ public class BkdRecordManager {
                             daoContext.getCvTermDao().getByName("unspecified");                        
                         range.setCvStop(cdef);
                     }
-                    daoContext.getRangeDao().updateRange(range);
+                    daoContext.getRangeDao().updateRange( range );
                 }                                        
             }
+
+            // attributes - persist attribute (and components)
+            //------------------------------------------------
+
+            log.info(" ATTRIBUTEs: update");
+
+            for( NodeAttr attr: node.getAttrs() ){
+                log.info("(*) attr" + attr.toString() );
+
+                attr.setNode(node);
+
+                // attribute type 
+                //---------------
+                
+                CvTerm acvtype = daoContext
+                    .getCvTermDao().getByAccession( attr.getCvType().getAc() );
+                
+                if( acvtype == null ){
+                    acvtype = daoContext
+                        .getCvTermDao().updateCvTerm( attr.getCvType() );                    
+                }
+
+                log.info("acvtype: " + acvtype);
+                attr.setCvType( acvtype );
+
+                // attribute source
+                //------------------
+                
+                Source asource = null;                 
+                log.info(" asource: " + attr.getSource().toString());
+			 
+                if(  attr.getSource() != null ){
+                    
+                    CvTerm ascvtype = daoContext
+                        .getCvTermDao().getByAccession( attr.getSource().getCvType().getAc() );
+                    
+                    if( ascvtype == null ){
+                        ascvtype = daoContext
+                            .getCvTermDao().updateCvTerm( attr.getSource().getCvType() );
+                    }
+                    log.info("ascvtype: " + ascvtype);
+                    attr.getSource().setCvType( ascvtype );
+				    
+                    asource = daoContext
+                        .getSourceDao().updateSource( attr.getSource() );
+                }
+                log.info(" attr source: " + asource);
+                
+                attr.setSource( asource );
+                
+                log.info(" attr source updated");
+                
+                daoContext.getAttributeDao().updateAttribute( attr );
+                
+            }
+
+            
+            // aliases - persist alias (and components)
+            //-----------------------------------------
+
+            log.info(" ALIASes: update");
+
+            for( NodeAlias alias: node.getAlias() ){
+                log.info("(*) alias" + alias.toString() );
+
+                alias.setNode(node);
+
+                CvTerm acvtype = daoContext
+                    .getCvTermDao().getByAccession( alias.getCvType().getAc() );
+                
+                if( acvtype == null ){
+                    acvtype = daoContext
+                        .getCvTermDao().updateCvTerm( alias.getCvType() );
+                    
+                }
+                log.info("acvtype: " + acvtype);
+                alias.setCvType( acvtype );
+
+                daoContext.getAliasDao().updateAlias(alias);
+                
+            }            
+            
             return node;
         } catch( Exception ex ) {
             log.error(ex);

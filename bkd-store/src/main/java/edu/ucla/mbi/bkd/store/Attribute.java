@@ -19,50 +19,55 @@ import javax.persistence.*;
 @DiscriminatorColumn (name="sclass",
                       discriminatorType = DiscriminatorType.STRING)
 
-@Table(name = "alias")
-public abstract class Alias{
+@Table(name = "attribute")
+public abstract class Attribute{
     
     @Id
-    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="alias_pkey_seq")
-    @SequenceGenerator( name="alias_pkey_seq", sequenceName="alias_pkey_seq",
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="attr_pkey_seq")
+    @SequenceGenerator( name="attr_pkey_seq", sequenceName="attr_pkey_seq",
                         allocationSize=1 )
     @Column(name = "pkey")
     private long pkey;
 
     /**
-       CREATE TABLE alias (
+       CREATE TABLE attribute (
           pkey bigint DEFAULT nextval(('"alias_pkey_seq"'::text)::regclass) NOT NULL CONSTRAINT alias_pk PRIMARY KEY,
           sclass character varying(32) DEFAULT ''::character varying,  -- node/protein/rna/gene/...
           fk_node bigint DEFAULT 0 NOT NULL,  -- foreign key
           fk_cvtype bigint DEFAULT 0 NOT NULL, -- unspecified xref type
-          alias character varying(128) DEFAULT ''::character varying NOT NULL
+          fk_source bigint DEFAULT 0 NOT NULL,  -- unspecified property source
+          value character text DEFAULT ''::text NOT NULL
        );
     **/
     
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "fk_cvtype")
     CvTerm cvtype;
-                
-    @Column(name = "alias")
-    String alias = "";
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "fk_source")
+    Source source;
+    
+    @Column(name = "value")
+    String value = "";
         
-    public int compareTo( Alias o ){
-        return this.getAlias().compareTo( o.getAlias() );        
+    public int compareTo( Attribute o ){
+        return this.getValue().compareTo( o.getValue() );        
     }
         
-    public Alias() { }
+    public Attribute() { }
 
-    public Alias( CvTerm cvtype, String alias ){
-        this.alias = alias;
+    public Attribute( CvTerm cvtype, String value ){
         this.cvtype = cvtype;
+        this.value = value;
     }
     
-    public String getAlias(){
-        return alias;
+    public String getValue(){
+        return value;
     }
 
-    public void setAlias( String alias ){
-        this.alias = alias;    
+    public void setValue( String value ){
+        this.value = value;    
     }
 
     public CvTerm getCvType(){
@@ -73,8 +78,16 @@ public abstract class Alias{
         this.cvtype = term;
     }
 
+    public void setSource( Source source ){
+        this.source = source;
+    }
+
+    public Source getSource(){
+        return source;
+    }
+    
     public String toString(){
-        return "Alias:" + this.alias ;
+        return "Atrribute:" + this.value ;
     }        
 }
 

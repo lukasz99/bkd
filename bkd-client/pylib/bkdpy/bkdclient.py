@@ -127,8 +127,8 @@ class BkdClient():
 
 
                     
-    def setnode( self, zdtsnode, mode = "add", debug = False ):
-        #print("#############################")
+    def setnode( self, zdtsnode, mode = "add", debug = False):
+
         if debug:
             print("BkdClinet.addnode: input node=" + str(zdtsnode))
         #else:
