@@ -116,14 +116,27 @@ BKDnode = {
     }
   },
 
-  nodeView: function(data, nodeAnchor, format, mode ){
-    
+  nodeView: function(data, nodeAnchor, fmt, mode ){
+
+    // view type
+    //----------
+
+    var tvpath = fmt.type.vpath;
+    var vformat = data;
+ 
+    for( var t = 0; t <tvpath.length; t++){
+      vformat = vformat[tvpath[t]]; 
+    }
+
+    console.log( "FORMAT: " + JSON.stringify(vformat) );
+
+    var format = fmt.type.view[vformat];
+
     console.log( "NA: " + nodeAnchor );
     console.log( "FL: " + JSON.stringify(format) );
-
     
-    // node accession
-    //---------------
+    // node type & accession
+    //----------------------
         
     var rac = format["ac"];
     var racval ="";
@@ -142,6 +155,9 @@ BKDnode = {
       cel = $("#" + rac["id"] )
       cel.val(cval);
       cel.attr('type','hidden');
+       
+      $("#bkd-main-name").append(format.type.label + cval);
+
     }
 
     // fields (if present)
@@ -200,8 +216,8 @@ BKDnode = {
                                        clbl+"</div>\n"); 
 
           $("#bkd-nv-field").append("<div id='bkd-nv-"+cid+"' class='nv-field'>"+
-                                       clbl+"</div>\n");
-
+                                    " <div id='bkd-nv-" + cid + "_head'>"+clbl+"</div>" +
+                                    "</div>\n");
           // events
           //-------
 
@@ -236,8 +252,23 @@ BKDnode = {
        
           // build pane contents
           //--------------------
-          
-          // select default pane    
+         
+          var pformat = format.pane[i].field;
+                    
+          if( pformat != null ){
+            for( var f = 0; f < pformat.length; f++){
+              var cfield = pformat[f];
+              console.log("PFIELD: " + cfield.name + " :: " + cfield.type);
+              switch( cfield.type ){
+                case "text":
+                  this.showText( "#bkd-nv-"+cid, cfield, data );    
+                break;
+              }
+            }
+          }
+
+          // select default pane
+          //--------------------
           if( cid == BKDnode.paneon ){  // select default pane
              $( "#bkd-nv-" + cid ).show();
              $( "#bkd-sb-" + cid ).addClass("bkd-sb-entry-on");   
@@ -253,7 +284,6 @@ BKDnode = {
        // no panels: hide sidepanel
 
     }
-
 
     var flist = []
 
@@ -649,13 +679,67 @@ BKDnode = {
 
      showText: function( tgt, format, data ){
 
+       console.log("showText:", JSON.stringify(format));
+
        var value = this.getVal( data, format.vpath);
        if( value == null && format.miss == "%DROP%") return;
        
        if( value == null || value.length == 0 ) value = format.miss;
        if( value == null || value.length == 0 ) value = "N/A";
 
-       $( tgt ).append( "<div>"+format.name+ ": " + value + "</div>" );    
+       if( format.condition == null){
+          $( tgt ).append( "<div>"+format.name+ ": " + value + "</div>" );
+          return;
+       }
+       console.log("showText: condition test");
+       
+       var fvlist =[];
+       for( var i =0; i < value.length; i ++){
+            
+          var cval = this.getVal( value[i], format.condition.test );
+          console.log("  cval: ", cval, " :::", JSON.stringify(value[i])) ;    
+          if( format.condition.equal != null && format.condition.equal == cval ){
+            console.log(" showText: got match!!!");       
+            var fval = this.getVal( value[i], format.condition.value );
+            if( fval != null ){
+               fvlist.push(fval);
+            }    
+          }
+       }
+       console.log(" showText: fvlist: ", JSON.stringify(fvlist));
+       if( format.list ){
+         if( format.header ){
+           $( tgt ).append( "<div><div>" + format.name + "</div><div></div></div>" );
+
+           $( tgt + " >*:last >*:first").on('click',function(event){              
+             $(event.currentTarget).next().toggle();
+            });
+
+          tgt +=" > *:last > *:last";
+         }
+
+         for( var i =0; i <fvlist.length; i ++ ){             
+           if( header ){
+             $( tgt ).append( "<div>" + fvlist[i]+ "</div>" );
+           }else{
+             $( tgt ).append( "<div>" + format.name + ": " + fvlist[i] + "</div>" );  
+           }
+         }
+        
+         return;
+       }
+
+       if( fvlist.length == 0 ){
+         if( format.miss == "%DROP%" ) return;
+         if( format.miss != null ){
+           $( tgt ).append( "<div>"+format.name+ ": " + format.miss + "</div>" );              
+         }else{
+           $( tgt ).append( "<div>"+format.name+ ": N/A</div>" );
+         }
+         return;
+       }
+       $( tgt ).append( "<div>"+format.name+ ": " + fvlist[0] + "</div>" );
+
      },
 
      showLink: function( tgt, format, data ){           

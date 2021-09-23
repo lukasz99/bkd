@@ -35,7 +35,9 @@
     <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
 
   <!-- ======================================================= CPNFIGURATION -->
-    
+
+  <import resource="siteconfig.xml" />
+  
   <bean id="applicationContextProvider"
         class="edu.ucla.mbi.util.context.ApplicationContextProvider" />
 

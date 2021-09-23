@@ -13,7 +13,6 @@
       http://www.springframework.org/schema/aop 
       http://www.springframework.org/schema/aop/spring-aop.xsd">
 
-<!-- icentral context: configuration files -->
 <!--
  <bean id="portalContext" class="edu.ucla.mbi.util.context.PortalContext">
 
@@ -38,7 +37,9 @@
     </property>
 
   </bean>
--->
+  -->
+
+  
   <bean id="pageContext" class="edu.ucla.mbi.util.context.JsonContext">
     <property name="config">
       <map>

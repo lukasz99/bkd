@@ -1,5 +1,5 @@
 package edu.ucla.mbi.bkd.store;
- 
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -8,9 +8,9 @@ import java.io.StringWriter;
 import java.util.*;
 
 import edu.ucla.mbi.dxf20.*;
+import edu.ucla.mbi.bkd.BKDconfig;
 
 import javax.xml.bind.JAXB;
-
 import javax.persistence.*;
 
 @Entity
@@ -29,7 +29,7 @@ public class Node implements Comparable<Node>{
     @Column(name = "pkey")
     private long pkey;
 
-    protected static String prefix = "CVDB";
+    protected static String prefix = null;
     
     @Column(name = "ndid")
     protected long ndid = 0;
@@ -92,7 +92,10 @@ public class Node implements Comparable<Node>{
     }
     
     public static String getPrefix(){
-	return prefix;
+        if( prefix == null ){
+            prefix = BKDconfig.getPrefix();
+        }
+        return prefix;
     }
     
     public void setId(long id ){        
@@ -104,10 +107,18 @@ public class Node implements Comparable<Node>{
     }
     
     public String getNs(){
+
+        if( prefix == null ){
+            prefix = BKDconfig.getPrefix();
+        }
         return prefix;
     }
 
     public String getAc(){
+
+        if( prefix == null ){
+            prefix = BKDconfig.getPrefix();
+        }
         return prefix + "-"+ Long.toString(ndid) + "N";
     }
 

@@ -48,6 +48,9 @@
 
     <dip-util.version>3.0.0</dip-util.version>
     <dip-proxy.version>1.0.0</dip-proxy.version>
+
+    <!-- generic -->
+    <db.ver>bkd</db.ver>
     
   </properties>
 
@@ -66,6 +69,7 @@
        <finalName>dipdev0</finalName>
       </build>
     </profile>
+
     <profile>
      <id>dipdev2</id>
      <activation>
@@ -80,6 +84,7 @@
       <finalName>dipdev2</finalName>
      </build>
     </profile>
+    
     <profile>
      <id>cvdbdev0</id>
      <activation>
@@ -91,9 +96,10 @@
        <db.ver>cvdb</db.ver>
      </properties>
      <build>
-      <finalName>cvdbdev2</finalName>
+      <finalName>cvdbdev0</finalName>
      </build>
     </profile>
+    
     <profile>     
      <id>cvdbdev2</id>
      <activation>
@@ -107,7 +113,8 @@
      <build>
       <finalName>cvdbdev2</finalName>
      </build>     
-   </profile>
+    </profile>
+    
   </profiles>
   
   <dependencies>
@@ -281,26 +288,78 @@
         <configuration>
 
           <webResources>
-
+            
+            <!-- XXXX -->
+              
              <resource>
-              <directory>${basedir}/src/main/resources</directory>
+              <directory>${basedir}/src/main/common/tiles</directory>
               <targetPath>tiles</targetPath>
               <filtering>true</filtering>
               <includes>
-                <include>header.jsp</include>   
+                <include>*.jsp</include>                   
               </includes>
             </resource>
 
             <resource>
-              <directory>${basedir}/src/main/resources</directory>
+              <directory>${basedir}/src/main/${db.ver}/tiles</directory>
+              <targetPath>tiles</targetPath>
+              <filtering>true</filtering>
+              <includes>
+                <include>*.jsp</include>                   
+              </includes>
+            </resource>
+
+            <resource>
+              <directory>${basedir}/src/main/common/js</directory>
+              <targetPath>js</targetPath>
+              <filtering>true</filtering>
+              <includes>
+                <include>*.js</include>                   
+              </includes>
+            </resource>
+
+            <resource>
+              <directory>${basedir}/src/main/${db.ver}/js</directory>
+              <targetPath>js</targetPath>
+              <filtering>true</filtering>
+              <includes>
+                <include>*.js</include>                   
+              </includes>
+            </resource>
+
+            
+            <resource>
+              <directory>${basedir}/src/main/${db.ver}/img</directory>
+              <targetPath>img</targetPath>
+              <filtering>true</filtering>
+              <includes>
+                <include>*.jsp</include>   
+                <include>*.png</include>   
+              </includes>
+            </resource>
+
+            
+            <resource>
+              <directory>${basedir}/src/main/${db.ver}</directory>
               <targetPath>WEB-INF</targetPath>
               <filtering>true</filtering>
               <includes>
                 <include>sun-jaxws.xml</include>   
                 <include>jetty-web.xml</include>
                 <include>tiles.xml</include>
+                <include>siteconfig.xml</include>
               </includes>
             </resource>
+            
+            <resource>
+              <directory>${basedir}/src/main/${db.ver}</directory>
+              <targetPath>WEB-INF/classes</targetPath>
+              <filtering>true</filtering>
+              <includes>
+                <include>siteconfig.xml</include>
+              </includes>
+            </resource>
+            
             
             <resource>
               <directory>${basedir}/../bkd-api/src/wsdl</directory>
@@ -331,7 +390,7 @@
                 <include>log4j2.xml</include>
               </includes>
             </resource>
-            
+           
           </webResources>
         </configuration>
       </plugin>
