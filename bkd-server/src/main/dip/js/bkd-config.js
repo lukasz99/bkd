@@ -367,109 +367,185 @@ BKDconf = {
         }
      }
   },
-  "node":{
-     "protein":{
-        "type":{
-          "val":"protein",
-          "label":"Protein Record:",
-        },
-        "ac":{
-          "vpath":['ac'],
-          "id":"node_ac"
-        },
-        defpane: "function",
-        pane:[
-          {id:"function",
-           label:"Function",           
-           field:[]
-          },
-          {id:"sequence",
-           label:"Sequence",
-           field:[
-             {name:"Sequence",
-              vpath:['sequence'],
-              type:"sequence",
-              header:true
-             }]
-          },
-          {id:"variant",
-           label:"Variants",
-           field:[]
-          },
-          {id:"feature",
-           label:"Features",
-           field:[
-             {name:"Features",
-              vpath:['feats'],
-              type:"feature",
-              header:true,
-              list:true,
-              miss: "%DROP%",
-              header:true
+  node:{
+    type:{
+      vpath:['cvType','name'],      
+      view:{
+        protein:{
+            "type":{
+              "val":"protein",
+              "label":"Protein Record: ",
+            },
+            "ac":{
+              "vpath":['ac'],
+              "id":"node_ac"
+            },
+            defpane: "function",
+            pane:[
+              {id:"function",
+               label:"Function",           
+               field:[
+                 {name:"Function",
+                  vpath:['attrs'],
+                  type:"text",
+                  condition:{
+                    test:['cvType','name'],
+                    equal:"function",
+                    value:["value"]
+                  },
+                  list:false,
+                  miss:"%DROP%"
+                 },
+                 {name:"Activity",
+                  vpath:['attrs'],
+                  type:"text",
+                  condition:{
+                    test:['cvType','name'],
+                    equal:"activity-regulation",
+                    value:["value"]
+                  },
+                  list:false,
+                  miss:"%DROP%"
+                 }
+               ]
+              },
+              {id:"sequence",
+               label:"Sequence",
+               field:[
+                 {name:"Sequence",
+                  vpath:['sequence'],
+                  type:"sequence",
+                  header:true
+                 }]
+              },
+              {id:"variant",
+               label:"Variants",
+               field:[]
+              },
+              {id:"feature",
+               label:"Features",
+               field:[
+                 {name:"Features",
+                  vpath:['feats'],
+                  type:"feature",
+                  header:true,
+                  list:true,
+                  miss: "%DROP%",
+                  header:true
+                 }
+               ]
+              },
+              {id:"structure",
+               label:"Structure",
+               field:[]
+              },
+              {id:"medical",
+               label:"Medical",
+               field:[]
+              },
+              {id:"xrefs",
+               label:"Cross-Refs",
+               field:[
+                 {name:"Cross-references",
+                  vpath:['xrefs'],
+                  type:"xref",
+                  header:true,
+                  list:true,
+                  miss: "%DROP%"}
+                ]
+              }          
+            ],
+            field:[
+              {name:"Accession",
+               vpath:['ac'],
+               type:"text"
+              },
+              {name:"Short name",
+               vpath:['label'],
+               type:"text"
+              },
+              {name:"Recommended name",
+               vpath:['name'],
+               type:"text"
+               },           
+              {name:"Alternative name(s)",
+               vpath:['alias'],
+               type:"text",
+               condition:{
+                 test:['cvType','name'],
+                 equal:"synonym",
+                 value:["alias"]
+               },
+               header:true,
+               list:true,
+               miss:"%DROP%" 
+              },           
+              {name:"Gene",
+               vpath:['alias'],
+               type:"text",
+               condition:{
+                 test:['cvType','name'],
+                 equal:"gene-name",
+                 value:["alias"]
+               },
+               list:false,
+               miss:"%DROP%"
+              },
+              {name:"Gene synonym(s)",
+               vpath:['alias'],
+               type:"text",
+               condition:{
+                 test:['cvType','name'],
+                 equal:"gene-synonym",
+                 value:["alias"]
+               },
+               header:true,
+               list:true,
+               miss:"%DROP%"
+              },               
+              {"name":"UniprotKB",
+               "vpath":['upr'],
+               "type":"link",
+               "url":"https://www.uniprot.org/uniprot/%%VAL%%",
+               "miss":"N/A"},
+               {"name":"RefSeq",
+               "vpath":['rsq'],
+               "type":"link",
+               "url":"https://www.ncbi.nlm.nih.gov/protein/%%VAL%%",
+               "miss":"N/A"
+              },
+
+              {"name":"Taxon",
+               "vpath":['taxon'],
+               "type":"taxon",
+               "url":"https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=%%VAL%%"
+              }
+             ],
+             "tab":[
+             ]
+         },
+         gene:{
+           type:{
+              "val":"gene",
+              "label":"Gene Record:",
+                
+           },
+           "ac":{
+               "vpath":['ac'],
+               "id":"node_ac"
+           },
+           defpane: "function",
+           pane:[
+             {id:"function",
+              label:"Function",           
+              field:[]
              }
-           ]
-          },
-          {id:"structure",
-           label:"Structure",
-           field:[]
-          },
-          {id:"medical",
-           label:"Medical",
-           field:[]
-          },
-          {id:"xrefs",
-           label:"Cross-Refs",
-           field:[
-             {name:"Cross-references",
-              vpath:['xrefs'],
-              type:"xref",
-              header:true,
-              list:true,
-              miss: "%DROP%"}
-            ]
-          }          
-        ],
-        field:[
-          {"name":"Accession",
-           "vpath":['ac'],
-           "type":"text"},
-          {"name":"Short name",
-           "vpath":['label'],
-           "type":"text"},
-          {"name":"Recommended name",
-           "vpath":['name'],
-           "type":"text"},           
-          {"name":"Gene",
-           "vpath":['gene'],
-           "type":"text",
-           "miss":"%DROP%"},
-          {"name":"UniprotKB",
-           "vpath":['upr'],
-           "type":"link",
-           "url":"https://www.uniprot.org/uniprot/%%VAL%%",
-           "miss":"N/A"},
-           {"name":"RefSeq",
-           "vpath":['rsq'],
-           "type":"link",
-           "url":"https://www.ncbi.nlm.nih.gov/protein/%%VAL%%",
-           "miss":"N/A"
-          },
-           
-          {"name":"Taxon",
-           "vpath":['taxon'],
-           "type":"taxon",
-           "url":"https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=%%VAL%%"
-          }
-         ],
-         "tab":[
-         ]
-     },
-     "gene":{
-        "ac":{
-          "vpath":['ac']          
-        },
-        "fld":[]
-     },
+           ],
+           "field":[]
+         }
+          
+      }
+    }
   },
      
   "xref-type":[{"ns":"psi-mi","ac":"MI:0000","value":"MI:0000",

@@ -28,7 +28,7 @@
              .done( function(data, textStatus, jqXHR){
                 BKDnode.view( data.node,
                               "#bkd-node-search", "#bkd-node-view",
-                              BKDconf["node"]["protein"],
+                              BKDconf["node"],
                               mode) } );
                   
         }
@@ -62,7 +62,7 @@
       </s:if>
        <tr>
          <td colspan="3">
-           <h1 id="bkd-main-name">Node</h1>           
+           <h1 id="bkd-main-name"></h1>           
        </tr>
 
    <s:if test="ac == null || ac.length == 0">
