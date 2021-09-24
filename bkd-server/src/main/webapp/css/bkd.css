@@ -121,5 +121,11 @@
 
 }
 
+#bkd-node-view  div {
+  border-style: solid;
+  border-color: #A8A8A8;
+  border-width: 1px;
+  padding: 1px 5px;
+}
 
 

@@ -383,7 +383,8 @@ BKDconf = {
             defpane: "function",
             pane:[
               {id:"function",
-               label:"Function",           
+               label:"Function",
+               header: true,
                field:[
                  {name:"Function",
                   vpath:['attrs'],
@@ -411,6 +412,7 @@ BKDconf = {
               },
               {id:"sequence",
                label:"Sequence",
+                header: false,
                field:[
                  {name:"Sequence",
                   vpath:['sequence'],
@@ -420,10 +422,12 @@ BKDconf = {
               },
               {id:"variant",
                label:"Variants",
+               header: true,
                field:[]
               },
               {id:"feature",
                label:"Features",
+               header: true,
                field:[
                  {name:"Features",
                   vpath:['feats'],
@@ -437,14 +441,22 @@ BKDconf = {
               },
               {id:"structure",
                label:"Structure",
+               header: true,
+               field:[]
+              },
+              {id:"homologs",
+               label:"Homologs",
+               header: true,
                field:[]
               },
               {id:"medical",
                label:"Medical",
+               header: true,
                field:[]
               },
               {id:"xrefs",
                label:"Cross-Refs",
+               header: true,
                field:[
                  {name:"Cross-references",
                   vpath:['xrefs'],
@@ -500,7 +512,7 @@ BKDconf = {
                  value:["alias"]
                },
                header:true,
-               list:true,
+               list:false,
                miss:"%DROP%"
               },               
               {"name":"UniprotKB",

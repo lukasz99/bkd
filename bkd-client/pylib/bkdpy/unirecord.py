@@ -18,8 +18,6 @@ class UniRecord( pymex.xmlrecord.XmlRecord ):
     
     def parseXml(self, filename, ver="uni001", debug=False):
         res =  super().parseXml( filename, ver=ver )
-        print(res)
-        
         return res
     
     def getRecord(self, ac="P60010"):

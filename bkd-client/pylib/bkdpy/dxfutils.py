@@ -298,8 +298,8 @@ class DxfUtils():
 
             sequence = ent['sequence']['value']
                       
-            #cattr = self.zdxf.attrType( name = "sequence", value = sequence, ns ="dxf", ac="dxf:0071" )
-            #znode.attrList['attr'].append( cattr )
+            cattr = self.zdxf.attrType( name = "sequence", value = sequence, ns ="dxf", ac="dxf:0071" )
+            znode.attrList['attr'].append( cattr )
 
             #cattr = self.zdxf.attrType( name = "sequence", value = sequence, ns ="dxf", ac="dxf:0072" )
             #znode.attrList.attr.append( cattr )

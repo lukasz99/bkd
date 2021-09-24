@@ -15,6 +15,7 @@
    <script src="js/bkd-config.js" type="text/javascript" language="JavaScript"></script>
    <script src="js/bkd-links.js" type="text/javascript" language="JavaScript"></script>
    <script src="js/bkd-node-jq.js" type="text/javascript" language="JavaScript"></script>
+   <script src="js/sequence-viewer.bundle.js" type="text/javascript" language="JavaScript"></script>
 
    <script type="text/javascript">
          

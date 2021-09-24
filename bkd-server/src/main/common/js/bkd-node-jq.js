@@ -214,10 +214,14 @@ BKDnode = {
 
           $("#bkd-sidebar").append("<div id='bkd-sb-"+cid+"' class='sidebar-entry'>"+
                                        clbl+"</div>\n"); 
+                                       
+          $("#bkd-nv-field").append("<div id='bkd-nv-"+cid+"' class='nv-field'></div>\n");
+          
+          if( format.pane[i].header){
+            $( "#bkd-nv-" + cid ).append(" <div id='bkd-nv-" + cid + "_head'>"+clbl+"</div>")
+          }
 
-          $("#bkd-nv-field").append("<div id='bkd-nv-"+cid+"' class='nv-field'>"+
-                                    " <div id='bkd-nv-" + cid + "_head'>"+clbl+"</div>" +
-                                    "</div>\n");
+
           // events
           //-------
 
@@ -261,8 +265,16 @@ BKDnode = {
               console.log("PFIELD: " + cfield.name + " :: " + cfield.type);
               switch( cfield.type ){
                 case "text":
+
                   this.showText( "#bkd-nv-"+cid, cfield, data );    
                 break;
+              case "sequence":
+                this.showSequence( "#bkd-nv-"+cid, cfield, data );    
+                break;
+              case "xref":
+                this.showXref( "#bkd-nv-"+cid, cfield, data );    
+                break;
+  
               }
             }
           }
@@ -738,7 +750,12 @@ BKDnode = {
          }
          return;
        }
-       $( tgt ).append( "<div>"+format.name+ ": " + fvlist[0] + "</div>" );
+
+       var fval = fvlist[0];   
+       for( var i=1; i <fvlist.length; i++){
+          fval+= "; " + fvlist[i];
+       }
+       $( tgt ).append( "<div>"+format.name+ ": " + fval + "</div>" );
 
      },
 
@@ -773,13 +790,24 @@ BKDnode = {
      },
 
      showSequence: function( tgt, format, data ){
-       var seq = this.getVal( data, format.vpath);
        
-       var value = "";
-       for(var i = 0; i*80 < seq.length; i++){
-          value += seq.substring(i*80,(i+1)*80) + "<br/>\n";
-       }
-       $( tgt ).append( "<div><div>"+format.name + "</div><div>" + value + "</div>" );
+       var seq = this.getVal( data, format.vpath);
+       $( tgt ).append( "<div><div id='seq-viewer'></div>" );
+
+       var seqview = new Sequence( seq );
+       seqview.render( '#seq-viewer',
+                       { 'showLineNumbers': true,
+                         'wrapAminoAcids': true,
+                         'charsPerLine': 80,
+                         'toolbar': true,
+                         //'search': true,
+                         //'title' : "Your title",
+                         'sequenceMaxHeight': "300px",
+                         'badge': false
+                       });
+
+      console.log("SHOWSEQUENCE: DONE");
+
      },
 
      showXref: function( tgt, format, data ){
