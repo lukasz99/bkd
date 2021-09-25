@@ -38,7 +38,8 @@ public class FeatureReport extends Report{
         Logger log = LogManager.getLogger( FeatureReport.class );
 
         FeatureReport report = new FeatureReport();
-        report.setCvType( freportType );
+               
+        report.setCvType( new CvTerm() );
         report.setSource( source );
 
         String tgtAc = "";
@@ -188,16 +189,25 @@ public class FeatureReport extends Report{
                     }
                 } else if(  key.startsWith("report_ac") ){
                     rac = val;
-                    System.out.println( " report ac = " + val );
-
+                    System.out.println( " report ac = " + val );                  
+                
+                } else if(  key.startsWith("report_type_") ){
                     
-                    
-
+                    System.out.println( " report type: key= " + key + "  val=" + val );                    
+                    String vname = key.replace("report_type_","");
+                    if( "ns".equalsIgnoreCase( vname ) ){
+                        report.getCvType().setNs( val );
+                    } else if( "ac".equalsIgnoreCase( vname ) ){
+                        report.getCvType().setAc( val );
+                    } else if( "name".equalsIgnoreCase( vname ) ){
+                        report.getCvType().setName( val );
+                    }
                 }
             }
 
             // report ac
-
+            //----------
+            
             try{
                 String rid = rac.replaceAll( "[^0-9]", "" );
                 long lrid = Long.parseLong( rid );
@@ -207,12 +217,10 @@ public class FeatureReport extends Report{
             } catch( Exception ex ){
                 // shouldn't happen                
             }
-            
-
-            
+                        
             
             // report target
-            
+            //--------------
             
             System.out.println( "JVAL:  " + jval.toString() );
             report.setJval( jval.toString() );

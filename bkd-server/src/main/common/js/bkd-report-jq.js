@@ -104,6 +104,11 @@ BKDrep = {
                             "</tr>");
         for(var i=0; i<data.length; i++){
             var cdata = data[i];
+
+            console.log("CDATA:"+ JSON.stringify(cdata));
+
+            if( cdata.feature !== undefined){
+
             var rid = cdata.ac +'_Edit';
             var crow = "<td>" + cdata.ac + "</td>" +
                 "<td>" + cdata.name + "</td>" + 
@@ -121,6 +126,7 @@ BKDrep = {
                 location.href = elink;
                 
             });
+            }
             
         }
         $('#' + tid).append("<tr> class='bkd-rep-fld'>" +
@@ -147,12 +153,19 @@ BKDrep = {
         
         console.log("DATA: "+ data);
         for(var i =0; i< data.length; i++){
+            if(data[i].feature !== undefined){
+
             console.log(data[i].feature.node.ac);
             $("#" + "bkd_report_new_target")
                 .append( $('<option>',{ val:data[i].feature.node.ac,
                                         text:data[i].feature.node.label}));
+            }
+            
         }
-        
+        $("#" + "bkd_report_new_target")
+                .append( $('<option>',{ val:"CVDB-4P",
+                                        text:"KCNK1_HUMAN"}));
+
         $( "#" + "bkd_report_new" ).on( 'click', function(event){
             console.log( "Target: " + $("#" + "bkd_report_new_target").val() );
 
@@ -508,7 +521,6 @@ BKDrep = {
 
         $(valAnchor).append("<form id='rep-val' name='report'" +
                     " action='report.action' method='post'>"); 
-
         
         //var repTp = BKDconf["report"]["feature"]["protein"]["type"];
        
@@ -516,11 +528,26 @@ BKDrep = {
         var flist = [];
         if( data != null && data.report != null ){
           var repTp = data.report.cvType;
-          var reports = BKDconf.report.feature;                    
-          for(var r in reports ){
-            console.log("tp: " + repTp +" r: "+ JSON.stringify(reports[r]) );
+          console.log("REPTP:::: "+ JSON.stringify(repTp) );                      
+          $( valAnchor +" > form" )
+                .append( "<input id='report_type_ns' class='bkd-report' type='hidden'/>" );
+          $("#report_type_ns" ).val(repTp.ns);
 
+          $( valAnchor +" > form" )
+                .append( "<input id='report_type_ac' class='bkd-report' type='hidden'/>" );
+          $("#report_type_ac" ).val(repTp.ac);
+
+          $( valAnchor +" > form" )
+                .append( "<input id='report_type_name' class='bkd-report' type='hidden'/>" );
+          $("#report_type_name" ).val(repTp.name);
+
+          var reports = BKDconf.report.feature;
+          console.log("reptp: " + JSON.stringify(repTp) );
+          for(var r in reports ){
+             console.log("r: "+ JSON.stringify(reports[r].cvType) );                      
+            //xxx;
             if( reports[r].cvType.name == repTp.name){
+                console.log("r: format found !!!");
                flist = reports[r].value;
                console.log("flist(setting): "+ JSON.stringify(flist));
                break;
@@ -535,15 +562,21 @@ BKDrep = {
         
         
         for( var i = 0; i < flist.length; i++){
+          
+
           var flabel = flist[i].name;         
           var fname = flist[i].value;
           var fid = flist[i].id;
           var fdata = '';
+          console.log( flabel + "::"+fname + "::" + flist[i].type);
+
+          console.log(JSON.stringify(data['report-value']));
+          
           if( data!== null && data['report-value'] != null &&
               data['report-value'][flist[i].value] !=null ){
               fdata = data['report-value'][flist[i].value]['value'];
           }              
-                                             
+          console.log(" Field data: " + fdata);                                   
           if( flist[i].type == "label"){
 
             $( valAnchor +" > form " ).append( "<div class='bkd-rep-fld'>\n"+
@@ -582,8 +615,9 @@ BKDrep = {
         $("#"+"report_submit").attr('value', 'Submit Report');
         $( "#" + "report_submit" ).on( 'click', function(event){
 
+            
             BKDrep.postData = { "report_type": repTp } ; 
-
+            
             $( ".bkd-report").each( function(index,el){
                 try{              
                   BKDrep.postData[el.id] = el.value;
@@ -596,6 +630,10 @@ BKDrep = {
                 }
              });
 
+             
+             console.log("REPTP: "+JSON.stringify(BKDrep.postData));      
+             
+             
              $.ajax({
                 type: "POST",
                 url: "report",
