@@ -26,7 +26,7 @@
 
     <service.jdbc>jdbc/bkd</service.jdbc>
     <service.dbip>10.1.7.101</service.dbip>
-    <service.esindex.url>http://10.1.6.4:9200/ucvdb</service.esindex.url>
+    <service.esindex.url>http://10.1.7.103:9200/cvdb-%%TYPE%%-index-000001</service.esindex.url>
     <service.esindex.active>true</service.esindex.active>
 
 
@@ -288,9 +288,6 @@
         <configuration>
 
           <webResources>
-            
-            <!-- XXXX -->
-              
              <resource>
               <directory>${basedir}/src/main/common/tiles</directory>
               <targetPath>tiles</targetPath>
@@ -386,8 +383,17 @@
               <targetPath>WEB-INF/classes</targetPath>
               <filtering>true</filtering>
               <includes>
-                <include>applicationContext.xml</include>
+                <include>applicationContext.xml</include>               
                 <include>log4j2.xml</include>
+              </includes>
+            </resource>
+
+            <resource>
+              <directory>${basedir}/src/main/resources/spring</directory>
+              <targetPath>WEB-INF/classes/spring</targetPath>
+              <filtering>true</filtering>
+              <includes>
+                <include>*.xml</include>               
               </includes>
             </resource>
            

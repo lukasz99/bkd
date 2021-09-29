@@ -133,6 +133,15 @@
      <property name="daoContext" ref="bkdDaoContext" />
    </bean>
    
+   <!-- Idex Manager -->
+
+   <bean id="bkdIndexManager" class="edu.ucla.mbi.bkd.store.BkdIndexManager"
+         init-method="initialize" >
+     <property name="recordManager" ref="bkdRecordManager" />
+     <property name="indexUrl" value="${service.esindex.url}" />
+     <property name="indexActive" value="${service.esindex.active}" />
+   </bean>
+
    <!-- Query Manager -->
 
    <bean id="bkdQueryManager" class="edu.ucla.mbi.bkd.store.BkdQueryManager"

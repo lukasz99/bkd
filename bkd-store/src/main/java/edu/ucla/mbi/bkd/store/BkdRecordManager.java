@@ -559,6 +559,15 @@ public class BkdRecordManager {
         return report;
     }
 
+    public Report getReport( String acc ) {
+
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( " getReport ->  acc=" + acc );
+        
+        Report report =  daoContext.getReportDao().getById( "", acc );
+        return report;
+    }
+
     public FeatureReport getNewFeatureReport( String tgtNs, String tgtAc ) {
 
         Logger log = LogManager.getLogger( this.getClass() );

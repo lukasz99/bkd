@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="
+      http://www.springframework.org/schema/beans 
+      http://www.springframework.org/schema/beans/spring-beans.xsd
+    
+      http://www.springframework.org/schema/tx 
+      http://www.springframework.org/schema/tx/spring-tx.xsd
+      
+      http://www.springframework.org/schema/aop 
+      http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+  <bean id="bkdAdviceBean" class="edu.ucla.mbi.bkd.BkdAdvice">
+     <!-- property name="attachmentManager" ref="attachmentManager"/> -->
+     <!-- property name="watchManager" ref="watchManager"/>          -->
+     <!-- property name="notificationManager" ref="notificationManager"/> -->
+     <property name="indexManager" ref="bkdIndexManager"/>
+  </bean>     
+
+  <aop:config>
+    <aop:aspect id="bkdAspect" ref="bkdAdviceBean">
+
+      <aop:after-returning returning="rnode"
+        pointcut="execution(* edu.ucla.mbi.bkd.store.BkdRecordManager.addNode(..))
+                  and args( node )"
+        method="addNodeMonitor" />    
+      
+      <aop:after-returning returning="rreport"
+        pointcut="execution(* edu.ucla.mbi.bkd.store.BkdRecordManager.addReport(..)) 
+                  and args( report )"        
+        method="addReportMonitor" />    
+    </aop:aspect>
+  </aop:config>
+ </beans>

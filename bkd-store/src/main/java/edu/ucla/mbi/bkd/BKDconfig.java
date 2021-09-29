@@ -4,7 +4,7 @@ public class BKDconfig{
  
     private static String prefix = "BKD";
     
-    public BKDconfig(){}
+    //public BKDconfig(){}
     
     public void setPrefix( String value ){
         prefix = value;
