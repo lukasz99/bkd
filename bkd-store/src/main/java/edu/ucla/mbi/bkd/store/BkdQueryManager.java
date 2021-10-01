@@ -22,6 +22,16 @@ public class BkdQueryManager extends QueryManager{
     }
 
     //--------------------------------------------------------------------------
+    // Index manager
+    //-----------
+    
+    BkdIndexManager indexManager;
+    
+    public void setIndexManager( BkdIndexManager manager ){
+        this.indexManager = manager;
+    }
+
+    //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
     
     public List<Object> getReportList( String ns, String ac, String sort){
@@ -54,6 +64,13 @@ public class BkdQueryManager extends QueryManager{
             rlist.add(rnode);
         }
         return rlist; 
+    }
+
+
+    
+    public List<Object> getNodeListSimple( String query ){
+        
+        return new ArrayList<Object>( indexManager.getNodeListSimple( query ) );
     }
 
     public List<Object> getNodeList(String query, String qmode, String sort){

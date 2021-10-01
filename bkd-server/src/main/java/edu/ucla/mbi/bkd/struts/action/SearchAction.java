@@ -79,7 +79,7 @@ public class SearchAction extends PortalSupport{
             if( "report".equalsIgnoreCase( this.getQmode() ) ){ 
                 rdlist = qmngr.getReportList( query, sort );
             } else { 
-                rdlist = qmngr.getNodeList( query, qmode, sort );
+                rdlist = qmngr.getNodeListSimple( query );
             }           
         }
                     
