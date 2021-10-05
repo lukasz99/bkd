@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.net.*;
 import java.util.*;
-
+import java.math.BigInteger;
 import org.hibernate.*;
 
 import edu.ucla.mbi.bkd.store.*;
@@ -25,7 +25,7 @@ public class NodeDao extends AbstractDAO {
             return null;
         } 
     }
-    
+
     //--------------------------------------------------------------------------
     
     public Node getByDip( String id ){ 
@@ -64,6 +64,43 @@ public class NodeDao extends AbstractDAO {
     }
 
     //--------------------------------------------------------------------------
+    
+    public Node getByNac( int nac ){ 
+
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( "NodeDao->getNode: nac(int)=" + nac  );
+
+               
+        Node node = null;
+        
+        Session session = getCurrentSession();
+        Transaction tx = session.beginTransaction();
+        
+        try {
+            
+            Query query =
+                session.createQuery( "from Node n where " +
+                                     " n.nacc = :nac order by n.id desc");
+            query.setParameter( "nac", nac );
+            query.setFirstResult( 0 );
+            node = (Node) query.uniqueResult();
+            tx.commit();
+            
+        } catch( NumberFormatException ne ){
+
+            // wrong accession fromat
+            
+        } catch( HibernateException e ) {
+            handleException( e );
+            // log error ?
+        } finally {
+            session.close();
+        }
+        log.info( "NodeDao-> found: " + node );
+        return node; 
+    }
+
+    //--------------------------------------------------------------------------
 
     public Node getById( String ns, String sid ){ 
         
@@ -73,73 +110,47 @@ public class NodeDao extends AbstractDAO {
         Transaction tx = session.beginTransaction();
 
         Logger log = LogManager.getLogger( this.getClass() );
-        log.info( "-> getById: ns=" + ns + " ac=" + sid + " prefix: " + Node.getPrefix());
+        log.info( "-> getById: ns=" + ns + " ac=" + sid );
 	
         try {	    
             Query query =  null;            
             
-            if( sid.startsWith( Node.getPrefix() ) ){
-
+                
+            if( "upr".equalsIgnoreCase( ns ) ){
+                log.info( "-> getById: upr=" + sid );
                 query =
-                    session.createQuery( "from Node n JOIN FETCH n.cvtype" +
-                                         " where n.ndid = :id order by n.id desc");
-
-                //query =
-                //   session.createQuery( "from Node n where " +
-                //                         " n.id = :id order by n.id desc");
-                
-                try{
-                    sid = sid.replaceAll( "[^0-9]", "" );
-                    if(sid.length() > 0){
-                        long lid = Long.parseLong( sid );
-                        query.setParameter( "id", lid );
-                        log.info( "-> getById: lid=" + lid );
-
-                    }
-                } catch(Exception ex){		    
-                    log.info( ex );
-                    
-                    // should not happen
-                }
-                
-            } else {
-                
-                if( "upr".equalsIgnoreCase( ns ) ){
-                    log.info( "-> getById: upr=" + sid );
-                    query =
-                        session.createQuery( "from Node n where " +
-                                             " n.upr = :id order by n.id desc");
-                }
-                
-                if( "rsq".equalsIgnoreCase( ns ) ){                   
-                    query =
-                        session.createQuery( "from Node n where " +
-                                             " n.rsq = :id order by n.id desc");
-                }
-                
-                
-                if( "dip".equalsIgnoreCase( ns ) ){
-                    query =
-                        session.createQuery( "from Node n where " +
-                                             " n.dip = :id order by n.id desc");
-                }
-                
-                if( "gid".equalsIgnoreCase( ns ) ){
-                    query =
-                        session.createQuery( "from Node n where " +
-                                             " n.gid = :id order by n.id desc");
-                }
-                
-                query.setParameter( "id", sid );
+                    session.createQuery( "from Node n where " +
+                                         " n.upr = :id order by n.id desc");
             }
+                
+            if( "rsq".equalsIgnoreCase( ns ) ){                   
+                query =
+                    session.createQuery( "from Node n where " +
+                                         " n.rsq = :id order by n.id desc");
+            }
+                
+                
+            if( "dip".equalsIgnoreCase( ns ) ){
+                query =
+                    session.createQuery( "from Node n where " +
+                                         " n.dip = :id order by n.id desc");
+            }
+            
+            if( "gid".equalsIgnoreCase( ns ) ){
+                query =
+                    session.createQuery( "from Node n where " +
+                                         " n.gid = :id order by n.id desc");
+            }
+                
+            query.setParameter( "id", sid );        
             query.setFirstResult( 0 );
             
             List<Node> nodes= (List<Node>) query.list();            
-
+            
             if( nodes.size() > 0 ){
                 node = nodes.get(0);
             }
-
+            
             tx.commit();
             log.info("found node: " + node);
             
@@ -156,7 +167,7 @@ public class NodeDao extends AbstractDAO {
     
     //--------------------------------------------------------------------------
 
-    public Node getByAccession( String accession ) { 
+    public Node getByAcc( String acc ){ 
         
         Node node = null;
         
@@ -167,22 +178,12 @@ public class NodeDao extends AbstractDAO {
 
             // convert accession to uid
             
-            int id = 0;
-
-            if( accession.startsWith("DIP-") ){
-                accession = accession.substring(4);
-            }
-
-            if( accession.endsWith("N") ){
-                accession = accession.substring(0,accession.length()-1);
-            }
-
-            id = Integer.parseInt( accession );
+            int id = Integer.parseInt(acc.replaceAll("[^0-9]", "") );
                       
             Query query =
                 session.createQuery( "from Node n where " +
-                                     " n.dip = :id ");
-            query.setParameter( "id", id );
+                                     " n.nacc = :nacc ");
+            query.setParameter( "nacc", id );
             query.setFirstResult( 0 );
             node = (Node) query.uniqueResult();
             tx.commit();
@@ -199,7 +200,7 @@ public class NodeDao extends AbstractDAO {
         }
         return node; 
     }
-
+    
     public List<Object> getListById( String ns, String ac,
                                      String ndtype, String sort ){
         
@@ -337,6 +338,31 @@ public class NodeDao extends AbstractDAO {
             session.close();
         }
         return count;
+    }
+    
+    public List<Integer> getIdList( int rfirst, int rmax ){
+
+        Session session = getCurrentSession();
+        Transaction tx = session.beginTransaction();
+        List<Integer> res = new ArrayList<Integer>();
+        try {           
+            SQLQuery query = session.createSQLQuery( "select nacc from node order by nacc asc" );
+            query.setFirstResult(rfirst);
+            query.setMaxResults(rmax);
+
+            List qres = query.list();
+            for( Object co : qres ){
+                res.add( ((Integer)co).intValue()  );                
+            }
+            
+            tx.commit();
+        } catch ( HibernateException e ) {
+            handleException( e );
+            // log error ?
+        } finally {            
+            session.close();
+        }
+        return res;
     }
     
     //---------------------------------------------------------------------

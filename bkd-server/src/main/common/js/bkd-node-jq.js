@@ -1,3 +1,5 @@
+console.log("bkd-node-jq: common");
+ 
 BKDnode = {
   nodeAnchor: null,
   srcAnchor: null,
@@ -22,6 +24,25 @@ BKDnode = {
       BKDnode.nodeView( data, this.nodeAnchor, flist, mode );
       $( nodeAnchor ).show();
     }
+  },
+
+  doSearch: function(){
+      var squery = $("#bkd-squery").val();
+      var qmode =  $("#bkd-qmode").val();  
+
+      console.log(qmode + ":" + squery);
+      
+      myurl ="search?query="+squery+"&qmode="+qmode;          
+      $.ajax( { url: myurl} )
+          .done( function(data, textStatus, jqXHR){
+            console.log(JSON.stringify(data)); 
+            console.log(JSON.stringify(textStatus)); 
+            console.log(JSON.stringify(jqXHR)); 
+
+             BKDnode.searchView( data.rdata,
+                                "#bkd-search-result", "#bkd-node-view",
+                                 BKDconf["node"],
+                                 qmode) } );
   },
   
   search: function( data, srcAnchor ){
@@ -81,35 +102,53 @@ BKDnode = {
   searchView: function(data, srcAnchor, mode ){
   
     var tid="bkd-search-table";
-    $('#' + tid).remove();
-    $(srcAnchor).append( "<div class='bkd-search'><hr/><table id='" + tid + "' class='bkd-search-table'></table></div>");
+    $(srcAnchor).empty();
+    $(srcAnchor).append( "<div id='foo'><hr/><table id='" + tid + "' class='bkd-search-table'></table></div>");
     $('#' + tid).append("<tr> class='bkd-rep-fld'>"+
-                                  "<th width='5%'>ID</th>"+
-                                  "<th width='10%'>Type</th>"+
-                                  "<th width='10%'>Accession</th>"+
-                                  "<th width='10%'>Species</th>"+
-                                  "<th width='10%'>Name</th>"+
-                                  "<th >Description</th>"+
-                                  "<th width='5%'>&nbsp;</th>"+
+                                  "<th align='center' width='5%'>ID</th>"+
+                                  "<th align='center' width='10%'>Type</th>"+
+                                  "<th align='center' width='10%'>Accession</th>"+
+                                  "<th align='center' width='10%'>Species</th>"+
+                                  "<th align='center' width='10%'>Name</th>"+
+                                  "<th align='center'>Description</th>"+
+                                  "<th align='center' width='5%' colspan='3'>&nbsp;</th>"+
                                 "</tr>");
     for(var i=0; i<data.length; i++){
                var cdata = data[i];
-               var rid = cdata.ac +'_View';
+               var rid = cdata.ac;
                var crow = "<td>" + cdata.ac + "</td>" +
-                          "<td>" + cdata.cvType.name + "</td>" + 
+                          "<td align='center'>" + cdata.cvType.name + "</td>" + 
                           "<td align='center'>" + cdata.ac + "</td>" +
+                          "<td align='center'>" + cdata.taxon.sciName + "</td>" +
                           "<td align='center'>" + cdata.label + "</td>" +
-                          "<td align='center'>" + cdata.name + "</td>" +
-                          "<td align='center'>" + cdata.label + "</td>" +
+                          "<td>" + cdata.name + "</td>" +
                           "<td align='center'>" +
-                          "<input type='button' id='"+rid+"' value='View'/>"+
+                          "<input type='button' id='"+rid+"_view' value='View'/>"+
+                          "</td>" +                          
+                          "<td align='center'>" +
+                          "<input type='button' id='"+rid+"_report_view' value='Reports'/>"+
+                          "</td>" +
+                          "<td>" +
+                          "<input type='button' id='"+rid+"_report_add' value='Add Report'/>"+
                           "</td>";
                           
                $('#' + tid).append("<tr> class='bkd-rep-fld'>"+crow+"</tr>");
 
-               $( "#" + rid ).on( 'click', function(event){
-                    var prefix= event.currentTarget.id.replace('_View','');
-                    var elink="node?ns=cvdb&ac="+prefix+"&mode=view";
+               $( "#" + rid +"_view").on( 'click', function(event){
+                    var prefix= event.currentTarget.id.replace('_view','');
+                    var elink="node?ns=" + BKDsite.prefix + "&ac="+prefix+"&mode=view";
+                    location.href = elink;                    
+                  });
+
+               $( "#" + rid +"_report_view").on( 'click', function(event){
+                    var prefix= event.currentTarget.id.replace('_report_view','');
+                    var elink="report?ns=" + BKDsite.prefix + "&ac="+prefix+"&mode=view";
+                    location.href = elink;                    
+                  });
+
+               $( "#" + rid +"_report_add").on( 'click', function(event){
+                    var prefix= event.currentTarget.id.replace('_report_add','');
+                    var elink="report?ns=" + BKDsite.prefix + "&ac="+prefix+"&op=new";
                     location.href = elink;                    
                   });
 
@@ -792,6 +831,7 @@ BKDnode = {
      showSequence: function( tgt, format, data ){
        
        var seq = this.getVal( data, format.vpath);
+       console.log(seq);
        $( tgt ).append( "<div><div id='seq-viewer'></div>" );
 
        var seqview = new Sequence( seq );

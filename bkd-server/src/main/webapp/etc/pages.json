@@ -41,6 +41,22 @@
                          "viewtype":"file-html",
                          "viewpath":"/pages/view-protein.html"
                        },
+        "databasemgr":{ "active":"true",
+                         "title":"Channel VUS: Database Manager",
+                         "menusel":"3:1:1",
+                         "urlindex":"pages/databasemgr.html",
+                         "showindex":"false",
+                         "viewtype":"file-html",
+                         "viewpath":"/pages/databasemgr.html"
+                       },
+        "indexmgr":{ "active":"true",
+                         "title":"Channel VUS: Database Manager",
+                         "menusel":"3:1:2",
+                         "urlindex":"pages/indexmgr.html",
+                         "showindex":"false",
+                         "viewtype":"file-html",
+                         "viewpath":"/pages/indexmgr.html"
+                       },
 
       browse:{
         active:true,
@@ -106,14 +122,6 @@
         viewtype:"file-html",
         viewpath:"/pages/workflowadmin.html"
       },
-      databasemgr:{
-        active:true,
-        title:"ImexCentral: Database Manager",
-        menudef:"0:2:2",
-        menusel:"3:3",
-        viewtype:"file-html",
-        viewpath:"/pages/databaseadmin.html"
-      },
       backendmgr:{
         active:true,
         title:"ImexCentral: Back-End Manager",
@@ -127,14 +135,6 @@
         title:"ImexCentral: Proxy Manager",
         menudef:"0:2:2",
         menusel:"3:3:2",
-        viewtype:"file-html",
-        viewpath:"/pages/udev.html"
-      },
-      indexmgr:{
-        active:true,
-        title:"ImexCentral: Index Manager",
-        menudef:"0:2:2",
-        menusel:"3:3:3",
         viewtype:"file-html",
         viewpath:"/pages/udev.html"
       },

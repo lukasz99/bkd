@@ -8,7 +8,6 @@ import java.io.StringWriter;
 import java.util.*;
 
 import edu.ucla.mbi.dxf20.*;
-import edu.ucla.mbi.bkd.BKDconfig;
 
 import javax.xml.bind.JAXB;
 import javax.persistence.*;
@@ -29,10 +28,11 @@ public class Node implements Comparable<Node>{
     @Column(name = "pkey")
     private long pkey;
 
-    protected static String prefix = null;
+    @Column(name = "prefix")
+    protected String prefix;
     
-    @Column(name = "ndid")
-    protected long ndid = 0;
+    @Column(name = "nacc")
+    protected int nacc = 0;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "cvtype")
@@ -91,35 +91,28 @@ public class Node implements Comparable<Node>{
         return generator;
     }
     
-    public static String getPrefix(){
-        if( prefix == null ){
-            prefix = BKDconfig.getPrefix();
-        }
-        return prefix;
-    }
-    
-    public void setId(long id ){        
-        this.ndid = id;
+    public void setPrefix( String prefix ){
+        this.prefix = prefix;
     }
 
-    public long  getId(){
-        return ndid;
+    public String getPrefix(){
+        return this.prefix;
+    }
+
+    public void setNacc(int nacc ){        
+        this.nacc = nacc;
+    }
+
+    public int getNacc(){
+        return nacc;
     }
     
     public String getNs(){
-
-        if( prefix == null ){
-            prefix = BKDconfig.getPrefix();
-        }
-        return prefix;
+        return this.prefix;
     }
 
     public String getAc(){
-
-        if( prefix == null ){
-            prefix = BKDconfig.getPrefix();
-        }
-        return prefix + "-"+ Long.toString(ndid) + "N";
+        return prefix + "-"+ Integer.toString(nacc) + "N";
     }
 
     public String getVersion(){

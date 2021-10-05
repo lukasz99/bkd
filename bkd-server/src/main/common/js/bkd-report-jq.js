@@ -1,3 +1,5 @@
+console.log("bkd-report-jq: common");
+
 BKDrep = {
     srcAnchor: null,
     tgtAnchor: null,
@@ -229,7 +231,9 @@ BKDrep = {
         } else {
           $( tgtAnchor ).show();
         }
-                
+
+        console.log("DATA:" + JSON.stringify(data));
+
         var flist = BKDconf["report"]["feature"]["protein"]["target"];
 
         // report accession
@@ -238,8 +242,10 @@ BKDrep = {
         var rac = BKDconf["report"]["feature"]["protein"]["ac"];
         var racval ="";
         var racpath = rac["vpath"];
-        var cval = data["report"];        
-                
+        var cval = data;   // ["record"];        
+          
+        console.log("PATH:" + JSON.stringify(racpath));
+
         for(var j=0; j<racpath.length; j++){
           console.log("CVAL: " + racpath[j] + " : " + cval[ racpath[j]] );
           cval = cval[ racpath[j] ];

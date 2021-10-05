@@ -5,16 +5,15 @@
 <html lang="en">
  <head>
   <meta charset="utf-8">
-  <title>Node</title>
+  <title>CVDB: Node</title>
 
   <t:insertDefinition name="htmlhead"/>  
-   <%--<script src="js/modal-yui.js" type="text/javascript" language="JavaScript"></script> --%>
-   <%-- <script src="js/help-yui.js" type="text/javascript" language="JavaScript"></script> --%>
    <script src="jq/jquery-3.6.0.js" type="text/javascript" language="JavaScript"></script>
-
    <script src="js/bkd-config.js" type="text/javascript" language="JavaScript"></script>
    <script src="js/bkd-links.js" type="text/javascript" language="JavaScript"></script>
+   <script src="js/sequence-viewer.bundle.js" type="text/javascript" language="JavaScript"></script>
    <script src="js/bkd-node-jq.js" type="text/javascript" language="JavaScript"></script>
+   <script src="js/bkd-site.js" type="text/javascript" language="JavaScript"></script>
 
    <script type="text/javascript">
          
@@ -25,12 +24,22 @@
         if( ns.length > 0 && ac.length >0 ){     // show node
            myurl ="node?ns="+ns+"&ac="+ac+"&ret=data&format=json";          
            $.ajax( { url: myurl} )
-             .done( function(data, textStatus, jqXHR){
-                BKDnode.view( data.node,
-                              "#bkd-node-search", "#bkd-node-view",
-                              BKDconf["node"],
-                              mode) } );
-                  
+              .done( function(data, textStatus, jqXHR){                  
+                 BKDnode.view( data.node,
+                               "#bkd-node-search", "#bkd-node-view",
+                               BKDconf["node"],
+                               mode) } );
+        } else {
+            // hide node view
+            $( "#bkd-node-view" ).hide(); 
+            $( "#bkd-sidebar" ).hide(); 
+            
+            $("#bkd-search").on( 'click', function (event) {
+               console.log("search clicked");
+               BKDnode.doSearch();
+            });
+            // show node search
+            $( "#bkd-node-search" ).show();
         }
     
        });

@@ -11,7 +11,7 @@
       http://www.springframework.org/schema/aop 
       http://www.springframework.org/schema/aop/spring-aop.xsd">
 
-  <bean id="siteConfig" class="edu.ucla.mbi.bkd.BKDconfig">
+  <bean id="siteConfig" class="edu.ucla.mbi.bkd.BkdConfig">
     <property name="prefix" value="CVDB"/>
   </bean>
 

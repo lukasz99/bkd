@@ -32,7 +32,7 @@ public class GeneNode extends Node{
     }
 
     public String getAc(){
-        return prefix + "-"+ Long.toString(ndid) + "G";
+        return prefix + "-"+ Long.toString(nacc) + "G";
     }
 
     public void setRsq( String rsq ){

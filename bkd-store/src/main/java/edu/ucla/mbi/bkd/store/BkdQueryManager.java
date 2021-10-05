@@ -49,6 +49,24 @@ public class BkdQueryManager extends QueryManager{
         return new ArrayList<Object>();
     }
 
+    public List<Object> getReportListSimple( String query, String sort ){
+
+        List<Node> nlst = indexManager.getNodeListSimple( query );
+
+        List<Object> result = new ArrayList<Object>();
+        
+        for( Node cn:  nlst ){
+            List<Object> crl = daoContext.getReportDao()
+                .getListByTarget( cn.getNs(), cn.getAc(), sort );
+
+            for( Object cr : crl ){
+                result.add(cr);
+            }            
+        }
+        
+        return result;
+    }
+
     public List<Object> getNodeList( String ns, String ac, String ndtype, String sort){
 
         // returns nodes of ndtype type matching ns/ac 
@@ -66,9 +84,8 @@ public class BkdQueryManager extends QueryManager{
         return rlist; 
     }
 
-
     
-    public List<Object> getNodeListSimple( String query ){
+    public List<Object> getNodeListSimple( String query, String sort ){
         
         return new ArrayList<Object>( indexManager.getNodeListSimple( query ) );
     }

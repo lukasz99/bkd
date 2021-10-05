@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 
+import edu.ucla.mbi.bkd.*;
 import edu.ucla.mbi.bkd.store.dao.*;
 
 public class BkdRecordManager {
@@ -24,12 +25,28 @@ public class BkdRecordManager {
         log.info( "RecordManager: cleanup called" );
     }
 
+    // BKD Config
+
+    BkdConfig bkdconf;
+    
+    public void setBkdConfig( BkdConfig config ){
+        this.bkdconf = config;
+    }
+
+    public BkdConfig getBkdConfig(){
+        return this.bkdconf;
+    }
+
     // DaoContext
 
     BkdDaoContext daoContext;
     
     public void setDaoContext( BkdDaoContext daoContext ){
         this.daoContext = daoContext;
+    }
+
+    public BkdDaoContext getDaoContext(){
+        return this.daoContext;
     }
     
     //---------------------------------------------------------------------
@@ -43,11 +60,25 @@ public class BkdRecordManager {
         Logger log = LogManager.getLogger( this.getClass() );
         log.info( " get node -> ac=" + acc );
         
+        //try{
+        Node node = daoContext.getNodeDao().getByAcc( acc );            
+        return node;
+        //} catch( Exception ex ) {
+        //log.error(ex);
+        //return null;
+        //}
+    }
+
+    public Node getNode( int id ) {
+	
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( " get node -> nac(int)=" + id );
+        
         try{
-            Node node = daoContext.getNodeDao().getByAccession( acc );            
+            Node node = daoContext.getNodeDao().getByNac( id );            
             return node;
         } catch( Exception ex ) {
-	    log.error(ex);
+            log.error(ex);
             return null;
         }
     }
@@ -72,10 +103,14 @@ public class BkdRecordManager {
         Logger log = LogManager.getLogger( this.getClass() );
         log.info( " add node -> node=" + node.toString() );
 
-        if( node.getId() == 0 ){ 
-            long nid = daoContext.getIdGenDao().getNextId( Node.generator() );
-            node.setId( nid );	    
+        if( node.getNacc() == 0 ){ 
+            int nid = daoContext.getIdGenDao().getNextId( Node.generator() );
+            node.setNacc( nid );	    
         }
+
+        node.setPrefix( bkdconf.getPrefix() );
+        
+        
         try{
 
             // cvtype - persist if needed
@@ -105,7 +140,7 @@ public class BkdRecordManager {
             
             node = daoContext.getNodeDao().updateNode( node );
 
-            log.info(" Node updated:" + node.getId());
+            log.info(" Node updated:" + node.getNacc());
             
             // xrefs - persist xrefs and components if needed
             //-----------------------------------------------           
@@ -568,14 +603,39 @@ public class BkdRecordManager {
         return report;
     }
 
-    public FeatureReport getNewFeatureReport( String tgtNs, String tgtAc ) {
+    public Report getReport( int id ) {
+        
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( " get report -> id(int)=" + id );
+        
+        try{
+            Report report = daoContext.getReportDao().getByNac( id );            
+            return report;
+        } catch( Exception ex ) {
+	    log.error(ex);
+            return null;
+        }
+    }
+
+    public FeatureReport getNewFeatureReport( String tgtNs, String tgtAc ){
 
         Logger log = LogManager.getLogger( this.getClass() );
         log.info( " getNewFeatureReport -> tgt=" + tgtAc );
+        log.info( " getNewFeatureReport -> tns=" + tgtNs + " nat ns="+ bkdconf.getPrefix());
         
-        Node tnode =  daoContext.getNodeDao().getById( tgtNs, tgtAc );
+        Node tnode;
+
+        if( bkdconf.getPrefix().equalsIgnoreCase(tgtNs) ){
+            tnode = daoContext.getNodeDao().getByAcc( tgtAc );
+        } else {
+            tnode = daoContext.getNodeDao().getById( tgtNs, tgtAc );
+        }
+
+        log.info( " getNewFeatureReport -> tnode=" + tnode );
         
         FeatureReport report = new FeatureReport();
+        report.setPrefix( bkdconf.getPrefix() );
+        
         NodeFeat nfeat = new NodeFeat();
         nfeat.setNode( tnode );
         report.setFeature( nfeat );
@@ -635,9 +695,9 @@ public class BkdRecordManager {
         log.info( "addReport -> report=" + report.toString() );
         log.info( "addReport -> Jval= " + report.getJval() ); 
         
-        if( report.getRpid() == 0 ){ 
-            long rid = daoContext.getIdGenDao().getNextId( Report.generator() );
-            report.setRpid( rid );	    
+        if( report.getNacc() == 0 ){ 
+            int rid = daoContext.getIdGenDao().getNextId( Report.generator() );
+            report.setNacc( rid );	    
         }
         
         if( report instanceof NodeReport){
@@ -786,7 +846,7 @@ public class BkdRecordManager {
         
         report = daoContext.getReportDao().updateReport( report );
         
-        log.info(" Report updated:" + report.getRpid());
+        log.info(" Report updated:" + report.getNacc());
         
         
         // xrefs - persist xterm and components if needed

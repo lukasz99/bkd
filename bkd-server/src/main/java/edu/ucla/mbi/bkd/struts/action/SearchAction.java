@@ -77,9 +77,9 @@ public class SearchAction extends PortalSupport{
         } else if( this.getQuery() != null && this.getQuery().length() > 0){
             
             if( "report".equalsIgnoreCase( this.getQmode() ) ){ 
-                rdlist = qmngr.getReportList( query, sort );
+                rdlist = qmngr.getReportListSimple( query, sort );
             } else { 
-                rdlist = qmngr.getNodeListSimple( query );
+                rdlist = qmngr.getNodeListSimple( query, sort );
             }           
         }
                     

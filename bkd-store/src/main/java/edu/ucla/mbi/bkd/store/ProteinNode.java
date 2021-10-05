@@ -35,7 +35,7 @@ public class ProteinNode extends Node{
     }
     
     public String getAc(){
-        return prefix + "-"+ Long.toString(ndid) + "P";
+        return prefix + "-"+ Long.toString(nacc) + "P";
     }
     
     public void setDip( String dip ){

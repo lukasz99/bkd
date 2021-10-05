@@ -64,6 +64,8 @@
         <site>dip</site>
         <srv.ver>dipdev0</srv.ver>
         <db.ver>dip</db.ver>
+        <rec.prefix>DIP</rec.prefix>
+        <service.esindex.url>http://10.1.7.103:9200/dip-%%TYPE%%-index-000000</service.esindex.url>
       </properties>
       <build>
        <finalName>dipdev0</finalName>
@@ -79,6 +81,8 @@
        <site>dip</site>
        <srv.ver>dipdev2</srv.ver>
        <db.ver>dip</db.ver>
+       <rec.prefix>DIP</rec.prefix>
+       <service.esindex.url>http://10.1.7.103:9200/dip-%%TYPE%%-index-000002</service.esindex.url>
      </properties>
      <build>
       <finalName>dipdev2</finalName>
@@ -94,6 +98,8 @@
        <site>cvdb</site>
        <srv.ver>cvdbdev0</srv.ver>
        <db.ver>cvdb</db.ver>
+       <rec.prefix>CVDB</rec.prefix>
+       <service.esindex.url>http://10.1.7.103:9200/cvdb-%%TYPE%%-index-000001</service.esindex.url>
      </properties>
      <build>
       <finalName>cvdbdev0</finalName>
@@ -109,6 +115,8 @@
        <site>cvdb</site>
        <srv.ver>cvdbdev2</srv.ver>
        <db.ver>cvdb</db.ver>
+       <rec.prefix>CVDB</rec.prefix>
+       <service.esindex.url>http://10.1.7.103:9200/cvdb-%%TYPE%%-index-000002</service.esindex.url>
      </properties>
      <build>
       <finalName>cvdbdev2</finalName>

@@ -21,8 +21,8 @@
     <property name="menuContext"         ref="menuContext"/>
   </bean>
 
-<!--
-    <bean id="editAction" scope="prototype"
+  <!--
+  <bean id="editAction" scope="prototype"
         class="edu.ucla.mbi.imex.central.struts.action.EditAction">
     <property name="menuContext"         ref="menuContext"/>
     <property name="pageContext"         ref="pageContext"/>
@@ -34,10 +34,10 @@
     <property name="sknDef" value="icentral"/>
     <property name="siteDef" value="icentral"/>
   </bean>
--->
+  -->
 <!-- user/feedback management -->
 
-<!--
+  <!--
   <bean id="userManager" scope="prototype"
        class="edu.ucla.mbi.imex.central.UserManager">
   </bean>
@@ -54,9 +54,9 @@
       </map>
     </property>
   </bean>
--->
+  -->
   
-<!--
+  <!--
   <bean id="userAction" scope="prototype"
       class="edu.ucla.mbi.imex.central.struts.action.UserAction">
     
@@ -93,9 +93,9 @@
     <property name="adminMail" value="dip@mbi.ucla.edu" />
     <property name="mailServer" value="banach.mbi.ucla.edu" />
   </bean>
--->
+  -->
   <!-- news display/editing -->
-<!--
+  <!--
   <bean id="newsAction" scope="prototype"
         class="edu.ucla.mbi.imex.central.struts.action.NewsAction">
     <property name="mst" value="5:3"/>
@@ -106,24 +106,24 @@
     <property name="sknDef" value="icentral"/>
     <property name="siteDef" value="icentral"/>
   </bean>
--->
+  -->
   <!-- access control list/interceptor -->
-<!--
+  <!--
   <bean id="aclInterceptor"      
         class="edu.ucla.mbi.util.struts.interceptor.AclInterceptor">
     <property name="aclContext" ref="aclContext"/>
     <property name="aclValidator" ref="aclVal"/>
   </bean>
--->
+  -->
  <!-- access control list/interceptor -->
-<!--
+ <!--
   <bean id="logInterceptor"
         class="edu.ucla.mbi.util.struts.interceptor.LogInterceptor">
     <property name="logContext" ref="logContext"/>
   </bean>
--->
+  -->
   <!-- user management actions -->
-<!--
+  <!--
   <bean id="userMgrAction" scope="prototype"
       class="edu.ucla.mbi.imex.central.struts.action.UserMgrAction">
 
@@ -217,6 +217,19 @@
         class="edu.ucla.mbi.bkd.struts.action.SearchAction">
     <property name="recordManager"       ref="bkdRecordManager"/>
     <property name="queryManager"        ref="bkdQueryManager"/>
+    <property name="menuContext"         ref="menuContext"/>
+  </bean>
+
+  <bean id="indexMgrAction" scope="prototype"
+        class="edu.ucla.mbi.bkd.struts.action.IndexMgrAction">
+    <property name="recordManager"       ref="bkdRecordManager"/>
+    <property name="indexManager"        ref="bkdIndexManager"/>
+    <property name="indexList">
+      <list>
+         <value>node</value>
+         <value>report</value>
+      </list>
+    </property>
     <property name="menuContext"         ref="menuContext"/>
   </bean>
 

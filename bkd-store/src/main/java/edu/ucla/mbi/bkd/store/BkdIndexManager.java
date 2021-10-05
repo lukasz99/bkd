@@ -76,6 +76,14 @@ public class BkdIndexManager {
     public boolean isIndexActive() {
         return indexActive;
     }
+
+    //---------------------------------------------------------------------
+    
+    int bsize = 500;
+
+    public void setBatchSize( int size ) {
+        this.bsize = size;
+    }
     
     //---------------------------------------------------------------------
     
@@ -100,6 +108,21 @@ public class BkdIndexManager {
         Logger log = LogManager.getLogger( this.getClass() ); 
         log.info( "BkdIndexManager: cleanup called" );
     }
+
+    
+    private Map<String,Boolean> rxactive = new HashMap<String,Boolean>();
+    
+    public Map<String,Boolean> getRxActive(){
+        return this.rxactive;
+    }
+
+    
+    private Map<String,Integer> rxposition = new HashMap<String,Integer>();      
+
+    public Map<String,Integer> getRxPosition(){
+        return this.rxposition;
+    }
+    
     
     //---------------------------------------------------------------------
     // Operations
@@ -112,7 +135,7 @@ public class BkdIndexManager {
         log.info( " index node -> ac=" + ac );
         
         try{
-            Node nde =  (Node) recManager.getNode( null, ac );
+            Node nde =  (Node) recManager.getNode( ac );
             log.info( " retrieved -> ac=" + nde );
             String idoc = node2idoc( nde );
             log.info( " idoc -> " + idoc );
@@ -150,6 +173,72 @@ public class BkdIndexManager {
         }
     }
 
+    public void reindex( String index ) {
+        Logger log = LogManager.getLogger( this.getClass() ); 
+        log.info( " reindex -> index=" + index );
+        
+        if( rxactive.containsKey( index ) && rxactive.get( index ) ) return;
+        rxactive.put( index, true );
+        
+        try{
+            long reccnt = 0;
+
+            if( "node".equalsIgnoreCase(index) ){
+                reccnt = recManager.getDaoContext().getNodeDao().getCount();
+            } else if("report".equalsIgnoreCase(index) ){
+                reccnt = recManager.getDaoContext().getReportDao().getCount();
+            }
+            
+            for(int minrec = 0; minrec < reccnt; minrec += bsize){
+                log.info( " reindex: " + index +
+                          " : " + minrec + "->" + minrec + bsize);
+
+                rxposition.put( index, minrec );
+                
+                if( "node".equalsIgnoreCase(index) ){                                    
+                    List<Integer> ndid = recManager.getDaoContext()
+                        .getNodeDao().getIdList( minrec, minrec + bsize );
+                    
+                    for( int cid : ndid ){
+                        Node cnd = (Node) recManager.getNode( cid );
+                        log.info(cnd);
+                        String idoc = node2idoc( cnd );                       
+                        if( ! getIndexUrl().equals("") ){
+                            esIndex( "node", cnd.getAc(), idoc );
+                        }
+                        log.info("cnd" + cnd);
+                    }
+                }
+                
+                if( "report".equalsIgnoreCase(index) ){                                    
+                    List<Integer> ndid = recManager.getDaoContext()
+                        .getReportDao().getIdList( minrec, minrec + bsize );
+                    
+                    for( int cid : ndid ){
+                        Report cnd = (Report) recManager.getReport( cid );                      
+                        String idoc = report2idoc( cnd );                       
+                        if( ! getIndexUrl().equals("") ){
+                            esIndex( "report", cnd.getAc(), idoc );
+                        }
+                        log.info("cnd" + cnd);
+                    }
+                }                
+            }
+            
+            log.info( "DONE" );
+        } catch( Exception ex ){ 
+            ex.printStackTrace();
+            log.info( "FAILED" );           
+        }
+
+        rxactive.put( index, false );
+        
+    }
+
+
+
+
+    
     //--------------------------------------------------------------------------
     // Query Nodes
     //------------
@@ -174,7 +263,7 @@ public class BkdIndexManager {
                                            skey, asc, flt,
                                            queryStr, queryType );
 
-            String sres = esQueryResult( "node", esquery ); 
+            String sres = esQueryResult( "node", esquery );          
             log.info( "EsQueryResult: " + sres);
             JSONObject jres = new JSONObject( sres );
 
@@ -184,7 +273,7 @@ public class BkdIndexManager {
                 String cacc = harr.getJSONObject( j ).getString("_id");
                 log.info( "ACC: " + cacc );
 
-                Node cnd=  (Node) recManager.getNode( null, cacc );
+                Node cnd=  (Node) recManager.getNode( cacc );
                 if( cnd != null)  res.add( cnd );
             }
                        
@@ -467,6 +556,48 @@ public class BkdIndexManager {
         return null;
     }
 
+    public String esPost( String index, String op, String query ){ 
+ 
+        Logger log = LogManager.getLogger( this.getClass() );
+        String url = getIndexUrl().replace( "%%TYPE%%", index );
+        String curl = url + "/" + op;
+           
+        log.info("EsIndex URL=" + curl);
+            
+        try{    
+            CloseableHttpClient httpclient = HttpClients.createDefault();
+            HttpPost post = new HttpPost( curl );
+
+            post.addHeader( "Accept", "application/json" );
+            post.addHeader( HttpHeaders.CONTENT_TYPE, "application/json" );
+                
+            StringEntity entity = new StringEntity( query, "UTF-8" );            
+            post.setEntity( entity );
+ 
+            CloseableHttpResponse httpResponse = httpclient.execute( post );
+            int statusCode = httpResponse.getStatusLine().getStatusCode(); 
+            log.info( "Status: " + statusCode );
+            HttpEntity content = httpResponse.getEntity();
+            BufferedReader in =
+                new BufferedReader(new InputStreamReader(content.getContent()));
+
+            String line = null;
+            StringBuffer jdoc=new StringBuffer();
+            
+            while((line = in.readLine()) != null) {
+                
+                jdoc.append(line);
+            }
+
+            httpclient.close();
+            return jdoc.toString();
+            
+        }catch( Exception ex){
+            log.info("EsIndex query error(query): " + query);
+        }
+        return null;
+    }
+    
     //--------------------------------------------------------------------------
 
     private String buildEsQuery( int firstRecord, int blockSize,

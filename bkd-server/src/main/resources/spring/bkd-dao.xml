@@ -107,7 +107,7 @@
 
   <bean id="bkdDaoContext" class="edu.ucla.mbi.bkd.store.dao.BkdDaoContext">
     
-    <property name="state" value="flop"/>
+    <property name="state" value="flip"/>
     
     <property name="flipSF" ref="bkdFlipSessionFactory"/>
     <property name="flopSF" ref="bkdFlopSessionFactory"/>
@@ -125,11 +125,13 @@
     <property name="sourceDao"  ref="bkdSourceDao"/>
     
   </bean>
-  
+
+     
    <!-- Record Manager -->
 
    <bean id="bkdRecordManager" class="edu.ucla.mbi.bkd.store.BkdRecordManager"
          init-method="initialize">
+     <property name="bkdConfig" ref="siteConfig" />
      <property name="daoContext" ref="bkdDaoContext" />
    </bean>
    
@@ -140,6 +142,7 @@
      <property name="recordManager" ref="bkdRecordManager" />
      <property name="indexUrl" value="${service.esindex.url}" />
      <property name="indexActive" value="${service.esindex.active}" />
+     <property name="batchSize" value="500" />
    </bean>
 
    <!-- Query Manager -->

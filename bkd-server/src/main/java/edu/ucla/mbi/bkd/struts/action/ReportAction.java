@@ -67,8 +67,8 @@ public class ReportAction extends PortalSupport{
             
             if( this.getNs() != null && this.getNs().length() > 0 &&
                 this.getAc() != null && this.getAc().length() > 0 ){
-
-                record = manager.getNewFeatureReport(ns,ac);            
+                
+                record = manager.getNewFeatureReport( ns, ac );
             }
             
         } else {

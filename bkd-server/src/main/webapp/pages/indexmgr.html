@@ -1,0 +1,64 @@
+<link rel="stylesheet" href="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/jquery-ui.min.css">
+<link rel="stylesheet" href="https://www.ncbi.nlm.nih.gov/Structure/icn3d/icn3d.css">
+<script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/jquery.min.js"></script>
+<script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/jquery-ui.min.js"></script>
+<script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/threeClass.min.js"></script>
+<script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/icn3d.min.js"></script>
+
+</br></br></br></br></br>
+<div>
+  <h1>Index Manager</h1>
+  <div class="status">
+    <div>Index status</div>
+    <div>
+      <div id="index-counts"></div>
+    </div>
+  </div>
+  <hr/>
+  <div class="manager">
+    <div id="index-mgr">
+      <div>Initialize <input id="index_init" type="button" value="GO!!!"/></div>
+    </div>  
+  </div>    
+</div>
+</br></br></br></br></br></br></br></br>
+
+<script type="text/javascript">
+  $( document ).ready(function() {
+     myurl ="indexmgr";          
+     $.ajax( { url: myurl} )
+        .done( function( data, textStatus ){             
+             for(var i =0; i < data["data"]["status"].length; i ++ ){
+               console.log(JSON.stringify(data["data"]["status"][i]));
+               var ccnt=data["data"]["status"][i];
+               var html = "<div>";                
+               if( ccnt["count"] >=0 ){
+                  html += ccnt["index"]+ " index: " + ccnt["count"] + " entries</div>";
+                  rx = "<div>Reindex " + ccnt["index"] +
+                       " <input id='reindex_"+ ccnt["index"] +"' type='button' value='GO!!!'/>" +
+                       "</div>";
+                  $("#index-mgr").append(rx);
+                  $("#reindex_" + ccnt["index"]).on('click',function(event){
+                        var index = event.currentTarget.id.replace("reindex_","");
+                        var conf = confirm("Do you want to continue ?");
+                        if( conf ){
+                        console.log("Reindexing....");
+                        $.ajax( { url: "indexmgr?op=reindex&id="+index} )
+                        }
+                  });
+
+               } else{
+                  html += "<div>" + ccnt["index"]+ " index:  N/A</div>";                
+               }
+               $("#index-counts").append(html);
+             }
+
+               $("#index_init").on('click',function(event){
+                  var conf = confirm("Do you want to continue ?");
+                  if(conf){
+                    $.ajax( { url: "indexmgr?op=init"} )
+                  }
+             });
+        });               
+   });
+ </script>

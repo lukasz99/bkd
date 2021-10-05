@@ -43,12 +43,16 @@ public abstract class Report{
          t_mod timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone
        );
     **/
-    protected static String prefix = "CVDB";
+
     private static String generator = "report";
     
-    @Column(name = "rpid")
-    protected long rpid = 0;
 
+    @Column(name = "prefix")
+    protected String prefix = "BKD";
+
+    @Column(name = "nacc")
+    protected int nacc = 0;
+       
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "cvtype")
     CvTerm cvtype;
@@ -68,16 +72,20 @@ public abstract class Report{
         return generator;
     }
     
-    public static String getPrefix(){
-        return prefix;
-    }
-    
-    public void setRpid(long id ){        
-        this.rpid = id;
+    public String getPrefix(){
+        return this.prefix;
     }
 
-    public long  getRpid(){
-        return this.rpid;
+    public void setPrefix( String prefix ){
+        this.prefix = prefix;
+    }
+    
+    public void setNacc(int nacc ){        
+        this.nacc = nacc;
+    }
+
+    public int getNacc(){
+        return this.nacc;
     }
     
     public String getNs(){
@@ -85,7 +93,7 @@ public abstract class Report{
     }
 
     public String getAc(){
-        return prefix + "-"+ Long.toString(rpid) + "R";
+        return prefix + "-"+ Integer.toString(nacc) + "R";
     }
 
     public String getVersion(){

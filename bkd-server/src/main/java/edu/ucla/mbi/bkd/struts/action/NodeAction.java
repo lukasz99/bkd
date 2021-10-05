@@ -57,7 +57,11 @@ public class NodeAction extends PortalSupport{
         if( this.getNs() != null && this.getNs().length() > 0 &&
             this.getAc() != null && this.getAc().length() > 0 ){
 
-            node = manager.getNode(ns,ac);            
+            if( manager.getBkdConfig().getPrefix().equalsIgnoreCase(ns) ){
+                node = manager.getNode( ac );  // native record
+            } else {
+                node = manager.getNode( ns, ac); 
+            }
         }
             
         if ( getRet() == null || getRet().equals( "view" ) ) {    

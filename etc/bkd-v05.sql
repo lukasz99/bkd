@@ -88,7 +88,8 @@ CREATE TABLE node ( -- protein/transcript(mRNA)/gene/molecule/etc
     sclass character varying(32) DEFAULT ''::character varying,
     cvtype bigint DEFAULT 0 NOT NULL,   -- unspecified type
     taxon bigint DEFAULT 1 NOT NULL,  -- unspecified taxon,
-    ndid bigint DEFAULT 0 NOT NULL,
+    prefix character varying(8) DEFAULT ''::character varying,
+    nacc int DEFAULT 0 NOT NULL,
 
     label character varying(32) DEFAULT ''::character varying NOT NULL,         
     name text DEFAULT ''::text NOT NULL,
@@ -113,7 +114,8 @@ CREATE SEQUENCE node_pkey_seq START WITH 1 INCREMENT BY 1
 CREATE INDEX node_01a ON node USING btree (cvtype);
 CREATE INDEX node_01b ON node USING btree (sclass);
 CREATE INDEX node_02  ON node USING btree (taxon);
-CREATE INDEX node_03  ON node USING btree (ndid);
+CREATE INDEX node_03a ON node USING btree (prefix,nacc);
+CREATE INDEX node_03b ON node USING btree (nacc);
 CREATE INDEX node_04  ON node USING btree (dip);
 CREATE INDEX node_05a ON node USING btree (rsq_prot);
 CREATE INDEX node_05b ON node USING btree (rsq_rna);
@@ -252,7 +254,8 @@ CREATE INDEX source_09 ON source USING btree (pmid);
 CREATE TABLE report (
     pkey bigint DEFAULT nextval(('"rep_pkey_seq"'::text)::regclass) NOT NULL CONSTRAINT rep_pk PRIMARY KEY,
     sclass character varying(32) DEFAULT ''::character varying,  -- nprop/nfeature...
-    rpid bigint DEFAULT 0 NOT NULL,   -- public identifier
+    prefix character varying(8) DEFAULT ''::character varying, 
+    nacc int DEFAULT 0 NOT NULL,   -- numerical accession
     
     cvtype bigint DEFAULT 0 NOT NULL,   -- unspecified type
     label character varying(32) DEFAULT ''::character varying NOT NULL,         
@@ -273,7 +276,8 @@ CREATE SEQUENCE rep_pkey_seq START WITH 1 INCREMENT BY 1
     NO MINVALUE NO MAXVALUE CACHE 1;
 
 CREATE INDEX rep_01  ON report USING btree (sclass, pkey);
-CREATE INDEX rep_01a ON report USING btree (rpid);
+CREATE INDEX rep_01a ON report USING btree (prefix,nacc);
+CREATE INDEX rep_01b ON report USING btree (nacc);
 CREATE INDEX rep_02  ON report USING btree (fk_node);
 CREATE INDEX rep_03  ON report USING btree (fk_source);
 CREATE INDEX rep_05  ON report USING btree (status);

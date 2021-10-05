@@ -88,10 +88,46 @@
                        }]
                   },
                   {"label":"Admin",
-                   "link":"usermgr",
-                   "disabled":"true",
-                   "roles":["administrator"],
-                   "menu":[{"label":"Accounts",
+                   "link":"page?id=databasemgr",
+                   "disabled":"false",                  
+                   "menu":[{label:"Database",
+                            "link":"page?id=databasemgr",
+                            "disabled":"false",                           
+                            "menu":[{"label":"Database Manager",
+                                     "link":"page?id=databasemgr",
+                                     "disabled":"false",
+                                     "menu":[]
+                                    },
+                                    {"label":"Index Manager",
+                                     "link":"page?id=indexmgr",
+                                     "disabled":"false",
+                                     "menu":[]
+                                    },
+                                    {"label":"Proxy Manager",
+                                     "link":"page?id=proxymgr",
+                                     "disabled":"true",
+                                     "roles":["administrator"],
+                                     "menu":[]
+                                    }]
+                           },
+                           {"label":"Access Control",
+                            "link":"page?id=accessmgr",
+                            "disabled":"true",
+                            roles:["administrator"], 
+                            "menu":[{"label":"Reinitialize",
+                                     "link":"aclmgr",
+                                     "disabled":"true",
+                                     roles:["administrator"],
+                                     "menu":[]
+                                    },
+                                    {"label":"ACL Editor",
+                                     "link":"aclmgr",
+                                     "disabled":"true",
+                                     roles:["administrator"],
+                                     "menu":[]
+                                    }]
+                           },
+                           {"label":"Accounts",
                             "link":"usermgr",
                             "disabled":"true",
                             "roles":["administrator"],
@@ -136,47 +172,7 @@
                                      "roles":["administrator"],
                                      "menu":[]
                                     }]
-                           },
-                           {label:"Database",
-                            "link":"page?id=databasemgr",
-                            "disabled":"false",
-                            "roles":["administrator"],
-                            "menu":[{"label":"Back-End Manager",
-                                     "link":"page?id=backendmgr",
-                                     "disabled":"true",
-                                     "roles":["administrator"],
-                                     "menu":[]
-                                    },
-                                    {"label":"Proxy Manager",
-                                     "link":"page?id=proxymgr",
-                                     "disabled":"true",
-                                     "roles":["administrator"],
-                                     "menu":[]
-                                    },
-                                    {"label":"Index Manager",
-                                     "link":"indexmgr",
-                                     "disabled":"true",
-                                     "roles":["administrator"],
-                                     "menu":[]
-                                    }]
-                           },
-                           {"label":"Access Control",
-                            "link":"page?id=accessmgr",
-                            "disabled":"true",
-                            roles:["administrator"], 
-                            "menu":[{"label":"Reinitialize",
-                                     "link":"aclmgr",
-                                     "disabled":"true",
-                                     roles:["administrator"],
-                                     "menu":[]
-                                    },
-                                    {"label":"ACL Editor",
-                                     "link":"aclmgr",
-                                     "disabled":"true",
-                                     roles:["administrator"],
-                                     "menu":[]
-                                    }]
-                           }]
+                           }]                           
                   },
                   {"label":"Preferences",
                    "link":"userprefmgr",

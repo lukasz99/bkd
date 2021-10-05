@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.net.*;
 import java.util.*;
+import java.math.BigInteger;
 
 import org.hibernate.*;
 
@@ -28,7 +29,7 @@ public class ReportDao extends AbstractDAO {
 
     //--------------------------------------------------------------------------
 
-    public Report getById( long rid ){ 
+    public Report getByNac( int nacc ){ 
         
         Report report = null;
         
@@ -36,21 +37,21 @@ public class ReportDao extends AbstractDAO {
         Transaction tx = session.beginTransaction();
 
         Logger log = LogManager.getLogger( this.getClass() );
-        log.info( "-> getById(long): rid=" + rid );
+        log.info( "-> getByNac(int): nacc=" + nacc );
         
         try {
             
             Query query =
                 session.createQuery( "from Report n where " +
-                                     " n.rpid = :id order by n.rpid desc");
+                                     " n.nacc = :nacc order by n.rpid desc");
             
-            query.setParameter( "id", rid );
+            query.setParameter( "nacc", nacc );
             
             query.setFirstResult( 0 );
             
             List<Report> reps= (List<Report>) query.list();            
             
-            log.info("-> getById(long): count=" + reps.size() );
+            log.info("-> getByNac(int): count=" + reps.size() );
             
             if( reps.size() > 0 ){
                 report = reps.get(0);
@@ -71,7 +72,6 @@ public class ReportDao extends AbstractDAO {
     
     //--------------------------------------------------------------------------
             
-
     public Report getById( String ns, String sid ){ 
         
         Report report = null;
@@ -81,40 +81,17 @@ public class ReportDao extends AbstractDAO {
 
         Logger log = LogManager.getLogger( this.getClass() );
         log.info( "-> getById: ns=" + ns + " ac=" + sid);
-	
+        
         try {
-            
-            Query query =  null;            
-	    
-            if( sid.startsWith( Report.getPrefix() ) ){
 
-                //query =
-                //session.createQuery( "from Report n where " +
-                //" n.id = :id order by n.id desc JOIN FETCH n.cvtype");
-
-                query =
-                    session.createQuery( "from Report n where " +
-                                         " n.rpid = :id order by n.rpid desc");
-                try{
-                    sid = sid.replaceAll( "[^0-9]", "" );
-                    System.out.println("sid=" + sid);
-                    if(sid.length() > 0){
-                        long lid = Long.parseLong( sid );
-                        log.info("id=" + String.valueOf(lid));
-                        query.setParameter( "id", lid );
-                    }
-                } catch(Exception ex){		    
-                    log.info( ex );
-                    System.out.println(ex);
-                    // should not happen
-                }
+            int id = Integer.parseInt(sid.replaceAll("[^0-9]", "") );
+             
+            Query query =
+                session.createQuery( "from Report n where " +
+                                     " n.nacc = :nacc order by n.id desc");
             
-            } else {
-                // by xrefs  ?
-                
-            }
+            query.setParameter( "nacc", id );            
             query.setFirstResult( 0 );
-
                         
             List<Report> reps= (List<Report>) query.list();            
 
@@ -125,9 +102,47 @@ public class ReportDao extends AbstractDAO {
             if( reps.size() > 0 ){
                 report = reps.get(0);
             }            
-            tx.commit();
-            System.out.println(report);
+            tx.commit();            
+        } catch( HibernateException e ) {
+            log.error(e);                        
+            handleException( e );           
+        }catch( Exception ex){
+            log.error( ex );
+        } finally {
+            session.close();
+        }
+        return report; 
+    }
+
+    public Report getByAcc( String acc ){ 
+        
+        Report report = null;
+        
+        Session session = getCurrentSession();
+        Transaction tx = session.beginTransaction();
+
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( "-> getByAcc: acc=" + acc );
+	
+        try {
+            int id = Integer.parseInt( acc.replaceAll("[^0-9]", "") );
+            Query query =
+                session.createQuery( "from Report n where " +
+                                     " n.nacc = :nacc order by n.id desc");
             
+            query.setParameter( "nacc", id );            
+            query.setFirstResult( 0 );
+                        
+            List<Report> reps= (List<Report>) query.list();            
+
+            System.out.println("size");
+            System.out.println(reps.size());
+            System.out.println("...");
+           
+            if( reps.size() > 0 ){
+                report = reps.get(0);
+            }            
+            tx.commit();            
         } catch( HibernateException e ) {
             log.error(e);                        
             handleException( e );           
@@ -152,15 +167,12 @@ public class ReportDao extends AbstractDAO {
             
             Logger log = LogManager.getLogger( this.getClass() );
             log.info( "-> getListByTarget: ns=" + ns + " ac=" + ac );
-
-
             
             try {
                 
                 if( "upr".equalsIgnoreCase( ns ) ){
                     
-                    // find target
-                    
+                    // find target                    
                     
                     Query pnq = session
                         .createQuery( "from ProteinNode pn where " +
@@ -246,7 +258,33 @@ public class ReportDao extends AbstractDAO {
         }
         return count;
     }
-    
+
+    public List<Integer> getIdList( int rfirst, int rmax ){
+
+        Session session = getCurrentSession();
+        Transaction tx = session.beginTransaction();
+        List<Integer> res = new ArrayList<Integer>();
+        try {           
+            SQLQuery query = session.createSQLQuery( "select rpid from report order by rpid asc" );
+            query.setFirstResult(rfirst);
+            query.setMaxResults(rmax);
+
+            List qres = query.list();
+            for( Object co : qres ){
+                res.add( ((BigInteger)co).intValue()  );
+                System.out.println(co);
+            }
+            
+            tx.commit();
+        } catch ( HibernateException e ) {
+            handleException( e );
+            // log error ?
+        } finally {            
+            session.close();
+        }
+        return res;
+    }
+
     //---------------------------------------------------------------------
     
     public Report updateReport( Report report ) { 
@@ -258,9 +296,9 @@ public class ReportDao extends AbstractDAO {
                 
         // quit if no persisted report 
         
-        if( report == null || report.getRpid() == 0) return null;
+        if( report == null || report.getNacc() == 0) return null;
                    
-        Report oldRep = this.getById( report.getRpid() );
+        Report oldRep = this.getByNac( report.getNacc() );
 
 
         /*

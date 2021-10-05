@@ -210,8 +210,8 @@ public class FeatureReport extends Report{
             
             try{
                 String rid = rac.replaceAll( "[^0-9]", "" );
-                long lrid = Long.parseLong( rid );
-                report.setRpid( lrid );
+                int lrid = Integer.parseInt( rid );
+                report.setNacc( lrid );
                 log.info("report id set to -> " + report.getAc());
 
             } catch( Exception ex ){
@@ -231,8 +231,8 @@ public class FeatureReport extends Report{
             
             try{
                 String sid = tgtAc.replaceAll( "[^0-9]", "" );
-                long lid = Long.parseLong( sid );
-                tgtFeat.getNode().setId( lid );
+                int lid = Integer.parseInt( sid );
+                tgtFeat.getNode().setNacc( lid );
                 System.out.println(lid );
                 System.out.println( "tgt node:  " + tgtFeat.getNode().toString() );                
                 log.info("feature: tgtnode set to -> " + tgtFeat.getNode());
