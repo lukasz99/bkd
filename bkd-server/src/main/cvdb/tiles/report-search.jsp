@@ -7,7 +7,7 @@
   <table>
    <tr>
     <td>
-     <s:radio name="smode" list="#{'protein':'Protein','gene':'Gene','report':'Report'}"/>
+     <s:radio name="smode" list="#{'node':'Protein/Gene','report':'Report'}"/>
     </td>
    </tr>
    <tr>

@@ -48,7 +48,7 @@ public abstract class Report{
     
 
     @Column(name = "prefix")
-    protected String prefix = "BKD";
+    protected String prefix;
 
     @Column(name = "nacc")
     protected int nacc = 0;

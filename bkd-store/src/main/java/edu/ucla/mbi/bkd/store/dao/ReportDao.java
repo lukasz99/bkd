@@ -43,7 +43,7 @@ public class ReportDao extends AbstractDAO {
             
             Query query =
                 session.createQuery( "from Report n where " +
-                                     " n.nacc = :nacc order by n.rpid desc");
+                                     " n.nacc = :nacc order by n.nacc desc");
             
             query.setParameter( "nacc", nacc );
             
@@ -156,7 +156,88 @@ public class ReportDao extends AbstractDAO {
 
     //--------------------------------------------------------------------------
 
-    public List<Object> getListByTarget( String ns, String ac, String sort ){
+    public List<Object> getListByTarget( String ac, String sort ){
+        
+        if( ac != null ){
+            
+            List<Object>  rlist = null;
+        
+            Session session = getCurrentSession();
+            Transaction tx = session.beginTransaction();
+            
+            Logger log = LogManager.getLogger( this.getClass() );
+            log.info( "-> getListByTarget: ac=" + ac );
+            
+            try {
+                
+                // find target
+                // convert accession to uid
+                
+                int id = Integer.parseInt(ac.replaceAll("[^0-9]", "") );
+                                                                                                                                                                                                                                                 
+                Query query =                                                                                                                                                                                                                        
+                    session.createQuery( "from Node n where " +                                                                                                                                                                                      
+                                         " n.nacc = :nacc ");                                                                                                                                                                                        
+                query.setParameter( "nacc", id );                                                                                                                                                                                                    
+                query.setFirstResult( 0 );                                                                                                                                                                                                           
+                Node node = (Node) query.uniqueResult();                                                                                                                                                                                                  
+      
+                List<Node> nlist = (List<Node>) query.list();
+                
+                log.info( "NList" + nlist );
+                    
+                if( nlist != null && nlist.size() > 0 ){
+                    
+                    // find matching features
+                    
+                    Query nfq = session
+                        .createQuery( "from NodeFeat nf where " +
+                                      " nf.node in ( :nl ) ");
+                    
+                    nfq.setParameter( "nl", nlist );
+                    nfq.setFirstResult( 0 );
+                
+                    List<NodeFeat> nflist = (List<NodeFeat>) nfq.list();
+
+                    log.info( "NFlist: " + nflist );
+                    
+                    if( nflist != null && nflist.size() > 0 ){
+                    
+                        Query rq = session
+                            .createQuery( "from FeatureReport fr where " +
+                                          " fr.feature in ( :nfl ) " +
+                                          " order by fr.nacc desc" );
+                        
+                        rq.setParameter( "nfl", nflist );
+                        rq.setFirstResult( 0 );
+                        
+                        rlist = (List<Object>) rq.list();
+                        
+                        log.info( "RList:" + rlist );
+                    }
+                }
+                
+                tx.commit();
+            
+            } catch( HibernateException e ) {
+                log.error(e);                        
+                handleException( e );           
+            }catch( Exception ex){
+                log.error( ex );
+            } finally {
+                session.close();
+            }
+            
+            log.info( "RList:" + rlist );
+            if( rlist != null ) return rlist;
+            
+        }
+        
+        return new ArrayList<Object>();
+        
+    }
+
+        public List<Object> getListByTarget( String ns, String ac, String sort ){
 
         if( ns!=null && ac != null ){
             
@@ -205,7 +286,7 @@ public class ReportDao extends AbstractDAO {
                             Query rq = session
                                 .createQuery( "from FeatureReport fr where " +
                                               " fr.feature in ( :nfl ) " +
-                                              " order by fr.rpid desc" );
+                                              " order by fr.nacc desc" );
                
                             rq.setParameter( "nfl", nflist );
                             rq.setFirstResult( 0 );
@@ -236,7 +317,7 @@ public class ReportDao extends AbstractDAO {
         return new ArrayList<Object>();
         
     }
-        
+
     //--------------------------------------------------------------------------
     
     public long getCount() {
@@ -247,7 +328,8 @@ public class ReportDao extends AbstractDAO {
         Transaction tx = session.beginTransaction();
         
         try {           
-            Query query = session.createQuery( "select count(n) from Report n" );
+            Query query = session
+                .createQuery( "select count(n) from Report n" );
             count  = (Long) query.uniqueResult();
             tx.commit();
         } catch ( HibernateException e ) {
@@ -265,13 +347,14 @@ public class ReportDao extends AbstractDAO {
         Transaction tx = session.beginTransaction();
         List<Integer> res = new ArrayList<Integer>();
         try {           
-            SQLQuery query = session.createSQLQuery( "select rpid from report order by rpid asc" );
+            SQLQuery query = session
+                .createSQLQuery( "select nacc from report order by nacc asc" );
             query.setFirstResult(rfirst);
             query.setMaxResults(rmax);
-
+            
             List qres = query.list();
             for( Object co : qres ){
-                res.add( ((BigInteger)co).intValue()  );
+                res.add( ((Integer)co).intValue()  );
                 System.out.println(co);
             }
             
@@ -397,7 +480,9 @@ public class ReportDao extends AbstractDAO {
         //super.saveOrUpdate( oldRep );
 
         super.saveOrUpdate( report );
-        super.delete(oldRep);
+        if( oldRep != null ){            
+            super.delete(oldRep);
+        }
         //if(ofeature != null){
         //    super.delete( ofeature );
         //}

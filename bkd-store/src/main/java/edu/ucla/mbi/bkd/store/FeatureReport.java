@@ -271,5 +271,18 @@ public class FeatureReport extends Report{
         }
         return report;
     }
+
+
+    public String toString(){
+        
+        if( feature != null ){
+            return "Feature:" + feature.toString() + " : " + super.toString();
+        } else {
+            return "Feature:" + feature + " : " + super.toString();
+        }
+    }
+   
 }
+
+    
 

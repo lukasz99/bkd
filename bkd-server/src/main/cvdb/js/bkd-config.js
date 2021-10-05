@@ -11,6 +11,10 @@ BKDconf = {
               "type":"hidden"
            },
            "target":[
+                  {"name":"ns",
+                   "vpath":['feature','node','ns'],
+                   "id":"report_target_ns",
+                   "type":"hidden" },
                   {"name":"ac",
                    "vpath":['feature','node','ac'],
                    "id":"report_target_ac",
@@ -148,6 +152,10 @@ BKDconf = {
                 "type":"hidden"
              },
              "target":[
+                  {"name":"ns",
+                   "vpath":['feature','node','ns'],
+                   "id":"report_target_ns",
+                   "type":"hidden" },
                   {"name":"ac",
                    "vpath":['feature','node','ac'],
                    "id":"report_target_ac",
@@ -269,6 +277,10 @@ BKDconf = {
               "vpath":['ac'],
               "type":"hidden"},
            "target":[
+                  {"name":"ns",
+                   "vpath":['feature','node','ns'],
+                   "id":"report_target_ns",
+                   "type":"hidden" },
                   {"name":"ac",
                    "vpath":['feature','node','ac'],
                    "id":"report_target_ac",

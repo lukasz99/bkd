@@ -87,13 +87,15 @@ public class BkdRecordManager {
 	
         Logger log = LogManager.getLogger( this.getClass() );
         log.info( " get node -> ns=" + ns + "  ac=" + acc );
-        
-        try{
-            Node node = daoContext.getNodeDao().getById( ns, acc );            
-            return node;
-        } catch( Exception ex ) {
-	    log.error(ex);
 
+        try{
+            if( bkdconf.getPrefix().equalsIgnoreCase( ns) ){
+                return daoContext.getNodeDao().getByAcc( acc );            
+            } else {
+                return daoContext.getNodeDao().getById( ns, acc );            
+            }            
+        } catch( Exception ex ) {
+            log.error(ex);
             return null;
         }
     }
@@ -697,7 +699,8 @@ public class BkdRecordManager {
         
         if( report.getNacc() == 0 ){ 
             int rid = daoContext.getIdGenDao().getNextId( Report.generator() );
-            report.setNacc( rid );	    
+            report.setPrefix( bkdconf.getPrefix() );
+            report.setNacc( rid );            
         }
         
         if( report instanceof NodeReport){
@@ -730,14 +733,11 @@ public class BkdRecordManager {
             
             Source fsrc = ((FeatureReport) report).getFeature().getSource();
             log.info("fsrc= " + fsrc); 
+
             // source cv type
             //----------------
-
-            
             
             CvTerm scvt = fsrc.getCvType();
-
-
             log.info("fsrc.type= " + scvt);
             
             scvt = daoContext.getCvTermDao().getByAccession( scvt.getAc() );
@@ -760,8 +760,15 @@ public class BkdRecordManager {
             Node rnode = ((NodeFeat) ((FeatureReport) report).getFeature()).getNode();
             log.info("feature node:" + rnode);
             log.info("feature node: ns=" + rnode.getNs() + "ac=" + rnode.getAc());
+
+            Node testNode = null;
             
-            Node testNode = (Node) daoContext.getNodeDao().getById( rnode.getNs(), rnode.getAc() );
+            if( bkdconf.getPrefix().equalsIgnoreCase( rnode.getNs() ) ){                                        
+                testNode = (Node) daoContext.getNodeDao().getByAcc( rnode.getAc() );
+            } else { 
+                testNode = (Node) daoContext.getNodeDao().getById( rnode.getNs(),
+                                                                   rnode.getAc() );
+            }
             
             log.info("feature node(test):" + testNode);  // node must exist
             ((NodeFeat) ((FeatureReport) report).getFeature()).setNode( testNode );

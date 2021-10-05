@@ -156,17 +156,21 @@ BKDrep = {
         console.log("DATA: "+ data);
         for(var i =0; i< data.length; i++){
             if(data[i].feature !== undefined){
-
-            console.log(data[i].feature.node.ac);
-            $("#" + "bkd_report_new_target")
-                .append( $('<option>',{ val:data[i].feature.node.ac,
-                                        text:data[i].feature.node.label}));
-            }
-            
+              console.log(data[i].feature.node.ac);
+              $("#" + "bkd_report_new_target")
+                  .append( $('<option>',{ val:data[i].feature.node.ac,
+                                          text:data[i].feature.node.label}));
+            } 
+            if(data[i].cvType !== undefined && data[i].cvType.name=="protein"){
+              console.log(data[i].label);
+              $("#" + "bkd_report_new_target")
+                  .append( $('<option>',{ val:data[i].ac,
+                                          text:data[i].label}));
+            }         
         }
-        $("#" + "bkd_report_new_target")
-                .append( $('<option>',{ val:"CVDB-4P",
-                                        text:"KCNK1_HUMAN"}));
+        //$("#" + "bkd_report_new_target")
+        //        .append( $('<option>',{ val:"CVDB-4P",
+        //                                text:"KCNK1_HUMAN"}));
 
         $( "#" + "bkd_report_new" ).on( 'click', function(event){
             console.log( "Target: " + $("#" + "bkd_report_new_target").val() );

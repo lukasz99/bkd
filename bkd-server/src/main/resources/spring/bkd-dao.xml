@@ -149,8 +149,8 @@
 
    <bean id="bkdQueryManager" class="edu.ucla.mbi.bkd.store.BkdQueryManager"
          init-method="initialize" >
+     <property name="bkdConfig" ref="siteConfig" />
      <property name="daoContext" ref="bkdDaoContext" />
-     <property name="indexManager" ref="bkdIndexManager" />
-     
+     <property name="indexManager" ref="bkdIndexManager" />     
    </bean>
  </beans>

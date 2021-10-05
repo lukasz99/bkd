@@ -28,4 +28,12 @@ public class NodeFeat extends Feature{
     public Node getNode(){
         return this.node;
     }
+
+    public String toString(){
+        if( node != null) {
+            return  "Node:" + node.getAc() + "/" +  super.toString();
+        } else {
+            return  "Node:" + node + "/" +  super.toString();
+        }
+    }
 }

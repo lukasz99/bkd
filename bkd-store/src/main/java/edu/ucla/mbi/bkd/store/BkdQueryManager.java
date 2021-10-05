@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.*;
 import java.text.NumberFormat;
 
+import edu.ucla.mbi.bkd.*;
 import edu.ucla.mbi.bkd.store.dao.*;
 import edu.ucla.mbi.dxf20.*;
 
@@ -19,6 +20,16 @@ public class BkdQueryManager extends QueryManager{
     
     public void setDaoContext( BkdDaoContext daoContext ){
         this.daoContext = daoContext;
+    }
+
+    //--------------------------------------------------------------------------
+    // config
+    //-----------
+    
+    BkdConfig bkdconf;
+    
+    public void setBkdConfig( BkdConfig config ){
+        this.bkdconf = config;
     }
 
     //--------------------------------------------------------------------------
@@ -56,12 +67,20 @@ public class BkdQueryManager extends QueryManager{
         List<Object> result = new ArrayList<Object>();
         
         for( Node cn:  nlst ){
-            List<Object> crl = daoContext.getReportDao()
-                .getListByTarget( cn.getNs(), cn.getAc(), sort );
-
-            for( Object cr : crl ){
-                result.add(cr);
-            }            
+            
+            if( bkdconf.getPrefix().equalsIgnoreCase( cn.getNs() ) ){
+                List<Object> crl = daoContext.getReportDao()
+                    .getListByTarget( cn.getAc(), sort );
+                
+                for( Object cr : crl ) result.add(cr);
+                    
+            } else {
+                List<Object> crl = daoContext.getReportDao()
+                    .getListByTarget( cn.getNs(), cn.getAc(), sort );
+                
+                for( Object cr : crl ) result.add(cr);
+            }
+           
         }
         
         return result;
