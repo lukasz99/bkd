@@ -93,7 +93,7 @@ public abstract class Report{
     }
 
     public String getAc(){
-        return prefix + "-"+ Integer.toString(nacc) + "R";
+        return prefix + Integer.toString(nacc) + "R";
     }
 
     public String getVersion(){

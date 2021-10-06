@@ -427,15 +427,24 @@ public class BkdNodeManager {
                     xrefList.add( nxref );                                       
                 }
             } else if( x.getTypeAc().equalsIgnoreCase( "dxf:0009" ) ){  // identical-to
-                NodeType xnode = x.getNode();
-                TypeDefType ntype = xnode.getType();
-                if(ntype.getAc().equalsIgnoreCase("dxf:0003") ){         // protein
-                    if( xnode.getNs().equalsIgnoreCase("rsq") ){         // refseq
-                        rsq_prot = x.getAc();
-                    }else if( xnode.getNs().equalsIgnoreCase("upr") ){   // uniprot
-                        upr = x.getAc();
-                    }
+                //xxx NodeType xnode = x.getNode();
+                //xxx TypeDefType ntype = xnode.getType();
+                //if(ntype.getAc().equalsIgnoreCase("dxf:0003") ){         // protein
+                //    if( xnode.getNs().equalsIgnoreCase("rsq") ){         // refseq
+                //        rsq_prot = x.getAc();
+                //    }else if( xnode.getNs().equalsIgnoreCase("upr") ){   // uniprot
+                //        upr = x.getAc();
+                //    }
+                //}
+
+                if( "upr".equalsIgnoreCase(x.getNs()) ){
+                    upr = x.getAc();
                 }
+
+                if( "rsq".equalsIgnoreCase(x.getNs()) ){
+                    rsq_prot = x.getAc();
+                }
+                
             } else {                                                   // xrefs
                                 
                 NodeXref nxref = new NodeXref();

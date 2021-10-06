@@ -112,7 +112,7 @@ public class Node implements Comparable<Node>{
     }
 
     public String getAc(){
-        return prefix + "-"+ Integer.toString(nacc) + "N";
+        return prefix + Integer.toString(nacc) + "N";
     }
 
     public String getVersion(){

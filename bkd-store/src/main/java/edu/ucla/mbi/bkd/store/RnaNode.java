@@ -29,7 +29,7 @@ public class RnaNode extends Node{
     }
 
     public String getAc(){
-        return prefix + "-"+ Long.toString(nacc) + "R";
+        return prefix + Long.toString(nacc) + "R";
     }
      
     public void setRsq( String rsq ){
