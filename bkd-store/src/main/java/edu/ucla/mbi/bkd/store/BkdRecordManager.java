@@ -265,123 +265,128 @@ public class BkdRecordManager {
                 //------
 
                 log.info("Feature XREFs: update ");
-                for( FeatureXref x: feat.getXrefs()){
-                    CvTerm xcvtype = daoContext
-                        .getCvTermDao().getByAccession( x.getCvType().getAc() );
-                    
-                    if( xcvtype == null ){
-                        xcvtype = daoContext
-                            .getCvTermDao().updateCvTerm( x.getCvType() );
-                        log.info("Feature XREF: " + xcvtype );
+                if( feat.getXrefs() != null ){
+                    for( FeatureXref x: feat.getXrefs()){
+                        CvTerm xcvtype = daoContext
+                            .getCvTermDao().getByAccession( x.getCvType().getAc() );
+                        
+                        if( xcvtype == null ){
+                            xcvtype = daoContext
+                                .getCvTermDao().updateCvTerm( x.getCvType() );
+                            log.info("Feature XREF: " + xcvtype );
+                        }
+                        x.setCvType( xcvtype );                    
+                        x.setFeature( feat );                    
+                        daoContext.getXrefDao().updateXref( x );                                    
                     }
-                    x.setCvType( xcvtype );                    
-                    x.setFeature( feat );                    
-                    daoContext.getXrefDao().updateXref( x );                                    
+                    log.info("Feature XREFs: update DONE");
+                    
+                    // Ranges
+                    //-------
+                    
+                    for(Range range: feat.getRanges() ){
+                        
+                        range.setFeature(feat);
+                        
+                        if(range.getCvStart() == null){                        
+                            CvTerm cdef =
+                                daoContext.getCvTermDao().getByName("unspecified");                        
+                            range.setCvStart(cdef);
+                        }
+                        
+                        if(range.getCvStop() == null){
+                            CvTerm cdef =
+                                daoContext.getCvTermDao().getByName("unspecified");                        
+                            range.setCvStop(cdef);
+                        }
+                        daoContext.getRangeDao().updateRange( range );
+                    }                                        
                 }
-                log.info("Feature XREFs: update DONE");
-                
-                // Ranges
-                //-------
-                
-                for(Range range: feat.getRanges() ){
-
-                    range.setFeature(feat);
-                    
-                    if(range.getCvStart() == null){                        
-                        CvTerm cdef =
-                            daoContext.getCvTermDao().getByName("unspecified");                        
-                        range.setCvStart(cdef);
-                    }
-
-                    if(range.getCvStop() == null){
-                        CvTerm cdef =
-                            daoContext.getCvTermDao().getByName("unspecified");                        
-                        range.setCvStop(cdef);
-                    }
-                    daoContext.getRangeDao().updateRange( range );
-                }                                        
             }
-
+            
             // attributes - persist attribute (and components)
             //------------------------------------------------
 
             log.info(" ATTRIBUTEs: update");
 
-            for( NodeAttr attr: node.getAttrs() ){
-                log.info("(*) attr" + attr.toString() );
+            if( node.getAttrs() != null ){
+                for( NodeAttr attr: node.getAttrs() ){
+                    log.info("(*) attr" + attr.toString() );
 
-                attr.setNode(node);
+                    attr.setNode(node);
 
-                // attribute type 
-                //---------------
-                
-                CvTerm acvtype = daoContext
-                    .getCvTermDao().getByAccession( attr.getCvType().getAc() );
-                
-                if( acvtype == null ){
-                    acvtype = daoContext
-                        .getCvTermDao().updateCvTerm( attr.getCvType() );                    
-                }
-
-                log.info("acvtype: " + acvtype);
-                attr.setCvType( acvtype );
-
-                // attribute source
-                //------------------
-                
-                Source asource = null;                 
-                log.info(" asource: " + attr.getSource().toString());
-			 
-                if(  attr.getSource() != null ){
+                    // attribute type 
+                    //---------------
                     
-                    CvTerm ascvtype = daoContext
-                        .getCvTermDao().getByAccession( attr.getSource().getCvType().getAc() );
+                    CvTerm acvtype = daoContext
+                        .getCvTermDao().getByAccession( attr.getCvType().getAc() );
                     
-                    if( ascvtype == null ){
-                        ascvtype = daoContext
-                            .getCvTermDao().updateCvTerm( attr.getSource().getCvType() );
+                    if( acvtype == null ){
+                        acvtype = daoContext
+                            .getCvTermDao().updateCvTerm( attr.getCvType() );                    
                     }
-                    log.info("ascvtype: " + ascvtype);
-                    attr.getSource().setCvType( ascvtype );
-				    
-                    asource = daoContext
-                        .getSourceDao().updateSource( attr.getSource() );
+                    
+                    log.info("acvtype: " + acvtype);
+                    attr.setCvType( acvtype );
+                    
+                    // attribute source
+                    //------------------
+                    
+                    Source asource = null;                 
+                    log.info(" asource: " + attr.getSource().toString());
+                    
+                    if(  attr.getSource() != null ){
+                        
+                        CvTerm ascvtype = daoContext
+                            .getCvTermDao().getByAccession( attr.getSource().getCvType().getAc() );
+                        
+                        if( ascvtype == null ){
+                            ascvtype = daoContext
+                                .getCvTermDao().updateCvTerm( attr.getSource().getCvType() );
+                        }
+                        log.info("ascvtype: " + ascvtype);
+                        attr.getSource().setCvType( ascvtype );
+                        
+                        asource = daoContext
+                            .getSourceDao().updateSource( attr.getSource() );
+                    }
+                    log.info(" attr source: " + asource);
+                    
+                    attr.setSource( asource );
+                    
+                    log.info(" attr source updated");
+                    
+                    daoContext.getAttributeDao().updateAttribute( attr );
+                    
                 }
-                log.info(" attr source: " + asource);
-                
-                attr.setSource( asource );
-                
-                log.info(" attr source updated");
-                
-                daoContext.getAttributeDao().updateAttribute( attr );
-                
             }
-
             
             // aliases - persist alias (and components)
             //-----------------------------------------
 
             log.info(" ALIASes: update");
 
-            for( NodeAlias alias: node.getAlias() ){
-                log.info("(*) alias" + alias.toString() );
-
-                alias.setNode(node);
-
-                CvTerm acvtype = daoContext
-                    .getCvTermDao().getByAccession( alias.getCvType().getAc() );
-                
-                if( acvtype == null ){
-                    acvtype = daoContext
-                        .getCvTermDao().updateCvTerm( alias.getCvType() );
+            if( node.getAlias() != null){
+                for( NodeAlias alias: node.getAlias() ){
+                    log.info("(*) alias" + alias.toString() );
+                    
+                    alias.setNode(node);
+                    
+                    CvTerm acvtype = daoContext
+                        .getCvTermDao().getByAccession( alias.getCvType().getAc() );
+                    
+                    if( acvtype == null ){
+                        acvtype = daoContext
+                            .getCvTermDao().updateCvTerm( alias.getCvType() );
+                        
+                    }
+                    log.info("acvtype: " + acvtype);
+                    alias.setCvType( acvtype );
+                    
+                    daoContext.getAliasDao().updateAlias(alias);
                     
                 }
-                log.info("acvtype: " + acvtype);
-                alias.setCvType( acvtype );
-
-                daoContext.getAliasDao().updateAlias(alias);
-                
-            }            
+            }
             
             return node;
         } catch( Exception ex ) {

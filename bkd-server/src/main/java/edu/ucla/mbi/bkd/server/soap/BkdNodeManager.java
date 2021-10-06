@@ -439,10 +439,14 @@ public class BkdNodeManager {
 
                 if( "upr".equalsIgnoreCase(x.getNs()) ){
                     upr = x.getAc();
+                    curNode.setUpr(upr);
+                    System.out.println("upr:" + upr);
                 }
 
                 if( "rsq".equalsIgnoreCase(x.getNs()) ){
                     rsq_prot = x.getAc();
+                    curNode.setRsq(rsq_prot);
+                    System.out.println("rsq:" + rsq_prot);
                 }
                 
             } else {                                                   // xrefs
