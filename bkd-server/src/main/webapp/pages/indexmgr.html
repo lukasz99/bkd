@@ -17,7 +17,12 @@
   <hr/>
   <div class="manager">
     <div id="index-mgr">
-      <div>Initialize <input id="index_init" type="button" value="GO!!!"/></div>
+      <div id="index-init">
+        <div>Initialize</div>
+     </div>   
+      <div id="index-reindex">
+        <div>Reindex</div>
+     </div>   
     </div>  
   </div>    
 </div>
@@ -34,10 +39,10 @@
                var html = "<div>";                
                if( ccnt["count"] >=0 ){
                   html += ccnt["index"]+ " index: " + ccnt["count"] + " entries</div>";
-                  rx = "<div>Reindex " + ccnt["index"] +
+                  rex = "<div>" + ccnt["index"] +
                        " <input id='reindex_"+ ccnt["index"] +"' type='button' value='GO!!!'/>" +
                        "</div>";
-                  $("#index-mgr").append(rx);
+                  $("#index-reindex").append(rex);
                   $("#reindex_" + ccnt["index"]).on('click',function(event){
                         var index = event.currentTarget.id.replace("reindex_","");
                         var conf = confirm("Do you want to continue ?");
@@ -47,18 +52,24 @@
                         }
                   });
 
+                  inx = "<div>" + ccnt["index"] +
+                       " <input id='init_"+ ccnt["index"] +"' type='button' value='GO!!!'/>" +
+                       "</div>";
+                  $("#index-init").append(inx);
+                  $("#init_" + ccnt["index"]).on('click',function(event){
+                        var index = event.currentTarget.id.replace("init_","");
+                        var conf = confirm("Do you want to continue ?");
+                        if( conf ){
+                        console.log("Reinitializing....");
+                        $.ajax( { url: "indexmgr?op=init&id="+index} )
+                        }
+                  });
+
                } else{
                   html += "<div>" + ccnt["index"]+ " index:  N/A</div>";                
                }
                $("#index-counts").append(html);
              }
-
-               $("#index_init").on('click',function(event){
-                  var conf = confirm("Do you want to continue ?");
-                  if(conf){
-                    $.ajax( { url: "indexmgr?op=init"} )
-                  }
-             });
         });               
    });
  </script>
