@@ -402,7 +402,35 @@ public class BkdNodeManager {
                 if(xnode == null) continue; 
                 TypeDefType ntype = xnode.getType();
                 if( ntype.getAc().equalsIgnoreCase("dxf:0017") ){        // organism
-                    taxid = x.getAc();   		    
+                    taxid = x.getAc();
+                    int itaxid = 0;
+                    
+                    try{
+                        itaxid = Integer.parseInt( taxid );
+                    } catch(  NumberFormatException ex ) {
+                        // ignore
+                    }
+                    
+                    if( itaxid == 0 ) return null;
+                    
+                    // test if taxon known
+                    
+                    if( recordManager.getTaxon(itaxid) == null ){
+
+                        // unknown: create new taxon record
+                        
+                        String sciName = xnode.getLabel();
+                        if( sciName == null) sciName = "";
+                        
+                        String comName = xnode.getName();
+                        if( comName == null) comName = "";
+                        
+                        recordManager.addTaxon( new Taxon( itaxid,
+                                                           sciName,
+                                                           comName) );
+                    }
+
+                    
                 } else if(ntype.getAc().equalsIgnoreCase("dxf:0025") ){  // xref: gene
                     
                     NodeXref nxref = new NodeXref();

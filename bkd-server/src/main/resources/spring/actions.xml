@@ -205,12 +205,14 @@
         class="edu.ucla.mbi.bkd.struts.action.ReportAction">
     <property name="recordManager"       ref="bkdRecordManager"/>
     <property name="menuContext"         ref="menuContext"/>
+    <property name="mst" value="1:2:2"/>
   </bean>
 
   <bean id="nodeAction" scope="prototype"
         class="edu.ucla.mbi.bkd.struts.action.NodeAction">
     <property name="recordManager"       ref="bkdRecordManager"/>
     <property name="menuContext"         ref="menuContext"/>
+    <property name="mst" value="1:2:1"/>
   </bean>
   
   <bean id="searchAction" scope="prototype"

@@ -14,7 +14,7 @@
                                      "disabled":"true",
                                      "menu":[]
                                     },
-                                    {"label":"Trnascripts",
+                                    {"label":"Transcripts",
                                      "link":"pubmgr",
                                      "disabled":"true",
                                      "menu":[]
@@ -22,19 +22,19 @@
                                     {"label":"Proteins",
                                      "link":"journalmgr",
                                      "disabled":"true",
-                                     menu:[]
+                                     "menu":[]
                                     }]
                            },
                            {"label":"Search",
-                            "link":"pubsrc.jsp",
-                            "disabled":"true",
-                            "menu":[{"label":"Publications",
-                                     "link":"pubsrc.jsp",
+                            "link":"node",
+                            "disabled":"false",
+                            "menu":[{"label":"Protein/Gene",
+                                     "link":"node",
                                      "disabled":"false",
                                      "menu":[]
                                     },
-                                    {"label":"Projects",
-                                     "link":"projsrc.jsp",
+                                    {"label":"Report",
+                                     "link":"report",
                                      "disabled":"false",
                                      "menu":[]
                                     }]
@@ -90,7 +90,7 @@
                   {"label":"Admin",
                    "link":"page?id=databasemgr",
                    "disabled":"false",                  
-                   "menu":[{label:"Database",
+                   "menu":[{"label":"Database",
                             "link":"page?id=databasemgr",
                             "disabled":"false",                           
                             "menu":[{"label":"Database Manager",
@@ -113,17 +113,17 @@
                            {"label":"Access Control",
                             "link":"page?id=accessmgr",
                             "disabled":"true",
-                            roles:["administrator"], 
+                            "roles":["administrator"], 
                             "menu":[{"label":"Reinitialize",
                                      "link":"aclmgr",
                                      "disabled":"true",
-                                     roles:["administrator"],
+                                     "roles":["administrator"],
                                      "menu":[]
                                     },
                                     {"label":"ACL Editor",
                                      "link":"aclmgr",
                                      "disabled":"true",
-                                     roles:["administrator"],
+                                     "roles":["administrator"],
                                      "menu":[]
                                     }]
                            },
