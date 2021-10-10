@@ -54,7 +54,7 @@ public abstract class Report{
     protected int nacc = 0;
        
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "cvtype")
+    @JoinColumn(name = "fk_type")
     CvTerm cvtype;
     
     @Column(name = "version")

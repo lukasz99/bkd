@@ -22,13 +22,31 @@ BKDlink  = {
                  "url":"https://pubmed.ncbi.nlm.nih.gov/%%AC%%",
                  "type":"source"}
                  },
+        "pmid":{"described-by":{
+                 "url":"https://pubmed.ncbi.nlm.nih.gov/%%AC%%",
+                 "type":"source"}
+                 },
         "PubMed":{"described-by":{
                  "url":"https://pubmed.ncbi.nlm.nih.gov/%%AC%%",
                  "type":"source"}
                  },
         "dbSNP":{"mutation":{
                  "url":"https://www.ncbi.nlm.nih.gov/snp/%%AC%%",
-                 "type":" sequence variant"}}
+                 "type":"sequence variant"}},
+        "dbsnp":{"mutation":{
+                 "url":"https://www.ncbi.nlm.nih.gov/snp/%%AC%%",
+                 "type":"sequence variant"},
+                 "sequence-variant":{
+                 "url":"https://www.ncbi.nlm.nih.gov/snp/%%AC%%",
+                 "type":"sequence variant",
+                 "label":"Variant(natural)"}},
+        "clinvar":{"mutation":{
+                 "url":"https://www.ncbi.nlm.nih.gov/clinvar/variation/%%AC%%",
+                 "type":"mutation"},
+                 "sequence-variant":{
+                 "url":"https://www.ncbi.nlm.nih.gov/clinvar/variation/%%AC%%",
+                 "type":"sequence variant",
+                 "label":"Variant(natural)"}}
       },
 
  taxid: function( taxon ){
@@ -49,16 +67,16 @@ BKDlink  = {
     return el; 
  },
 
- xref: function( xref ){
+ xrefType: function( xref ){
    var ns = xref.ns;  
    var ac = xref.ac;
    var tp = xref.cvType.name;
 
    var el = null;
-   console.log("XREF: " + JSON.stringify(xref));
+   console.log("links: XREF: " + JSON.stringify(xref));
    // format:
    //ns:<a>ac</ac> (type)
-   console.log("x.ns:" + ns + " x.ns.tp:"+ tp);
+   console.log("links: x.ns:" + ns + " x.ns.tp:"+ tp);
    if( this.url[ns] ){
      if( this.url[ns][tp] ){
       
@@ -66,10 +84,34 @@ BKDlink  = {
 
         el = ns + ":<a href='" + url + "'>" + ac + "</a>";
         if( this.url[ns][tp].type ){
-          el = el + " (" + this.url[ns][tp].type + ")";
+          el = el + " (" + this.url[ns][tp].type + ")";          
         }
      }
    }
+   if(el == null ){
+     el = ns+":"+ac;
+   }
+   return el;
+ },
+
+ xref: function( xref ){
+   var ns = xref.ns;  
+   var ac = xref.ac;
+   var tp = xref.cvType.name;
+
+   var el = null;
+   console.log("links: XREF: " + JSON.stringify(xref));
+   // format:
+   //ns:<a>ac</ac> (type)
+   console.log("links: x.ns:" + ns + " x.ns.tp:"+ tp);
+
+   if( this.url[ns] ){
+     if( this.url[ns][tp] ){      
+       url = this.url[ns][tp].url.replace("%%AC%%",ac);        
+       el = ns + ":<a href='" + url + "'>" + ac + "</a>";
+     }
+   }
+
    if(el == null ){
      el = ns+":"+ac;
    }

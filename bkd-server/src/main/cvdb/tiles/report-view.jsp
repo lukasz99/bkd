@@ -8,13 +8,14 @@
   <title>Report</title>
 
   <t:insertDefinition name="htmlhead"/>  
-   <%--<script src="js/modal-yui.js" type="text/javascript" language="JavaScript"></script> --%>
-   <%-- <script src="js/help-yui.js" type="text/javascript" language="JavaScript"></script> --%>
    <script src="jq/jquery-3.6.0.js" type="text/javascript" language="JavaScript"></script>
 
    <script src="js/bkd-config.js" type="text/javascript" language="JavaScript"></script>
    <script src="js/bkd-links.js" type="text/javascript" language="JavaScript"></script>
+   <!--script src="js/sequence-viewer.bundle.js" type="text/javascript" language="JavaScript"></script-->
+   
    <script src="js/bkd-report-jq.js" type="text/javascript" language="JavaScript"></script>
+   <script src="js/bkd-site.js" type="text/javascript" language="JavaScript"></script>
 
    <script type="text/javascript">
          
@@ -24,7 +25,7 @@
         var op   = "<s:property value='op'/>";
         var mode = "<s:property value='mode'/>"; // set to edit if editor mode
         if( ns.length > 0 && ac.length >0 ){     // show report
-          myurl ="cvdbdev0/report?ns="+ns+"&ac="+ac+"&ret=data&format=json";
+          myurl ="report?ns="+ns+"&ac="+ac+"&ret=data&format=json";
           if( op.length> 0){
            myurl += "&op=" + op;
           }

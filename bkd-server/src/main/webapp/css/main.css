@@ -917,7 +917,7 @@ img.main {
   background-color: #eeeeee;
   color: white;
   text-align: center;
-  font-size:  1.00em;
+  font-size:  1.00em;  !important
   font-family: sans-serif;
   vertical-align: middle; 
   border-bottom: 1px solid #555555;
@@ -931,7 +931,7 @@ img.main {
   font-weight: bold;
   vertical-align: middle; 
   white-space: nowrap;
-}
+} 
 
 .midmenulink {
   color: black;

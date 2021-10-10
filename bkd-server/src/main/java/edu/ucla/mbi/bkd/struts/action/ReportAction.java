@@ -235,6 +235,14 @@ public class ReportAction extends PortalSupport{
         String tgtNs = "";
         String tgtAc = "";
         String rac = "";
+
+        String featCvtNs = "";
+        String featCvtAc = "";
+        String featCvtNm = "";
+
+        String featLabel = "";
+        String featName = "";
+                       
         try{
             JSONObject jform = new JSONObject( sform );
             
@@ -293,11 +301,41 @@ public class ReportAction extends PortalSupport{
                     // feature details: label, ranges, xrefs
                     
                     String vname = key.replace("report_target_feature_","");
-
-                    log.info( " feature: name= " + vname );
                     
-                    if( vname.startsWith( "ranges_" ) ){
+                    
+                    log.info( " feature: name= " + vname );
 
+                    if( "label".equalsIgnoreCase( vname ) ){
+
+                        // feature label
+
+                        featLabel = val;
+                        
+
+                    }else if( "name".equalsIgnoreCase( vname ) ){   
+
+                        // feature name
+
+                        featName = val;                        
+
+                    }else if( vname.startsWith( "cvtype_" ) ){   
+
+                        // feature type
+                        
+                        vname = vname.replace("cvtype_","");
+
+                        if( "ac".equalsIgnoreCase( vname ) ){
+                            featCvtAc = val;
+                        } else if( "ns".equalsIgnoreCase( vname ) ){
+                            featCvtNs = val;
+                        } else if( "name".equalsIgnoreCase( vname ) ){
+                            featCvtNm = val;
+                        } 
+                            
+                    }else if( vname.startsWith( "ranges_" ) ){
+
+                        // feature ranges
+                        
                         log.info(  " feature: ranges= " + vname );
                         //ranges_0_start
                         vname = vname.replace( "ranges_", "" );
@@ -383,7 +421,7 @@ public class ReportAction extends PortalSupport{
                     } catch(Exception ex ){
                         
                     }
-                } else if(  key.startsWith("report_ac") ){
+                } else if(  key.equalsIgnoreCase("ac") ){
                     rac = val;
                     log.info( " report ac = " + val );                  
                 
@@ -408,6 +446,8 @@ public class ReportAction extends PortalSupport{
                 String rid = rac.replaceAll( "[^0-9]", "" );
                 int lrid = Integer.parseInt( rid );
                 report.setNacc( lrid );
+                report.setPrefix( manager.getBkdConfig().getPrefix() );
+                
                 log.info("report id set to -> " + report.getAc());
 
             } catch( Exception ex ){
@@ -435,10 +475,19 @@ public class ReportAction extends PortalSupport{
             tgtFeat.setNode( tgtNode );
             
             report.setFeature( tgtFeat );
-            CvTerm cvt = new CvTerm( "psi-mi", "mi:0118", "mutation" );            
+
+            report.getFeature().setLabel( featLabel );
+            report.getFeature().setName( featName );
+            
+            CvTerm cvt = new CvTerm( featCvtNs, featCvtAc, featCvtNm );            
+
+            if( featCvtAc == null || featCvtAc.equals("") ){
+               cvt = new CvTerm( "MI", "MI:0118", "mutation" );
+            }            
+            
             report.getFeature().setCvType( cvt );
             report.getFeature().setSource( source );
-           
+            
             log.info( "RMAP:  " + rangeMap );
             
             for( Iterator<String> ikey = rangeMap.keySet().iterator();

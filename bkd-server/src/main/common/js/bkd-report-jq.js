@@ -148,9 +148,11 @@ BKDrep = {
         var reports = BKDconf.report.feature;                    
         for(var r in reports ){
             console.log(r);
-            $("#" + "bkd_report_new_type")
-                .append( $('<option>',{ val:reports[r].cvType.ac,
-                                        text:reports[r].label}));
+            if( reports[r].active ){
+              $("#" + "bkd_report_new_type")
+                  .append( $('<option>',{ val:reports[r].cvType.ac,
+                                          text:reports[r].label}));
+            }
         }
         
         console.log("DATA: "+ data);
@@ -162,7 +164,7 @@ BKDrep = {
                                           text:data[i].feature.node.label}));
             } 
             if(data[i].cvType !== undefined && data[i].cvType.name=="protein"){
-              console.log(data[i].label);
+              // console.log(data[i].label);
               $("#" + "bkd_report_new_target")
                   .append( $('<option>',{ val:data[i].ac,
                                           text:data[i].label}));
@@ -174,7 +176,8 @@ BKDrep = {
 
         $( "#" + "bkd_report_new" ).on( 'click', function(event){
             console.log( "Target: " + $("#" + "bkd_report_new_target").val() );
-
+            console.log( "RType: " + $("#" + "bkd_report_new_type").val() );
+            
             var tgt = $("#" + "bkd_report_new_target").val();            
             
             var report = "report?ns=CVDB&ac="+tgt+"&op=new&ret=data&format=json";          
@@ -192,18 +195,18 @@ BKDrep = {
                        nrep.ac = null;
                        
                        // set report type
-                       var tpa = $("#" + "bkd_report_new_type").val();            
-
+                       var tpac = $("#" + "bkd_report_new_type").val();            
+                       
                        var reports = BKDconf.report.feature;
                        for(var r in reports ){
-                          if(reports[r].cvType.ac == tpa){
+                          if(reports[r].cvType.ac == tpac){
                              nrep.cvType = reports[r].cvType;
                              break;
                           }
                        }
 
-                       console.log( "NEW Report:" + JSON.stringify(nrep) );                     
-
+                       console.log( "NEW Report:" + JSON.stringify(nrep.cvType) );                     
+                       
                        //BKDrep.searchView( data.rdata, BKDrep.srcAnchor, "edit" );                   
                     
                         $(BKDrep.srcAnchor).hide();
@@ -227,7 +230,6 @@ BKDrep = {
         
     },
 
-
     tgtView: function(data, tgtAnchor, mode ){
         
         if( data == null ){
@@ -237,16 +239,19 @@ BKDrep = {
         }
 
         console.log("DATA:" + JSON.stringify(data));
-
-        var flist = BKDconf["report"]["feature"]["protein"]["target"];
-
+        console.log(" CVTYPE:" + data.report.cvType.name);
+        
+        var flist = BKDconf["report"]["feature"][data.report.cvType.name].target;
+        console.log(" CVTYPE:" + JSON.stringify(data.report.cvType.name));
+        console.log(" FLIST:" + JSON.stringify(flist));
+        
         // report accession
         //-----------------
         
-        var rac = BKDconf["report"]["feature"]["protein"]["ac"];
+        var rac = BKDconf["report"]["feature"][data.report.cvType.name]["ac"];
         var racval ="";
         var racpath = rac["vpath"];
-        var cval = data;   // ["record"];        
+        var cval = data.report;        
           
         console.log("PATH:" + JSON.stringify(racpath));
 
@@ -254,23 +259,23 @@ BKDrep = {
           console.log("CVAL: " + racpath[j] + " : " + cval[ racpath[j]] );
           cval = cval[ racpath[j] ];
         }
-               
+        
         $(tgtAnchor).append( "<input id='" + rac["id"] + "'" +
                                      "class='bkd-report' />");
 
         cel = $("#" + rac["id"] )
         cel.val(cval);
-        cel.attr('type','hidden');
-
-
+        cel.attr('type','hidden'); 
+         
         // go over configuration
-
+        //----------------------
+        
         for( var i = 0; i < flist.length; i++){
 
           var fname = flist[i].name;
           console.log("NAME: " + fname + " : list:" + flist[i].list + " value:" + flist[i].value);
           
-          if( flist[i].list ){   // config field is list            
+          if( flist[i].list ){   // config field is a list            
             
             if( flist[i].vpath ){    // vpath present; list of values @ vpath
               console.log(" VPATH: present");
@@ -301,6 +306,10 @@ BKDrep = {
                    $( "#"+event.currentTarget.id.replace('_head','_body')).toggle(); 
                 });
 
+                if( flist[i].collapse ){
+                   $("#" + flist[i].id + "_body").hide();
+                }
+
                 for(var v = 0; v <fvlist.length; v ++){
 
                   // one line for each list value
@@ -308,7 +317,7 @@ BKDrep = {
                   var cval = fvlist[v];                   
                   if(flist[i].type == "xref"){
                   
-                     var cel = BKDlink.xref(cval);  
+                     var cel = BKDlink.xrefType(cval);  
                      
                      $( "#" + flist[i].id + "_body" )
                        .append(" <div class='bkd-rep-fld'> "+cel+"</div>\n");
@@ -318,9 +327,9 @@ BKDrep = {
                        .append(" <div class='bkd-rep-fld'> "+cval.ns +": "+cval.ac+"</div>\n");
                   }                 
                 }
-              }
-              // done: vpath present
-          }else if( flist[i].value ){  // no vpath: list of complex values (ie feature)
+              }  
+            // done: vpath present -  show as list 
+            }else if( flist[i].value ){  // no vpath: list of complex values (ie feature)
 
               var fname = flist[i].name;
               console.log(" feature: " + fname);
@@ -331,15 +340,14 @@ BKDrep = {
                                   "</div>");
 
               for( var k=0; k < flist[i].value.length; k++ ){  // go over fields
-
+               
                 // go over complex fields
 
                 var cname = flist[i].value[k].name;
                 var cvpath = flist[i].value[k].vpath;
                 var cvedit = flist[i].value[k].edit;
                 var cvid = flist[i].value[k].id;
-                console.log(" feature: c val name " + cname);
-
+               
                 var cval = null;   
 
                 if(cvpath.length >0){
@@ -353,9 +361,8 @@ BKDrep = {
                     }                        
                   }
                 }
-
-
-                if( flist[i].value[k].list ){  // list of values
+              
+                if( flist[i].value[k].list ){  // feature: list of values
                                       
                   if( cval !== null ||
                     (flist[i].value[k].edit && mode == 'edit') ){  //edit 
@@ -364,19 +371,18 @@ BKDrep = {
                        .append(" <div class='bkd-rep-fld' id='"+flist[i].value[k].id+"'>\n" +
                                "   <div class='bkd-rep-fld'>" + cname + "</div>\n" +
                                " </div>\n");
-                  
-                      
+                       
                     if( flist[i].value[k].edit && mode == 'edit' ){ 
                       console.log(" show editables...");
                       //build add fields for editable lists
-
-                      if( flist[i].value[k].type == "xref") {
-                        BKDrep.xrefEdit( flist[i].value[k], cvid, cval );
+                      
+                      if( flist[i].value[k].type == "xref") {                      
+                          BKDrep.xrefEdit( flist[i].value[k], cvid, cval );
                       } 
-
+                      
                       if( flist[i].value[k].type == "range" ){
-                        console.log("RANGES....");
-                        BKDrep.rangeEdit( flist[i].value[k], cvid, cval );
+                          console.log("RANGES....");
+                          BKDrep.rangeEdit( flist[i].value[k], cvid, cval );
                       }                        
                       
                         // edit line: end
@@ -407,7 +413,7 @@ BKDrep = {
                     }
                   }
                         
-                } else {  // simple value (eg feature parameters)
+                } else {  // feature: simple value (eg feature parameters)
 
                   console.log("  feature: simple value here...");          
                   if(cvedit && mode == 'edit'){  // set up edit field
@@ -415,11 +421,11 @@ BKDrep = {
                     if( flist[i].value[k].type =="cvterm" ){
 
                       // build cvterm  menu
-                      var cvtsel ="<select id='"+flist[i].value[k].id+"_cvt' class='bkd-report'>";
+                      var cvtsel ="<select id='"+flist[i].value[k].id+"_ac' class='bkd-report'>";
                       for(var n = 0; n< flist[i].value[k]["cvt-list"].length; n++){
                        cvtsel = cvtsel +"<option value='" +
-                           flist[i].value[k]["cvt-list"][n].value+"'>" +
-                           flist[i].value[k]["cvt-list"][n].name+"</option>";
+                           flist[i].value[k]["cvt-list"][n].ac+"'>" +
+                           flist[i].value[k]["cvt-list"][n].label+"</option>";
                       }
                       cvtsel = cvtsel + "</select>";
 
@@ -432,8 +438,8 @@ BKDrep = {
                         var cvtvalue = cval.ac; 
                         var cvtname = cval.name;
 
-                        $( "#" + flist[i].value[k].id +"_cvt  option[value='"+cvtvalue+"']" ).attr("selected",true);
-                        $( "#" + flist[i].value[k].id +"_cvt" ).val(cvtvalue);
+                        $( "#" + flist[i].value[k].id +"_ac  option[value='"+cvtvalue+"']" ).attr("selected",true);
+                        $( "#" + flist[i].value[k].id +"_ac" ).val(cvtvalue);
                       }
                     } else {
                       $( tgtAnchor + " >div:last")
@@ -642,7 +648,7 @@ BKDrep = {
 
              
              console.log("REPTP: "+JSON.stringify(BKDrep.postData));      
-             
+             alert(JSON.stringify(BKDrep.postData));     
              
              $.ajax({
                 type: "POST",
@@ -843,8 +849,6 @@ BKDrep = {
 
       xrefEdit:  function( cel, cvid, cval ){
 
-         // cel = flist[i].value[k];
-         
          // build xref-ns menu
          var xnsel = "<select id='"+cel.id+"_ns'>";
          for(var n = 0; n< cel["xref-ns"].length; n++){
@@ -855,14 +859,15 @@ BKDrep = {
          // build xref-type menu                            
          var xtsel ="<select id='" + cel.id+"_type'>";
          for(var n = 0; n< cel["xref-type"].length; n++){
-            xtsel = xtsel +"<option value='"+cel["xref-type"][n].value+"'>"+cel["xref-type"][n].label+"</option>";
+            xtsel = xtsel +"<option value='"+cel["xref-type"][n].ac+"'>"+
+                     cel["xref-type"][n].label+"</option>";
          }
          xtsel = xtsel + "</select>";
 
          var divAdd = " <div class='bkd-rep-fld'>" + 
-                      xnsel + 
+                      xtsel + " " + xnsel + 
                       "  <input type='text' id='" + cel.id+"_ac'/> " + 
-                      xtsel + 
+                       
                       "  <input type='button' id='" + cel.id+"_add'/>"+
                       " </div>";
 
@@ -879,16 +884,17 @@ BKDrep = {
             console.log("XREFADD: " + xns + " : " + xac + " : " + xtac );
             var xtns ="";
             var xtnm ="";
-            
-            for(t=0; t< BKDconf["xref-type"].length;t++){
-              console.log(t+" : " +BKDconf["xref-type"][t]);
-              if(BKDconf["xref-type"][t].ac == xtac){
-                 xtns = BKDconf["xref-type"][t]["ns"];
-                 xtnm = BKDconf["xref-type"][t]["name"];
+            var xtlbl =""; 
+            for(t=0; t< cel["xref-type"].length;t++){
+              console.log(t+" : " +cel["xref-type"][t]);
+              if(cel["xref-type"][t].ac == xtac){
+                 xtns = cel["xref-type"][t]["ns"];
+                 xtnm = cel["xref-type"][t]["name"];
+                 xtlbl = cel["xref-type"][t]["label"];
               }
             }
 
-            BKDrep.fxlist = []
+            BKDrep.fxlist = [];
 
             $(".bkd-xref").each( function( index, elem){
                  BKDrep.fxlist.push( elem.id );                                 
@@ -919,7 +925,7 @@ BKDrep = {
 
             $( "#" + event.currentTarget.id.replace('_add','') )
                 .append( " <div class='bkd-rep-fld bkd-xref' id='"+cid+"'>" +
-                         cval + chid +
+                         xtlbl + ": " + cval + chid +
                          "  <input type='button' id='"+cid+"_drop'/>"+
                          " </div>\n");
 
@@ -943,10 +949,23 @@ BKDrep = {
           var cid= cel.id +"_" + x;
 
           console.log("CVAL " + JSON.stringify(cval[x]));
-
+          
           var xlnk = BKDlink.xref(cval[x]);  
-          console.log(xlnk);           
-          $( "#" + cel.id ).append( "<div id='" + cid + "' class='bkd-rep-fld bkd-range'>" + xlnk +
+          console.log("XLNK:" + xlnk + "CVT:" + JSON.stringify( cval[x].cvType ) );           
+          console.log("CVTLST:");
+
+          var xtac = cval[x].cvType.ac;
+          var xtlbl ="";
+          for(t=0; t< cel["xref-type"].length;t++){
+            console.log(t+" : " + cel["xref-type"][t]);
+            if(cel["xref-type"][t].ac == xtac){
+               xtns = cel["xref-type"][t]["ns"];
+               xtnm = cel["xref-type"][t]["name"];
+               xtlbl = cel["xref-type"][t]["label"] +": ";
+            }
+          }
+
+          $( "#" + cel.id ).append( "<div id='" + cid + "' class='bkd-rep-fld bkd-range'>" + xtlbl + xlnk +
                                     "\n<input type='button' id='" + cid + "_drop'/></div>\n</div>" );
           
           $("#"+ cid).append("<input type='hidden' id='" + cid + "_ns' class='bkd-report' />" );
@@ -976,7 +995,7 @@ BKDrep = {
         
         //BKDrep.xrefHidden( flist[i].value[k], cvid, clist, m );
         
-        var cval = BKDlink.xref( clist[m] );
+        var cval = BKDlink.xrefType( clist[m] );
         var cid = cvid + "_" + m;
         $( tgtAnchor + " > div:last-child > div:last-child")
           .append(" <div class='bkd-rep-fld  bkd-xref' id='"+cid+"'>" + cval +" <input type='button' id='"+cid+"_drop'/></div>\n");

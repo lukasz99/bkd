@@ -8,7 +8,7 @@ CREATE TABLE type(
 CREATE SEQUENCE type_pkey_seq START WITH 1 INCREMENT BY 1
     NO MINVALUE NO MAXVALUE CACHE 1;
 
-insert into type (ns, ac, name) values ('','','unspecified');   -- unspecified
+insert into type (ns, ac, name) values ('','','unspecified');
 insert into type (ns, ac, name) values ('dip','dip:0307','node');
 insert into type (ns, ac, name) values ('dip','dip:0308','edge');
 insert into type (ns, ac, name) values ('dip','dip:0309','experiment');
@@ -43,7 +43,7 @@ insert into cvterm (ns, ac, name) values ('psi-mi','MI:0319','DNA');
 
 CREATE TABLE cvtref(
     pkey bigint DEFAULT nextval(('"cvtref_pkey_seq"'::text)::regclass) NOT NULL CONSTRAINT cvtref_pk PRIMARY KEY,
-    fk_cvreftype bigint DEFAULT 0 NOT NULL, -- unspecified xref type
+    fk_cvreftype bigint DEFAULT 0 NOT NULL,
     ns character varying(16)  DEFAULT ''::character varying NOT NULL,
     ac character varying(32)  DEFAULT ''::character varying NOT NULL
 );
@@ -66,28 +66,28 @@ CREATE TABLE ident(
 CREATE SEQUENCE ident_pkey_seq START WITH 192 INCREMENT BY 1
     NO MINVALUE NO MAXVALUE CACHE 1;
 
-insert into ident ( pkey, name, prfix, ptfix, idmax) values( 1, 'node', 'CVDB','N', 1);  -- node
-insert into ident ( pkey, name, prfix, ptfix, idmax) values( 2, 'protein', 'CVDB','PN', 1);  -- node:protein
-insert into ident ( pkey, name, prfix, ptfix, idmax) values( 3, 'rna', 'CVDB','RN', 1);  -- node:rna
-insert into ident ( pkey, name, prfix, ptfix, idmax) values( 4, 'gene', 'CVDB','GN', 1);  -- node:gene
-insert into ident ( pkey, name, prfix, ptfix, idmax) values( 5, 'molecule','CVDB','MN', 1);  -- node:molecule
+insert into ident ( pkey, name, prfix, ptfix, idmax) values( 1, 'node', 'CVDB','N', 1);  
+insert into ident ( pkey, name, prfix, ptfix, idmax) values( 2, 'protein', 'CVDB','PN', 1); 
+insert into ident ( pkey, name, prfix, ptfix, idmax) values( 3, 'rna', 'CVDB','RN', 1);  
+insert into ident ( pkey, name, prfix, ptfix, idmax) values( 4, 'gene', 'CVDB','GN', 1);  
+insert into ident ( pkey, name, prfix, ptfix, idmax) values( 5, 'molecule','CVDB','MN', 1); 
 
-insert into ident ( pkey, name, prfix, ptfix, idmax) values(32, 'edge', 'CVDB','E', 1);  -- edge
-insert into ident ( pkey, name, prfix, ptfix, idmax) values(33, 'molint', 'CVDB','ME', 1);  -- edge: molecualr interaction
-insert into ident ( pkey, name, prfix, ptfix, idmax) values(34, 'genint', 'CVDB','GE', 1);  -- edge: genetic interaction
-insert into ident ( pkey, name, prfix, ptfix, idmax) values(35, 'funlnk', 'CVDB','FE', 1);  -- edge: functional link
-insert into ident ( pkey, name, prfix, ptfix, idmax) values(64, 'report', 'CVDB','R', 1);  -- report
-insert into ident ( pkey, name, prfix, ptfix, idmax) values(65, 'experiment', 'CVDB','X', 1);  -- experiment
-insert into ident ( pkey, name, prfix, ptfix, idmax) values(96, 'inference', 'CVDB','I', 1);  -- inference
+insert into ident ( pkey, name, prfix, ptfix, idmax) values(32, 'edge', 'CVDB','E', 1);  
+insert into ident ( pkey, name, prfix, ptfix, idmax) values(33, 'molint', 'CVDB','ME', 1);
+insert into ident ( pkey, name, prfix, ptfix, idmax) values(34, 'genint', 'CVDB','GE', 1);
+insert into ident ( pkey, name, prfix, ptfix, idmax) values(35, 'funlnk', 'CVDB','FE', 1);
+insert into ident ( pkey, name, prfix, ptfix, idmax) values(64, 'report', 'CVDB','R', 1);
+insert into ident ( pkey, name, prfix, ptfix, idmax) values(65, 'experiment', 'CVDB','X', 1);
+insert into ident ( pkey, name, prfix, ptfix, idmax) values(96, 'inference', 'CVDB','I', 1);
 
-insert into ident ( pkey, name, prfix, ptfix, idmax) values(128, 'source', 'CVDB','S', 1);  -- source
-insert into ident ( pkey, name, prfix, ptfix, idmax) values(160, 'producer', 'CVDB','P', 1);  -- producer
+insert into ident ( pkey, name, prfix, ptfix, idmax) values(128, 'source', 'CVDB','S', 1);
+insert into ident ( pkey, name, prfix, ptfix, idmax) values(160, 'producer', 'CVDB','P', 1);
 
-CREATE TABLE node ( -- protein/transcript(mRNA)/gene/molecule/etc
+CREATE TABLE node (
     pkey bigint DEFAULT nextval(('"node_pkey_seq"'::text)::regclass) NOT NULL CONSTRAINT node_pk PRIMARY KEY,
     sclass character varying(32) DEFAULT ''::character varying,
-    cvtype bigint DEFAULT 0 NOT NULL,   -- unspecified type
-    taxon bigint DEFAULT 1 NOT NULL,  -- unspecified taxon,
+    cvtype bigint DEFAULT 0 NOT NULL,   
+    taxon bigint DEFAULT 1 NOT NULL,  
     prefix character varying(8) DEFAULT ''::character varying,
     nacc int DEFAULT 0 NOT NULL,
 
@@ -150,9 +150,9 @@ insert into taxon (taxid, sciname,comname) values ('-3', 'in silico','in silico'
 
 CREATE TABLE alias (
     pkey bigint DEFAULT nextval(('"alias_pkey_seq"'::text)::regclass) NOT NULL CONSTRAINT alias_pk PRIMARY KEY,   
-    sclass character varying(32) DEFAULT ''::character varying,  -- node/protein/rna/gene/...
-    fk_node bigint DEFAULT 0 NOT NULL,  -- foreign key (node)
-    fk_cvtype bigint DEFAULT 0 NOT NULL, -- unspecified xref type	
+    sclass character varying(32) DEFAULT ''::character varying,  
+    fk_node bigint DEFAULT 0 NOT NULL,  
+    fk_cvtype bigint DEFAULT 0 NOT NULL, 
     alias character varying(128) DEFAULT ''::character varying NOT NULL
 );
 
@@ -167,10 +167,10 @@ CREATE INDEX alias_04 ON alias USING btree (sclass);
 
 CREATE TABLE attribute (
     pkey bigint DEFAULT nextval(('"attr_pkey_seq"'::text)::regclass) NOT NULL CONSTRAINT attr_pk PRIMARY KEY,   
-    sclass character varying(32) DEFAULT ''::character varying,  -- node/protein/rna/gene/...
-    fk_node bigint DEFAULT 0 NOT NULL,  -- foreign key (node)
-    fk_cvtype bigint DEFAULT 0 NOT NULL, -- unspecified xref tye
-    fk_source bigint DEFAULT 0 NOT NULL, -- unspecified xref source    
+    sclass character varying(32) DEFAULT ''::character varying,  
+    fk_node bigint DEFAULT 0 NOT NULL,  
+    fk_cvtype bigint DEFAULT 0 NOT NULL,
+    fk_source bigint DEFAULT 0 NOT NULL,
     value text DEFAULT ''::text NOT NULL
 );
 
@@ -185,12 +185,12 @@ CREATE INDEX attr_04 ON attribute USING btree (sclass);
 
 CREATE TABLE xref (
     pkey bigint DEFAULT nextval(('"xref_pkey_seq"'::text)::regclass) NOT NULL CONSTRAINT xref_pk PRIMARY KEY,
-    sclass character varying(32) DEFAULT ''::character varying,  -- node/protein/rna/gene/...       
-    fk_node bigint DEFAULT 0 NOT NULL,   -- foreign key (node)   
-    fk_feature bigint DEFAULT 0 NOT NULL,   -- foreign key (feature)
-    fk_report bigint DEFAULT 0 NOT NULL,   -- foreign key (report)
-    fk_cvtype bigint DEFAULT 0 NOT NULL, -- unspecified xref type	
-    fk_source bigint DEFAULT 0 NOT NULL, -- unspecified xref source   
+    sclass character varying(32) DEFAULT ''::character varying, 
+    fk_node bigint DEFAULT 0 NOT NULL,   
+    fk_feature bigint DEFAULT 0 NOT NULL,
+    fk_report bigint DEFAULT 0 NOT NULL, 
+    fk_cvtype bigint DEFAULT 0 NOT NULL, 
+    fk_source bigint DEFAULT 0 NOT NULL, 
     ns character varying(16) DEFAULT ''::character varying NOT NULL,
     ac character varying(32) DEFAULT ''::character varying NOT NULL,
     url character varying(128) DEFAULT ''::character varying NOT NULL,
@@ -210,13 +210,13 @@ CREATE INDEX xref_03  ON xref USING btree (ac,fk_cvtype);
 CREATE INDEX xref_04  ON xref USING btree (fk_cvtype);
 CREATE INDEX xref_05  ON xref USING btree (fk_source);
 
-CREATE TABLE source (   -- person/publication/institution       
+CREATE TABLE source (   
        pkey bigint DEFAULT nextval(('"source_pkey_seq"'::text)::regclass) NOT NULL CONSTRAINT source_pk PRIMARY KEY,                                                     
        sclass character varying(32) DEFAULT ''::character varying,                                                                                                
-       fk_cvtype bigint DEFAULT 0 NOT NULL, -- unspecified source type                                                                                                 
+       fk_cvtype bigint DEFAULT 0 NOT NULL, 
        name character varying(256) DEFAULT ''::character varying NOT NULL,                                                                                             
        url character varying(128) DEFAULT ''::character varying NOT NULL,                                                                                              
-       email character varying(128) DEFAULT ''::character varying NOT NULL, -- LS: added
+       email character varying(128) DEFAULT ''::character varying NOT NULL, 
                                                                                                                                                                        
        atitle character varying(256) DEFAULT ''::character varying NOT NULL,                                                                                           
        jtitle character varying(64) DEFAULT ''::character varying NOT NULL,
@@ -224,8 +224,8 @@ CREATE TABLE source (   -- person/publication/institution
        abstract text DEFAULT ''::text NOT NULL,                                                                                                                        
        nlmid character varying(16) DEFAULT ''::character varying NOT NULL,                                                                                             
                                                                                                                                                                        
-       orcid character varying(32) DEFAULT ''::character varying NOT NULL,   -- skips https://orcid.org/
-       doi character varying(32) DEFAULT ''::character varying NOT NULL,     -- skips https://doi.org/
+       orcid character varying(32) DEFAULT ''::character varying NOT NULL,  
+       doi character varying(32) DEFAULT ''::character varying NOT NULL,    
        pmid character varying(16) DEFAULT ''::character varying NOT NULL,
 
        ns character varying(16) DEFAULT ''::character varying NOT NULL,
@@ -249,22 +249,20 @@ CREATE INDEX source_07 ON source USING btree (orcid);
 CREATE INDEX source_08 ON source USING btree (doi);
 CREATE INDEX source_09 ON source USING btree (pmid);
 
---TABLE report: report  --   
-
 CREATE TABLE report (
     pkey bigint DEFAULT nextval(('"rep_pkey_seq"'::text)::regclass) NOT NULL CONSTRAINT rep_pk PRIMARY KEY,
-    sclass character varying(32) DEFAULT ''::character varying,  -- nprop/nfeature...
+    sclass character varying(32) DEFAULT ''::character varying,
     prefix character varying(8) DEFAULT ''::character varying, 
-    nacc int DEFAULT 0 NOT NULL,   -- numerical accession
+    nacc int DEFAULT 0 NOT NULL, 
     
-    cvtype bigint DEFAULT 0 NOT NULL,   -- unspecified type
+    cvtype bigint DEFAULT 0 NOT NULL,
     label character varying(32) DEFAULT ''::character varying NOT NULL,         
     name text DEFAULT ''::text NOT NULL,
-    fk_node bigint DEFAULT 0 NOT NULL,   -- foreign key (node)
-    fk_feat bigint DEFAULT 0 NOT NULL,   -- foreign key (feature)
-    fk_type bigint DEFAULT 0 NOT NULL,   -- report type
-    fk_source bigint DEFAULT 0 NOT NULL,  -- unspecified property source       
-    jval text DEFAULT ''::text NOT NULL,  -- json value
+    fk_node bigint DEFAULT 0 NOT NULL,
+    fk_feat bigint DEFAULT 0 NOT NULL,
+    fk_type bigint DEFAULT 0 NOT NULL,
+    fk_source bigint DEFAULT 0 NOT NULL,
+    jval text DEFAULT ''::text NOT NULL,
     comment text DEFAULT ''::text NOT NULL,
     status character varying(16) DEFAULT ''::character varying NOT NULL,
     version character varying(16) DEFAULT ''::character varying,            
@@ -284,17 +282,15 @@ CREATE INDEX rep_05  ON report USING btree (status);
 CREATE INDEX rep_06  ON report USING btree (t_cr);
 CREATE INDEX rep_07  ON report USING btree (t_mod);
 
---TABLE feature: feature  --  
-
 CREATE TABLE feature (
     pkey bigint DEFAULT nextval(('"feat_pkey_seq"'::text)::regclass) NOT NULL CONSTRAINT feat_pk PRIMARY KEY,
-    sclass character varying(32) DEFAULT ''::character varying,  -- nprop/nfeature...
-    fk_node bigint DEFAULT 0 NOT NULL,   -- foreign key (parent)
-    fk_type bigint DEFAULT 0 NOT NULL,  -- feature type
+    sclass character varying(32) DEFAULT ''::character varying,
+    fk_node bigint DEFAULT 0 NOT NULL,
+    fk_type bigint DEFAULT 0 NOT NULL,
     label character varying(128) DEFAULT ''::character varying NOT NULL,         
     name text DEFAULT ''::text NOT NULL,
-    fk_source bigint DEFAULT 0 NOT NULL,  -- unspecified property source       
-    jval text DEFAULT ''::text NOT NULL,  -- json value
+    fk_source bigint DEFAULT 0 NOT NULL,
+    jval text DEFAULT ''::text NOT NULL,
     comment text DEFAULT ''::text NOT NULL,
     status character varying(16) DEFAULT ''::character varying NOT NULL,
     t_cr timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone,
@@ -312,17 +308,15 @@ CREATE INDEX feat_06 ON feature USING btree (status);
 CREATE INDEX feat_07 ON feature USING btree (t_cr);
 CREATE INDEX feat_08 ON feature USING btree (t_mod);
 
---TABLE range: range  --
-
 CREATE TABLE range (
     pkey bigint DEFAULT nextval(('"range_pkey_seq"'::text)::regclass) NOT NULL CONSTRAINT range_pk PRIMARY KEY,
-    fk_feature bigint DEFAULT 0 NOT NULL,   -- foreign key (feature)
+    fk_feature bigint DEFAULT 0 NOT NULL,
     rstart int DEFAULT 0 NOT NULL,
     rstart2 int DEFAULT 0 NOT NULL,
-    fk_cvstart bigint DEFAULT 0 NOT NULL, -- unspecified beg type
+    fk_cvstart bigint DEFAULT 0 NOT NULL,
     rstop int DEFAULT 0 NOT NULL,
     rstop2 int DEFAULT 0 NOT NULL,
-    fk_cvstop bigint DEFAULT 0 NOT NULL, -- unspecified end type
+    fk_cvstop bigint DEFAULT 0 NOT NULL, 
     sequence text DEFAULT ''::text,
     t_cr timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone,                                                                               
     t_mod timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone
