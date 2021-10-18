@@ -354,31 +354,30 @@ public class BkdNodeManager {
             
             String attNs = att.getNs();
             String attAc = att.getAc();
-
-            // NOTE: make this run-time configurable !!!!
-
-            
+                        
             if( att.getName().equalsIgnoreCase("sequence") && aval != null ){
                 sequence = aval;
             } else if( att.getAc().equalsIgnoreCase("dxf:0087") ){ // comment
                 comment = aval;
-            } else if( att.getAc().equalsIgnoreCase("dxf:0031") ||  // synonym
-                       att.getAc().equalsIgnoreCase("dxf:0102") ||  // gene-name
-                       att.getAc().equalsIgnoreCase("dxf:0103")     // gene-synonym
-                       ){ 
-                
+
+            } else if( recordManager.getBkdConfig()
+                       .getStoredAliasAcList().contains( att.getAc() ) ){
+
+                // stored aliases
+
                 CvTerm cvtype = new CvTerm( "dxf", att.getAc(), att.getName() );                    
                 NodeAlias nal = new NodeAlias( cvtype, aval );
 
                 aliasList.add( nal );
 
-            } else if( att.getAc().equalsIgnoreCase("dxf:0104") ||  // function
-                       att.getAc().equalsIgnoreCase("dxf:0106") ||  // subcellular-location
-                       att.getAc().equalsIgnoreCase("dxf:0107") ||  // tissue-specificity
-                       att.getAc().equalsIgnoreCase("dxf:0109")     // activity-regulation
-                       ){ 
+            } else if( recordManager.getBkdConfig()               
+                       .getStoredAttrAcList().contains( att.getAc() ) ){
+
+                // stored attributes
                 
-                CvTerm cvtype = new CvTerm( att.getNs(), att.getAc(), att.getName() );                    
+                CvTerm cvtype = new CvTerm( att.getNs(), att.getAc(),
+                                            att.getName() );
+                
                 NodeAttr nat = new NodeAttr( cvtype, aval );
 
                 // test for xrefs
@@ -395,19 +394,22 @@ public class BkdNodeManager {
                         axref.setAc( xt.getAc() );
                         
                         CvTerm cvt = new CvTerm( xt.getTypeNs(), xt.getTypeAc(),
-                                                 xt.getType() );  // persist if needed ? 
-                        axref.setCvType(cvt);
-                                                   
+                                                 xt.getType() );
+
+                        // persist if needed ? 
+
+                        axref.setCvType(cvt);                                                   
                         nat.getXrefs().add( axref );                        
                     }
                 }
                 
                 // test for source and add if present ? 
-
                 
                 attrList.add( nat );
                 
-            } else if( att.getAc().equalsIgnoreCase("dxf:0016") ){ // data-source
+            } else if( att.getAc().equalsIgnoreCase("dxf:0016") ){
+
+                // data-source
                 
                 log.info("Attribute: data-source");
                 source = this.buildSource( att );                    
@@ -426,7 +428,7 @@ public class BkdNodeManager {
                 NodeType xnode = x.getNode();
                 if(xnode == null) continue; 
                 TypeDefType ntype = xnode.getType();
-                if( ntype.getAc().equalsIgnoreCase("dxf:0017") ){        // organism
+                if( ntype.getAc().equalsIgnoreCase("dxf:0017") ){  // organism
                     taxid = x.getAc();
                     int itaxid = 0;
                     
