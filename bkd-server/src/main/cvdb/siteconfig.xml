@@ -13,6 +13,13 @@
 
   <bean id="siteConfig" class="edu.ucla.mbi.bkd.BkdConfig">
     <property name="prefix" value="CVDB"/>
+    <property name="storedAttrAcList">
+      <list>
+        <value>a</value>
+        <value>b</value>
+        <value>c</value>
+      </list>
+    </property>  
   </bean>
 
 </beans>

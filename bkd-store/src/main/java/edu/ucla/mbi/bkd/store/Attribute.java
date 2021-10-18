@@ -61,6 +61,20 @@ public abstract class Attribute{
         this.cvtype = cvtype;
         this.value = value;
     }
+
+
+    @OneToMany(mappedBy="attribute",fetch = FetchType.EAGER)
+    private Set<AttrXref> xrefs;
+
+    public Set<AttrXref> getXrefs(){
+	if(this.xrefs == null)
+	    this.xrefs = new HashSet<AttrXref>();	
+        return this.xrefs;
+    }
+
+    public void setXrefs(Set<AttrXref> xrefs){
+        this.xrefs = xrefs;
+    }    
     
     public String getValue(){
         return value;

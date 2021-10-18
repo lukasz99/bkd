@@ -354,6 +354,9 @@ public class BkdNodeManager {
             
             String attNs = att.getNs();
             String attAc = att.getAc();
+
+            // NOTE: make this run-time configurable !!!!
+
             
             if( att.getName().equalsIgnoreCase("sequence") && aval != null ){
                 sequence = aval;
@@ -378,7 +381,29 @@ public class BkdNodeManager {
                 CvTerm cvtype = new CvTerm( att.getNs(), att.getAc(), att.getName() );                    
                 NodeAttr nat = new NodeAttr( cvtype, aval );
 
+                // test for xrefs
+                log.info("ATTR:" + att); 
+                if( att.getXrefList() != null ){
+                    List<XrefType> xtlist = att.getXrefList().getXref();
+                    for( XrefType xt : xtlist ){
+                        log.info(xt);
+
+                        // add xref
+                        AttrXref axref = new AttrXref();
+
+                        axref.setNs( xt.getNs() );
+                        axref.setAc( xt.getAc() );
+                        
+                        CvTerm cvt = new CvTerm( xt.getTypeNs(), xt.getTypeAc(),
+                                                 xt.getType() );  // persist if needed ? 
+                        axref.setCvType(cvt);
+                                                   
+                        nat.getXrefs().add( axref );                        
+                    }
+                }
+                
                 // test for source and add if present ? 
+
                 
                 attrList.add( nat );
                 
@@ -1071,7 +1096,46 @@ public class BkdNodeManager {
             dxfNode.getAttrList().getAttr().add( da );
             
         }      
-        
+
+        if(node.getAttrs() != null && node.getAttrs().size() > 0){
+
+            if(dxfNode.getAttrList() == null){
+                dxfNode.setAttrList(dxfFactory.createNodeTypeAttrList() );
+            }
+            
+            for( NodeAttr na: node.getAttrs() ){
+
+                AttrType da = dxfFactory.createAttrType();
+
+                da.setName( na.getCvType().getName() );
+                da.setNs( na.getCvType().getNs() );
+                da.setAc( na.getCvType().getAc() );
+                
+                AttrType.Value av = dxfFactory.createAttrTypeValue();
+                av.setValue(na.getValue());
+                da.setValue(av);
+
+                if( na.getXrefs() != null && na.getXrefs().size() > 0 ){
+
+                    AttrType.XrefList axl = dxfFactory.createAttrTypeXrefList();
+                    da.setXrefList(axl);
+                    
+                    for(AttrXref ax : na.getXrefs() ){
+
+                        XrefType xt = dxfFactory.createXrefType();
+                        xt.setNs(ax.getNs());
+                        xt.setAc(ax.getAc());
+                        xt.setTypeNs(ax.getCvType().getNs());
+                        xt.setTypeAc(ax.getCvType().getAc());
+                        xt.setType(ax.getCvType().getName());
+                                                    
+                        da.getXrefList().getXref().add(xt);
+                    }
+
+                }
+                dxfNode.getAttrList().getAttr().add(da);
+            }
+        }
 
         for( NodeXref x: node.getXrefs() ){
             

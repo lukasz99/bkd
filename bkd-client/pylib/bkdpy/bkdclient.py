@@ -29,6 +29,7 @@ class BkdClient():
             #url = 'https://imexcentral.org/bkdev/services/soap?wsdl'
             #url = 'http://localhost:9999/bkdev/services/soap?wsdl'
             url = 'http://10.1.7.100:9999/cvdbdev0/services/soap?wsdl'
+            #url = 'http://10.1.7.100:9999/dipdev0/services/soap?wsdl'
              
         if self.debug:
             print(url)

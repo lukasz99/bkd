@@ -133,7 +133,7 @@ class DxfUtils():
         return znode
             
     
-    def buildUniprotZnode( self, node, cid = 1 ):
+    def buildUniprotZnode( self, node, ns="", ac="", cid = 1 ):
        
         # ntp - node type: dxf:0003  - protein 
         #                  dxf:0053  - rna(transcript) 
@@ -187,8 +187,15 @@ class DxfUtils():
         print( ent["gene"]["name"][0]["value"] ) # gene   1,2,3,.. aliases
                         
         version=ent['version']
-        nns = "upr"
-        nac = ent["accession"][0]
+        if len(ns) > 0:
+            nns = ns
+        else:
+            nns = "upr"
+        if len(ac) > 0:
+            nac = ac
+        else:
+            nac = ent["accession"][0]
+            
         nlabel = ent["name"]
         nname = ent["protein"]["name"][0]["value"]
         ntaxid = ent["organism"]["dbReference"][0]["id"]
@@ -196,13 +203,20 @@ class DxfUtils():
         ntxname = ent["organism"]["name"][1]["value"]
         print("L:",ntxlabel,"N:",ntxname)
         #xx
-        znode = self.zdxf.nodeType( ns=nns, ac=nac, type=ntype, id=1,
+        znode = self.zdxf.nodeType( ns="", ac="", type=ntype, id=1,
                                     label=nlabel, name=nname,
                                     featureList = None,
                                     xrefList = {'xref':[]},
                                     attrList = {'attr':[]} )
 
-
+        idxref = self.zdxf.xrefType( type = "identical-to",
+                                     typeNs = "dxf",
+                                     typeAc = "dxf:0009",
+                                     node = xsd.SkipValue,
+                                     ns = nns,
+                                     ac = nac )
+        znode.xrefList.xref.append(idxref)
+        
         #  <attr name="data-source" ns="dxf" ac="dxf:0016">
         #   <value ns="upr" ac="Q15582.209"
         #          type="database-record" typeNs="dxf" typeAc="dxf:0057"/>
@@ -238,11 +252,14 @@ class DxfUtils():
         #
         #for xk in xtp:
         #    print(xk, len(xtp[xk])
-            
+    
+        ursq =""
+        ursqFlag = True
+
         if 'dbReference' in ent:
             for x in ent["dbReference"]:
 
-                #print(x)
+                print("XXX",x)
                 
                 xns = x["type"]
                 xac = x["id"] 
@@ -263,17 +280,29 @@ class DxfUtils():
                          "DIP": {"type":"has-links", "ns":"dxf", "ac":"dxf:0082"},
                          "IntAct": {"type":"has-links", "ns":"dxf", "ac":"dxf:0082"},
                          "MIM": {"type":"has-phenotype", "ns":"dxf", "ac":"dxf:0077"} }
-                
-                if xns.lower() in ['embl','refseq','pdb','dip','intact','mim']:
 
-                                   
-                    cxref = self.zdxf.xrefType( type = xtpd[xns]['type'],
-                                                typeNs = xtpd[xns]['ns'],
-                                                typeAc = xtpd[xns]['ac'],
-                                                node = xsd.SkipValue,
-                                                ns = xns,
-                                                ac = xac )
-                    #if "target" in x:
+                #if xns.lower() in 
+                
+                if xns.lower() in ['embl','refseq','upr','pdb','dip','intact','mim']:                     
+
+                    if xns.lower() not in ['refseq']:
+                    
+                        cxref = self.zdxf.xrefType( type = xtpd[xns]['type'],
+                                                    typeNs = xtpd[xns]['ns'],
+                                                    typeAc = xtpd[xns]['ac'],
+                                                    node = xsd.SkipValue,
+                                                    ns = xns,
+                                                    ac = xac )
+                    else:
+                        # if  molecule -> flag -> false
+                        # if urfq nonempty -> false
+                        if ursq != "":
+                            ursqflag = False
+                        if "molecule" in x:
+                            ursqflag = False
+                        ursq = xac
+                                              
+                        #if "target" in x:
                     #    tgt = x["target"]
                     #    tgtType = self.getTypeDefType( tgt["type"] )
                     #    tgtNs = tgt["ns"]
@@ -291,7 +320,17 @@ class DxfUtils():
                     
                     # add xcref to node xrefs
                     znode.xrefList.xref.append(cxref)
-                
+
+        if ursqFlag and len(ursq) > 0:
+            print("UNIQUE RefSeq: " + ursq)
+            rsqxref = self.zdxf.xrefType( type = "identical-to",
+                                        typeNs = "dxf",
+                                        typeAc = "dxf:0009",
+                                        node = xsd.SkipValue,
+                                        ns = "rsq",
+                                        ac = ursq )
+            znode.xrefList.xref.append(rsqxref)
+                    
         if 'sequence' in ent:
             #if znode.attrList is None:
             #    znode.attrList = {'attr':[]}
@@ -372,6 +411,13 @@ class DxfUtils():
                 #if znode.attrList is None:
                 #    znode.attrList = {'attr':[]}
                 #print(ccm.keys())
+
+                isoform = ""
+
+                if "molecule" in ccm and ccm["molecule"]["value"].startswith("Isoform "):
+                   print(" Molecule: ",ccm["molecule"])
+                   isoform = ccm["molecule"]["value"].replace("Isoform ","")
+                   print("  Isoform: ", isoform)
                 if "type" in ccm:
                     print(" Type: ",ccm["type"])
                 if "text" in ccm:
@@ -387,11 +433,23 @@ class DxfUtils():
 
                         ctp = self._attmap[ccm["type"]]
                     
-                        
+                        if len(isoform) >0:
 
-                        cattr = self.zdxf.attrType( value = ccm["text"]["value"],
-                                                    name =  ctp["name"],
-                                                    ns=ctp["ns"], ac = ctp["ac"] )
+                            ifref = self.zdxf.xrefType( type = "describes",
+                                                        typeNs = "dxf", typeAc = "dxf:0024",
+                                                        node = xsd.SkipValue,
+                                                        ns = "upr", ac =  nac + "-" + isoform )
+
+                            cattr = self.zdxf.attrType( value = ccm["text"]["value"],
+                                                        name =  ctp["name"],
+                                                        ns=ctp["ns"], ac = ctp["ac"],
+                                                        xrefList = { "xref": [ifref] } )
+                            
+                        else:
+                            cattr = self.zdxf.attrType( value = ccm["text"]["value"],
+                                                        name =  ctp["name"],
+                                                        ns=ctp["ns"], ac = ctp["ac"] )                            
+                            
                         znode.attrList['attr'].append( cattr )
                         
                 print("----")    
@@ -401,23 +459,20 @@ class DxfUtils():
 
 
 
-
-
-
-
-
-
             
         print("--feature--------------------XX")
         for c in ent["feature"]:
             
             if c["type"] in ["sequence variant","mutagenesis site","disease"]:
-                
+                #print("C" + str(c))
                 feature = {"evidence":[]}
                 
                 feature["type"] = c["type"]
-                feature["description"] = c["description"]
-                
+                if "description" in c:
+                    feature["description"] = c["description"]
+                else:
+                    feature["description"] =""
+                    
                 if "evidence" in c:
                 
                     ev = c["evidence"].split()

@@ -356,8 +356,34 @@ public class BkdRecordManager {
                     
                     log.info(" attr source updated");
                     
-                    daoContext.getAttributeDao().updateAttribute( attr );
-                    
+                    attr = (NodeAttr) daoContext.getAttributeDao().updateAttribute( attr );
+
+                    try{
+
+                        // attribute xrefs
+                        //----------------
+
+                        log.info("Attribute XREFs: update ");
+                        if( attr.getXrefs() != null ){
+                            for( AttrXref x: attr.getXrefs()){
+                                CvTerm xcvtype = daoContext
+                                    .getCvTermDao().getByAccession( x.getCvType().getAc() );
+                                
+                                if( xcvtype == null ){
+                                    xcvtype = daoContext
+                                        .getCvTermDao().updateCvTerm( x.getCvType() );
+                                    log.info("Attribute XREF: " + xcvtype );
+                                }
+                                x.setCvType( xcvtype );                    
+                                x.setAttr( attr );
+                                x.setSource(asource);
+                                daoContext.getXrefDao().updateXref( x );                                    
+                            }
+                            log.info("Attr XREFs: update DONE");
+                        }
+                    }catch( Exception ex ) {
+                        log.error(ex);
+                    }
                 }
             }
             
