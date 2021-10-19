@@ -670,11 +670,11 @@ BKDconf = {
               {name:"Gene synonym(s)",
                vpath:['alias'],
                type:"text",
-               condition:[{
+               condition:{
                  test:['cvType','name'],
-                 equal:"gene-synonym",
-                 value:["alias"]
-               }],
+                 equal:"gene-synonym"
+               },
+               value:["alias"],
                header:true,
                list:false,
                miss:"%DROP%"

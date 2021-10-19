@@ -1,5 +1,5 @@
 console.log("bkd-node-jq: common");
- 
+    
 BKDnode = {
   nodeAnchor: null,
   srcAnchor: null,
