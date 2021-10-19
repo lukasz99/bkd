@@ -19,7 +19,13 @@
 
    <script type="text/javascript">
          
-    $( function(){
+     $( function(){
+
+        hhght =  $("#header").height(); 
+
+        $("#bkd-sidebar").css('padding-top',3);
+        $("#bkd-main").css('margin-top',hhght);
+     
         var ns   = "<s:property value='ns'/>";
         var ac   = "<s:property value='ac'/>";
         var mode = "<s:property value='mode'/>"; // set to edit if editor mode

@@ -548,11 +548,11 @@ BKDconf = {
                  {name:"Function",
                   vpath:['attrs'],
                   type:"text",
-                  condition:{
+                  condition:{  
                     test:['cvType','name'],
-                    equal:"function",
-                    value:["value"]
+                    equal:"function"
                   },
+                  value:["value"],
                   list:false,
                   miss:"%DROP%"
                  },
@@ -561,9 +561,9 @@ BKDconf = {
                   type:"text",
                   condition:{
                     test:['cvType','name'],
-                    equal:"activity-regulation",
-                    value:["value"]
+                    equal:"activity-regulation"                  
                   },
+                  value:["value"],
                   list:false,
                   miss:"%DROP%"
                  }
@@ -649,9 +649,9 @@ BKDconf = {
                type:"text",
                condition:{
                  test:['cvType','name'],
-                 equal:"synonym",
-                 value:["alias"]
+                 equal:"synonym"
                },
+               value:["alias"],
                header:true,
                list:true,
                miss:"%DROP%" 
@@ -661,20 +661,20 @@ BKDconf = {
                type:"text",
                condition:{
                  test:['cvType','name'],
-                 equal:"gene-name",
-                 value:["alias"]
+                 equal:"gene-name"
                },
+               value:["alias"],              
                list:false,
                miss:"%DROP%"
               },
               {name:"Gene synonym(s)",
                vpath:['alias'],
                type:"text",
-               condition:{
+               condition:[{
                  test:['cvType','name'],
                  equal:"gene-synonym",
                  value:["alias"]
-               },
+               }],
                header:true,
                list:false,
                miss:"%DROP%"

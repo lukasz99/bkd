@@ -412,7 +412,7 @@ class DxfUtils():
                 #    znode.attrList = {'attr':[]}
                 #print(ccm.keys())
 
-                isoform = ""
+                isoform = nac;
 
                 if "molecule" in ccm and ccm["molecule"]["value"].startswith("Isoform "):
                    print(" Molecule: ",ccm["molecule"])

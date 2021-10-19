@@ -14,7 +14,8 @@ BKDnode = {
          
     this.srcAnchor=srcAnchor;
     this.nodeAnchor=nodeAnchor;
-            
+    
+    
     if(data == null ){
       $( nodeAnchor ).hide();            
       BKDnode.search( data, node.srcAnchor );
@@ -748,10 +749,11 @@ BKDnode = {
        for( var i =0; i < value.length; i ++){
             
           var cval = this.getVal( value[i], format.condition.test );
-          console.log("  cval: ", cval, " :::", JSON.stringify(value[i])) ;    
+          console.log("  cval: ", cval, " :::", JSON.stringify(value[i])) ;
+          
           if( format.condition.equal != null && format.condition.equal == cval ){
             console.log(" showText: got match!!!");       
-            var fval = this.getVal( value[i], format.condition.value );
+            var fval = this.getVal( value[i], format.value );
             if( fval != null ){
                fvlist.push(fval);
             }    
