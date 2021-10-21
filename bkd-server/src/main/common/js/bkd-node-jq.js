@@ -733,32 +733,66 @@ BKDnode = {
 
        console.log("showText:", JSON.stringify(format));
 
-       var value = this.getVal( data, format.vpath);
+       var value = this.getVal2( data, format.vpath);   // values @ vpath
+       console.log("showText: type ", typeof value);
        if( value == null && format.miss == "%DROP%") return;
        
        if( value == null || value.length == 0 ) value = format.miss;
        if( value == null || value.length == 0 ) value = "N/A";
-
+        
        if( format.condition == null){
+          console.log("showText: " + JSON.stringify(value));
           $( tgt ).append( "<div>"+format.name+ ": " + value + "</div>" );
           return;
        }
        console.log("showText: condition test");
-       
+       // assumes value is a list, condition is present
+
        var fvlist =[];
-       for( var i =0; i < value.length; i ++){
-            
-          var cval = this.getVal( value[i], format.condition.test );
-          console.log("  cval: ", cval, " :::", JSON.stringify(value[i])) ;
-          
-          if( format.condition.equal != null && format.condition.equal == cval ){
-            console.log(" showText: got match!!!");       
-            var fval = this.getVal( value[i], format.value );
-            if( fval != null ){
-               fvlist.push(fval);
-            }    
-          }
+       for( var i =0; i < value.length; i ++){                     
+          console.log("  cval: ", value[i], " :::", JSON.stringify(value[i])) ;
+
+          for( var j = 0; j < format.condition.length; j++ ){     
+
+             console.log("\n----------\nCONDITION: "+format.name+"\n----------\n");
+
+             cond = format.condition[j];
+             console.log("cond equal: " + JSON.stringify(cond.equal));
+             console.log("cond type: " + typeof cond.equal);
+
+             var cval = this.getVal2( value[i], cond.test );  // value: tested attribute
+             console.log("cond tested val: " + JSON.stringify( cval ) );
+
+             if( typeof cond.equal  === 'string') {
+               console.log(" equal: string");
+               if( cond.equal != null && cond.equal == cval ){
+                 console.log(" showText: got match!!!");       
+                 var fval = this.getVal2( value[i], format.value );
+                 if( fval != null ){
+                    fvlist = fvlist.concat(fval);
+                 }    
+               }
+             }
+
+             if( typeof cond.equal  === 'object' ){
+                  console.log(" equal: list");
+                  console.log("data: " + JSON.stringify(data));
+                  var tval = this.getVal2( data, cond.equal);
+                  console.log("TVAL: " + JSON.stringify(tval));
+                  
+                  //var test = his.getVal( value[i], cond.test );
+                  console.log( "cond: list" );
+                  //if( format.condition.equal != null && format.condition.equal == cval ){
+                  //  console.log(" showText: got match!!!");       
+                  //  var fval = this.getVal( value[i], format.value );
+                  //  if( fval != null ){
+                  //     fvlist.push(fval);
+                  //  }    
+                  //}                                   
+             }
+         }
        }
+       
        console.log(" showText: fvlist: ", JSON.stringify(fvlist));
        if( format.list ){
          if( format.header ){
@@ -899,12 +933,57 @@ BKDnode = {
      getVal: function( data, path ){
        var cval = data;
        for(var j=0; j<path.length; j++){
-           console.log("CVAL: " + path[j] + " :: " + cval[ path[j]] );
+           console.log("CVAL: " + path[j] + " :: " + JSON.stringify(cval[ path[j]]) );
            cval = cval[ path[j] ];
        }
        return cval; 
            
-    }
+    },
 
+    getVal2b: function( data, path ){
+       console.log("\n\nCV2 called");
+       console.log("CV2: path=" + JSON.stringify(path));
+       var cval = []; 
+       if( Array.isArray(data) ){
+          cval = data;
+       } else {
+          cval = [data];
+       }
+       console.log("CV2: cval: " + JSON.stringify(cval));
+       var rval = [];
+       for( var k =0; k < cval.length; k ++ ){
+          console.log("CV2:  going over cval element # " + k ); 
+          console.log( "XXX " + path[0] + " ::: " + JSON.stringify(cval[k][path[0]]));
+          rval = rval.concat( cval[k][path[0]]);
+          console.log("rval.length=" + rval.length);
+       }
+       
+       if( path.length == 1 ){ // end of path: return values
+          console.log("LAST PASS: " + JSON.stringify(rval)); 
+          return rval;
+       } else {
+          console.log("NEXT LEVEL: " + JSON.stringify(rval));
+          return this.getVal2( rval, path.slice(1) );
+       }            
+    },
+    
+    getVal2: function( data, path ){
+        var cval = []; 
+       if( Array.isArray(data) ){
+          cval = data;
+       } else {
+          cval = [data];
+       }
+        var rval = [];
+       for( var k =0; k < cval.length; k ++ ){
+           rval = rval.concat( cval[k][path[0]]);
+        }
+       
+       if( path.length == 1 ){ // end of path: return values
+           return rval;
+       } else {
+           return this.getVal2( rval, path.slice(1) );
+       }            
+    }
 
 };
