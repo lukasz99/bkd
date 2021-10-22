@@ -650,7 +650,13 @@ public class BkdRecordManager {
         }
     }
 
+
+    
     public FeatureReport getNewFeatureReport( String tgtNs, String tgtAc ){
+        return getNewFeatureReport(tgtNs,tgtAc, null );
+    }
+    
+    public FeatureReport getNewFeatureReport( String tgtNs, String tgtAc, String rtype ){
 
         Logger log = LogManager.getLogger( this.getClass() );
         log.info( " getNewFeatureReport -> tgt=" + tgtAc );
@@ -672,7 +678,12 @@ public class BkdRecordManager {
         NodeFeat nfeat = new NodeFeat();
         nfeat.setNode( tnode );
         report.setFeature( nfeat );
-        
+
+        if( rtype != null ){
+            CvTerm tcv = daoContext.getCvTermDao().getByAccession( rtype );
+            report.setCvType(tcv);
+        }
+            
         return report;
     }
     

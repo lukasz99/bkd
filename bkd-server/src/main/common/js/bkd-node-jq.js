@@ -104,33 +104,33 @@ BKDnode = {
   
     var tid="bkd-search-table";
     $(srcAnchor).empty();
-    $(srcAnchor).append( "<div id='foo'><hr/><table id='" + tid + "' class='bkd-search-table'></table></div>");
+    $(srcAnchor).append( "<div id='bkd-search-result'><hr/>"
+                         + "<table id='" + tid
+                         + "' border='0' cellspacing='0' cellpadding='0' class='bkd-search-table'>"
+                         + "</table></div>");
     $('#' + tid).append("<tr> class='bkd-rep-fld'>"+
-                                  "<th align='center' width='5%'>ID</th>"+
-                                  "<th align='center' width='10%'>Type</th>"+
-                                  "<th align='center' width='10%'>Accession</th>"+
+                                  "<th align='center' width='5%'>ID</th>"+                                  
+                                  "<th align='center' width='10%'>Short Name</th>"+
+                                  "<th align='center'>Full Name</th>"+
                                   "<th align='center' width='10%'>Species</th>"+
-                                  "<th align='center' width='10%'>Name</th>"+
-                                  "<th align='center'>Description</th>"+
-                                  "<th align='center' width='5%' colspan='3'>&nbsp;</th>"+
+                                  "<th align='center' width='10%'>UniprotKB</th>"+
+                                  "<th align='center' width='10%'>Type</th>"+
+                                  "<th align='center' width='5%' colspan='2'>&nbsp;</th>"+
                                 "</tr>");
     for(var i=0; i<data.length; i++){
                var cdata = data[i];
                var rid = cdata.ac;
                var crow = "<td>" + cdata.ac + "</td>" +
-                          "<td align='center'>" + cdata.cvType.name + "</td>" + 
-                          "<td align='center'>" + cdata.ac + "</td>" +
-                          "<td align='center'>" + cdata.taxon.sciName + "</td>" +
                           "<td align='center'>" + cdata.label + "</td>" +
                           "<td>" + cdata.name + "</td>" +
+                          "<td align='center'>" + cdata.taxon.sciName + "</td>" +
+                          "<td align='center'>" + cdata.upr + "</td>" + 
+                          "<td align='center'>" + cdata.cvType.name + "</td>" + 
                           "<td align='center'>" +
-                          "<input type='button' id='"+rid+"_view' value='View'/>"+
+                          "<input type='button' id='"+rid+"_view' value='Details'/>"+
                           "</td>" +                          
                           "<td align='center'>" +
-                          "<input type='button' id='"+rid+"_report_view' value='Reports'/>"+
-                          "</td>" +
-                          "<td>" +
-                          "<input type='button' id='"+rid+"_report_add' value='Add Report'/>"+
+                          "<input type='button' id='"+rid+"_report_view' value='CVUS Reports'/>"+
                           "</td>";
                           
                $('#' + tid).append("<tr> class='bkd-rep-fld'>"+crow+"</tr>");
@@ -143,16 +143,10 @@ BKDnode = {
 
                $( "#" + rid +"_report_view").on( 'click', function(event){
                     var prefix= event.currentTarget.id.replace('_report_view','');
-                    var elink="report?ns=" + BKDsite.prefix + "&ac="+prefix+"&mode=view";
+
+                    var elink="report?query=" + prefix + "&qmode=node";
                     location.href = elink;                    
                   });
-
-               $( "#" + rid +"_report_add").on( 'click', function(event){
-                    var prefix= event.currentTarget.id.replace('_report_add','');
-                    var elink="report?ns=" + BKDsite.prefix + "&ac="+prefix+"&op=new";
-                    location.href = elink;                    
-                  });
-
     }
   },
 
@@ -305,7 +299,6 @@ BKDnode = {
               console.log("PFIELD: " + cfield.name + " :: " + cfield.type);
               switch( cfield.type ){
                 case "text":
-
                   this.showText( "#bkd-nv-"+cid, cfield, data );    
                 break;
               case "sequence":
@@ -731,21 +724,17 @@ BKDnode = {
 
      showText: function( tgt, format, data ){
 
-       console.log("showText:", JSON.stringify(format));
-
        var value = this.getVal2( data, format.vpath);   // values @ vpath
-       console.log("showText: type ", typeof value);
-       if( value == null && format.miss == "%DROP%") return;
-       
+
+       if( value == null && format.miss == "%DROP%") return;       
        if( value == null || value.length == 0 ) value = format.miss;
        if( value == null || value.length == 0 ) value = "N/A";
         
-       if( format.condition == null){
-          console.log("showText: " + JSON.stringify(value));
+       if( format.condition == null){          
           $( tgt ).append( "<div>"+format.name+ ": " + value + "</div>" );
           return;
        }
-       console.log("showText: condition test");
+
        // assumes value is a list, condition is present
 
        var fvlist =[];
@@ -796,13 +785,23 @@ BKDnode = {
        console.log(" showText: fvlist: ", JSON.stringify(fvlist));
        if( format.list ){
          if( format.header ){
-           $( tgt ).append( "<div><div>" + format.name + "</div><div></div></div>" );
+           $( tgt ).append( "<div><div>" + format.name + " [<em>show/hide</em>]</div><div></div></div>" );
+
+           console.log("HIDE:" + format.hide);
+
+           if( format.hide ){
+              //console.log("HIDE: " + tgt);
+              //console.log("HIDE: " + tgt + " > *:last > *:last");
+              $( tgt + " > *:last > *:last" ).hide();
+           }
 
            $( tgt + " >*:last >*:first").on('click',function(event){              
              $(event.currentTarget).next().toggle();
             });
 
-          tgt +=" > *:last > *:last";
+           tgt +=" > *:last > *:last";
+
+
          }
 
          for( var i =0; i <fvlist.length; i ++ ){             

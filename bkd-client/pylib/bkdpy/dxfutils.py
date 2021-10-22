@@ -196,7 +196,7 @@ class DxfUtils():
         else:
             nac = ent["accession"][0]
             
-        nlabel = ent["name"]
+        nlabel = ent["gene"]["name"][0]["value"]+ " protein"
         nname = ent["protein"]["name"][0]["value"]
         ntaxid = ent["organism"]["dbReference"][0]["id"]
         ntxlabel = ent["organism"]["name"][0]["value"]
@@ -412,7 +412,7 @@ class DxfUtils():
                 #    znode.attrList = {'attr':[]}
                 #print(ccm.keys())
 
-                isoform = nac;
+                isoform = '';
 
                 if "molecule" in ccm and ccm["molecule"]["value"].startswith("Isoform "):
                    print(" Molecule: ",ccm["molecule"])
@@ -434,22 +434,22 @@ class DxfUtils():
                         ctp = self._attmap[ccm["type"]]
                     
                         if len(isoform) >0:
-
                             ifref = self.zdxf.xrefType( type = "describes",
                                                         typeNs = "dxf", typeAc = "dxf:0024",
                                                         node = xsd.SkipValue,
-                                                        ns = "upr", ac =  nac + "-" + isoform )
-
-                            cattr = self.zdxf.attrType( value = ccm["text"]["value"],
-                                                        name =  ctp["name"],
-                                                        ns=ctp["ns"], ac = ctp["ac"],
-                                                        xrefList = { "xref": [ifref] } )
-                            
+                                                        ns = "upr", ac = nac + "-" + isoform )
                         else:
-                            cattr = self.zdxf.attrType( value = ccm["text"]["value"],
-                                                        name =  ctp["name"],
-                                                        ns=ctp["ns"], ac = ctp["ac"] )                            
+                            ifref = self.zdxf.xrefType( type = "describes",
+                                                        typeNs = "dxf", typeAc = "dxf:0024",
+                                                        node = xsd.SkipValue,
+                                                        ns = "upr", ac = nac )
+
                             
+                        cattr = self.zdxf.attrType( value = ccm["text"]["value"],
+                                                    name =  ctp["name"],
+                                                    ns=ctp["ns"], ac = ctp["ac"],
+                                                    xrefList = { "xref": [ifref] } )
+                                                        
                         znode.attrList['attr'].append( cattr )
                         
                 print("----")    

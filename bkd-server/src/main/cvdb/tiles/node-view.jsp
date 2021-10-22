@@ -12,7 +12,7 @@
 
    <script src="js/bkd-config.js" type="text/javascript" language="JavaScript"></script>
    <script src="js/bkd-links.js" type="text/javascript" language="JavaScript"></script>
-   <script src="js/sequence-viewer.bundle.js" type="text/javascript" language="JavaScript"></script>
+   <script src="js/sequence-viewer.bundle.js" type="text/javascript" language="JavaScript"></script> 
 
    <script src="js/bkd-node-jq.js" type="text/javascript" language="JavaScript"></script>
    <script src="js/bkd-site.js" type="text/javascript" language="JavaScript"></script>
@@ -79,7 +79,8 @@
       </s:if>
        <tr>
          <td colspan="3">
-           <h1 id="bkd-main-name"></h1>           
+           <div id="bkd-main-name"></div>
+         </td>  
        </tr>
 
    <s:if test="ac == null || ac.length == 0">

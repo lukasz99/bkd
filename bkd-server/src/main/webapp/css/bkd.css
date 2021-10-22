@@ -3,6 +3,15 @@
     padding-top: 0em;
 }
 
+#bkd-main-name {
+    margin: 7px 0px;
+    font-size: 1.75em;
+}
+
+#bkd-nv-field {
+    margin: 0px 0px 50px 0px;   
+}
+
 #bkd-sidebar {
     height: 100%;
     width: 7em;
@@ -33,14 +42,6 @@
 }
 
 
-#bkd-report-search {
- border-style: solid;
-  border-color: #A8A8A8;
-  border-width: 1px;
-  margin: 5px;
-  padding: 5px;
-
-}
 
 #bkd-report-target {
  border-style: solid;
@@ -100,7 +101,10 @@
 }
 .bkd-search-table{  
     width: 99%;
-    margin: auto;
+    margin: 0px 0px 50px 0px;
+    border-style: solid;
+    border-color: #A8A8A8;
+    border-width: 1px;
 }
 
 .bkd-search-table > tr > th {
@@ -108,6 +112,7 @@
   border-color: #A8A8A8;
   border-width: 1px;
   padding: 1px 5px;
+  text-align: center;
 
 }
 

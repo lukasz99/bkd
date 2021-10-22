@@ -563,120 +563,123 @@ public class BkdNodeManager {
 
                 // attribute scan
                 //---------------
-            
-                for( AttrType catt: cf.getAttrList().getAttr() ){
-                    //String ns = catt.getNs();
-                    //String ac = catt.getAc();
-                
-                    if( catt.getValue() != null ){
-                
-                        AttrType.Value aval = catt.getValue();
+                if( cf.getAttrList() != null ){
 
-                        String vns = aval.getNs();
-                        String vac = aval.getAc();
-                        String vtns = aval.getTypeNs();
-                        String vtac = aval.getTypeAc();
-                        String vval = aval.getValue();
                     
-                        //aval = att.getValue().getValue();
-                    }
-                
-                    NodeType anode = catt.getNode();
-                    TypeDefType atype = catt.getType();
-            
-                    String attNs = catt.getNs();
-                    String attAc = catt.getAc();
-                
-                    if( catt.getAc().equalsIgnoreCase("dxf:0087") ){ // comment
-                    
-                        if( catt.getValue() != null ){
-                            String cval = catt.getValue().getValue();
-                            if( cval != null && cval.length() > 0 ){
-                                cnf.setComment( cval );
-                            }
-                        }
-                    
-                    } else if( catt.getAc().equalsIgnoreCase("dxf:0052") ){ // ev method
+                    for( AttrType catt: cf.getAttrList().getAttr() ){
+                        //String ns = catt.getNs();
+                        //String ac = catt.getAc();
 
                         if( catt.getValue() != null ){
-                            String vns = catt.getValue().getNs();
-                            String vac = catt.getValue().getAc();
-                            if( vns  != null && vac != null ){
 
-                                // look for cv term, add if new
-                           
-                                //CvTerm term = new CvTerm(vns, vac, "");
-                                //term.setDefinition( "" );   
-                                CvTerm term =
-                                    (CvTerm) recordManager.getCvTerm( vns, vac );
-                                if( term == null ){
-                                    term = new CvTerm(vns, vac, "");
-                                    term = (CvTerm) recordManager.addCvTerm( term );
-                                }
-
-                                if( term != null ){
-                                                        
-                                    JSONObject jatt = new JSONObject();
-
-                                    try{
-                                        jatt.put( "value", term.getName() );
-                                        jatt.put( "ns", catt.getNs() );
-                                        jatt.put( "ac", catt.getAc() );
-                                        jatt.put( "vns", term.getNs() );
-                                        jatt.put( "vac", term.getAc() );
+                            AttrType.Value aval = catt.getValue();
                             
-                                        jval.put("evidence-method", jatt) ;
-
-                                    }catch(JSONException jx){
-                                        // shouldn't happen
+                            String vns = aval.getNs();
+                            String vac = aval.getAc();
+                            String vtns = aval.getTypeNs();
+                            String vtac = aval.getTypeAc();
+                            String vval = aval.getValue();
+                            
+                            //aval = att.getValue().getValue();
+                        }
+                        
+                        NodeType anode = catt.getNode();
+                        TypeDefType atype = catt.getType();
+                        
+                        String attNs = catt.getNs();
+                        String attAc = catt.getAc();
+                        
+                        if( catt.getAc().equalsIgnoreCase("dxf:0087") ){ // comment
+                            
+                            if( catt.getValue() != null ){
+                                String cval = catt.getValue().getValue();
+                                if( cval != null && cval.length() > 0 ){
+                                    cnf.setComment( cval );
+                                }
+                            }
+                            
+                        } else if( catt.getAc().equalsIgnoreCase("dxf:0052") ){ // ev method
+                            
+                            if( catt.getValue() != null ){
+                                String vns = catt.getValue().getNs();
+                                String vac = catt.getValue().getAc();
+                                if( vns  != null && vac != null ){
+                                    
+                                    // look for cv term, add if new
+                                    
+                                    //CvTerm term = new CvTerm(vns, vac, "");
+                                    //term.setDefinition( "" );   
+                                    CvTerm term =
+                                        (CvTerm) recordManager.getCvTerm( vns, vac );
+                                    if( term == null ){
+                                        term = new CvTerm(vns, vac, "");
+                                        term = (CvTerm) recordManager.addCvTerm( term );
+                                    }
+                                    
+                                    if( term != null ){
+                                        
+                                        JSONObject jatt = new JSONObject();
+                                        
+                                        try{
+                                            jatt.put( "value", term.getName() );
+                                            jatt.put( "ns", catt.getNs() );
+                                            jatt.put( "ac", catt.getAc() );
+                                            jatt.put( "vns", term.getNs() );
+                                            jatt.put( "vac", term.getAc() );
+                                            
+                                            jval.put("evidence-method", jatt) ;
+                                            
+                                        }catch(JSONException jx){
+                                            // shouldn't happen
+                                        }
                                     }
                                 }
                             }
-                        }
-                    
-                    } else {  // others
-                    
-                        if( catt.getValue() != null ){
-                            String cval = catt.getValue().getValue();
-                            if( cval != null && cval.length() > 0 ){
-
-                                // JSON value 
                             
-                                JSONObject jatt = this.buildJAtt( catt );
-                                if( jatt != null ){
-                                    try{
-                                        jval.put(catt.getName(), jatt) ;
-                                    } catch(JSONException jx){
-                                        // shouldn't happen
+                        } else {  // others
+                            
+                            if( catt.getValue() != null ){
+                                String cval = catt.getValue().getValue();
+                                if( cval != null && cval.length() > 0 ){
+                                    
+                                    // JSON value 
+                                    
+                                    JSONObject jatt = this.buildJAtt( catt );
+                                    if( jatt != null ){
+                                        try{
+                                            jval.put(catt.getName(), jatt) ;
+                                        } catch(JSONException jx){
+                                            // shouldn't happen
+                                        }
                                     }
+                                    /*
+                                      JSONObject jatt = new JSONObject();
+                                      try{
+                                      jatt.put( "value", cval );
+                                      jatt.put( "ns",catt.getNs() );
+                                      jatt.put( "ac",catt.getAc() );
+                                      if( catt.getValue().getNs() != null &&
+                                      catt.getValue().getNs().length() > 0  ){
+                                      jatt.put( "vns", catt.getValue().getNs() );                                 
+                                      }
+                                      if( catt.getValue().getAc() != null &&
+                                      catt.getValue().getAc().length() > 0  ){
+                                      jatt.put( "vac", catt.getValue().getAc() );                                 
+                                      }
+                                      jval.put(catt.getName(), jatt) ;
+                                      }catch(JSONException jx){
+                                      // shouldn't happen
+                                      }
+                                    */
+                                } else {
+                                    
                                 }
-                                /*
-                                  JSONObject jatt = new JSONObject();
-                                  try{
-                                  jatt.put( "value", cval );
-                                  jatt.put( "ns",catt.getNs() );
-                                  jatt.put( "ac",catt.getAc() );
-                                  if( catt.getValue().getNs() != null &&
-                                  catt.getValue().getNs().length() > 0  ){
-                                  jatt.put( "vns", catt.getValue().getNs() );                                 
-                                  }
-                                  if( catt.getValue().getAc() != null &&
-                                  catt.getValue().getAc().length() > 0  ){
-                                  jatt.put( "vac", catt.getValue().getAc() );                                 
-                                  }
-                                  jval.put(catt.getName(), jatt) ;
-                                  }catch(JSONException jx){
-                                  // shouldn't happen
-                                  }
-                                */
-                            } else {
-                            
-                            }
-                            
-                        }                    
-                    }            
+                                
+                            }                    
+                        }            
+                    } 
                 }
-
+                
                 // feature xrefs
                 //--------------
             

@@ -533,10 +533,10 @@ BKDconf = {
         protein:{
             "type":{
               "val":"protein",
-              "label":"Protein Record: ",
+              "label":"Protein: ",
             },
             "ac":{
-              "vpath":['ac'],
+              "vpath":['name'],
               "id":"node_ac"
             },
             defpane: "function",
@@ -636,18 +636,14 @@ BKDconf = {
               }          
             ],
             field:[
+              {name:"Short name",
+               vpath:['label'],
+               type:"text"
+              },            
               {name:"Accession",
                vpath:['ac'],
                type:"text"
               },
-              {name:"Short name",
-               vpath:['label'],
-               type:"text"
-              },
-              {name:"Recommended name",
-               vpath:['name'],
-               type:"text"
-               },           
               {name:"Alternative name(s)",
                vpath:['alias'],
                type:"text",
@@ -656,9 +652,10 @@ BKDconf = {
                  equal:"synonym"
                }],
                value:["alias"],
-               header:true,
-               list:true,
-               miss:"%DROP%" 
+               header: true,
+               list: true,
+               hide: true,
+               miss: "%DROP%" 
               },           
               {name:"Gene",
                vpath:['alias'],

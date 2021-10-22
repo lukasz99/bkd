@@ -59,9 +59,13 @@ public class ReportAction extends PortalSupport{
     //-----------
 
     public String dispatch() throws Exception {
-
-        if( "update".equalsIgnoreCase( getOp() ) &&
-            record != null ){ 
+        
+        if( getQuery() != null && getQuery().length() > 0 &&
+            getQmode() != null && getQmode().length() > 0 ){
+            
+            return SUCCESS;
+        } else if( "update".equalsIgnoreCase( getOp() ) &&
+                   record != null ){ 
             
             manager.addReport( (Report) record );
             
@@ -69,8 +73,13 @@ public class ReportAction extends PortalSupport{
             
             if( this.getNs() != null && this.getNs().length() > 0 &&
                 this.getAc() != null && this.getAc().length() > 0 ){
+
+                if ( getRtype() == null ){
+                    return SUCCESS;
+                } 
                 
-                record = manager.getNewFeatureReport( ns, ac );
+                String repType = getRtype();                
+                record = manager.getNewFeatureReport( ns, ac,  getRtype()  );
             }
             
         } else {
@@ -101,13 +110,13 @@ public class ReportAction extends PortalSupport{
             return JSON;
         }
         return SUCCESS;
-    }
+        }
 
-    //--------------------------------------------------------------------------
+        //--------------------------------------------------------------------------
     // arguments
     //----------
-    
-    String format = "json";
+        
+        String format = "json";
     
     public void setFormat( String format){
         this.format = format;
@@ -180,13 +189,22 @@ public class ReportAction extends PortalSupport{
 
     String op="";
     
-    public void setOp(String op){
-        System.out.println(op);
+    public void setOp(String op){     
         this.op = op;                                     
     }
     
     public String getOp(){
         return this.op;                                  
+    }
+
+    String rtype = null;
+    
+    public void setRtype(String rtype){     
+        this.rtype=rtype;                    
+    }
+    
+    public String getRtype(){
+        return this.rtype;                               
     }
 
     String repJson = null;

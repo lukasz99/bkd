@@ -17,12 +17,18 @@ BKDrep = {
         this.srcAnchor=srcAnchor;
         this.tgtAnchor=tgtAnchor;
         this.valAnchor=valAnchor;
-        
+
         if(data == null ){
             BKDrep.search( data, this.srcAnchor );
             $( tgtAnchor ).hide();
             BKDrep.valEdit(data, this.valAnchor);
-        } else{            
+        } else if(data.qmode !== undefined && data.query !== undefined){
+           
+           BKDrep.search( data, this.srcAnchor );
+           $( tgtAnchor ).hide();           
+           //BKDrep.valEdit(data, this.valAnchor);
+           $( valAnchor ).hide();
+        } else {            
             BKDrep.tgtView( data, this.tgtAnchor, mode );
             if( mode == 'edit'){
                 BKDrep.valEdit( data, this.valAnchor );
@@ -32,8 +38,41 @@ BKDrep = {
         }
     },
 
-    search: function( data, tgtAnchor ){
-        
+    search: function( data, tgtAnchor ){        
+
+        if( data  !==  undefined && data != null ){
+           if( "node" == data.qmode ){
+             $("input[name='report_smodenode'][value='node']").prop('checked', true);
+           }
+           if( "report" == data.qmode ){
+             $("input[name='report_smodereport'][value='report']").prop('checked', true);
+           }
+           formData = {
+                    query: data.query,
+                    ns: "",
+                    ac: "",
+                    qmode: data.qmode,
+                    ret: "data"
+                };
+                        
+            $.ajax({
+                type: "POST",             
+                url: "search",
+                data: formData,
+                dataType: "json",
+                encode: true,}).done(function (data) {
+                    
+                    if( data.rdata != null && data.rdata.length > 0){
+                        BKDrep.searchView( data.rdata, BKDrep.srcAnchor, "edit" );                       
+                    }else if(data.record !== null){
+                        BKDrep.searchView( data.rdata, BKDrep.srcAnchor, "edit" );
+                        BKDrep.tgtView( data.record, BKDrep.tgtAnchor, "edit" );
+                        BKDrep.valEdit( data.record, BKDrep.valAnchor );
+                    }
+                });
+            
+       } else {
+
         $(tgtAnchor + " form").submit( function (event) {
             
             var radioValue = $("input[name='smode']:checked").val();
@@ -77,9 +116,9 @@ BKDrep = {
                 encode: true,}).done(function (data) {
                     
                     if( data.rdata != null && data.rdata.length > 0){
-                        BKDrep.searchView( data.rdata, BKDrep.srcAnchor, "edit" );                   
-                        
+                        BKDrep.searchView( data.rdata, BKDrep.srcAnchor, "edit" );                       
                     }else if(data.record !== null){
+                        BKDrep.searchView( data.rdata, BKDrep.srcAnchor, "edit" );                                       
                         BKDrep.tgtView( data.record, BKDrep.tgtAnchor, "edit" );
                         BKDrep.valEdit( data.record, BKDrep.valAnchor );
                     }
@@ -87,14 +126,17 @@ BKDrep = {
             
             event.preventDefault();
         });
-        
+      } 
     },
     
     searchView: function(data, srcAnchor, mode ){
-
+          
         var tid="bkd-search-table";
-        $('#' + tid).remove();
-        $(srcAnchor).append( "<div class='bkd-search'><table id='" + tid + "' class='bkd-search-table'></table></div>");
+        $('#bkd-search-result').remove();
+        $(srcAnchor).append( "<div id='bkd-search-result'><hr/><table id='"
+                             + tid
+                             + "' cellspacing='0' cellpadding='0' class='bkd-search-table'></table></div>");
+                             
         $('#' + tid).append("<tr> class='bkd-rep-fld'>"+
                             "<th width='5%'>Report ID</th>"+
                             "<th >Report Title</th>"+
@@ -178,9 +220,17 @@ BKDrep = {
             console.log( "Target: " + $("#" + "bkd_report_new_target").val() );
             console.log( "RType: " + $("#" + "bkd_report_new_type").val() );
             
-            var tgt = $("#" + "bkd_report_new_target").val();            
-            
-            var report = "report?ns=CVDB&ac="+tgt+"&op=new&ret=data&format=json";          
+            var tgt = $("#" + "bkd_report_new_target").val();
+            var rtp = $("#" + "bkd_report_new_type").val();
+
+            //alert(tgt + " || " + rtp);
+
+            //Bkdconf.report.feature            
+
+            /// report?ns=cvdb&ac=CVDB2R&op=new&rtype=dxf:0096&mode=edit
+            var report = "report?ns=CVDB&ac="+tgt+"&rtype="+rtp+"&op=new&mode=edit";
+            location.href = report;
+           /*
             try{
                 $.ajax({
                     type: "POST",               
@@ -220,12 +270,13 @@ BKDrep = {
                         //BKDrep.valEdit( data.record, BKDrep.valAnchor );
                     }
                 });
-
+              
+              
                 console.log("done...");
             } catch(ex){
                 console.log( "error..");
             }
-                
+             */   
         });
         
     },

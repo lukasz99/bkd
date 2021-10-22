@@ -19,24 +19,56 @@
 
    <script type="text/javascript">
          
-    $( function(){
+     $( function(){
+
+        hhght =  $("#header").height(); 
+
+        $("#bkd-sidebar").css('padding-top',3);
+        $("#bkd-main").css('margin-top',hhght);
+     
         var ns   = "<s:property value='ns'/>";
         var ac   = "<s:property value='ac'/>";
         var op   = "<s:property value='op'/>";
+        var rt   = "<s:property value='rtype'/>";
+        var query  = "<s:property value='query'/>";
+        var qmode  = "<s:property value='qmode'/>";
+
         var mode = "<s:property value='mode'/>"; // set to edit if editor mode
-        if( ns.length > 0 && ac.length >0 ){     // show report
+    
+        if( query.length > 0 && qmode.length >0 ){
+             
+           $( "#bkd-sidebar" ).hide(); 
+           BKDrep.view( {qmode:qmode, query:query},
+                        "#bkd-report-search",
+                        "#bkd-report-target",
+                        "#bkd-report-value", "edit");            
+
+        } else if( ns.length > 0 && ac.length >0 ){     // show report
           myurl ="report?ns="+ns+"&ac="+ac+"&ret=data&format=json";
           if( op.length> 0){
-           myurl += "&op=" + op;
+             myurl += "&op=" + op;
+             //if( op == "new" ) myurl += "&mode=edit";
           }
+          if( rt.length> 0) myurl += "&rtype=" + rt;
+
+          // data.record
+
           $.ajax( { url: myurl} )
-             .done( function(data, textStatus, jqXHR){                 
-                       BKDrep.view( data.record,
+                .done( function(data, textStatus, jqXHR){
+
+                       var  dta;
+                       if(  "report" in data.record ){
+                           dta = data.record;
+                       } else { 
+                           dta = { "report": data.record };
+                       }
+                       BKDrep.view( dta,         
                                     "#bkd-report-search",
                                     "#bkd-report-target",
                                     "#bkd-report-value" , mode) } );
                   
         } else {                               // show empty form
+           $( "#bkd-sidebar" ).hide(); 
            BKDrep.view( null, "#bkd-report-search",
                               "#bkd-report-target",
                               "#bkd-report-value", "edit");
@@ -51,28 +83,29 @@
   <s:if test="big">
    <t:insertTemplate template="/tiles/header.jsp" flush="true"/>
   </s:if>
-  <table class="pagebody" width="98%" cellspacing="0" cellpadding="0" border="0" >
+  <div id="bkd-sidebar"></div>
+  <div id="bkd-main">
+   <table class="pagebody" width="98%" cellspacing="0" cellpadding="0" border="0" >
 
-    <s:if test="hasActionErrors()">
-    <tr>
-     <td colspan="3">
-      <div  class="upage" id="errorDiv">
-       <span class="pgerror">
-        <s:iterator value="actionErrors">
-         <span class="errorMessage"><s:property escapeHtml="false" /></span>
-        </s:iterator>
-       </span>
-      </div>
-      <br/>
-     </td>
-    </tr>
-   </s:if>
-    <tr>
+     <s:if test="hasActionErrors()">
+     <tr>
       <td colspan="3">
-        <br/><br/><br/><br/><br/><br/><br/>
-        <h1>Report</h1>
-        <br/>
-    </tr>
+       <div  class="upage" id="errorDiv">
+        <span class="pgerror">
+         <s:iterator value="actionErrors">
+          <span class="errorMessage"><s:property escapeHtml="false" /></span>
+         </s:iterator>
+        </span>
+       </div>
+       <br/>
+      </td>
+     </tr>
+    </s:if>
+      <tr>
+        <td colspan="3">
+          <div id="bkd-main-name"></div>
+        </td>
+     </tr>
 
 <s:if test="ac == null || ac.length == 0">
     <tr>
@@ -91,7 +124,8 @@
         <div id="bkd-report-value"></div>        
       </td>
     </tr>    
-  </table>
+   </table>
+  </div> 
   <s:if test="big">
    <t:insertTemplate template="/tiles/footer.jsp" flush="true"/>
   </s:if>

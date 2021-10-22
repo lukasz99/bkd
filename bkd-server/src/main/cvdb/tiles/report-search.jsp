@@ -2,7 +2,7 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
 
 <div id="bkd-report-search"> 
- <h2>Search</h2>
+ <hr/>
  <s:form action="report" theme="simple">
   <table>
    <tr>
