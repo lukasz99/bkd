@@ -320,7 +320,7 @@ public class NodeDao extends AbstractDAO {
     
     //--------------------------------------------------------------------------
     
-    public long getCount() {
+    public long getTotalCount() {
 
         long count = 0;
 
@@ -338,6 +338,26 @@ public class NodeDao extends AbstractDAO {
             session.close();
         }
         return count;
+    }
+
+    public int getMaxAcc(){
+        
+        int maxacc = 0;
+        
+        Session session = getCurrentSession();
+        Transaction tx = session.beginTransaction();
+        
+        try {           
+            Query query = session.createQuery( "select max(n.nacc) from Node n" );
+            maxacc  = (Integer) query.uniqueResult();
+            tx.commit();
+        } catch ( HibernateException e ) {
+            handleException( e );
+            // log error ?
+        } finally {            
+            session.close();
+        }
+        return maxacc;
     }
     
     public List<Integer> getIdList( int rfirst, int rmax ){

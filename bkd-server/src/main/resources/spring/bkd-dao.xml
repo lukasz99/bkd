@@ -107,7 +107,7 @@
 
   <bean id="bkdDaoContext" class="edu.ucla.mbi.bkd.store.dao.BkdDaoContext">
     
-    <property name="state" value="flip"/>
+    <property name="state" value="flop"/>
     
     <property name="flipSF" ref="bkdFlipSessionFactory"/>
     <property name="flopSF" ref="bkdFlopSessionFactory"/>

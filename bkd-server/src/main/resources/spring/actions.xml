@@ -197,6 +197,7 @@
    <property name="mst" value="3:3:3"/>
 
  </bean>
+ 
  -->
 
 <!-- database actions -->
@@ -227,6 +228,19 @@
     <property name="recordManager"       ref="bkdRecordManager"/>
     <property name="indexManager"        ref="bkdIndexManager"/>
     <property name="indexList">
+      <list>
+         <value>node</value>
+         <value>report</value>
+      </list>
+    </property>
+    <property name="menuContext"         ref="menuContext"/>
+  </bean>
+
+  <bean id="databaseMgrAction" scope="prototype"
+        class="edu.ucla.mbi.bkd.struts.action.DatabaseMgrAction">
+    <property name="recordManager"       ref="bkdRecordManager"/>
+    <property name="indexManager"        ref="bkdIndexManager"/>
+    <property name="idGenList">
       <list>
          <value>node</value>
          <value>report</value>

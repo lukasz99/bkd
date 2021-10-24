@@ -320,7 +320,7 @@ public class ReportDao extends AbstractDAO {
 
     //--------------------------------------------------------------------------
     
-    public long getCount() {
+    public long getTotalCount(){
 
         long count = 0;
 
@@ -341,6 +341,26 @@ public class ReportDao extends AbstractDAO {
         return count;
     }
 
+    public int getMaxAcc(){
+        
+        int maxacc = 0;
+        
+        Session session = getCurrentSession();
+        Transaction tx = session.beginTransaction();
+        
+        try {           
+            Query query = session.createQuery( "select max(n.nacc) from Report n" );
+            maxacc  = (Integer) query.uniqueResult();
+            tx.commit();
+        } catch ( HibernateException e ) {
+            handleException( e );
+            // log error ?
+        } finally {            
+            session.close();
+        }
+        return maxacc;
+    }
+    
     public List<Integer> getIdList( int rfirst, int rmax ){
 
         Session session = getCurrentSession();

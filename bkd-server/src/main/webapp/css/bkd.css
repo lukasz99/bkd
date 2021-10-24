@@ -41,8 +41,6 @@
     background-color: #F0F0F0  !important;
 }
 
-
-
 #bkd-report-target {
  border-style: solid;
   border-color: #A8A8A8;
@@ -99,6 +97,7 @@
 .bkd-search{
     width: 100%;
 }
+
 .bkd-search-table{  
     width: 99%;
     margin: 0px 0px 50px 0px;
@@ -131,4 +130,29 @@
   padding: 1px 5px;
 }
 
+.bkd-manager-table{  
+    width: 50%;
+    margin: 10px 0px 50px 0px;
+    border-style: solid;
+    border-color: #A8A8A8;
+    border-width: 1px;
+}
+
+.bkd-manager-table th {
+  border-style: solid;
+  border-color: #A8A8A8;
+  border-width: 1px;
+  padding: 1px 5px;
+  text-align: center;
+
+}
+
+.bkd-manager-table td {
+  border-style: solid;
+  border-color: #A8A8A8;
+  border-width: 1px;
+  padding: 1px 5px;
+  text-align: center;
+
+}
 

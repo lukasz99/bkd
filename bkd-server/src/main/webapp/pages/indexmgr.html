@@ -4,72 +4,81 @@
 <script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/jquery-ui.min.js"></script>
 <script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/threeClass.min.js"></script>
 <script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/icn3d.min.js"></script>
-
-</br></br></br></br></br>
-<div>
-  <h1>Index Manager</h1>
+ 
+<div id="bkd-main">
   <div class="status">
-    <div>Index status</div>
-    <div>
-      <div id="index-counts"></div>
-    </div>
   </div>
-  <hr/>
-  <div class="manager">
-    <div id="index-mgr">
-      <div id="index-init">
-        <div>Initialize</div>
-     </div>   
-      <div id="index-reindex">
-        <div>Reindex</div>
-     </div>   
-    </div>  
-  </div>    
+  <div id="bkd-manager">
+  </div>  
 </div>
-</br></br></br></br></br></br></br></br>
 
 <script type="text/javascript">
   $( document ).ready(function() {
+
+     hhght =  $("#header").height(); 
+
+     $("#bkd-sidebar").css('padding-top',3);
+     $("#bkd-main").css('margin-top',hhght);
+     $("#bkd-main").css('margin-bottom',100);
+
      myurl ="indexmgr";          
      $.ajax( { url: myurl} )
-        .done( function( data, textStatus ){             
-             for(var i =0; i < data["data"]["status"].length; i ++ ){
-               console.log(JSON.stringify(data["data"]["status"][i]));
-               var ccnt=data["data"]["status"][i];
-               var html = "<div>";                
-               if( ccnt["count"] >=0 ){
-                  html += ccnt["index"]+ " index: " + ccnt["count"] + " entries</div>";
-                  rex = "<div>" + ccnt["index"] +
-                       " <input id='reindex_"+ ccnt["index"] +"' type='button' value='GO!!!'/>" +
-                       "</div>";
-                  $("#index-reindex").append(rex);
-                  $("#reindex_" + ccnt["index"]).on('click',function(event){
+      .done( function( data, textStatus ){
+
+        $("#bkd-manager").append( "<table class='bkd-manager-table'"
+                                  + " cellspacing='0' cellpadding='0'>"
+                                  +"<tr>"  
+                                  +"<th>Index</th>"
+                                  +"<th>Count</th>"
+                                  +"<th colspan='2'>(Re)set</th>"
+                                  +"</tr>"
+                                  +"</table>" );
+  
+        for(var i =0; i < data["data"]["status"].length; i ++ ){
+          console.log(JSON.stringify(data["data"]["status"][i]));
+          var ccnt=data["data"]["status"][i];
+          
+          if( ccnt["count"] >=0 ){
+            var html = "<tr>";                
+            html += "<td>" + ccnt["index"]+ "</td><td>" + ccnt["count"] + "</td>";
+            html += "<td><input id='clear_"+ ccnt["index"]
+                    + "' type='button' value='Clear'/></td>";
+
+            html += "<td><input id='reindex_"+ ccnt["index"]
+                    + "' type='button' value='Reindex'/></td>";
+            html += "</tr>";     
+            $("#bkd-manager  table").append(html);
+    
+            $("#reindex_" + ccnt["index"]).on('click',function(event){
                         var index = event.currentTarget.id.replace("reindex_","");
                         var conf = confirm("Do you want to continue ?");
                         if( conf ){
-                        console.log("Reindexing....");
-                        $.ajax( { url: "indexmgr?op=reindex&id="+index} )
+                          $.ajax( { url: "indexmgr?op=reindex&id="+index} )
+                          .done( function(data, textStatus){
+                            location.href ="page?id=indexmgr"
+                          });
                         }
                   });
 
-                  inx = "<div>" + ccnt["index"] +
-                       " <input id='init_"+ ccnt["index"] +"' type='button' value='GO!!!'/>" +
-                       "</div>";
-                  $("#index-init").append(inx);
-                  $("#init_" + ccnt["index"]).on('click',function(event){
-                        var index = event.currentTarget.id.replace("init_","");
+            $("#clear_" + ccnt["index"]).on('click',function(event){
+                        var index = event.currentTarget.id.replace("clear_","");
                         var conf = confirm("Do you want to continue ?");
                         if( conf ){
-                        console.log("Reinitializing....");
-                        $.ajax( { url: "indexmgr?op=init&id="+index} )
+                          $.ajax( { url: "indexmgr?op=init&id="+index} )
+                           .done( function(data, textStatus){
+                             location.href ="page?id=indexmgr"
+                           });
                         }
                   });
 
-               } else{
-                  html += "<div>" + ccnt["index"]+ " index:  N/A</div>";                
-               }
-               $("#index-counts").append(html);
-             }
-        });               
+          }else{
+            //var html = "<tr>";                
+            //html += "<td>" + ccnt["index"] + "</td>";
+            //html += "<td>N/A</td><td colspan='2'>&nbsp;</td>";
+            //html += "</tr>";     
+            //$("#bkd-manager  table").append(html);            
+          }
+        }
+      });               
    });
  </script>

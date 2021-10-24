@@ -184,9 +184,9 @@ public class BkdIndexManager {
             long reccnt = 0;
 
             if( "node".equalsIgnoreCase(index) ){
-                reccnt = recManager.getDaoContext().getNodeDao().getCount();
+                reccnt = recManager.getDaoContext().getNodeDao().getTotalCount();
             } else if("report".equalsIgnoreCase(index) ){
-                reccnt = recManager.getDaoContext().getReportDao().getCount();
+                reccnt = recManager.getDaoContext().getReportDao().getTotalCount();
             }
             
             for(int minrec = 0; minrec < reccnt; minrec += bsize){

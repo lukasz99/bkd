@@ -5,21 +5,104 @@
 <script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/threeClass.min.js"></script>
 <script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/icn3d.min.js"></script>
 
-</br></br></br></br></br></br></br></br>
-<div>
-  <h1>Database Manager</h1>
-  <div class="status">
-    <div>Database status</div>
+<div id="bkd-main">
+  <div id="bkd-state">    
   </div>
-  <div class="manager">
-      <div>Initialize</div>   
-      <div>Set next node accession</div>   
-      <div>Set next report accession</div>    
+  <div id="bkd-manager">
   </div>    
 </div>
-</br></br></br></br></br></br></br></br>
 
 <script type="text/javascript">
-    $( document ).ready(function() {
-    });
+  $( document ).ready(function() {
+
+     hhght =  $("#header").height(); 
+
+     $("#bkd-sidebar").css('padding-top',3);
+     $("#bkd-main").css('margin-top',hhght);
+     $("#bkd-main").css('margin-bottom',100);
+
+     myurl ="databasemgr";          
+     $.ajax( { url: myurl} )
+      .done( function( data, textStatus ){             
+        
+        $("#bkd-state").append("Active DB: " + data["data"]["state"]);
+        $("#bkd-state").append(" <input id='toggle' type='button' value='Toggle'/>");
+        $("#toggle").on('click',function(event){
+            $.ajax( { url: "databasemgr?op=toggle"})
+                  .done( function(data, textStatus){
+                     location.href ="page?id=databasemgr"
+                  });
+            });
+
+        $("#bkd-state").append( "<table class='bkd-manager-table'"
+                                  + " cellspacing='0' cellpadding='0'>"
+                                  +"<tr>"  
+                                  +"<th>Object Type</th>"
+                                  +"<th>Total Count</th>"
+                                  +"</tr>"
+                                  +"</table>" );
+
+        for(var i=0; i < data["data"]["counts"].length; i ++ ){
+          var ccnt=data["data"]["counts"][i];              
+          var html = "<tr>";
+          html += "<td>" + ccnt["name"] +"</td>";
+          html += "<td>" + ccnt["total"] +"</td>";
+          html += "</tr>";
+          $("#bkd-state table").append(html);
+       }
+  
+        $("#bkd-manager").append( "<table class='bkd-manager-table'"
+                                  + " cellspacing='0' cellpadding='0'>"
+                                  +"<tr>"  
+                                  +"<th>Id&nbsp;Generator</th>"
+                                  +"<th>Current&nbsp;Value</th>"
+                                  +"<th colspan='2'>(Re)set&nbsp;Value</th>"
+                                  +"</tr>"
+                                  +"</table>" );
+
+        for(var i=0; i < data["data"]["idgen"].length; i ++ ){
+           
+           var ccnt=data["data"]["idgen"][i];              
+           var html = "<tr>";                
+           html += "<td>" + ccnt["name"] +"</td>";
+           html += "<td>" + ccnt["curid"] +"</td>";
+           html += "<td><input id='reset_"+ccnt["name"] + "' type='button' value='Reset'/></td>";
+           html += "<td><input id='val_"+ccnt["name"] + "' type='text' value='"+ccnt["curid"]+"'/> ";
+           html += "<input id='set_" + ccnt["name"] + "' type='button' value='Set'/>";
+           html += "</td>";           
+           html += "</tr>";          
+           $("#bkd-manager  table").append(html);
+
+           $("#reset_"+ccnt["name"]).on('click',function(event){
+
+              var idgen = event.currentTarget.id.replace("reset_","");
+              var conf = confirm("Resetting " + idgen +" id generator.\nDo you want to continue ?");
+              if( conf ){
+                 $.ajax( { url: "databasemgr?op=reset&idgen="+idgen})
+                  .done( function(data, textStatus){
+                     location.href ="page?id=databasemgr"
+                  });
+              };
+           });
+
+           $("#set_"+ccnt["name"]).on('click',function(event){
+
+             var idgen = event.currentTarget.id.replace("set_","");
+             var nval = $("#val_"+idgen).val();
+             if( nval >0 ){            
+                var conf = confirm("Resetting " + idgen + " id generator to "+nval+".\n"
+                           + "Do you want to continue ?");
+                if( conf ){
+                  $.ajax( { url: "databasemgr?op=set&idgen=" + idgen + "&value=" + nval})
+                   .done( function(data, textStatus){
+                     location.href ="page?id=databasemgr"
+                   });
+                }
+              };
+           });
+                         
+         }
+                           
+      });     
+  });
  </script>

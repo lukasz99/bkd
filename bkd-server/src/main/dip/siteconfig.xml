@@ -13,6 +13,22 @@
 
   <bean id="siteConfig" class="edu.ucla.mbi.bkd.BkdConfig">
     <property name="prefix" value="DIP"/>
+    <property name="storedAliasAcList">
+      <list>
+        <value>dxf:0031</value>
+        <value>dxf:0102</value>
+        <value>dxf:0103</value>
+      </list>
+    </property>  
+    <property name="storedAttrAcList">
+      <list>
+        <value>dxf:0104</value>
+        <value>dxf:0106</value>
+        <value>dxf:0107</value>
+        <value>dxf:0109</value>
+      </list>
+    </property>  
+
   </bean>
 
 </beans>

@@ -156,6 +156,20 @@
       </result>
     </action>
 
+    <action name="databasemgr" class="databaseMgrAction" >
+      <interceptor-ref name="defaultStack"/>
+      <interceptor-ref name="timer"/>
+      <interceptor-ref name="menu"/>
+      <result name="json"  type="json">
+        <param name="includeProperties">
+          data.*
+        </param>
+        <param name="excludeProperties">
+          record.report.jval,record.report.feature.jval,rdata.*.jval
+        </param>        
+      </result>
+    </action>
+
     <action name="indexmgr" class="indexMgrAction" >
       <interceptor-ref name="defaultStack"/>
       <interceptor-ref name="timer"/>

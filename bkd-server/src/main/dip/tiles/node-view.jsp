@@ -9,15 +9,23 @@
 
   <t:insertDefinition name="htmlhead"/>  
    <script src="jq/jquery-3.6.0.js" type="text/javascript" language="JavaScript"></script>
+
    <script src="js/bkd-config.js" type="text/javascript" language="JavaScript"></script>
    <script src="js/bkd-links.js" type="text/javascript" language="JavaScript"></script>
-   <script src="js/sequence-viewer.bundle.js" type="text/javascript" language="JavaScript"></script>
+   <script src="js/sequence-viewer.bundle.js" type="text/javascript" language="JavaScript"></script> 
+
    <script src="js/bkd-node-jq.js" type="text/javascript" language="JavaScript"></script>
    <script src="js/bkd-site.js" type="text/javascript" language="JavaScript"></script>
 
    <script type="text/javascript">
          
-    $( function(){
+     $( function(){
+
+        hhght =  $("#header").height(); 
+
+        $("#bkd-sidebar").css('padding-top',3);
+        $("#bkd-main").css('margin-top',hhght);
+     
         var ns   = "<s:property value='ns'/>";
         var ac   = "<s:property value='ac'/>";
         var mode = "<s:property value='mode'/>"; // set to edit if editor mode
@@ -71,7 +79,8 @@
       </s:if>
        <tr>
          <td colspan="3">
-           <h1 id="bkd-main-name"></h1>           
+           <div id="bkd-main-name"></div>
+         </td>  
        </tr>
 
    <s:if test="ac == null || ac.length == 0">
