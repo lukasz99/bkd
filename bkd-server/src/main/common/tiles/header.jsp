@@ -181,7 +181,7 @@
             <s:if test="searchOn"> 
              Gene/Protein:
              <input id="bkd-head-squery" size="16" type="text" maxlength="254"/>
-             <input id="bkd-head-search" type="button" value="SEARCH" />
+             <input id="bkd-head-search-go" type="button" value="SEARCH" />
              <input id="bkd-head-qmode" type="hidden" value="node"  />
             </s:if>
             <s:else>

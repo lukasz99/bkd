@@ -10,9 +10,10 @@ BKDnode = {
     BKDnode.view( data, srcAnchor, nodeAnchor, flist, mode);
   },
 
-  view: function(data, srcAnchor, nodeAnchor, flist, mode){
+  view: function(data, srcAnchor, srcViewAnchor, nodeAnchor, flist, mode){
          
     this.srcAnchor=srcAnchor;
+    this.srcViewAnchor=srcViewAnchor;
     this.nodeAnchor=nodeAnchor;
     
     
@@ -22,7 +23,9 @@ BKDnode = {
       $( srcAnchor ).show();            
     }else{
       $( srcAnchor ).hide();            
-      BKDnode.nodeView( data, this.nodeAnchor, flist, mode );
+      $( srcViewAnchor ).hide();            
+      BKDnode.nodeView( data, this.srcAnchor, this.srcViewAnchor,
+                        this.nodeAnchor, flist, mode );
       $( nodeAnchor ).show();
     }
   },
@@ -36,14 +39,13 @@ BKDnode = {
       myurl ="search?query="+squery+"&qmode="+qmode;          
       $.ajax( { url: myurl} )
           .done( function(data, textStatus, jqXHR){
-            console.log(JSON.stringify(data)); 
-            console.log(JSON.stringify(textStatus)); 
-            console.log(JSON.stringify(jqXHR)); 
+            console.log( JSON.stringify(textStatus)
+                         + " || data.length: "  + JSON.stringify(data).length); 
 
              BKDnode.searchView( data.rdata,
-                                "#bkd-search-result", "#bkd-node-view",
-                                 BKDconf["node"],
-                                 qmode) } );
+                                 "#bkd-search", "#bkd-search-view", 
+                                 "#bkd-node-view",
+                                 BKDconf["node"], qmode) } );
   },
 
   doHeadSearch: function(){
@@ -55,14 +57,13 @@ BKDnode = {
       myurl ="search?query="+squery+"&qmode="+qmode;          
       $.ajax( { url: myurl} )
           .done( function(data, textStatus, jqXHR){
-            console.log(JSON.stringify(data)); 
-            console.log(JSON.stringify(textStatus)); 
-            console.log(JSON.stringify(jqXHR)); 
+            console.log( JSON.stringify(textStatus)
+                         + " || data.length: "  + JSON.stringify(data).length); 
 
              BKDnode.searchView( data.rdata,
-                                "#bkd-search-result", "#bkd-node-view",
-                                 BKDconf["node"],
-                                 qmode) } );
+                                 "#bkd-search", "#bkd-search-view",
+                                 "#bkd-node-view",
+                                 BKDconf["node"], qmode) } );
   },
   
   search: function( data, srcAnchor ){
@@ -119,14 +120,18 @@ BKDnode = {
       });
   },
 
-  searchView: function(data, srcAnchor, mode ){
+  searchView: function(data, srcAnchor, srcViewAnchor, nodeViewAnchor, mode ){
   
     var tid="bkd-search-table";
-    $(srcAnchor).empty();
-    $(srcAnchor).append( "<div id='bkd-search-result'><hr/>"
+    //$(srcAnchor).hide();
+    $(srcViewAnchor).hide();
+    $(nodeViewAnchor).hide();
+
+    $(srcViewAnchor).empty();    
+    $(srcViewAnchor).append( "<hr/>"
                          + "<table id='" + tid
                          + "' border='0' cellspacing='0' cellpadding='0' class='bkd-search-table'>"
-                         + "</table></div>");
+                         + "</table>");
     $('#' + tid).append("<tr> class='bkd-rep-fld'>"+
                                   "<th align='center' width='5%'>ID</th>"+                                  
                                   "<th align='center' width='10%'>Short Name</th>"+
@@ -167,10 +172,16 @@ BKDnode = {
                     location.href = elink;                    
                   });
     }
+    $(srcAnchor).show();
+    $(srcViewAnchor).show();
   },
 
-  nodeView: function(data, nodeAnchor, fmt, mode ){
-
+  nodeView: function(data, srcAnchor, srcViewAnchor, nodeViewAnchor, fmt, mode ){
+    
+    $(nodeViewAnchor).empty();
+    $(nodeViewAnchor).append( "<div id='bkd-hv-field'></div>"
+                              +"<div id='bkd-nv-field'></div>"
+                              +"<div id='bkd-fv-field'></div>" );
     // view type
     //----------
 
@@ -185,7 +196,7 @@ BKDnode = {
 
     var format = fmt.type.view[vformat];
 
-    console.log( "NA: " + nodeAnchor );
+    console.log( "NA: " + nodeViewAnchor );
     console.log( "FL: " + JSON.stringify(format) );
     
     // node type & accession

@@ -34,21 +34,24 @@
            $.ajax( { url: myurl} )
               .done( function(data, textStatus, jqXHR){                  
                  BKDnode.view( data.node,
-                               "#bkd-node-search", "#bkd-node-view",
-                               BKDconf["node"],
-                               mode) } );
+                               "#bkd-search", "#bkd-search-view",
+                               "#bkd-node-view", BKDconf["node"], mode) } );
         } else {
             // hide node view
             $( "#bkd-node-view" ).hide(); 
             $( "#bkd-sidebar" ).hide(); 
             
-            $("#bkd-search").on( 'click', function (event) {
+            $("#bkd-search-go").on( 'click', function (event) {
                console.log("search clicked");
                BKDnode.doSearch();
             });
             // show node search
             $( "#bkd-node-search" ).show();
         }
+        $("#bkd-head-search-go").on( 'click', function (event) { 
+           console.log("search clicked");
+           BKDnode.doHeadSearch();
+        });     
     
        });
   </script>
@@ -82,14 +85,11 @@
            <div id="bkd-main-name"></div>
          </td>  
        </tr>
-
-   <s:if test="ac == null || ac.length == 0">
        <tr>
          <td colspan="3">
-    <t:insertDefinition name="node-search"/>
+           <t:insertDefinition name="node-search"/>
          </td>
        </tr>
-   </s:if>
        <tr>
          <td colspan="3">
            <div id="bkd-node-view">
