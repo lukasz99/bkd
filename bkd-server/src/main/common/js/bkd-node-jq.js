@@ -45,6 +45,25 @@ BKDnode = {
                                  BKDconf["node"],
                                  qmode) } );
   },
+
+  doHeadSearch: function(){
+      var squery = $("#bkd-head-squery").val();
+      var qmode =  $("#bkd-head-qmode").val();  
+
+      console.log( "HeadSearch: " + qmode + ":" + squery);
+      
+      myurl ="search?query="+squery+"&qmode="+qmode;          
+      $.ajax( { url: myurl} )
+          .done( function(data, textStatus, jqXHR){
+            console.log(JSON.stringify(data)); 
+            console.log(JSON.stringify(textStatus)); 
+            console.log(JSON.stringify(jqXHR)); 
+
+             BKDnode.searchView( data.rdata,
+                                "#bkd-search-result", "#bkd-node-view",
+                                 BKDconf["node"],
+                                 qmode) } );
+  },
   
   search: function( data, srcAnchor ){
 

@@ -49,6 +49,10 @@
             // show node search
             $( "#bkd-node-search" ).show();
         }
+        $("#bkd-head-search").on( 'click', function (event) { 
+           console.log("search clicked");
+           BKDnode.doHeadSearch();
+        });     
     
        });
   </script>

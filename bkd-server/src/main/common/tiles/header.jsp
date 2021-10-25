@@ -7,7 +7,7 @@
    <table width="100%" cellspacing="0" border="0">
     <tr>
      <td class="logo" valign="middle">
-      <a href="."><img height="73" border="0" src="img/site_logo.png" alt="Site Logo"/></a>
+      <a href="."><img height="73" border="0" src="img/site_logo.svg" alt="Site Logo"/></a>
      </td>
     </tr>
    </table>
@@ -178,12 +178,16 @@
          <table cellspacing="0" cellpadding="0">
           <tr>
            <td align="left" class="btmsearchtab" nowrap>
-            <s:if test="searchOn"><s:form action="pubsrc" theme="simple">
-             Gene/Protein:<s:textfield theme="simple" name="pub.pmid" size="16" value="" maxlength="128"/>
-             <s:submit class="menu-button" type="input" tabindex="3" name="op.esrc" value="SEARCH" theme="simple"/>
-            </s:form>
+            <s:if test="searchOn"> 
+             Gene/Protein:
+             <input id="bkd-head-squery" size="16" type="text" maxlength="254"/>
+             <input id="bkd-head-search" type="button" value="SEARCH" />
+             <input id="bkd-head-qmode" type="hidden" value="node"  />
+            </s:if>
+            <s:else>
+              &nbsp;
+            </s:else>
            </td>
-           </s:if>
            <td class="menu3blank">&nbsp;
            </td>
           </tr>
