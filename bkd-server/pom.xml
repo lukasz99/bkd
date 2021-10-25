@@ -88,6 +88,23 @@
       <finalName>dipdev2</finalName>
      </build>
     </profile>
+
+    <profile>
+     <id>dipdev3</id>
+     <activation>
+      <activeByDefault>false</activeByDefault>
+     </activation>
+     <properties>
+       <site>dip</site>
+       <srv.ver>dipdev3</srv.ver>
+       <db.ver>dip</db.ver>
+       <rec.prefix>DIP</rec.prefix>
+       <service.esindex.url>http://10.1.7.103:9200/dip-%%TYPE%%-index-000000</service.esindex.url>
+     </properties>
+     <build>
+      <finalName>dipdev2</finalName>
+     </build>
+    </profile>
     
     <profile>
      <id>cvdbdev0</id>
