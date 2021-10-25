@@ -344,6 +344,15 @@
               </includes>
             </resource>
 
+            <resource>
+              <directory>${basedir}/src/main/${db.ver}/etc</directory>
+              <targetPath>etc</targetPath>
+              <filtering>true</filtering>
+              <includes>
+                <include>*.json</include>   
+              </includes>
+            </resource>
+
             
             <resource>
               <directory>${basedir}/src/main/${db.ver}</directory>
