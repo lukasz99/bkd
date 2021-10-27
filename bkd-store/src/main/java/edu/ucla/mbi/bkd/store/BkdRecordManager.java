@@ -143,6 +143,13 @@ public class BkdRecordManager {
             node = daoContext.getNodeDao().updateNode( node );
 
             log.info(" Node updated:" + node.getNacc());
+
+        } catch( Exception ex ) {
+            log.error(ex);
+            return null;
+        }
+
+        try{
             
             // xrefs - persist xrefs and components if needed
             //-----------------------------------------------           
@@ -208,8 +215,17 @@ public class BkdRecordManager {
                 
             }
 
-            log.info(" XREFs: updated");
-            
+        } catch( Exception ex ) {
+            log.error(ex);
+            return null;
+        }
+
+        
+        log.info(" XREFs: updated");
+
+        try{
+
+        
             // features - persist fetures (and components if neeed)
             //-----------------------------------------------------
             
@@ -303,7 +319,18 @@ public class BkdRecordManager {
                     }                                        
                 }
             }
+
             
+        } catch( Exception ex ) {
+            log.error(ex);
+            return null;
+        }
+
+        log.info(" FEATs: done");
+        
+        try{
+            
+        
             // attributes - persist attribute (and components)
             //------------------------------------------------
 
@@ -386,6 +413,15 @@ public class BkdRecordManager {
                     }
                 }
             }
+
+        } catch( Exception ex ) {
+            log.error(ex);
+            return null;
+        }
+
+        log.info(" ATTRs: done");
+        
+        try{
             
             // aliases - persist alias (and components)
             //-----------------------------------------

@@ -335,6 +335,16 @@ public class BkdNodeManager {
                 //return this.toDxfProteinNode( oldNode );
             }
             //return this.toDxfProteinNode( oldNode );	    
+        } else {
+            try{
+                
+                String snacc = ac.replaceAll("\\D","");
+                int inacc = Integer.parseInt( snacc );
+                curNode.setNacc(inacc);
+            } catch(Exception ex){
+                ex.printStackTrace();
+            }
+
         }
 		
         // attribute scan
