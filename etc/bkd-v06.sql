@@ -129,6 +129,54 @@ CREATE INDEX node_11  ON node USING btree (status);
 CREATE INDEX node_12  ON node USING btree (t_cr);
 CREATE INDEX node_13  ON node USING btree (t_mod);
 
+CREATE TABLE edge (
+    pkey bigint DEFAULT nextval(('"edge_pkey_seq"'::text)::regclass) NOT NULL CONSTRAINT edge_pk PRIMARY KEY,
+    sclass character varying(32) DEFAULT ''::character varying,
+    cvtype bigint DEFAULT 0 NOT NULL,   
+    prefix character varying(8) DEFAULT ''::character varying,
+    nacc int DEFAULT 0 NOT NULL,
+
+    label character varying(32) DEFAULT ''::character varying NOT NULL,         
+    name text DEFAULT ''::text NOT NULL,
+    comment text DEFAULT ''::text,
+    status character varying(16) DEFAULT ''::character varying NOT NULL,
+    version character varying(16) DEFAULT ''::character varying,	
+    t_cr timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone,
+    t_mod timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone,
+);
+
+CREATE SEQUENCE edge_pkey_seq START WITH 1 INCREMENT BY 1
+    NO MINVALUE NO MAXVALUE CACHE 1;
+
+CREATE INDEX edge_01a ON edge USING btree (cvtype);
+CREATE INDEX edge_01b ON edge USING btree (sclass);
+CREATE INDEX edge_03a ON edge USING btree (prefix,nacc);
+CREATE INDEX edge_03b ON edge USING btree (nacc);
+CREATE INDEX edge_06  ON edge USING btree (label);
+CREATE INDEX edge_09  ON edge USING btree (t_cr);
+CREATE INDEX edge_10  ON edge USING btree (t_mod);
+CREATE INDEX edge_11  ON edge USING btree (status);
+CREATE INDEX edge_11a  ON edge USING btree (version);
+CREATE INDEX edge_12  ON edge USING btree (t_cr);
+CREATE INDEX edge_13  ON edge USING btree (t_mod);
+
+CREATE TABLE lnode (
+    pkey bigint DEFAULT nextval(('"lnode_pkey_seq"'::text)::regclass) NOT NULL CONSTRAINT lnode_pk PRIMARY KEY,
+    fk_edge bigint DEFAULT 0 NOT NULL,
+    fk_node bigint DEFAULT 0 NOT NULL,    
+    t_cr timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone,
+    t_mod timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone,
+);
+
+CREATE SEQUENCE lnode_pkey_seq START WITH 1 INCREMENT BY 1
+    NO MINVALUE NO MAXVALUE CACHE 1;
+
+CREATE INDEX lnode_01a ON lnode USING btree (fk_edge);
+CREATE INDEX lnode_01b ON lnode USING btree (fk_node);
+CREATE INDEX lnode_01c ON lnode USING btree (fk_node,fk_edge);
+CREATE INDEX lnode_2   ON lnode USING btree (t_cr);
+CREATE INDEX lnode_3   ON lnode USING btree (t_mod);
+
 CREATE TABLE taxon (
     pkey bigint DEFAULT nextval(('"taxon_pkey_seq"'::text)::regclass) NOT NULL CONSTRAINT taxon_pk PRIMARY KEY,   
     taxid integer DEFAULT 0 NOT NULL,
