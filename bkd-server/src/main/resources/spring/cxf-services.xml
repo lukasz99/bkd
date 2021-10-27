@@ -42,12 +42,18 @@
         class="edu.ucla.mbi.bkd.server.soap.BkdNodeManager" >   
     <property name="recordManager" ref="bkdRecordManager"/>
   </bean>
+
+  <bean id="bkd-link-manager"
+        class="edu.ucla.mbi.bkd.server.soap.BkdLinkManager" >   
+    <property name="recordManager" ref="bkdRecordManager"/>
+  </bean>
   
   <bean id="bkd-soap-bean" init-method="initialize"
         class="edu.ucla.mbi.bkd.server.soap.BkdPortImpl" >
 
     <property name="builder" ref="bkd-builder"/>
     <property name="nodeManager" ref="bkd-node-manager"/>
+    <property name="linkManager" ref="bkd-link-manager"/>
     <!--    <property name="queryManager" ref="bkdQueryManager"/> -->
   </bean>
   <!--

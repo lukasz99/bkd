@@ -1,0 +1,37 @@
+  <node ac="" ns="" id="1">
+    <type name="link" ac="dxf:0004" ns="dxf"/>
+    <label></label>     <----   it's got to be present but can be left empty     
+    <partList>
+      <part id="1" name="">
+        <type name="linked-node" ac="dxf:0010" ns="dxf"/>
+        <node ac="DIP621P" ns="dip" id="1">
+          <type name="protein" ac="dxf:0003" ns="dxf"/>
+          <label>...</label>    <---- whatever comes from the preeexisting protien record
+          <xrefList>
+            <xref type="produced-by" typeAc="dxf:0007" typeNs="dxf" ac="4932" ns="TaxId"/>
+          </xrefList>
+        </node>
+      </part>
+      <part id="2" name="">
+        <type name="linked-node" ac="dxf:0010" ns="dxf"/>
+        <node ac="DIP611P" ns="dip" id="1">
+          <type name="protein" ac="dxf:0003" ns="dxf"/>
+          <label>....</label>
+          <xrefList>
+            <xref type="produced-by" typeAc="dxf:0007" typeNs="dxf" ac="4932" ns="TaxId"/>
+          </xrefList>
+        </node>
+      </part>
+      <part id="3" name="">
+        <type name="linked-node" ac="dxf:0010" ns="dxf"/>
+        <node ac="DIP612P" ns="dip" id="1">
+          <type name="protein" ac="dxf:0003" ns="dxf"/>
+          <label>....</label>
+          <xrefList>
+            <xref type="produced-by" typeAc="dxf:0007" typeNs="dxf" ac="4932" ns="TaxId"/>
+          </xrefList>
+        </node>
+      </part>
+    </partList>
+  </node>
+
