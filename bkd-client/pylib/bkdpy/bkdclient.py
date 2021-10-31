@@ -78,7 +78,7 @@ class BkdClient():
              print( e )
         return None
     
-    def getlink( self, ns, ac, detail='default', format='dxf15' ):
+    def getlink( self, ns, ac, detail='default', format='dxf15', debug=False ):
         print("BkdClinet: getlink")
         client = self._zclient
         try:
@@ -125,9 +125,57 @@ class BkdClient():
         except Exception as e:
              print( e )
         return None
-
-
                     
+    def getlinks( self, zdtsnode, match = "", detail="", format="", debug = False):
+
+        if debug:
+            print("BkdClinet.addnode: input node=" + str(zdtsnode))
+        #else:
+        #    print("BkdClinet.addnode: input node=",len(str(zdtsnode)))
+        if zdtsnode is not None:
+            client = self._zclient
+            #try:
+
+            if debug:
+                print( ET.tostring(client.create_message(client.service,'setNode', dataset= zdtsnode, mode="add"), pretty_print=True ).decode()  )
+            else:
+                with client.settings(raw_response=True):
+                    res = client.service.getLinksByNodeSet( zdtsnode, match, detail, format )
+                    restree = ET.fromstring(res.text)
+                    #print("RES",res.text)
+                    dset = restree.xpath('//dxf:dataset',namespaces = self.dxfns )
+                    
+                    #print("\n\n",ET.tostring(dset[0], pretty_print=True).decode(),"\n\n" )
+                    if dset:
+                        return dset[0]
+            
+        return None
+
+    def setlink( self, zdtsnode, mode = "add", debug = False):
+
+        if debug:
+            print("BkdClinet.addnode: input node=" + str(zdtsnode))
+        #else:
+        #    print("BkdClinet.addnode: input node=",len(str(zdtsnode)))
+        if zdtsnode is not None:
+            client = self._zclient
+            #try:
+
+            if debug:
+                print( ET.tostring(client.create_message(client.service,'setNode', dataset= zdtsnode, mode="add"), pretty_print=True ).decode()  )
+            else:
+                with client.settings(raw_response=True):
+                    res = client.service.setLink( zdtsnode, mode )
+                    restree = ET.fromstring(res.text)
+                    #print("RES",res.text)
+                    dset = restree.xpath('//dxf:dataset',namespaces = self.dxfns )
+                    
+                    #print("\n\n",ET.tostring(dset[0], pretty_print=True).decode(),"\n\n" )
+                    if dset:
+                        return dset[0]
+            
+        return None
+
     def setnode( self, zdtsnode, mode = "add", debug = False):
 
         if debug:

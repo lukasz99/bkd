@@ -72,8 +72,8 @@ insert into ident ( pkey, name, prfix, ptfix, idmax) values( 3, 'rna', 'CVDB','R
 insert into ident ( pkey, name, prfix, ptfix, idmax) values( 4, 'gene', 'CVDB','GN', 1);  
 insert into ident ( pkey, name, prfix, ptfix, idmax) values( 5, 'molecule','CVDB','MN', 1); 
 
-insert into ident ( pkey, name, prfix, ptfix, idmax) values(32, 'edge', 'CVDB','E', 1);  
-insert into ident ( pkey, name, prfix, ptfix, idmax) values(33, 'molint', 'CVDB','ME', 1);
+insert into ident ( pkey, name, prfix, ptfix, idmax) values(32, 'edge', 'CVDB','xE', 1);  
+insert into ident ( pkey, name, prfix, ptfix, idmax) values(33, 'molint', 'CVDB','E', 1);
 insert into ident ( pkey, name, prfix, ptfix, idmax) values(34, 'genint', 'CVDB','GE', 1);
 insert into ident ( pkey, name, prfix, ptfix, idmax) values(35, 'funlnk', 'CVDB','FE', 1);
 insert into ident ( pkey, name, prfix, ptfix, idmax) values(64, 'report', 'CVDB','R', 1);
@@ -138,11 +138,12 @@ CREATE TABLE edge (
 
     label character varying(32) DEFAULT ''::character varying NOT NULL,         
     name text DEFAULT ''::text NOT NULL,
+    nhash char(64) DEFAULT ''::character NOT NULL,
     comment text DEFAULT ''::text,
     status character varying(16) DEFAULT ''::character varying NOT NULL,
     version character varying(16) DEFAULT ''::character varying,	
     t_cr timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone,
-    t_mod timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone,
+    t_mod timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone
 );
 
 CREATE SEQUENCE edge_pkey_seq START WITH 1 INCREMENT BY 1
@@ -152,6 +153,7 @@ CREATE INDEX edge_01a ON edge USING btree (cvtype);
 CREATE INDEX edge_01b ON edge USING btree (sclass);
 CREATE INDEX edge_03a ON edge USING btree (prefix,nacc);
 CREATE INDEX edge_03b ON edge USING btree (nacc);
+CREATE INDEX edge_03c ON edge USING btree (nhash);
 CREATE INDEX edge_06  ON edge USING btree (label);
 CREATE INDEX edge_09  ON edge USING btree (t_cr);
 CREATE INDEX edge_10  ON edge USING btree (t_mod);
@@ -165,7 +167,7 @@ CREATE TABLE lnode (
     fk_edge bigint DEFAULT 0 NOT NULL,
     fk_node bigint DEFAULT 0 NOT NULL,    
     t_cr timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone,
-    t_mod timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone,
+    t_mod timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone
 );
 
 CREATE SEQUENCE lnode_pkey_seq START WITH 1 INCREMENT BY 1

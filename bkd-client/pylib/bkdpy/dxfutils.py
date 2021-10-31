@@ -131,7 +131,45 @@ class DxfUtils():
             
             return zdts
         return znode
-            
+    
+    def buildLinkZnode( self, ns="", ac="", vlist = [], cid = 1 ):
+
+        ntype = self.getTypeDefType( "link" )        
+        znode = self.zdxf.nodeType( ns=ns, ac=ac, type=ntype, id=1,
+                                    label="", name="",
+                                    featureList = None,
+                                    xrefList = None,
+                                    attrList = None,
+                                    partList = {'part':[]}
+        )
+
+        for v in vlist:
+            vns = v["ns"]
+            vac = v["ac"]
+            vtype = self.getTypeDefType( "linked-node" )
+            vptype = self.getTypeDefType( "protein" )
+
+            vpnode = self.zdxf.nodeType( ns=vns, ac=vac, type=vptype, id=1,
+                                         label="", name="",
+                                         featureList = None,
+                                         xrefList = None,
+                                         attrList = None,
+                                         partList = None )
+
+            znode.partList.part.append( {"type": vtype,
+                                         "node": vpnode,
+                                         "xrefList": None,
+                                         "attrList": None,
+                                         "featureList": None,
+                                         "name": "", "id": 1})
+
+                    
+        zdts = self.zdxf.datasetType([znode])
+        zdts['level']= "2"
+        zdts['version']= "0"
+        
+        return zdts
+
     
     def buildUniprotZnode( self, node, ns="", ac="", cid = 1 ):
        
@@ -187,14 +225,17 @@ class DxfUtils():
         print( ent["gene"]["name"][0]["value"] ) # gene   1,2,3,.. aliases
                         
         version=ent['version']
-        if len(ns) > 0:
-            nns = ns
-        else:
-            nns = "upr"
-        if len(ac) > 0:
-            nac = ac
-        else:
-            nac = ent["accession"][0]
+        #if len(ns) > 0:
+        #    nns = ns
+        #else:
+        #    nns = "upr"
+        #if len(ac) > 0:
+        #    nac = ac
+        #else:
+        #    nac = ent["accession"][0]
+
+        nns = "upr"
+        nac = ent["accession"][0]
             
         nlabel = ent["gene"]["name"][0]["value"]+ " protein"
         nname = ent["protein"]["name"][0]["value"]
@@ -203,7 +244,7 @@ class DxfUtils():
         ntxname = ent["organism"]["name"][1]["value"]
         print("L:",ntxlabel,"N:",ntxname)
         #xx
-        znode = self.zdxf.nodeType( ns="", ac="", type=ntype, id=1,
+        znode = self.zdxf.nodeType( ns=ns, ac=ac, type=ntype, id=1,
                                     label=nlabel, name=nname,
                                     featureList = None,
                                     xrefList = {'xref':[]},
@@ -735,6 +776,16 @@ class DxfUtils():
             ntype = self.zdxf.typeDefType( ns="dxf", ac="dxf:0030",
                                            typeDef = xsd.SkipValue,
                                            name="cv-term" )
+
+        elif tname.lower() in ["link"]:
+            ntype = self.zdxf.typeDefType( ns="dxf", ac="dxf:0004",
+                                           typeDef = xsd.SkipValue,
+                                           name="link" )
+        elif tname.lower() in ["linked-node"]:
+            ntype = self.zdxf.typeDefType( ns="dxf", ac="dxf:0010",
+                                           typeDef = xsd.SkipValue,
+                                           name="linked-node" )
+            
         return ntype
             
 print("DxfUtils: import")

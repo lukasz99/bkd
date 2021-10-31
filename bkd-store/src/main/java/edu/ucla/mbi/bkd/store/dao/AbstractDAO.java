@@ -65,24 +65,24 @@ public abstract class AbstractDAO {
     }
 
     protected void saveOrUpdate( Object obj ) throws DAOException {
-
+        
         Session session = getCurrentSession();
         Transaction tx = session.beginTransaction();
-
-        try {            
+        
+        try {
+            System.out.println(obj);
             session.saveOrUpdate( obj );
             tx.commit();
         } catch ( HibernateException e ) {
 
-	    Logger log = LogManager.getLogger( this.getClass() );                                                                                                          
-	    log.info( "saveOrUpdate exception" + e  );                                                                                                          
-
-	    
+            Logger log = LogManager.getLogger( this.getClass() );                                                                                                          
+            log.info( "saveOrUpdate exception" + e  );                                                                                                          
+            
             handleException( e, tx );
         } finally {
             session.close();
         }
-
+        
     }
 
     protected void delete ( Object obj ) throws DAOException {

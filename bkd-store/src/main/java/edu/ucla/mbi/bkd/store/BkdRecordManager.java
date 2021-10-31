@@ -89,7 +89,7 @@ public class BkdRecordManager {
         log.info( " get node -> ns=" + ns + "  ac=" + acc );
 
         try{
-            if( bkdconf.getPrefix().equalsIgnoreCase( ns) ){
+            if( bkdconf.getPrefix().equalsIgnoreCase( ns ) ){
                 return daoContext.getNodeDao().getByAcc( acc );            
             } else {
                 return daoContext.getNodeDao().getById( ns, acc );            
@@ -491,23 +491,60 @@ public class BkdRecordManager {
         }
     }
     **/
+
     //---------------------------------------------------------------------
-    // Link management
-    //--------------------
-    /**
-    public DipLink getLink( String accession ) {
+    // Edge management
+    //----------------
+    
+    public Edge getEdge( String accession ) {
         
-        Logger log = LoggerFactory.getLogger( this.getClass() );
-        log.info( " get evid -> ac=" + accession );
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( " get edge -> ac=" + accession );
         
         try{
-            DipLink link = linkDao.getByAccession( accession );            
-            return link;
+            Edge edge = daoContext.getEdgeDao().getByAcc( accession );            
+            return edge;
         } catch( Exception ex ) {
             return null;
         }
     }
-    **/
+
+    public Edge getEdge( Set<String> acset ){
+        
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( " get edge(by node ac set)"  );
+        
+        try{
+            Edge nedge = daoContext.getEdgeDao().getByNodeAccSet( acset );
+            return nedge;
+        } catch( Exception ex ) {
+            return null;
+        }
+    }
+
+    public Edge addEdge( Edge edge ){
+
+        InteractionEdge iedge = (InteractionEdge) edge;
+        
+        edge.setPrefix( bkdconf.getPrefix() );
+        
+        if( iedge.getNacc() == 0 ){ 
+            int eid = daoContext.getIdGenDao().getNextId( InteractionEdge.generator() );
+            iedge.setNacc( eid );	    
+        }
+        
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( " add edge -> " + iedge );
+
+        try{
+            Edge nedge = daoContext.getEdgeDao().addEdge(  iedge );            
+            return nedge;
+        } catch( Exception ex ) {
+            return null;
+        }
+    }
+
+    
     //---------------------------------------------------------------------
     // Taxon management
     //-----------------

@@ -3,6 +3,8 @@ package edu.ucla.mbi.bkd.store.dao;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.security.MessageDigest;
+
 import java.net.*;
 import java.util.*;
 import java.math.BigInteger;
@@ -10,7 +12,7 @@ import org.hibernate.*;
 
 import edu.ucla.mbi.bkd.store.*;
 
-public class EdgeDao extends AbstractDAO {
+public class EdgeDao extends edu.ucla.mbi.bkd.store.dao.AbstractDAO {
     
     public Edge getByPkey( int pk ){ 
 
@@ -97,7 +99,94 @@ public class EdgeDao extends AbstractDAO {
         }
         return edge; 
     }
+
+    //--------------------------------------------------------------------------
+
+    public List<Edge> getByNodeAcc( String ac ){
         
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( "EdgeDao->getByNodeAcc: nacc=" + ac );
+        
+        List<Edge> elist = new ArrayList<Edge>();
+        
+        Session session = getCurrentSession();
+        Transaction tx = session.beginTransaction();
+        
+        try {
+
+            // LS: Fix me:  add hash collision test !!!!
+            
+            Query query =
+                session.createQuery( "from Edge e where " +
+                                     " e.nhash = :nhash order by e.id desc");
+            query.setParameter( "nac", ac );
+            query.setFirstResult( 0 );
+            Edge edge = (Edge) query.uniqueResult();
+            elist.add( edge );
+            tx.commit();
+            
+        } catch( NumberFormatException ne ){
+
+            // wrong accession fromat
+            
+        } catch( HibernateException e ) {
+            handleException( e );
+            // log error ?
+        } finally {
+            session.close();
+        }
+        
+        return elist; 
+    }
+
+    //--------------------------------------------------------------------------
+
+
+    public Edge getByNodeAccSet( Set<String> acset ){
+
+        String ndachash = Edge.getHash( acset ); 
+
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( "EdgeDao->getByNodeAccList: ndachash=" + ndachash );
+        
+        Edge edge = null;
+        
+        Session session = getCurrentSession();
+        Transaction tx = session.beginTransaction();
+        
+        try {
+
+            // LS: Fix me:  add hash collision test !!!!
+            
+            Query query =
+                session.createQuery( "from Edge e where " +
+                                     " e.nhash = :nhash order by e.id desc");
+            query.setParameter( "nhash", ndachash );
+            query.setFirstResult( 0 );
+            edge = (Edge) query.uniqueResult();
+            tx.commit();
+            
+        } catch( NumberFormatException ne ){
+
+            // wrong accession fromat
+            
+        } catch( HibernateException e ) {
+            handleException( e );
+            // log error ?
+        } finally {
+            session.close();
+        }
+        log.info( "EdgeDao-> found: " + edge );
+        return edge; 
+    }
+
+    //--------------------------------------------------------------------------
+    
+    public Edge getByNodeAccList( List<String> aclist ){
+        return this.getByNodeAccSet( new HashSet<String>( aclist ) );
+    }
+    
+    
     //--------------------------------------------------------------------------
     
     public long getTotalCount() {
@@ -106,7 +195,7 @@ public class EdgeDao extends AbstractDAO {
 
         Session session = getCurrentSession();
         Transaction tx = session.beginTransaction();
-        
+         
         try {           
             Query query = session.createQuery( "select count(e) from Edge e" );
             count  = (Long) query.uniqueResult();
@@ -167,21 +256,25 @@ public class EdgeDao extends AbstractDAO {
     
     //---------------------------------------------------------------------
 
-    public Edge updateEdge( Edge edge ) { 
+    public Edge addEdge( Edge edge ) { 
 
         Logger log = LogManager.getLogger( this.getClass() );
-        log.info( "->updateEdge: " + edge.toString()  );
-	
+        log.info( "->addEdge: " + edge.toString()  );
+        
         if( edge == null ) return null;
 	
         if( edge.getLabel() == null ) edge.setLabel( "" ); 
 
+        edge.rehash();   // regenerate node hash
+        log.info( "->updateEdge: hash= " + edge.getNhash() );
+        
         if(edge.getCTime() == null){
             edge.setCTime(new Date());
         }
         edge.setUTime(new Date());
-        
+
         super.saveOrUpdate( edge );
+        
         return edge;
     }
 }

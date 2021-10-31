@@ -66,7 +66,6 @@ public class BkdPortImpl implements BkdPort {
         
         Logger log = LogManager.getLogger( BkdPortImpl.class );	
         log.info( "getNode:" + "NS: " + ns + " AC:" + ac);
-
         
         edu.ucla.mbi.dxf20.NodeType rnode = null;
             
@@ -93,16 +92,7 @@ public class BkdPortImpl implements BkdPort {
         
         return null;
     }
-    
-    public java.util.List<edu.ucla.mbi.dxf20.NodeType>
-        getLink( java.lang.String ns,
-                 java.lang.String ac,
-                 java.lang.String match,
-                 java.lang.String detail,
-                 java.lang.String format ){
-        return null;
-    }
-    
+        
     public java.util.List<edu.ucla.mbi.dxf20.XrefType>
         getSourceList( java.lang.String ns,
                        java.lang.String ac,
@@ -118,24 +108,45 @@ public class BkdPortImpl implements BkdPort {
     }
 
     public java.util.List<edu.ucla.mbi.dxf20.NodeType>
-        setLink( edu.ucla.mbi.dxf20.DatasetType dataset,
-                 java.lang.String mode ){
+        getLink( java.lang.String ns,
+                 java.lang.String ac,
+                 java.lang.String match,
+                 java.lang.String detail,
+                 java.lang.String format ){
 
         Logger log = LogManager.getLogger( BkdPortImpl.class );	
-        log.info( "setLink" );
+        log.info( "getLink: ns=" + ns + " ac=" + ac );
+
+        List<edu.ucla.mbi.dxf20.NodeType> rList
+            = new <edu.ucla.mbi.dxf20.NodeType>ArrayList();    
+
+        edu.ucla.mbi.dxf20.NodeType rnode
+            = linkManager.getLinkNode( ns, ac, match, detail );
+        
+        if( rnode != null ){
+            rList.add(rnode);
+            return rList;
+        }
+        
+        return null;               
+    }
+                    
+    public java.util.List<edu.ucla.mbi.dxf20.NodeType>
+        getLinksByNodeSet( edu.ucla.mbi.dxf20.DatasetType dataset,
+                           java.lang.String match,
+                           java.lang.String detail,
+                           java.lang.String format ){
+        
+        Logger log = LogManager.getLogger( BkdPortImpl.class );	
+        log.info( "getLinksByNodeSet" );
         
         List<edu.ucla.mbi.dxf20.NodeType> nList = dataset.getNode();
-        List<edu.ucla.mbi.dxf20.NodeType> rList = new <edu.ucla.mbi.dxf20.NodeType>ArrayList();    
 
-        if( mode.equalsIgnoreCase("mirror") ){ //  mirrors request
-            return nList;
-        }
+        List<edu.ucla.mbi.dxf20.NodeType> rList
+            = new <edu.ucla.mbi.dxf20.NodeType>ArrayList();    
         
         for(edu.ucla.mbi.dxf20.NodeType nd: nList){
             edu.ucla.mbi.dxf20.TypeDefType ntp = nd.getType();
-            
-            //String name = ntp.getNs();
-            //String ns = ntp.getNs();
             
             String ac = ntp.getAc();
             log.info( "setLink: node type: " + ntp.getName() );
@@ -143,8 +154,54 @@ public class BkdPortImpl implements BkdPort {
             edu.ucla.mbi.dxf20.NodeType rnode = null;
             
             switch (ac) {
+            case "dxf:0004":
+                rnode = linkManager.getLinkNode( nd, match, detail );
+                break;
+                
+            default: rnode = null;
+                break;
+            }
+            
+            if( rnode != null){
+                rList.add( rnode );
+            }
+            
+            if(rList.size() > 0){
+                return rList;
+            }
+            return null;
+        }
+        
+        return null;
+    }
+    
+    public java.util.List<edu.ucla.mbi.dxf20.NodeType>
+        setLink( edu.ucla.mbi.dxf20.DatasetType dataset,
+                 java.lang.String mode ){
 
-                case "dxf:0004":  rnode = linkManager.processLinkNode( nd, mode );
+        Logger log = LogManager.getLogger( BkdPortImpl.class );	
+        log.info( "setLink" );
+
+        List<edu.ucla.mbi.dxf20.NodeType> nList = dataset.getNode();
+
+        List<edu.ucla.mbi.dxf20.NodeType> rList
+            = new <edu.ucla.mbi.dxf20.NodeType>ArrayList();    
+
+        if( mode.equalsIgnoreCase("mirror") ){ //  mirrors request
+            return nList;
+        }
+        
+        for(edu.ucla.mbi.dxf20.NodeType nd: nList){
+            edu.ucla.mbi.dxf20.TypeDefType ntp = nd.getType();
+                        
+            String ac = ntp.getAc();
+            log.info( "setLink: node type: " + ntp.getName() );
+            
+            edu.ucla.mbi.dxf20.NodeType rnode = null;
+            
+            switch (ac) {
+                case "dxf:0004":
+                    rnode = linkManager.processLinkNode( nd, mode );
                 break;
                 
             default: rnode = null;
@@ -300,6 +357,7 @@ public class BkdPortImpl implements BkdPort {
                       java.lang.String format ){
         return null;
     }
+
     
     public java.util.List<edu.ucla.mbi.dxf20.NodeType>
         dropEvidence( java.lang.String ns,
@@ -310,14 +368,6 @@ public class BkdPortImpl implements BkdPort {
     public java.util.List<edu.ucla.mbi.dxf20.NodeType>
         setSource( edu.ucla.mbi.dxf20.DatasetType dataset,
                    java.lang.String mode ){
-        return null;
-    }
-                    
-    public java.util.List<edu.ucla.mbi.dxf20.NodeType>
-        getLinksByNodeSet( edu.ucla.mbi.dxf20.DatasetType dataset,
-                           java.lang.String match,
-                           java.lang.String detail,
-                           java.lang.String format ){
         return null;
     }
     

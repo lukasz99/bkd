@@ -254,6 +254,26 @@ public class BkdDaoContext{
 	}
 	return this.idGenDao;
     }
+
+    // Edge
+    //-----
+    
+    EdgeDao edgeDao;
+    
+    public void setEdgeDao( EdgeDao dao ){
+        this.edgeDao = dao;
+    }
+
+    public EdgeDao getEdgeDao(){
+        
+        if( this.state.equals("flip") ){
+            this.edgeDao.setSessionFactory( flipSF );
+        } else{
+            this.edgeDao.setSessionFactory( flopSF );
+        }
+        return this.edgeDao;  
+    }
+
     
     /**
     // Experiment

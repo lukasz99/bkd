@@ -12,6 +12,8 @@ import edu.ucla.mbi.dxf20.*;
 import javax.xml.bind.JAXB;
 import javax.persistence.*;
 
+import java.security.MessageDigest;
+
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn (name="sclass", 
@@ -38,20 +40,23 @@ public class Edge implements Comparable<Edge>{
     String version = "";
 
 
-    @ManyToMany(cascade = { CascadeType.ALL })
+    @ManyToMany(cascade = { CascadeType.ALL },fetch = FetchType.EAGER )
     @JoinTable(
         name = "lnode", 
         joinColumns = { @JoinColumn(name = "fk_edge") }, 
-        inverseJoinColumns = { @JoinColumn(name = "fk_node") }
+        inverseJoinColumns = { @JoinColumn(name = "fk_node") }        
     )
     
-    Set<Node> projects = new HashSet<>();
+    Set<Node> lnodes = new HashSet<Node>();
        
     @Column(name = "name")
     String name = "";
     
     @Column(name = "label")
     String label = "";
+
+    @Column(name = "nhash")
+    String nhash = "";
     
     @Column(name = "comment")
     String comment ="";
@@ -106,7 +111,20 @@ public class Edge implements Comparable<Edge>{
     public String setVersion(String version){
 	return this.version = version;
     }
-        
+
+
+    public Set<Node> getNodeSet(){
+
+        if( this.lnodes  == null ){
+            this.lnodes = new HashSet<Node>();
+        }         
+        return lnodes; 
+    }        
+
+    public void setNodeSet( Set<Node> nset){
+        this.lnodes = nset;
+    }        
+    
     public void setName( String name ){        
         this.name = name == null ? "" : name;
     }
@@ -117,6 +135,14 @@ public class Edge implements Comparable<Edge>{
     
     public void setLabel( String label ){
         this.label = label == null ? "" : label;
+    }
+
+    public String getNhash(){
+        return nhash;
+    }
+
+    public void setNhash( String nhash ){
+        this.nhash = nhash;
     }
 
     public String getLabel(){
@@ -158,7 +184,47 @@ public class Edge implements Comparable<Edge>{
     public String toString(){
         return "[AC:" + this.getAc() +
             " name:" + name + " label:" + label +"]";
-    }        
+    }
+
+    public String rehash(){ 
+    
+        List<String> aclist = new ArrayList<String>();
+
+        // calculate node hash
+        //--------------------
+        
+        for( Node n: this.getNodeSet() ){
+            aclist.add( n.getAc() ); 
+        }
+
+        this.nhash = Edge.getHash( aclist );
+        return this.nhash;
+    }
+
+
+    public static String getHash( Set<String> acset ){
+        return Edge.getHash( new ArrayList<String>( acset ) );  
+    }
+
+    
+    public static String getHash( List<String> aclist){
+        
+        Collections.sort(aclist);
+        
+        StringBuffer strToHash = new StringBuffer(":");
+        for( String ac : aclist) strToHash.append( ac + ":" );
+        String nhash ="";
+        try{
+            MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+            messageDigest.update(strToHash.toString().getBytes());
+            nhash = new String(messageDigest.digest());
+            
+        } catch (Exception ex){
+            // Should not happen
+        }
+        return nhash;
+    }
+    
 }
 
 

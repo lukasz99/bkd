@@ -339,8 +339,10 @@ public class BkdNodeManager {
             try{
                 
                 String snacc = ac.replaceAll("\\D","");
-                int inacc = Integer.parseInt( snacc );
-                curNode.setNacc(inacc);
+                if( snacc.length() > 0){
+                    int inacc = Integer.parseInt( snacc );
+                    curNode.setNacc(inacc);
+                }
             } catch(Exception ex){
                 ex.printStackTrace();
             }
