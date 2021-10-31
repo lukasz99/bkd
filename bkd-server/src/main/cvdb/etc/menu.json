@@ -33,6 +33,11 @@
                                      "disabled":"false",
                                      "menu":[]
                                     },
+                                    {"label":"Interaction",
+                                     "link":"edge",
+                                     "disabled":"false",
+                                     "menu":[]
+                                    },
                                     {"label":"Report",
                                      "link":"report",
                                      "disabled":"false",

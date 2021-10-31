@@ -33,9 +33,9 @@
                                      "disabled":"false",
                                      "menu":[]
                                     },
-                                    {"label":"Edge",
+                                    {"label":"Interaction",
                                      "link":"edge",
-                                     "disabled":"true",
+                                     "disabled":"false",
                                      "menu":[]
                                     },
                                     {"label":"Source",

@@ -148,14 +148,26 @@ public class BkdLinkManager {
         
         if( nacset.size() == 0 ) return null;
 
-        InteractionEdge curEdge = (InteractionEdge) recordManager.getEdge( nacset );
+        Edge curEdge = (Edge) recordManager.getEdge( nacset );
         
         log.info( " old edge: " + curEdge );
         if( curEdge != null ) return this.toDxfLinkNode( curEdge );  // edge already in
 
-        curEdge = new InteractionEdge();
+        curEdge = new Edge();
         
-        //String ac = node.getAc();
+        String ac = node.getAc();
+        
+        try{         
+            String snacc = ac.replaceAll("\\D","");
+            if( snacc.length() > 0){
+                int inacc = Integer.parseInt( snacc );
+                curEdge.setNacc(inacc);
+            }
+
+
+        } catch(Exception ex){
+        };
+
         
         curEdge.setLabel( node.getLabel() );
         curEdge.setName( node.getName() );
@@ -180,7 +192,7 @@ public class BkdLinkManager {
         log.info( " curEdge: node count=" + curEdge.getNodeSet().size() );
 
         if( curEdge.getNodeSet().size() == nacset.size() ){
-            curEdge = (InteractionEdge) recordManager.addEdge( curEdge );
+            curEdge = (Edge) recordManager.addEdge( curEdge );
         }
         
         return this.toDxfLinkNode( curEdge );

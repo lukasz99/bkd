@@ -42,6 +42,9 @@
 
  <definition name="node-search" template="/tiles/node-search.jsp"/>
  <definition name="node-view" template="/tiles/node-view.jsp"/>
+
+ <definition name="edge-search" template="/tiles/edge-search.jsp"/>
+ <definition name="edge-view" template="/tiles/edge-view.jsp"/>
  
 
  

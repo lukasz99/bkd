@@ -18,6 +18,7 @@ import java.security.MessageDigest;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn (name="sclass", 
                       discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorValue("edge")
 @Table(name = "edge")
 public class Edge implements Comparable<Edge>{
 

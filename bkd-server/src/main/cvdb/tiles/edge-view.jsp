@@ -13,7 +13,7 @@
    <script src="js/bkd-config.js" type="text/javascript" language="JavaScript"></script>
    <script src="js/bkd-links.js" type="text/javascript" language="JavaScript"></script>
 
-   <script src="js/bkd-edge-jq.js" type="text/javascript" language="JavaScript"></script>
+   <script src="js/bkd-node-jq.js" type="text/javascript" language="JavaScript"></script>
    <script src="js/bkd-site.js" type="text/javascript" language="JavaScript"></script>
 
    <script type="text/javascript">
@@ -32,22 +32,25 @@
            myurl ="node?ns="+ns+"&ac="+ac+"&ret=data&format=json";          
            $.ajax( { url: myurl} )
               .done( function(data, textStatus, jqXHR){                  
-                 BKDnode.view( data.edge,
-                               "#bkd-edge-search", "#bkd-edge-view",
-                               BKDconf["edge"],
-                               mode) } );
+                 BKDnode.view( data.node,
+                               "#bkd-search", "#bkd-search-view",
+                               "#bkd-node-view", BKDconf["node"], mode) } );
         } else {
-            // hide edge view
-            $( "#bkd-edge-view" ).hide(); 
+            // hide node view
+            $( "#bkd-node-view" ).hide(); 
             $( "#bkd-sidebar" ).hide(); 
             
-            $("#bkd-search").on( 'click', function (event) {
+            $("#bkd-search-go").on( 'click', function (event) {
                console.log("search clicked");
-               BKDedge.doSearch();
+               BKDnode.doSearch();
             });
-            // show edge search
-            $( "#bkd-edge-search" ).show();
+            // show node search
+            $( "#bkd-node-search" ).show();
         }
+        $("#bkd-head-search-go").on( 'click', function (event) { 
+           console.log("search clicked");
+           BKDnode.doHeadSearch();
+        });     
     
        });
   </script>
@@ -81,17 +84,14 @@
            <div id="bkd-main-name"></div>
          </td>  
        </tr>
-
-   <s:if test="ac == null || ac.length == 0">
        <tr>
          <td colspan="3">
-    <t:insertDefinition name="edge-search"/>
+           <t:insertDefinition name="node-search"/>
          </td>
        </tr>
-   </s:if>
        <tr>
          <td colspan="3">
-           <div id="bkd-edge-view">
+           <div id="bkd-node-view">
               <div id="bkd-hv-field"></div>
               <div id="bkd-nv-field"></div>
               <div id="bkd-fv-field"></div>             

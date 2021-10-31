@@ -138,6 +138,23 @@
       </result>
     </action>
 
+    <action name="edge" class="edgeAction" >
+      <interceptor-ref name="defaultStack"/>
+      <interceptor-ref name="timer"/>
+      <interceptor-ref name="menu"/>
+
+      <result name="success" type="tiles">edge-view</result>
+      <result name="json"  type="json">
+        <param name="includeProperties">
+          menu.*, edge.*
+        </param>
+        <param name="excludeProperties">
+          record.report.jval,record.report.feature.jval
+        </param>
+        
+      </result>
+    </action>
+
     <action name="search" class="searchAction" >
       <interceptor-ref name="defaultStack"/>
       <interceptor-ref name="timer"/>

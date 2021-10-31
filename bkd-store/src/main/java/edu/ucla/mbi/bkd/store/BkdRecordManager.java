@@ -524,12 +524,12 @@ public class BkdRecordManager {
 
     public Edge addEdge( Edge edge ){
 
-        InteractionEdge iedge = (InteractionEdge) edge;
+        Edge iedge = (Edge) edge;
         
         edge.setPrefix( bkdconf.getPrefix() );
         
         if( iedge.getNacc() == 0 ){ 
-            int eid = daoContext.getIdGenDao().getNextId( InteractionEdge.generator() );
+            int eid = daoContext.getIdGenDao().getNextId( Edge.generator() );
             iedge.setNacc( eid );	    
         }
         

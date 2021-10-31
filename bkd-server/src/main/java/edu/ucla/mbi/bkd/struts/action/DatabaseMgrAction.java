@@ -90,7 +90,7 @@ public class DatabaseMgrAction extends PortalSupport{
             if( idGenList.contains(idgen) && nval > 0 ){                
                 log.info( " updating generator");
                 mgr.getDaoContext()
-                    .getIdGenDao().setCurrentId( "node", nval);                
+                    .getIdGenDao().setCurrentId( idgen, nval);                
             }
             
         } else if( "reset".equalsIgnoreCase( op ) ){
@@ -105,6 +105,10 @@ public class DatabaseMgrAction extends PortalSupport{
                 
                 if( "node".equalsIgnoreCase(idgen) ){
                     maxid = mgr.getDaoContext().getNodeDao().getMaxAcc();
+                }
+
+                if( "edge".equalsIgnoreCase(idgen) ){
+                    maxid = mgr.getDaoContext().getEdgeDao().getMaxAcc();
                 }
 
                 if( "report".equalsIgnoreCase(idgen) ){
@@ -159,6 +163,10 @@ public class DatabaseMgrAction extends PortalSupport{
                 
             if( "node".equalsIgnoreCase( (String) ci) ){
                 count = mgr.getDaoContext().getNodeDao().getTotalCount();
+            }
+
+            if( "edge".equalsIgnoreCase( (String) ci) ){
+                count = mgr.getDaoContext().getEdgeDao().getTotalCount();
             }
             if( "report".equalsIgnoreCase( (String) ci) ){
                 count = mgr.getDaoContext().getReportDao().getTotalCount();
