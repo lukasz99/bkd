@@ -787,5 +787,9 @@ class DxfUtils():
                                            name="linked-node" )
             
         return ntype
-            
+
+
+        
+   
+    
 print("DxfUtils: import")
