@@ -493,6 +493,26 @@ public class BkdRecordManager {
     **/
 
     //---------------------------------------------------------------------
+    // Alias management
+    //-----------------
+    
+    public void deleteAlias( Alias alias ) {
+        
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( " delete alias -> ac=" + alias );
+        
+        try{
+            daoContext.getAliasDao().deleteAlias( alias );            
+            
+        } catch( Exception ex ) {
+            // should not happen
+        }
+    }
+
+
+
+    
+    //---------------------------------------------------------------------
     // Edge management
     //----------------
     

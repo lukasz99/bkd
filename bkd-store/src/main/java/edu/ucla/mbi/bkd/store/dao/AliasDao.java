@@ -38,4 +38,15 @@ public class AliasDao extends AbstractDAO {
         super.saveOrUpdate( alias );        
         return alias;
     }
+
+    public Alias deleteAlias( Alias alias ) { 
+
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( "->deleteAlias: " + alias.toString()  );
+	
+        if( alias == null ) return null;
+        
+        super.delete( alias );        
+        return alias;
+    }
 }

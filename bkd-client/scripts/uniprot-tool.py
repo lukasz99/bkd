@@ -23,6 +23,10 @@ parser.add_argument('--upr', '-u', dest="upr", type=str,
                     required=False, default='P60010',
                     help='UniprotKB accession.')
 
+parser.add_argument('--acc', '-a', dest="acc", type=str,
+                    required=False, default='',
+                    help='Forced Record Accession.')
+
 parser.add_argument('--file', '-f', dest="file", type=str,
                     required=False, default='',
                     help='Input file.')
@@ -80,7 +84,7 @@ else:
                     ucl = BK.unirecord.UniRecord()
                     ucr = ucl.getRecord(upr)
 
-                    znode = du.buildUniprotZnode( ucr )
+                    znode = du.buildUniprotZnode( ucr, ns="CVDB", ac=args.acc )
                     zres = bc.setnode(znode, mode=args.mode, debug=args.debug)
 
                     if len(args.out)  > 0:                
@@ -93,9 +97,11 @@ else:
     else:
         ucl = BK.unirecord.UniRecord()
         ucr = ucl.getRecord(args.upr)   
-        znode = du.buildUniprotZnode( ucr )
+        znode = du.buildUniprotZnode( ucr, ns="CVDB", ac=args.acc )
         zres = bc.setnode(znode, mode=args.mode, debug=args.debug)
-                
+        print("**")
+        print(ET.tostring(zres, pretty_print=True).decode() )
+        print("**")
         if not args.debug:
             if len(args.out)  > 0:
                 if not args.out.endswith(".dxf"):

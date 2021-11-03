@@ -329,7 +329,7 @@ public class BkdNodeManager {
             curNode = oldNode;
             
             if( mode.equalsIgnoreCase( "add" ) ){
-                //return this.toDxfProteinNode( oldNode );
+                return this.toDxfProteinNode( oldNode );
             }
             if( mode.equalsIgnoreCase( "update" ) ){
                 //return this.toDxfProteinNode( oldNode );
@@ -755,6 +755,12 @@ public class BkdNodeManager {
         curNode.setLabel( label );
         curNode.setSequence( sequence );
         curNode.setComment( comment );
+
+        //for( NodeAlias na: curNode.getAlias() ){
+        //     recordManager.deleteAlias( na );              
+        //}
+
+        curNode.setAlias( null );
         
         for( NodeAlias nal: aliasList ){
             nal.setNode( curNode );

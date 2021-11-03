@@ -9,6 +9,10 @@ from zeep import Client as zClient, Settings as zSettings
 from zeep.transports import Transport
 from zeep import xsd
 
+
+from urllib.request import urlopen
+from time import sleep
+
 import bkdpy as BKD
 import json
 import re
@@ -24,7 +28,7 @@ class UniZeep():
     def __init__( self, zeepWsdlUrl, debug=False ):
         self._zeepWsdlUrl = zeepWsdlUrl
 
-        self._eco_path="/home/lukasz/git/bkd-client/config/ECO_label_dict.json"
+        self._eco_path="/home/lukasz/git/bkd/config/ECO_label_dict.json"
         
         self._debug = debug
         self._zsettings = zSettings( strict=False, xml_huge_tree=True,
@@ -205,6 +209,7 @@ class UniZeep():
                 eco_label = eco_label_dict[evidence["type"]]
             else:
                 eco_id = evidence["type"].replace(":","_")
+                print(eco_id)
                 eco_file = urlopen("https://www.ebi.ac.uk/ols/api/ontologies/eco/terms?iri=http://purl.obolibrary.org/obo/%s"%eco_id).read()
                 sleep(1)
                 eco_text = eco_file.decode("utf-8")
@@ -343,7 +348,7 @@ class UniZeep():
                                    name=rec.protein.host.name,
                                    xrefList = xsd.SkipValue,
                                    attrList = xsd.SkipValue)
-
+        
         zxref_taxon = zdxf.xrefType( type = "produced-by",
                                      typeNs = "dxf",
                                      typeAc = "dxf:0007",

@@ -72,8 +72,8 @@ insert into ident ( pkey, name, prfix, ptfix, idmax) values( 3, 'rna', 'CVDB','R
 insert into ident ( pkey, name, prfix, ptfix, idmax) values( 4, 'gene', 'CVDB','GN', 1);  
 insert into ident ( pkey, name, prfix, ptfix, idmax) values( 5, 'molecule','CVDB','MN', 1); 
 
-insert into ident ( pkey, name, prfix, ptfix, idmax) values(32, 'edge', 'CVDB','xE', 1);  
-insert into ident ( pkey, name, prfix, ptfix, idmax) values(33, 'molint', 'CVDB','E', 1);
+insert into ident ( pkey, name, prfix, ptfix, idmax) values(32, 'edge', 'CVDB','E', 1);  
+insert into ident ( pkey, name, prfix, ptfix, idmax) values(33, 'molint', 'CVDB','ME', 1);
 insert into ident ( pkey, name, prfix, ptfix, idmax) values(34, 'genint', 'CVDB','GE', 1);
 insert into ident ( pkey, name, prfix, ptfix, idmax) values(35, 'funlnk', 'CVDB','FE', 1);
 insert into ident ( pkey, name, prfix, ptfix, idmax) values(64, 'report', 'CVDB','R', 1);

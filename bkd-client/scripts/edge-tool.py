@@ -22,13 +22,14 @@ import bkdpy as BK
 du = BK.DxfUtils('http://10.1.7.100:9999/cvdbdev0/services/soap?wsdl')
 bc = BK.BkdClient(user="bkd", password="444bkd444")
 
-zlink = du.buildLinkZnode( ns="", ac="", vlist=[{"ns":"CVDB","ac":"CVDB11P"},
-                                                {"ns":"CVDB","ac":"CVDB24P"},
-                                                {"ns":"CVDB","ac":"CVDB44P"}] )
+zlink = du.buildLinkZnode( ns="CVDB", ac="CVDB4E",
+                           vlist=[{"ns":"CVDB","ac":"CVDB12P"},
+                                  {"ns":"CVDB","ac":"CVDB35P"},
+                                  {"ns":"CVDB","ac":"CVDB45P"}] )
 
-#zres = bc.setlink(zlink, mode="add", debug=False)
+zres = bc.setlink(zlink, mode="add", debug=False)
 #zres = bc.getlinks(zlink, debug=False)
-zres = bc.getlink("CVDB", "CVDB13E", debug=False)
+#zres = bc.getlink("", "", debug=False)
 
 print("**")
 print(ET.tostring(zres, pretty_print=True).decode() )
