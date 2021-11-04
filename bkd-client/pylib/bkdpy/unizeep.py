@@ -1,4 +1,5 @@
 import sys
+import os
 
 from lxml import etree as ET
 
@@ -17,7 +18,7 @@ import bkdpy as BKD
 import json
 import re
 
-class UniZeep():
+class UniZeep(BKD.BkdZeep):
 
     # expected prefixes/namespaces
     #
@@ -26,44 +27,36 @@ class UniZeep():
     # ns1: http://dip.doe-mbi.ucla.edu/services/dxf20
 
     def __init__( self, zeepWsdlUrl, debug=False ):
-        self._zeepWsdlUrl = zeepWsdlUrl
+        super().__init__(zeepWsdlUrl)
 
-        self._eco_path="/home/lukasz/git/bkd/config/ECO_label_dict.json"
+        self._eco_file="ECO_label_dict.json"
+        self._eco_url = "https://www.ebi.ac.uk/ols/api/ontologies/eco/terms?iri=http://purl.obolibrary.org/obo/%s"
+        self._ctypes = {"function":{"name":"function", "ns":"dxf", "ac":"dxf:0104"},
+                        #"subcellular location":{"name":"subcellular-location", "ns":"dxf", "ac":"dxf:0106"},
+                        "tissue specificity":{"name":"tissue-specificity", "ns":"dxf", "ac":"dxf:0107"},
+                        "activity regulation":{"name":"activity-regulation", "ns":"dxf", "ac":"dxf:0109"},
+        }
+ 
+        self._dbtypes = {"EMBL":{"name":"encoded-by", "ns":"dxf", "ac":"dxf:0022"},
+                         "RefSeq":{"name":"has-instance", "ns":"dxf", "ac":"dxf:0084"},
+                         "PDB":{"name":"has-structure", "ns":"dxf", "ac":"dxf:0081"},
+                         "DIP":{"name":"has-links", "ns":"dxf", "ac":"dxf:0082"},
+                         "IntAct":{"name":"has-links", "ns":"dxf", "ac":"dxf:0082"},
+                         "MIM":{"name":"has-phenotype", "ns":"dxf", "ac":"dxf:0077"}}
         
-        self._debug = debug
-        self._zsettings = zSettings( strict=False, xml_huge_tree=True,
-                                     raw_response=True )
+        self._ftypes={"mutagenesis site":{"name":"mutation","ns":"psi-mi","ac":"MI:0118"},
+                      "glycosylation site":{"name":"glycolysated residue","ns":"psi-mod","ac":"MOD:00693"}
+        }
 
-        self._zsession = Session()
-        self._zsession.verify = False
-        # self._zsession.auth = HTTPBasicAuth(self.user, self.password)
-
-        self._zclient = zClient(self._zeepWsdlUrl,
-                                settings=self._zsettings,
-                                transport=Transport(session=self._zsession))
+        mypath = os.path.realpath(__file__)
+        self._eco_path = os.path.join(os.path.split(mypath)[0], self._eco_file )
         
-        self._dxfactory = self._zclient.type_factory('ns1')
-        self._ssfactory = self._zclient.type_factory('ns0')
-
-        self._attmap = { "function":{"ns":"dxf","ac":"dxf:0104","name":"function"},
-                         "subcellular location":{"ns":"dxf","ac":"dxf:0106","name":"subcellular-location"},
-                         "tissue specificity":{"ns":"dxf","ac":"dxf:0107","name":"tissue-specificity"},
-                         "activity regulation":{"ns":"dxf","ac":"dxf:0109","name":"activity-regulation"} }
-        
-        if self._debug:
-            print(self.zclient)
-            print("\nDONE: __init__") 
-
-        self.mi = BKD.cvlib.MI()
-
-    @property    
-    def zclient(self):
-        return self._zclient
-
-    @property    
-    def dxfactory(self):
-        return self._dxfactory
-
+        try:        
+            with open(self._eco_path, "r") as openfile:
+                self._eco_label_dict = json.load(openfile)
+        except Exception:
+            self._eco_label_dict = {}
+    
         
     def initiateNode(self, rec, ns = "", ac = ""):
         #zdxf = zclient.type_factory("ns1")
@@ -192,31 +185,31 @@ class UniZeep():
     def appendEvidence(self, rec, element, zelement ):
  
         zdxf = self._dxfactory
-        
-        try:
-            #with open("config/ECO_label_dict.json", "r") as openfile:
-            with open(self._eco_path, "r") as openfile:
-                eco_label_dict = json.load(openfile)
-        except Exception:
-            eco_label_dict = {}
-            print("initialized ECO_label_dict.json")
+        if "evidence" not in element:
+            return
         
         evidence_dict = rec.root["uniprot"]["entry"][0]["evidence"]
         
         for evidence_key in element["evidence"]:
             evidence = evidence_dict[evidence_key]
-            if evidence["type"] in eco_label_dict.keys():
-                eco_label = eco_label_dict[evidence["type"]]
+            if evidence["type"] in self._eco_label_dict.keys():
+                eco_label = self._eco_label_dict[evidence["type"]]
             else:
                 eco_id = evidence["type"].replace(":","_")
-                print(eco_id)
-                eco_file = urlopen("https://www.ebi.ac.uk/ols/api/ontologies/eco/terms?iri=http://purl.obolibrary.org/obo/%s"%eco_id).read()
+                print("New ECO id", eco_id)
+                eco_file = urlopen(self._eco_url%eco_id).read()
                 sleep(1)
                 eco_text = eco_file.decode("utf-8")
                 eco_json = json.loads(eco_text)
                 eco_label = eco_json["_embedded"]["terms"][0]["label"]
-                eco_label_dict[evidence["type"]] = eco_label
-        
+                self._eco_label_dict[evidence["type"]] = eco_label
+
+                if os.access(self._eco_path, os.W_OK):
+                    # only when allowed to write
+                    json_object = json.dumps(self._eco_label_dict, indent = 4)                
+                    with open(self._eco_path, "w") as outfile:
+                        outfile.write(json_object)                         
+                
             if "source" in evidence.keys():
                 if "dbReference" in evidence["source"].keys():
                     for dbReference in evidence["source"]["dbReference"]:
@@ -240,28 +233,19 @@ class UniZeep():
                                        ac = "")
                 zelement.xrefList["xref"].append(zxref)
     
-        json_object = json.dumps(eco_label_dict, indent = 4)
-        #with open("config/ECO_label_dict.json", "w") as outfile:
-        with open(self._eco_path, "w") as outfile:
-            outfile.write(json_object)
-
+        
 
     def appendComments(self, rec, znode, print_new_types = True):
 
         zdxf = self._dxfactory
-        
-        ctypes = {"function":{"name":"function", "ns":"dxf", "ac":"dxf:0104"},
-                  #"subcellular location":{"name":"subcellular-location", "ns":"dxf", "ac":"dxf:0106"},
-                  "tissue specificity":{"name":"tissue-specificity", "ns":"dxf", "ac":"dxf:0107"},
-                  "activity regulation":{"name":"activity-regulation", "ns":"dxf", "ac":"dxf:0109"},
-        }
+
         for comment_type in rec.comment.values():
             for comment in comment_type:
-                if comment["type"] in ctypes.keys():
+                if comment["type"] in self._ctypes.keys():
                     zattr = zdxf.attrType(value = comment["text"]["value"],
-                                          name = ctypes[comment["type"]]["name"],
-                                          ns=ctypes[comment["type"]]["ns"],
-                                          ac =ctypes[comment["type"]]["ac"], 
+                                          name = self._ctypes[comment["type"]]["name"],
+                                          ns=self._ctypes[comment["type"]]["ns"],
+                                          ac =self._ctypes[comment["type"]]["ac"], 
                                           attrList = xsd.SkipValue, 
                                           xrefList = {"xref":[]})
                     self.appendIsoforms( rec, comment, zattr )
@@ -274,17 +258,10 @@ class UniZeep():
     def appendDbReferences(self, rec, znode ):
 
         zdxf = self._dxfactory
-        
-        dbtypes = {"EMBL":{"name":"encoded-by", "ns":"dxf", "ac":"dxf:0022"},
-                   "RefSeq":{"name":"has-instance", "ns":"dxf", "ac":"dxf:0084"},
-                   "PDB":{"name":"has-structure", "ns":"dxf", "ac":"dxf:0081"},
-                   "DIP":{"name":"has-links", "ns":"dxf", "ac":"dxf:0082"},
-                   "IntAct":{"name":"has-links", "ns":"dxf", "ac":"dxf:0082"},
-                   "MIM":{"name":"has-phenotype", "ns":"dxf", "ac":"dxf:0077"}}
-    
+            
         isoforms = set([])
 
-        for refType in dbtypes:
+        for refType in self._dbtypes:
             refList = [dbref for dbref in rec.root["uniprot"]["entry"][0]["dbReference"] if dbref["type"] == refType]
             if refType == "RefSeq" and len(refList) == 1 and "molecule" not in refList[0].keys():
                 zxref = zdxf.xrefType( type = "identical-to",
@@ -302,20 +279,20 @@ class UniZeep():
                             isoforms.add(ref["molecule"]["id"])
                         else:
                             #skips RefSeq entries that are not for isoforms if more than one
-                            continue 
+                            continue
 
-                    zxref = zdxf.xrefType( type = dbtypes[refType]["name"],
-                                           typeNs = dbtypes[refType]["ns"],
-                                           typeAc = dbtypes[refType]["ac"],
+                    zxref = zdxf.xrefType( type = self._dbtypes[refType]["name"],
+                                           typeNs = self._dbtypes[refType]["ns"],
+                                           typeAc = self._dbtypes[refType]["ac"],
                                            node = xsd.SkipValue,
                                            ns = refType, ac = refList[0]["id"])
                     
                     znode.xrefList["xref"].append( zxref )
 
         for isoform in isoforms:
-            zxref = zdxf.xrefType( type = dbtypes["RefSeq"]["name"],
-                                   typeNs = dbtypes["RefSeq"]["ns"],
-                                   typeAc = dbtypes["RefSeq"]["ac"],
+            zxref = zdxf.xrefType( type = self._dbtypes["RefSeq"]["name"],
+                                   typeNs = self._dbtypes["RefSeq"]["ns"],
+                                   typeAc = self._dbtypes["RefSeq"]["ac"],
                                    node = xsd.SkipValue,
                                    ns = "upr", ac = isoform)
 
@@ -363,18 +340,14 @@ class UniZeep():
 
         zdxf = self._dxfactory
     
-        ftypes={"mutagenesis site":{"name":"mutation","ns":"psi-mi","ac":"MI:0118"},
-                "glycosylation site":{"name":"glycolysated residue","ns":"psi-mod","ac":"MOD:00693"}
-        }
-    
         unhandled_types = set([])
     
         for feature in rec.root["uniprot"]["entry"][0]["feature"]:
-            if feature["type"] in ftypes.keys():
-                featureType = zdxf.typeDefType(ns= ftypes[feature["type"]]["ns"], 
-                                               ac=ftypes[feature["type"]]["ac"],
+            if feature["type"] in self._ftypes.keys():
+                featureType = zdxf.typeDefType(ns= self._ftypes[feature["type"]]["ns"], 
+                                               ac=self._ftypes[feature["type"]]["ac"],
                                                typeDef = xsd.SkipValue,
-                                               name=ftypes[feature["type"]]["name"])
+                                               name=self._ftypes[feature["type"]]["name"])
 
                 zfeature = zdxf.featureType(type = featureType,
                                             label = feature["type"], #TODO: filler for now

@@ -9,23 +9,51 @@ from lxml import etree as ET
 import logging
 logging.basicConfig(level=logging.WARN)     # needs logging configured
 
-#pymex_dir="/home/lukasz/git/pymex/pylib"
-#if os.path.isdir( pymex_dir ):
-#    print( "#pymex: using source library version" )
-#    sys.path.insert( 0, pymex_dir )
+pymex_dir="/home/lukasz/git/pymex/pylib"
+if os.path.isdir( pymex_dir ):
+    print( "#pymex: using source library version" )
+    sys.path.insert( 0, pymex_dir )
 
 sys.path.insert(0, "/home/lukasz/git/bkd/bkd-client/pylib" )
-import bkdpy as BK
+
+import pymex
+import bkdpy as BKD
+
+bkd_dest = {"dip0-local":"http://10.1.7.100:9999/dipdev0/services/soap?wsdl",
+            "dip0-public":"htts://dip.mbi.ucla.edu/dipdev0/services/soap?wsdl",
+            "dip2-local":"http://10.1.7.102:9999/dipdev2/services/soap?wsdl",
+            "dip2-public":"htts://dip.mbi.ucla.edu/dipdev2/services/soap?wsdl",
+            "cvdb0-local":"http://10.1.7.100:9999/cvdbdev0/services/soap?wsdl",
+            "cvdb0-public":"htts://dip.mbi.ucla.edu/cvdbdev0/services/soap?wsdl",
+            "cvdb2-local":"http://10.1.7.102:9999/cvdbdev2/services/soap?wsdl",
+            "cvdb2-public":"htts://dip.mbi.ucla.edu/cvdbdev2/services/soap?wsdl"}
+
+upr_loc ={"local":"/mnt/mirrors/uniprotkb/records"}
+
+
+upr_path = "/mnt/mnt/mirrors/uniprotkb/records"
 
 parser = argparse.ArgumentParser( description='UniprotKB Tool' )
+
+parser.add_argument('--ulocation', '-ul', dest="uloc", type=str, 
+                    required=False, default='local',
+                    help='Uniprot record location: local/remote.')
 
 parser.add_argument('--upr', '-u', dest="upr", type=str,
                     required=False, default='P60010',
                     help='UniprotKB accession.')
 
-parser.add_argument('--acc', '-a', dest="acc", type=str,
+parser.add_argument('--slocation', '-sl', dest="sloc", type=str,
+                    required=False, default='cvdb0-local',
+                    help='Server location.')
+
+parser.add_argument('--ns', '-n', dest="ns", type=str,
                     required=False, default='',
-                    help='Forced Record Accession.')
+                    help='Record namespace.')
+
+parser.add_argument('--acc', '-a', dest="ac", type=str,
+                    required=False, default='',
+                    help='Record accession.')
 
 parser.add_argument('--file', '-f', dest="file", type=str,
                     required=False, default='',
@@ -49,59 +77,105 @@ if '-i' in sys.argv:
     parser.add_argument('-i',  dest="i", type=str,
                         required=False, default=None)
 
+    
+def acc2path( dir, acc ):
+    
+    lacc="0000000000" + acc
+    rdir = dir;
+    for d in range(5,1,-1):
+        rdir += "/" + lacc[-3*d:-3*(d-1)] 
+    return rdir + "/" + acc + ".xml"
+
 args = parser.parse_args()
 
-#print(json.dumps(ucr.root,indent=1))
-
-du = BK.DxfUtils('http://10.1.7.100:9999/cvdbdev0/services/soap?wsdl')
-bc = BK.BkdClient(user="bkd", password="444bkd444")
+uzeep = BKD.UniZeep(bkd_dest[args.sloc])
 
 if args.mode == "get":
-        zres = bc.getnode("upr", args.upr, debug=args.debug)
-        if len(args.out)  > 0:
-            if not args.out.endswith(".dxf"):
-                args.out+= ".dxf"
+    zres = uzeep.getnode( args.ns, args.ac )
+    
+    if len(args.out)  > 0:
+        if not args.out.endswith(".dxf"):
+            args.out+= ".dxf"
                 
-            with open( args.out, "w" ) as of:
-                of.write( ET.tostring( zres, pretty_print=True).decode() )
-                of.write( "\n" )
-        else:
-            print(ET.tostring(zres, pretty_print=True).decode() )
-            print()
-else:
-    if len(args.file) > 0:
+        with open( args.out, "w" ) as of:
+            of.write( ET.tostring( zres, pretty_print=True).decode() )
+            of.write( "\n" )
+    else:
+        print(ET.tostring(zres, pretty_print=True).decode() )
+        print()
 
+elif args.mode == "set":
+    if len(args.file) > 0: 
         if args.out.endswith(".dxf"):
             args.out = args.out.replace(".dxf","")            
+        with open(args.out, "w") as logh:
+            logh.write("#AC\tUPR\n")
+            with open(args.file, "r") as fh:
+                for ln in fh:
+                    if  not ln.startswith("#"):
+                        cols = ln.split('\t')
+                        upr = cols[1].strip()
+
+                        if len( cols[0].strip() ) > 0:
+                            ac = cols[0]
+                        else:
+                            ac = ""
+                        
+                        print( "Uniprot Accesion: " + upr)
+
+                        uloc = upr_loc[args.uloc]
+
+                        # build path to local file
         
-        with open(args.file, "r") as fh:
-            for ln in fh:
-                if  not ln.startswith("#"):
-                    cols = ln.split('\t')
-                    upr = cols[0]
-                    print( "Uniprot Accesion: " + upr)
+                        swpath = acc2path( uloc + "/swissprot", upr)
+                        trpath = acc2path( uloc + "/trembl", upr)
 
-                    ucl = BK.unirecord.UniRecord()
-                    ucr = ucl.getRecord(upr)
+                        if os.path.isfile(swpath):
+                            ufile = swpath
+                        elif os.path.isfile(trpath):
+                            ufile = trpath
+                        else:
+                            print( "ERROR: no uniprot file" )
+        
+                        print("UniprotKB record: " + ufile)        
+        
+                        rec = pymex.uprot.Record().parseXml( ufile ) # parse uniprot record
+                        znode = uzeep.buildZnode(rec, args.ns, ac) # build zeep request node
 
-                    znode = du.buildUniprotZnode( ucr, ns="CVDB", ac=args.acc )
-                    zres = bc.setnode(znode, mode=args.mode, debug=args.debug)
-
-                    if len(args.out)  > 0:                
-                        with open( args.out + "-" + upr+".dxf", "w" ) as of:
-                            of.write( ET.tostring( zres, pretty_print=True).decode() )
-                            of.write( "\n" )
-                    else:
-                        #print(ET.tostring(zres, pretty_print=True).decode() )
-                        print() 
+                        zres = uzeep.setnode(znode, mode="add", debug=args.debug)
+                        nsl = zres.xpath("//dxf:dataset/dxf:node/@ns",namespaces=uzeep.dxfns)
+                        acl = zres.xpath("//dxf:dataset/dxf:node/@ac",namespaces=uzeep.dxfns)
+                                    
+                        logh.write( "\t".join( (acl[0], upr,"\n") ) )
+                        
     else:
-        ucl = BK.unirecord.UniRecord()
-        ucr = ucl.getRecord(args.upr)   
-        znode = du.buildUniprotZnode( ucr, ns="CVDB", ac=args.acc )
-        zres = bc.setnode(znode, mode=args.mode, debug=args.debug)
-        print("**")
-        print(ET.tostring(zres, pretty_print=True).decode() )
-        print("**")
+
+        uloc = upr_loc[args.uloc]
+
+        # build path to local file
+        
+        swpath = acc2path( uloc + "/swissprot", args.upr)
+        trpath = acc2path( uloc + "/trembl", args.upr)
+
+        if os.path.isfile(swpath):
+            ufile = swpath
+        elif os.path.isfile(trpath):
+             ufile = trpath
+        else:
+            print( "ERROR: no uniprot file" )
+        
+        print("UniprotKB record: " + ufile)        
+        
+        rec = pymex.uprot.Record().parseXml( ufile ) # parse uniprot record
+        znode = uzeep.buildZnode(rec, args.ns, args.ac) # build zeep request node
+
+        if args.debug:
+            print("**")
+            print(ET.tostring( znode, pretty_print=True).decode() )
+            print("**")
+        
+        zres = uzeep.setnode(znode, mode=args.mode, debug=args.debug)
+                
         if not args.debug:
             if len(args.out)  > 0:
                 if not args.out.endswith(".dxf"):
