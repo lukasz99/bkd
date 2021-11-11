@@ -9,6 +9,7 @@ from requests.auth import HTTPBasicAuth
 from zeep import Client as zClient, Settings as zSettings
 from zeep.transports import Transport
 
+
 from lxml import etree as ET
 import bkdpy as BKD
 
@@ -18,7 +19,6 @@ class BkdZeep():
                   mode='dev', debug=False ):
 
         self.dxfns = { 'dxf': 'http://dip.doe-mbi.ucla.edu/services/dxf20' }
-
         self.user = user
         self.password = password
         self.mode = mode
@@ -78,7 +78,7 @@ class BkdZeep():
                 node = self._zclient.service.getNode( ns = ns, ac = ac,
                                                       detail='default',
                                                       format='dxf20')
-                tree = ET.fromstring(node.text)
+                tree = ET.fromstring(node.text)            
                 dset = tree.xpath('//dxf:dataset',namespaces = self.dxfns )
                 if dset:
                     return dset[0]
@@ -161,16 +161,21 @@ class BkdZeep():
 
     def setlink( self, zdtsnode, mode = "add", debug = False):
 
+        if type(zdtsnode) != type(self._dxfactory.datasetType()):        
+            zdtsnode = self._dxfactory.datasetType([zdtsnode])        
+            
         if debug:
             print("BkdClinet.addnode: input node=" + str(zdtsnode))
         #else:
         #    print("BkdClinet.addnode: input node=",len(str(zdtsnode)))
+        
         if zdtsnode is not None:
             client = self._zclient
             #try:
 
             if debug:
-                print( ET.tostring(client.create_message(client.service,'setNode', dataset= zdtsnode, mode="add"), pretty_print=True ).decode()  )
+                print( ET.tostring( client.create_message(client.service,'setNode', dataset= zdtsnode, mode="add"),
+                                    pretty_print=True ).decode()  )
             else:
                 with client.settings(raw_response=True):
                     res = client.service.setLink( zdtsnode, mode )
@@ -180,14 +185,14 @@ class BkdZeep():
                     
                     #print("\n\n",ET.tostring(dset[0], pretty_print=True).decode(),"\n\n" )
                     if dset:
-                        return dset[0]
-            
+                        return dset[0]            
         return None
 
-    def setnode( self, znode, mode = "add", debug = False):
+    def setnode( self, zdtsnode, mode = "add", debug = False):
+        
+        if type(zdtsnode) != type(self._dxfactory.datasetType()):        
+            zdtsnode = self._dxfactory.datasetType([zdtsnode])        
 
-        zdtsnode = self._dxfactory.datasetType([znode])        
-                
         if debug:
             print("BkdClinet.addnode: input node=" + str(zdtsnode))
         #else:

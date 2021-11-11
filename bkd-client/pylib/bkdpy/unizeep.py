@@ -59,9 +59,8 @@ class UniZeep(BKD.BkdZeep):
     
         
     def initiateNode(self, rec, ns = "", ac = ""):
-        #zdxf = zclient.type_factory("ns1")
-        zdxf = self._dxfactory
-        
+
+        zdxf = self._dxfactory        
         ntype = zdxf.typeDefType( ns= "dxf", ac="dxf:0003",
                                   typeDef = xsd.SkipValue,
                                   name="protein" )
@@ -74,14 +73,12 @@ class UniZeep(BKD.BkdZeep):
                               name=rec.protein.name,
                               xrefList = {"xref":[] },
                               attrList = {"attr":[] },
-                              featureList = {"feature":[] })
-    
+                              featureList = {"feature":[] })    
         return znode
     
     def appendAccessions(self, rec, znode ):
 
-        zdxf = self._dxfactory
-        
+        zdxf = self._dxfactory        
         zxref = zdxf.xrefType( type = "identical-to",
                                typeNs = "dxf",
                                typeAc = "dxf:0009",
@@ -89,13 +86,17 @@ class UniZeep(BKD.BkdZeep):
                                ns = "upr", ac = rec.accession["primary"])
 
         znode.xrefList["xref"].append( zxref )
-    
-        version = rec.root['uniprot']['entry'][0]['version']
+
+        version = rec.version
+        #version = rec.root['uniprot']['entry'][0]['version'] #LS: replaced
+        #print("ver:",version, rec.version)  #LS
+        #print(rec.acc.primary, "::", rec.acc.secondary) #LS
     
         zattr = zdxf.attrType( name = "data-source", value='',
                                ns ="dxf", ac="dxf:0016" )
         zattr.value['ns']='upr'
-        zattr.value['ac']= '.'.join( [rec.accession["primary"], version] )
+        #zattr.value['ac']= '.'.join( [rec.accession["primary"], version] ) #LS: replaced
+        zattr.value['ac']= '.'.join( [rec.acc.primary, rec.version])        
         zattr.value['type']='database-record'
         zattr.value['typeNs']='dxf'
         zattr.value['typeAc']='dxf:0057'
@@ -182,15 +183,19 @@ class UniZeep(BKD.BkdZeep):
             zelement.xrefList["xref"].append(zxref)
 
 
-    def appendEvidence(self, rec, element, zelement ):
+    def appendEvidence(self, rec, element, zelement ):   # element == feature ?
  
         zdxf = self._dxfactory
         if "evidence" not in element:
-            return
+            return        
         
         evidence_dict = rec.root["uniprot"]["entry"][0]["evidence"]
         
         for evidence_key in element["evidence"]:
+
+            print("evid:", evidence_key)
+
+            
             evidence = evidence_dict[evidence_key]
             if evidence["type"] in self._eco_label_dict.keys():
                 eco_label = self._eco_label_dict[evidence["type"]]
@@ -239,8 +244,24 @@ class UniZeep(BKD.BkdZeep):
 
         zdxf = self._dxfactory
 
-        for comment_type in rec.comment.values():
+        #LS: need
+        # comment.type.ns
+        # comment.type.ac
+        # comment.type.name
+        # comment.text
+
+        # comment.molecule
+
+        print(rec.comm.keys())
+        for comment_type in rec.comm.values():
             for comment in comment_type:
+                #print("TEXT:", comment.text)
+                #print("EVID:", comment.molecule)
+                pass
+            
+        for comment_type in rec.comment.values():            
+            for comment in comment_type:
+                print(type(comment))
                 if comment["type"] in self._ctypes.keys():
                     zattr = zdxf.attrType(value = comment["text"]["value"],
                                           name = self._ctypes[comment["type"]]["name"],
@@ -402,8 +423,8 @@ class UniZeep(BKD.BkdZeep):
         print("Unhandled Feature Types: ", unhandled_types)
 
 
-    def buildZnode(self, rec, ns, ac):
-
+    def buildZnode(self, rec, ns, ac):  # rec: pymex.uprot.record
+                
         znode  = self.initiateNode( rec, ns = ns, ac = ac )
 
         self.appendAccessions(rec, znode)

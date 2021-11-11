@@ -7,3 +7,4 @@ from .cvlib import *
 
 from .bkdzeep import *
 from .unizeep import *
+from .linkzeep import *

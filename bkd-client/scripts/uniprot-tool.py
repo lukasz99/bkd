@@ -20,13 +20,13 @@ import pymex
 import bkdpy as BKD
 
 bkd_dest = {"dip0-local":"http://10.1.7.100:9999/dipdev0/services/soap?wsdl",
-            "dip0-public":"htts://dip.mbi.ucla.edu/dipdev0/services/soap?wsdl",
+            "dip0-public":"https://dip.mbi.ucla.edu/dipdev0/services/soap?wsdl",
             "dip2-local":"http://10.1.7.102:9999/dipdev2/services/soap?wsdl",
-            "dip2-public":"htts://dip.mbi.ucla.edu/dipdev2/services/soap?wsdl",
+            "dip2-public":"https://dip.mbi.ucla.edu/dipdev2/services/soap?wsdl",
             "cvdb0-local":"http://10.1.7.100:9999/cvdbdev0/services/soap?wsdl",
-            "cvdb0-public":"htts://dip.mbi.ucla.edu/cvdbdev0/services/soap?wsdl",
+            "cvdb0-public":"https://dip.mbi.ucla.edu/cvdbdev0/services/soap?wsdl",
             "cvdb2-local":"http://10.1.7.102:9999/cvdbdev2/services/soap?wsdl",
-            "cvdb2-public":"htts://dip.mbi.ucla.edu/cvdbdev2/services/soap?wsdl"}
+            "cvdb2-public":"https://dip.mbi.ucla.edu/cvdbdev2/services/soap?wsdl"}
 
 upr_loc ={"local":"/mnt/mirrors/uniprotkb/records"}
 
@@ -129,7 +129,8 @@ elif args.mode == "set":
         
                         swpath = acc2path( uloc + "/swissprot", upr)
                         trpath = acc2path( uloc + "/trembl", upr)
-
+                        
+                        
                         if os.path.isfile(swpath):
                             ufile = swpath
                         elif os.path.isfile(trpath):
@@ -140,6 +141,8 @@ elif args.mode == "set":
                         print("UniprotKB record: " + ufile)        
         
                         rec = pymex.uprot.Record().parseXml( ufile ) # parse uniprot record
+
+                        
                         znode = uzeep.buildZnode(rec, args.ns, ac) # build zeep request node
 
                         zres = uzeep.setnode(znode, mode="add", debug=args.debug)
@@ -156,7 +159,8 @@ elif args.mode == "set":
         
         swpath = acc2path( uloc + "/swissprot", args.upr)
         trpath = acc2path( uloc + "/trembl", args.upr)
-
+           
+        
         if os.path.isfile(swpath):
             ufile = swpath
         elif os.path.isfile(trpath):
@@ -167,6 +171,12 @@ elif args.mode == "set":
         print("UniprotKB record: " + ufile)        
         
         rec = pymex.uprot.Record().parseXml( ufile ) # parse uniprot record
+
+
+        print(json.dumps(rec.root,indent=3))
+
+        #xx
+        
         znode = uzeep.buildZnode(rec, args.ns, args.ac) # build zeep request node
 
         if args.debug:
