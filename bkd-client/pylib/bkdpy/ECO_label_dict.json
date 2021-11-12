@@ -1,5 +1,7 @@
 {
     "ECO:0000269": "experimental evidence used in manual assertion",
     "ECO:0000255": "match to sequence model evidence used in manual assertion",
-    "ECO:0007744": "combinatorial computational and experimental evidence used in manual assertion"
+    "ECO:0007744": "combinatorial computational and experimental evidence used in manual assertion",
+    "ECO:0000250": "sequence similarity evidence used in manual assertion",
+    "ECO:0000256": "match to sequence model evidence used in automatic assertion"
 }

@@ -40,6 +40,11 @@ insert into cvterm (ns, ac, name) values ('psi-mi','MI:0326','protein');
 insert into cvterm (ns, ac, name) values ('psi-mi','MI:0250','gene');
 insert into cvterm (ns, ac, name) values ('psi-mi','MI:0324','mRNA');
 insert into cvterm (ns, ac, name) values ('psi-mi','MI:0319','DNA');
+insert into cvterm (ns, ac,name) values ('dxf','dxf:0096','channel-report');
+insert into cvterm (ns, ac,name) values ('dxf','dxf:0097','transporter-report');
+insert into cvterm (ns, ac,name) values ('dxf','dxf:0093','clinical-report');
+
+
 
 CREATE TABLE cvtref(
     pkey bigint DEFAULT nextval(('"cvtref_pkey_seq"'::text)::regclass) NOT NULL CONSTRAINT cvtref_pk PRIMARY KEY,

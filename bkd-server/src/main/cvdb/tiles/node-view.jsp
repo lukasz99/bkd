@@ -12,8 +12,13 @@
 
    <script src="js/bkd-config.js" type="text/javascript" language="JavaScript"></script>
    <script src="js/bkd-links.js" type="text/javascript" language="JavaScript"></script>
-   <script src="js/sequence-viewer.bundle.js" type="text/javascript" language="JavaScript"></script> 
+   <!--   <script src="js/sequence-viewer.bundle.js" type="text/javascript" language="JavaScript"></script>  -->
 
+   <!--<script src="js/d3.min.js" type="text/javascript" language="JavaScript"></script>  -->
+
+   <script src="https://d3js.org/d3.v4.min.js" type="text/javascript" language="JavaScript"></script> 
+   <script src="js/g3-lollipop.js" type="text/javascript" language="JavaScript"></script> 
+   <script src="js/pviz-bundle.min.js" type="text/javascript" language="JavaScript"></script> 
    <script src="js/bkd-node-jq.js" type="text/javascript" language="JavaScript"></script>
    <script src="js/bkd-site.js" type="text/javascript" language="JavaScript"></script>
 

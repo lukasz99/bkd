@@ -112,7 +112,7 @@ public class BkdNodeManager {
     public NodeType getNode( String ns, String ac, String detail ){
 
         Logger log = LogManager.getLogger( BkdNodeManager.class );
-        log.info("BkdNodeManager.getNode");
+        log.info("BkdNodeManager.getNode: ns=" + ns + " ac=" + ac);
         
         Node node = (Node) recordManager.getNode( ns, ac );
         if( node == null ){
@@ -324,6 +324,8 @@ public class BkdNodeManager {
         
         ProteinNode oldNode =
             (ProteinNode) recordManager.getNode( ns, ac ); 
+
+        log.info("Old Node:" + ns + " :: " + ac + " ::" + oldNode);
         
         if( oldNode != null ){
             curNode = oldNode;

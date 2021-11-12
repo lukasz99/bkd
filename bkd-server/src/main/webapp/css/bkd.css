@@ -98,7 +98,7 @@
     width: 100%;
 }
 
-.bkd-search-table{  
+.bkd-search-table {  
     width: 99%;
     margin: 0px 0px 50px 0px;
     border-style: solid;
@@ -106,7 +106,7 @@
     border-width: 1px;
 }
 
-.bkd-search-table > tr > th {
+.bkd-search-table  tr  th {
   border-style: solid;
   border-color: #A8A8A8;
   border-width: 1px;
@@ -115,7 +115,7 @@
 
 }
 
-.bkd-search-table > tr > td {
+.bkd-search-table  tr  td {
   border-style: solid;
   border-color: #A8A8A8;
   border-width: 1px;

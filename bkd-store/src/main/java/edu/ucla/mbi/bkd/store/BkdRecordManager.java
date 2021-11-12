@@ -752,7 +752,7 @@ public class BkdRecordManager {
     public FeatureReport getNewFeatureReport( String tgtNs, String tgtAc, String rtype ){
 
         Logger log = LogManager.getLogger( this.getClass() );
-        log.info( " getNewFeatureReport -> tgt=" + tgtAc );
+        log.info( " getNewFeatureReport -> tgt=" + tgtAc + " rtype=" + rtype);
         log.info( " getNewFeatureReport -> tns=" + tgtNs + " nat ns="+ bkdconf.getPrefix());
         
         Node tnode;

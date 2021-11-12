@@ -3,6 +3,7 @@ import os
 import sys
 import argparse
 import json
+import re
 
 from lxml import etree as ET
 
@@ -142,8 +143,12 @@ elif args.mode == "set":
         
                         rec = pymex.uprot.Record().parseXml( ufile ) # parse uniprot record
 
+                        if len(ac) > 0 and len(args.ns) == 0:
+                            ns  = re.sub("-?\d+\D","",ac)
+                        else:
+                            ns = args.ns
                         
-                        znode = uzeep.buildZnode(rec, args.ns, ac) # build zeep request node
+                        znode = uzeep.buildZnode(rec, ns, ac) # build zeep request node
 
                         zres = uzeep.setnode(znode, mode="add", debug=args.debug)
                         nsl = zres.xpath("//dxf:dataset/dxf:node/@ns",namespaces=uzeep.dxfns)

@@ -168,7 +168,7 @@ BKDnode = {
                $( "#" + rid +"_report_view").on( 'click', function(event){
                     var prefix= event.currentTarget.id.replace('_report_view','');
 
-                    var elink="report?query=" + prefix + "&qmode=node";
+                    var elink="report?query=" + prefix + "&qmode=report";
                     location.href = elink;                    
                   });
     }
@@ -899,20 +899,129 @@ BKDnode = {
        console.log(seq);
        $( tgt ).append( "<div><div id='seq-viewer'></div>" );
 
-       var seqview = new Sequence( seq );
-       seqview.render( '#seq-viewer',
-                       { 'showLineNumbers': true,
-                         'wrapAminoAcids': true,
-                         'charsPerLine': 80,
-                         'toolbar': true,
-                         //'search': true,
-                         //'title' : "Your title",
-                         'sequenceMaxHeight': "300px",
-                         'badge': false
-                       });
 
-      console.log("SHOWSEQUENCE: DONE");
+       //var seqview = new Sequence( seq );
+       //seqview.render( '#seq-viewer',
+       //                { 'showLineNumbers': true,
+       //                  'wrapAminoAcids': true,
+       //                  'charsPerLine': 80,
+       //                  'toolbar': true,
+       //                  //'search': true,
+       //                  //'title' : "Your title",
+       //                  'sequenceMaxHeight': "300px",
+       //                  'badge': false
+       //                });
 
+       var lollipop = g3.Lollipop("seq-viewer");
+
+var mutation_data = [
+    {
+        "Hugo_Symbol": "PIK3CA",
+        "Variant_Classification": "Silent",
+        "HGVSp_Short": "p.F70F",
+        "Mutation_Class": "Inframe",
+        "Protein_Change":"F70F",
+        "AA_Position": 70
+    }, {
+        "Hugo_Symbol": "PIK3CB",
+        "Variant_Classification": "Missense_Mutation",
+        "HGVSp_Short": "p.E81F",
+        "Mutation_Class": "Missense",
+        "Protein_Change":"E81F",
+        "AA_Position": 81
+    }, {
+        "Hugo_Symbol": "PIK3CA",
+        "Variant_Classification": "Missense_Mutation",
+        "HGVSp_Short": "p.E81K",
+        "Protein_Change":"E81K",
+        "Mutation_Class": "Inframe",
+        "AA_Position": 81
+    }, {
+        "Hugo_Symbol": "PIK3CA",
+        "Variant_Classification": "Missense_Mutation",
+        "HGVSp_Short": "p.F83S",
+        "Protein_Change":"F83S",
+        "Mutation_Class": "Missense",
+        "AA_Position": 83
+    }, {
+        "Hugo_Symbol": "PIK3CA",
+        "Variant_Classification": "Missense_Mutation",
+        "HGVSp_Short": "p.R88Q",
+        "Protein_Change":"R88Q",
+        "Mutation_Class": "Missense",
+        "AA_Position": 88
+    }
+];
+
+var mutation_data_default_settings = {
+    x: "AA_Position",         // mutation position
+    y: "Protein_Change",      // amino-acid changes
+    factor: "Mutation_Class", // classify mutations by certain factor (optional)
+};
+
+var pfam_data = {  
+   "hgnc_symbol":"TP53",
+   "protein_name":"tumor protein p53",
+   "uniprot_id":"P04637",
+   "length":393,
+   "pfam":[  
+      {  
+         "pfam_ac":"PF08563",
+         "pfam_start":6,
+         "pfam_end":29,
+         "pfam_id":"P53_TAD"
+      },
+      {  
+         "pfam_ac":"PF00870",
+         "pfam_start":95,
+         "pfam_end":288,
+         "pfam_id":"P53"
+      },
+      {  
+         "pfam_ac":"PF07710",
+         "pfam_start":318,
+         "pfam_end":358,
+         "pfam_id":"P53_tetramer"
+      }
+   ]
+}
+
+
+var pfam_data_default_settings = {
+    domainType: "pfam",       // key to the domain annotation entries
+    length: "length",         // protein length
+    details: {
+        start: "pfam_start",  // protein domain start position
+        end: "pfam_end",      // protein domain end position
+        name: "pfam_id",      // protein domain name
+    },
+};
+
+
+
+       // add mutation data
+       lollipop.data.snvData = mutation_data;
+       // mutation data format settings
+       lollipop.format.snvData = mutation_data_default_settings;
+
+       // Pfam domain data
+       lollipop.data.domainData = pfam_data;
+       // Pfam data format settings
+       lollipop.format.domainData = pfam_data_default_settings;
+
+       // set up more chart options ...
+
+
+       lollipop.options.chartType = "circle";
+
+
+
+
+       // draw lollipop
+       //lollipop.draw();
+
+        console.log("SHOWSEQUENCE: DONE");
+        
      },
 
      showXref: function( tgt, format, data ){

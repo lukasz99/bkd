@@ -190,13 +190,14 @@ class UniZeep(BKD.BkdZeep):
             return        
         
         evidence_dict = rec.root["uniprot"]["entry"][0]["evidence"]
-        
-        for evidence_key in element["evidence"]:
+        #print("XXX:",element.evidence)
 
-            print("evid:", evidence_key)
+        #for evidence_key in element["evidence"]:
+        #    print("evid:", evidence_key, ":")
+        #    evidence = evidence_dict[evidence_key]
 
-            
-            evidence = evidence_dict[evidence_key]
+        for evidence in element["_evidence"]:
+
             if evidence["type"] in self._eco_label_dict.keys():
                 eco_label = self._eco_label_dict[evidence["type"]]
             else:

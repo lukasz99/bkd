@@ -8,22 +8,31 @@ BKDrep = {
     fxList: null,
     frList: null,
 
+    ns: null,
+    ac: null,
+    query: null,
+    qmode: null,
+
     init: function( data, srcAnchor, tgtAnchor, valAnchor, mode){
+        $( "#report" ).hide();
         BKDrep.view( data, srcAnchor, tgtAnchor, valAnchor, mode);
     },
     
     view: function(data, srcAnchor, tgtAnchor, valAnchor, mode){
-         
+        $( "#report" ).hide();    
         this.srcAnchor=srcAnchor;
         this.tgtAnchor=tgtAnchor;
         this.valAnchor=valAnchor;
-
+        
         if(data == null ){
             BKDrep.search( data, this.srcAnchor );
             $( tgtAnchor ).hide();
             BKDrep.valEdit(data, this.valAnchor);
         } else if(data.qmode !== undefined && data.query !== undefined){
-           
+
+           this.qmode =data.qmode;
+           this.query =data.query;
+
            BKDrep.search( data, this.srcAnchor );
            $( tgtAnchor ).hide();           
            //BKDrep.valEdit(data, this.valAnchor);
@@ -39,7 +48,7 @@ BKDrep = {
     },
 
     search: function( data, tgtAnchor ){        
-
+    
         if( data  !==  undefined && data != null ){
            if( "node" == data.qmode ){
              $("input[name='report_smodenode'][value='node']").prop('checked', true);
@@ -68,6 +77,33 @@ BKDrep = {
                         BKDrep.searchView( data.rdata, BKDrep.srcAnchor, "edit" );
                         BKDrep.tgtView( data.record, BKDrep.tgtAnchor, "edit" );
                         BKDrep.valEdit( data.record, BKDrep.valAnchor );
+                    } else {
+                           //alert(BKDrep.query + "::" +BKDrep.qmode);
+                          
+                           formData = {
+                           query: BKDrep.query,
+                           ns: "",
+                           ac: "",
+                           qmode: "node",
+                           ret: "data"
+                           };
+                                                
+                           $.ajax({
+                             type: "POST",             
+                             url: "search",
+                             data: formData,
+                             dataType: "json",
+                             encode: true,}).done(function (data) {
+                                //alert(JSON.stringify(data));
+                               if( data.rdata != null && data.rdata.length > 0){
+                                  BKDrep.searchView( data.rdata, BKDrep.srcAnchor, "edit" );                       
+                               }else if(data.record !== null){
+                                  BKDrep.searchView( data.rdata, BKDrep.srcAnchor, "edit" );
+                                  BKDrep.tgtView( data.record, BKDrep.tgtAnchor, "edit" );
+                                  BKDrep.valEdit( data.record, BKDrep.valAnchor );
+                               }
+                           });
+
                     }
                 });
             
@@ -699,7 +735,7 @@ BKDrep = {
 
              
              console.log("REPTP: "+JSON.stringify(BKDrep.postData));      
-             alert(JSON.stringify(BKDrep.postData));     
+             //alert(JSON.stringify(BKDrep.postData));     
              
              $.ajax({
                 type: "POST",

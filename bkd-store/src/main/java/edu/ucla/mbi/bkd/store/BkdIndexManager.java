@@ -278,7 +278,7 @@ public class BkdIndexManager {
             }
                        
         }catch( Exception ex){
-            //ex.printStackTrace();
+            ex.printStackTrace();
         }
         return res; 
     }
