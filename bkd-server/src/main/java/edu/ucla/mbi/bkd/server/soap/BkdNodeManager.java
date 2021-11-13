@@ -114,11 +114,19 @@ public class BkdNodeManager {
         Logger log = LogManager.getLogger( BkdNodeManager.class );
         log.info("BkdNodeManager.getNode: ns=" + ns + " ac=" + ac);
         
+        if( ac.endsWith("R") ){
+            Report rep = (Report) recordManager.getReport( ns, ac );
+            
+            if( rep != null && rep instanceof FeatureReport ){
+                return this.toDxfReportNode( (FeatureReport) rep );	
+            }            
+        }
+        
         Node node = (Node) recordManager.getNode( ns, ac );
         if( node == null ){
             return null;
         }
-
+        
         if( node instanceof ProteinNode ){
             return this.toDxfProteinNode( (ProteinNode) node );	
         }

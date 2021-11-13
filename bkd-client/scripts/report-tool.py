@@ -3,6 +3,8 @@ import os
 import sys
 import argparse
 import json
+import re
+import csv
 
 from lxml import etree as ET
 
@@ -15,24 +17,34 @@ logging.basicConfig(level=logging.WARN)     # needs logging configured
 #    sys.path.insert( 0, pymex_dir )
 
 sys.path.insert(0, "/home/lukasz/git/bkd/bkd-client/pylib" )
-import bkdpy as BK
+import bkdpy as BKD
 
-parser = argparse.ArgumentParser( description='UniprotKB Tool' )
+bkd_dest = { "cvdb0-local":"http://10.1.7.100:9999/cvdbdev0/services/soap?wsdl",
+             "cvdb0-public":"https://dip.mbi.ucla.edu/cvdbdev0/services/soap?wsdl",
+             "cvdb2-local":"http://10.1.7.102:9999/cvdbdev2/services/soap?wsdl",
+             "cvdb2-public":"https://dip.mbi.ucla.edu/cvdbdev2/services/soap?wsdl",
+             "cvdb":"https://dip.mbi.ucla.edu/cvdb/services/soap?wsdl" }
+
+parser = argparse.ArgumentParser( description='Report Tool' )
+
+parser.add_argument('--slocation', '-sl', dest="sloc", type=str,
+                    required=False, default='cvdb0-local',
+                    help='Server location.')
 
 parser.add_argument('--ns', '-n', dest="ns", type=str,
-                    required=False, default='upr',
-                    help='Namespace (default: upr).')
+                    required=False, default='CVDB',
+                    help='Namespace (default: CVDB).')
 
 parser.add_argument('--ac', '-a', dest="ac", type=str,
-                    required=False, default='O00180',
-                    help='Accession (default: O00180).')
+                    required=False, default='CVDB2R',
+                    help='Accession (default: CVDB2R).')
 
 parser.add_argument('--mode', '-m', dest="mode", type=str,
-                    required=False, default='add',
+                    required=False, default='get',
                     help='Mode (default: add).')
 
 parser.add_argument('--file', '-f', dest="file", type=str,
-                    required=True, default='',
+                    required=False, default='',
                     help='Report File.')
 
 #spyder hack: add '-i' option only if present (as added by spyder)
@@ -43,16 +55,14 @@ if '-i' in sys.argv:
 
 args = parser.parse_args()
 
-du = BK.DxfUtils('http://10.1.7.100:9999/bkd-server/services/soap?wsdl')
+du = BKD.DxfUtils( bkd_dest[args.sloc] )
 
-znode = du.buildUniprotZnode( ucr )
-
-
-bc = BK.BkdClient(user="bkd", password="444bkd444")
+bc = BKD.BkdClient(user="bkd", password="444bkd444")
 
 if args.mode == "get":
-        zres = bc.getnode("upr", args.upr, debug=False)
+    zres = bc.getnode( args.ns, args.ac, debug=False )
 else:
-        zres = bc.setnode(znode, mode=args.mode, debug=False)
+    #zres = bc.setnode(znode, mode=args.mode, debug=False)
+    pass
 
 print(ET.tostring(zres, pretty_print=True).decode() )
