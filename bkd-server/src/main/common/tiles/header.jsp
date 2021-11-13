@@ -7,7 +7,7 @@
    <table width="100%" cellspacing="0" border="0">
     <tr>
      <td class="logo" valign="middle">
-      <a href="."><img height="73" border="0" src="img/site_logo.svg" alt="Site Logo"/></a>
+      <a href="."><img height="80" border="0" src="img/site_logo.svg" alt="Site Logo"/></a>
      </td>
     </tr>
    </table>

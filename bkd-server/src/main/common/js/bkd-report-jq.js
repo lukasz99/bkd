@@ -173,13 +173,16 @@ BKDrep = {
                              + tid
                              + "' cellspacing='0' cellpadding='0' class='bkd-search-table'></table></div>");
                              
-        $('#' + tid).append("<tr> class='bkd-rep-fld'>"+
-                            "<th width='5%'>Report ID</th>"+
-                            "<th >Report Title</th>"+
-                            "<th width='10%'>Report Type</th>"+
-                            "<th width='10%'>Gene/Protein</th>"+
-                            "<th width='15%'>Feature Type</th>"+
+        $('#' + tid).append("<tr class='bkd-rep-fld bkd-search-table-header'>"+
+        
+                            "<th width='5%' align='center'>Report&nbsp;ID</th>"+
+                            "<th width='10%' align='center'>Gene/Protein</th>"+
+                            "<th >Full Name</th>"+
+                            
+                            "<th width='15% 'align='center'>Feature Type</th>"+
                             "<th width='15%'>Feature Name</th>"+
+                            
+                            "<th width='10%' align='center'>Report Type</th>"+
                             "<th width='5%'>&nbsp;</th>"+
                             "</tr>");
         for(var i=0; i<data.length; i++){
@@ -190,12 +193,15 @@ BKDrep = {
             if( cdata.feature !== undefined){
 
             var rid = cdata.ac +'_Edit';
-            var crow = "<td>" + cdata.ac + "</td>" +
-                "<td>" + cdata.name + "</td>" + 
-                "<td align='center'>" + cdata.cvType.name + "</td>" +
-                "<td align='center'>" + cdata.feature.node.label + "</td>" +
-                "<td align='center'>" + cdata.feature.cvType.name + "</td>" +
+            var crow = "<td align='center'>" + cdata.ac + "</td>" +
+                "<td align='center'>" + cdata.feature.node.label + "</td>" + 
+                "<td>" + cdata.feature.node.name + "</td>" +
+                
+                "<td align='center'>" + cdata.feature.cvType.name + "</td>" +                               
                 "<td align='center'>" + cdata.feature.label + "</td>" +
+                
+                "<td align='center'>" + cdata.cvType.name + "</td>" +
+                
                 "<td align='center'><input type='button' id='"+rid+"' value='Edit Report'/></td>";
             
             $('#' + tid).append("<tr> class='bkd-rep-fld'>"+crow+"</tr>");
@@ -209,18 +215,18 @@ BKDrep = {
             }
             
         }
-        $('#' + tid).append("<tr> class='bkd-rep-fld'>" +
+        $('#' + tid).append("<tr class='bkd-rep-fld bkd-search-table-footer'>" +
                             " <td colspan='1'>&nbsp;</td>\n" +
-                            " <td colspan='1'></td>\n" +
-                            " <td colspan='1'>\n"+
-                            "  <select id='bkd_report_new_type'>\n"+
-                            "  </select>\n"+  
-                            "</td>n" +
-                            " <td colspan='1'>\n"+
+                            " <td colspan='1' align='center'>\n"+
                             "  <select id='bkd_report_new_target'>\n"+
                             "  </select>\n"+  
-                            "</td>n" +
-                            " <td colspan='2'></td>\n" +                                
+                            " </td>\n" +
+                            " <td colspan='3'>&nbsp;</td>\n" +
+                            " <td colspan='1' align='center'>\n"+
+                            "  <select id='bkd_report_new_type'>\n"+
+                            "  </select>\n"+  
+                            " </td>\n" +
+
                             " <td><input type='button' id='bkd_report_new' value='New Report'/></td>\n"+
                             "</tr>\n");
         var reports = BKDconf.report.feature;                    
@@ -360,7 +366,8 @@ BKDrep = {
         for( var i = 0; i < flist.length; i++){
 
           var fname = flist[i].name;
-          console.log("NAME: " + fname + " : list:" + flist[i].list + " value:" + flist[i].value);
+          console.log( "NAME: " + fname + " : list:" + flist[i].list +
+                       " css: " + flist[i]["css-class"] + " value:" + flist[i].value);
           
           if( flist[i].list ){   // config field is a list            
             
@@ -382,15 +389,24 @@ BKDrep = {
             
               if( fvlist != null && fvlist.length > 0){  // values present: show 
 
+                if( flist[i]["css-class"] !== undefined ){
+                  cclass="bkd-rep-fld " + flist[i]["css-class"]; 
+                } else {
+                  cclass="bkd-rep-fld"
+                }
+
                 // header/body for value list
 
                 $(tgtAnchor).append("<div class='bkd-rep-fld'>\n"+
-                                    " <div class='bkd-rep-fld' id='"+flist[i].id+"_head'>"+fname+"</div>\n"+
+                                    " <div class='" + cclass + "' id='"+flist[i].id+"_head'>"+fname+" [<a class='bkd-act'>show/hide</a>]  </div>\n"+
                                     " <div class='bkd-rep-fld' id='"+flist[i].id+"_body'/>\n"+
                                     "</div>");
 
                 $( "#" + flist[i].id + "_head").on('click',function(event){
-                   $( "#"+event.currentTarget.id.replace('_head','_body')).toggle(); 
+                   $( "#"+event.currentTarget.id.replace('_head','_body')).toggle();
+                   //$( "#"+event.currentTarget.id).toggle();
+                   event.stopPropagation();
+                   
                 });
 
                 if( flist[i].collapse ){
@@ -416,14 +432,20 @@ BKDrep = {
                 }
               }  
             // done: vpath present -  show as list 
-            }else if( flist[i].value ){  // no vpath: list of complex values (ie feature)
+            } else if( flist[i].value ){  // no vpath: list of complex values (ie feature)
 
               var fname = flist[i].name;
               console.log(" feature: " + fname);
               // list header
-                
+
+              if( flist[i]["css-class"] !== undefined ){
+                cclass="bkd-rep-fld " + flist[i]["css-class"]; 
+              } else {
+                cclass="bkd-rep-fld"
+              }
+
               $(tgtAnchor).append("<div class='bkd-rep-fld'>\n"+
-                                  " <div class='bkd-rep-fld'>" + fname + "</div>\n"+
+                                  " <div  class='" + cclass + "'>" + fname + "</div>\n"+
                                   "</div>");
 
               for( var k=0; k < flist[i].value.length; k++ ){  // go over fields
@@ -450,13 +472,20 @@ BKDrep = {
                 }
               
                 if( flist[i].value[k].list ){  // feature: list of values
-                                      
+
+
+                  if( flist[i].value[k]["css-class"] !== undefined ){
+                    cclass="bkd-rep-fld " + flist[i].value[k]["css-class"]; 
+                  } else {
+                    cclass="bkd-rep-fld"
+                  }
+                                    
                   if( cval !== null ||
                     (flist[i].value[k].edit && mode == 'edit') ){  //edit 
 
                     $( tgtAnchor + " >div:last")   
                        .append(" <div class='bkd-rep-fld' id='"+flist[i].value[k].id+"'>\n" +
-                               "   <div class='bkd-rep-fld'>" + cname + "</div>\n" +
+                               "   <div class='" + cclass + "'>" + cname + "</div>\n" +
                                " </div>\n");
                        
                     if( flist[i].value[k].edit && mode == 'edit' ){ 
@@ -550,7 +579,14 @@ BKDrep = {
                }
             }
           } else {  // config field is a single value
-             
+
+
+             if( flist[i]["css-class"] !== undefined ){
+                cclass="bkd-rep-fld " + flist[i]["css-class"]; 
+              } else {
+                cclass="bkd-rep-fld"
+              }
+
              var vpath = [];
              if( flist[i].vpath){
                vpath =flist[i].vpath;
@@ -573,7 +609,7 @@ BKDrep = {
                if( flist[i].type ){
                  if(flist[i].type == 'taxon'){
                    var fval = BKDlink.taxid( fval );
-                   $(tgtAnchor).append("<div class='bkd-rep-fld'>"+fname+ ":"+ fval +"</div>");                 
+                   $(tgtAnchor).append("<div class='" + cclass + "'>"+fname+ ":"+ fval +"</div>");
                  }else if( flist[i].type == 'hidden'){
                    console.log("AC");
                    $(tgtAnchor).append( "<input type='hidden' class='bkd-rep-fld bkd-report' id='"+flist[i].id+"'/>");
@@ -583,7 +619,7 @@ BKDrep = {
                  if( flist[i].edit && mode == 'edit' ){
                    $(tgtAnchor).append("<input type='text' size='32' maxlength='64' class='bkd-rep-fld'>"+fval+"</input>");   
                  } else {
-                   $(tgtAnchor).append("<div class='bkd-rep-fld'>"+fname+ ": "+fval+"</div>");
+                   $(tgtAnchor).append("<div class='" + cclass +"'>"+fname+ ": "+fval+"</div>");
                  }
                }
              }
@@ -625,13 +661,9 @@ BKDrep = {
         $(valAnchor).append("<form id='rep-val' name='report'" +
                     " action='report.action' method='post'>"); 
         
-        //var repTp = BKDconf["report"]["feature"]["protein"]["type"];
-       
-        
         var flist = [];
         if( data != null && data.report != null ){
-          var repTp = data.report.cvType;
-          console.log("REPTP:::: "+ JSON.stringify(repTp) );                      
+          var repTp = data.report.cvType;          
           $( valAnchor +" > form" )
                 .append( "<input id='report_type_ns' class='bkd-report' type='hidden'/>" );
           $("#report_type_ns" ).val(repTp.ns);
@@ -645,41 +677,27 @@ BKDrep = {
           $("#report_type_name" ).val(repTp.name);
 
           var reports = BKDconf.report.feature;
-          console.log("reptp: " + JSON.stringify(repTp) );
-          for(var r in reports ){
-             console.log("r: "+ JSON.stringify(reports[r].cvType) );                      
-            //xxx;
+          for(var r in reports ){           
             if( reports[r].cvType.name == repTp.name){
                 console.log("r: format found !!!");
-               flist = reports[r].value;
-               console.log("flist(setting): "+ JSON.stringify(flist));
-               break;
+              flist = reports[r].value;
+              break;
             }
           }
         }
 
-        console.log("flist(set): "+ JSON.stringify(flist));
- 
-
-        //var flist = BKDconf["report"]["feature"]["protein"]["value"];
-        
-        
         for( var i = 0; i < flist.length; i++){
           
-
           var flabel = flist[i].name;         
           var fname = flist[i].value;
           var fid = flist[i].id;
           var fdata = '';
-          console.log( flabel + "::"+fname + "::" + flist[i].type);
-
-          console.log(JSON.stringify(data['report-value']));
           
           if( data!== null && data['report-value'] != null &&
               data['report-value'][flist[i].value] !=null ){
               fdata = data['report-value'][flist[i].value]['value'];
           }              
-          console.log(" Field data: " + fdata);                                   
+
           if( flist[i].type == "label"){
 
             $( valAnchor +" > form " ).append( "<div class='bkd-rep-fld'>\n"+
@@ -715,13 +733,12 @@ BKDrep = {
 
         $( valAnchor +" > form > div:last" )
            .append("<div><input type='button' id='" + "report_submit" + "'/></div>\n");
-        $("#"+"report_submit").attr('value', 'Submit Report');
+        $( "#"+"report_submit").attr('value', 'Submit Report');
         $( "#" + "report_submit" ).on( 'click', function(event){
-
             
             BKDrep.postData = { "report_type": repTp } ; 
             
-            $( ".bkd-report").each( function(index,el){
+            $( ".bkd-report").each( function( index, el ){
                 try{              
                   BKDrep.postData[el.id] = el.value;
 
@@ -732,10 +749,6 @@ BKDrep = {
                   console.log( "ERR:" + el.id + " : " + el );
                 }
              });
-
-             
-             console.log("REPTP: "+JSON.stringify(BKDrep.postData));      
-             //alert(JSON.stringify(BKDrep.postData));     
              
              $.ajax({
                 type: "POST",
@@ -744,10 +757,12 @@ BKDrep = {
                        op:"update",
                        mode:"json"},                    
                 dataType: "json",
-               encode: true,}).done(function (data) {                
-                 //BKDrep.tgtView( data.record, BKDrep.tgtAnchor, "edit" );
-                 //BKDrep.valEdit( data.record, BKDrep.valAnchor );
-               });                            
+                encode: true}).done( function(data){});
+
+             setTimeout(function() {
+               window.location.href = 'report?qmode=report&query='+BKDrep.postData.report_target_ac;
+             }, 250);  
+             
           });
                                            
       },

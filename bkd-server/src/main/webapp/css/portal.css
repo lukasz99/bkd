@@ -871,7 +871,7 @@ th.int, td.int {
 }
 
 .logo {
-  padding: 9px 10px 5px 10px;
+  padding: 8px 6px 6px 6px;
 }
 
 }
@@ -1420,7 +1420,7 @@ td.menu1 {
 }
 
 td.menu1select {
-  background-color:#99bbee; 
+  background-color:#8BB8E8; 
   border-right: 1px solid #bbccee;
   border-top: 1px solid #7799cc;
   border-left: 1px solid #7799cc;
@@ -1436,8 +1436,8 @@ td.menu1blank {
 }
 
 table.menu2_background {		/* mid menu (menu2) */
-  border-top: 5px solid #99bbee;
-  background-color:#99bbee;
+  border-top: 5px solid #8BB8E8;
+  background-color:#8BB8E8;
 }
 
 td.menu2first, td.menu2, td.menu2select, td.menu2last, td.menu2blank {
@@ -1458,7 +1458,7 @@ td.menu2 {
 
 td.menu2select {
   color: white;
-  background-color: #e3edff; 
+  background-color: #F6F4EE; 
   border-top:    1px solid #bbccee; 
   border-right:   1px solid white; 
   border-left:  1px solid #bbccee;
@@ -1474,8 +1474,8 @@ td.menu2blank {
 }
 
 table.menu3_background {		/* bottom menu (menu3) */
-  border-top: 5px solid #e3edff;
-  background-color:     #e3edff;
+  border-top: 5px solid #F6F4EE;
+  background-color:     #F6F4EE;
 }
 
 td.menu3first, td.menu3, td.menu3select, td.menu3last, td.menu3blank, td.menu3null {

@@ -30,6 +30,12 @@ BKDlink  = {
                  "url":"https://pubmed.ncbi.nlm.nih.gov/%%AC%%",
                  "type":"source"}
                  },
+        "upr":{"replaces":{
+                 "url":"https://www.uniprot.org/uniprot/%%AC%%",
+                 "type":"UniprotKB secondary accession"},
+               "has-instance":{
+                 "url":"https://www.uniprot.org/uniprot/%%AC%%",
+                 "type":"splice form"}},
         "dbSNP":{"mutation":{
                  "url":"https://www.ncbi.nlm.nih.gov/snp/%%AC%%",
                  "type":"sequence variant"}},
@@ -98,7 +104,7 @@ BKDlink  = {
    var ns = xref.ns;  
    var ac = xref.ac;
    var tp = xref.cvType.name;
-
+   
    var el = null;
    console.log("links: XREF: " + JSON.stringify(xref));
    // format:

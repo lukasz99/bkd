@@ -1,2 +1,3 @@
-<h1>channels bkd</h1>
-<hr/>
+<script>
+  window.location.replace('node');
+</script>

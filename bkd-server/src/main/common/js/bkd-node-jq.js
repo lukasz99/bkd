@@ -132,7 +132,7 @@ BKDnode = {
                          + "<table id='" + tid
                          + "' border='0' cellspacing='0' cellpadding='0' class='bkd-search-table'>"
                          + "</table>");
-    $('#' + tid).append("<tr> class='bkd-rep-fld'>"+
+    $('#' + tid).append("<tr class='bkd-rep-fld bkd-search-table-header'>"+
                                   "<th align='center' width='5%'>ID</th>"+                                  
                                   "<th align='center' width='10%'>Short Name</th>"+
                                   "<th align='center'>Full Name</th>"+

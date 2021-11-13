@@ -1,0 +1,137 @@
+
+Prefixes:
+     xsd: http://www.w3.org/2001/XMLSchema
+     ns0: http://mbi.ucla.edu/bkd/services/soap
+     ns1: http://dip.doe-mbi.ucla.edu/services/dxf20
+
+Global elements:
+     ns1:dataset(ns1:datasetType)
+     ns0:ServiceFailedException(messageType: xsd:string, message: xsd:string)
+     ns0:dropEvidence(ns: xsd:string, ac: xsd:string)
+     ns0:dropSource(ns: xsd:string, ac: xsd:string)
+     ns0:getCounts(ns: xsd:string, ac: xsd:string, match: xsd:string, detail: xsd:string, format: xsd:string)
+     ns0:getCrossRef(ns: xsd:string, ac: xsd:string, match: xsd:string, detail: xsd:string, format: xsd:string)
+     ns0:getEvidence(ns: xsd:string, ac: xsd:string, match: xsd:string, detail: xsd:string, format: xsd:string)
+     ns0:getEvidenceList(ns: xsd:string, ac: xsd:string, match: xsd:string, detail: xsd:string, format: xsd:string)
+     ns0:getLink(ns: xsd:string, ac: xsd:string, match: xsd:string, detail: xsd:string, format: xsd:string)
+     ns0:getLinkBounds(detail: xsd:string, format: xsd:string)
+     ns0:getLinkList(ns: xsd:string, ac: xsd:string, match: xsd:string, detail: xsd:string, format: xsd:string)
+     ns0:getLinkRange(fr: xsd:long, to: xsd:long, detail: xsd:string, format: xsd:string)
+     ns0:getLinksByNodeSet(dataset: ns1:datasetType, match: xsd:string, detail: xsd:string, format: xsd:string)
+     ns0:getNode(ns: xsd:string, ac: xsd:string, sequence: xsd:string, match: xsd:string, detail: xsd:string, format: xsd:string)
+     ns0:getNodeBounds(detail: xsd:string, format: xsd:string)
+     ns0:getNodeList(ns: xsd:string, ac: xsd:string, match: xsd:string, detail: xsd:string, format: xsd:string)
+     ns0:getNodeRange(fr: xsd:long, to: xsd:long, detail: xsd:string, format: xsd:string)
+     ns0:getSource(ns: xsd:string, ac: xsd:string, match: xsd:string, detail: xsd:string, format: xsd:string)
+     ns0:getSourceBounds(detail: xsd:string, format: xsd:string)
+     ns0:getSourceList(ns: xsd:string, ac: xsd:string, match: xsd:string, detail: xsd:string, format: xsd:string)
+     ns0:getSourceRange(fr: xsd:long, to: xsd:long, detail: xsd:string, format: xsd:string)
+     ns0:matchNode(dataset: ns1:datasetType, match: xsd:string, detail: xsd:string, format: xsd:string)
+     ns0:query(query: xsd:string, detail: xsd:string, format: xsd:string)
+     ns0:response(dxfset: ns1:datasetType, strset: xsd:string)
+     ns0:setEvidence(dataset: ns1:datasetType, mode: xsd:string)
+     ns0:setLink(dataset: ns1:datasetType, mode: xsd:string)
+     ns0:setNode(dataset: ns1:datasetType, mode: xsd:string)
+     ns0:setSource(dataset: ns1:datasetType, mode: xsd:string)
+     ns0:status(detail: xsd:string, format: xsd:string)
+     ns0:transform(dataset: ns1:datasetType, detail: xsd:string, format: xsd:string, expand: xsd:string, operation: ns0:operationType, limit: xsd:string)
+     ns0:xrefList(xref: ns1:xrefType[])
+     
+
+Global types:
+     xsd:anyType
+     ns1:attrType(({value: {xsd:string, ns: xsd:string, ac: xsd:string, typeNs: xsd:string, typeAc: xsd:string, type: xsd:string}} |
+                           {type: ns1:typeDefType, node: ns1:nodeType}),
+                    xrefList: {xref: ns1:xrefType[]},
+                    attrList: {attr: ns1:attrType[]},
+                    ns: xsd:string, ac: xsd:string,
+                    name: xsd:string)
+     ns1:datasetType(node: ns1:nodeType[])
+     ns1:featureType(type: ns1:typeDefType, label: xsd:string, name: xsd:string, locationList: {location: ns1:locationType[]}, xrefList: {xref: ns1:xrefType[]}, attrList: {attr: ns1:attrType[]})
+     ns1:locationType(begin: xsd:string, end: xsd:string, attrList: {attr: ns1:attrType[]})
+     ns1:nodeType(({type: ns1:typeDefType, label: xsd:string, name: xsd:string, xrefList: {xref: ns1:xrefType[]}, attrList: {attr: ns1:attrType[]}, partList: {part: {type: ns1:typeDefType, node: ns1:nodeType, xrefList: {xref: ns1:xrefType[]}, attrList: {attr: ns1:attrType[]}, featureList: {feature: ns1:featureType[]}, name: xsd:string, id: xsd:long}[]}, featureList: {feature: ns1:featureType[]}} | {_value_1: ANY}), id: xsd:long, ns: xsd:string, ac: xsd:string)
+     ns1:partType(type: ns1:typeDefType, node: ns1:nodeType, xrefList: {xref: ns1:xrefType[]}, attrList: {attr: ns1:attrType[]}, featureList: {feature: ns1:featureType[]}, name: xsd:string, id: xsd:long)
+     ns1:typeDefType(typeDef: ns1:nodeType, ns: xsd:string, ac: xsd:string, name: xsd:string)
+     ns1:xrefType(node: ns1:nodeType, attrList: {attr: ns1:attrType[]}, ns: xsd:string, ac: xsd:string, typeNs: xsd:string, typeAc: xsd:string, type: xsd:string)
+     ns0:argType(name: xsd:string, value: xsd:string)
+     ns0:operationType(opName: xsd:string, opArg: ns0:argType)
+     xsd:ENTITIES
+     xsd:ENTITY
+     xsd:ID
+     xsd:IDREF
+     xsd:IDREFS
+     xsd:NCName
+     xsd:NMTOKEN
+     xsd:NMTOKENS
+     xsd:NOTATION
+     xsd:Name
+     xsd:QName
+     xsd:anySimpleType
+     xsd:anyURI
+     xsd:base64Binary
+     xsd:boolean
+     xsd:byte
+     xsd:date
+     xsd:dateTime
+     xsd:decimal
+     xsd:double
+     xsd:duration
+     xsd:float
+     xsd:gDay
+     xsd:gMonth
+     xsd:gMonthDay
+     xsd:gYear
+     xsd:gYearMonth
+     xsd:hexBinary
+     xsd:int
+     xsd:integer
+     xsd:language
+     xsd:long
+     xsd:negativeInteger
+     xsd:nonNegativeInteger
+     xsd:nonPositiveInteger
+     xsd:normalizedString
+     xsd:positiveInteger
+     xsd:short
+     xsd:string
+     xsd:time
+     xsd:token
+     xsd:unsignedByte
+     xsd:unsignedInt
+     xsd:unsignedLong
+     xsd:unsignedShort
+
+Bindings:
+     Soap11Binding: {http://mbi.ucla.edu/bkd/services/soap}BkdServiceBinding
+
+Service: BkdService
+     Port: BkdServicePort (Soap11Binding: {http://mbi.ucla.edu/bkd/services/soap}BkdServiceBinding)
+         Operations:
+            dropEvidence(ns: xsd:string, ac: xsd:string) -> node: ns1:nodeType[]
+            dropSource(ns: xsd:string, ac: xsd:string) -> node: ns1:nodeType[]
+            getCounts(ns: xsd:string, ac: xsd:string, match: xsd:string, detail: xsd:string, format: xsd:string) -> node: ns1:nodeType[]
+            getCrossRefList(ns: xsd:string, ac: xsd:string, match: xsd:string, detail: xsd:string, format: xsd:string) -> node: ns1:nodeType[]
+            getEvidence(ns: xsd:string, ac: xsd:string, match: xsd:string, detail: xsd:string, format: xsd:string) -> node: ns1:nodeType[]
+            getEvidenceList(ns: xsd:string, ac: xsd:string, match: xsd:string, detail: xsd:string, format: xsd:string) -> xref: ns1:xrefType[]
+            getLink(ns: xsd:string, ac: xsd:string, match: xsd:string, detail: xsd:string, format: xsd:string) -> node: ns1:nodeType[]
+            getLinkBounds(detail: xsd:string, format: xsd:string) -> node: ns1:nodeType[]
+            getLinkList(ns: xsd:string, ac: xsd:string, match: xsd:string, detail: xsd:string, format: xsd:string) -> xref: ns1:xrefType[]
+            getLinkRange(fr: xsd:long, to: xsd:long, detail: xsd:string, format: xsd:string) -> node: ns1:nodeType[]
+            getLinksByNodeSet(dataset: ns1:datasetType, match: xsd:string, detail: xsd:string, format: xsd:string) -> node: ns1:nodeType[]
+            getNode(ns: xsd:string, ac: xsd:string, sequence: xsd:string, match: xsd:string, detail: xsd:string, format: xsd:string) -> node: ns1:nodeType[]
+            getNodeBounds(detail: xsd:string, format: xsd:string) -> node: ns1:nodeType[]
+            getNodeList(ns: xsd:string, ac: xsd:string, match: xsd:string, detail: xsd:string, format: xsd:string) -> xref: ns1:xrefType[]
+            getNodeRange(fr: xsd:long, to: xsd:long, detail: xsd:string, format: xsd:string) -> node: ns1:nodeType[]
+            getSource(ns: xsd:string, ac: xsd:string, match: xsd:string, detail: xsd:string, format: xsd:string) -> node: ns1:nodeType[]
+            getSourceBounds(detail: xsd:string, format: xsd:string) -> node: ns1:nodeType[]
+            getSourceList(ns: xsd:string, ac: xsd:string, match: xsd:string, detail: xsd:string, format: xsd:string) -> xref: ns1:xrefType[]
+            getSourceRange(fr: xsd:long, to: xsd:long, detail: xsd:string, format: xsd:string) -> node: ns1:nodeType[]
+            matchNode(dataset: ns1:datasetType, match: xsd:string, detail: xsd:string, format: xsd:string) -> node: ns1:nodeType[]
+            query(query: xsd:string, detail: xsd:string, format: xsd:string) -> node: ns1:nodeType[]
+            setEvidence(dataset: ns1:datasetType, mode: xsd:string) -> node: ns1:nodeType[]
+            setLink(dataset: ns1:datasetType, mode: xsd:string) -> node: ns1:nodeType[]
+            setNode(dataset: ns1:datasetType, mode: xsd:string) -> node: ns1:nodeType[]
+            setSource(dataset: ns1:datasetType, mode: xsd:string) -> node: ns1:nodeType[]
+            status(detail: xsd:string, format: xsd:string) -> node: ns1:nodeType[]
+            transform(dataset: ns1:datasetType, detail: xsd:string, format: xsd:string, expand: xsd:string, operation: ns0:operationType, limit: xsd:string) -> node: ns1:nodeType[]
+

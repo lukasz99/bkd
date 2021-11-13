@@ -4,6 +4,7 @@ import sys
 import argparse
 import json
 import re
+import csv
 
 from lxml import etree as ET
 
@@ -60,6 +61,10 @@ parser.add_argument('--file', '-f', dest="file", type=str,
                     required=False, default='',
                     help='Input file.')
 
+parser.add_argument('--annotation-file', '-af', dest="afile", type=str,
+                    required=False, default='',
+                    help='Annotation file.')
+
 parser.add_argument('--mode', '-m', dest="mode", type=str,
                     required=False, default='get',
                     help='Mode.')
@@ -106,6 +111,24 @@ if args.mode == "get":
         print()
 
 elif args.mode == "set":
+
+    annot = {}
+    
+    if len(args.afile) > 0: 
+        with open(args.afile, "r") as ah:
+            areader = csv.DictReader(ah, delimiter='\t')
+            for row in areader:
+                arow = {}
+                nkey=None
+                for k in row.keys():
+                    if k == 'key':
+                        nkey=row[k]
+                    else:
+                        arow[k]=row[k]
+                if nkey is not None: 
+                    annot[nkey]=arow
+    print(annot)
+    
     if len(args.file) > 0: 
         if args.out.endswith(".dxf"):
             args.out = args.out.replace(".dxf","")            
@@ -140,16 +163,23 @@ elif args.mode == "set":
                             print( "ERROR: no uniprot file" )
         
                         print("UniprotKB record: " + ufile)        
-        
+
+                        
                         rec = pymex.uprot.Record().parseXml( ufile ) # parse uniprot record
 
+                            
                         if len(ac) > 0 and len(args.ns) == 0:
                             ns  = re.sub("-?\d+\D","",ac)
                         else:
                             ns = args.ns
-                        
+                            
                         znode = uzeep.buildZnode(rec, ns, ac) # build zeep request node
 
+                        if upr in annot.keys():
+                            cann = annot[upr]
+                            if "label" in cann and cann["label"] is not None and len(cann["label"]) > 0:  
+                                znode.label=annot[upr]["label"]
+                                               
                         zres = uzeep.setnode(znode, mode="add", debug=args.debug)
                         nsl = zres.xpath("//dxf:dataset/dxf:node/@ns",namespaces=uzeep.dxfns)
                         acl = zres.xpath("//dxf:dataset/dxf:node/@ac",namespaces=uzeep.dxfns)
@@ -176,7 +206,6 @@ elif args.mode == "set":
         print("UniprotKB record: " + ufile)        
         
         rec = pymex.uprot.Record().parseXml( ufile ) # parse uniprot record
-
 
         print(json.dumps(rec.root,indent=3))
 
