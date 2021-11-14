@@ -5,6 +5,8 @@ import argparse
 import json
 import re
 import csv
+import urllib.request
+import ssl
 
 from lxml import etree as ET
 
@@ -21,14 +23,14 @@ sys.path.insert(0, "/home/lukasz/git/bkd/bkd-client/pylib" )
 import pymex
 import bkdpy as BKD
 
-bkd_dest = {"dip0-local":"http://10.1.7.100:9999/dipdev0/services/soap?wsdl",
-            "dip0-public":"https://dip.mbi.ucla.edu/dipdev0/services/soap?wsdl",
-            "dip2-local":"http://10.1.7.102:9999/dipdev2/services/soap?wsdl",
-            "dip2-public":"https://dip.mbi.ucla.edu/dipdev2/services/soap?wsdl",
-            "cvdb0-local":"http://10.1.7.100:9999/cvdbdev0/services/soap?wsdl",
-            "cvdb0-public":"https://dip.mbi.ucla.edu/cvdbdev0/services/soap?wsdl",
-            "cvdb2-local":"http://10.1.7.102:9999/cvdbdev2/services/soap?wsdl",
-            "cvdb2-public":"https://dip.mbi.ucla.edu/cvdbdev2/services/soap?wsdl"}
+bkd_dest = {"dip0-local":"http://10.1.7.100:9999/dipdev0",
+            "dip0-public":"https://dip.mbi.ucla.edu/dipdev0",
+            "dip2-local":"http://10.1.7.102:9999/dipdev2",
+            "dip2-public":"https://dip.mbi.ucla.edu/dipdev2",
+            "cvdb0-local":"http://10.1.7.100:9999/cvdbdev0",
+            "cvdb0-public":"https://dip.mbi.ucla.edu/cvdbdev0",
+            "cvdb2-local":"http://10.1.7.102:9999/cvdbdev2",
+            "cvdb2-public":"https://dip.mbi.ucla.edu/cvdbdev2"}
 
 upr_loc ={"local":"/mnt/mirrors/uniprotkb/records"}
 
@@ -69,6 +71,10 @@ parser.add_argument('--mode', '-m', dest="mode", type=str,
                     required=False, default='get',
                     help='Mode.')
 
+parser.add_argument('--setac', dest="setac", type=bool,
+                    required=False, default=False,
+                    help='Set accession')
+
 parser.add_argument('--out', '-o', dest="out", type=str,
                     required=False, default='',
                     help='Output file.')
@@ -94,7 +100,7 @@ def acc2path( dir, acc ):
 
 args = parser.parse_args()
 
-uzeep = BKD.UniZeep(bkd_dest[args.sloc])
+uzeep = BKD.UniZeep( bkd_dest[args.sloc] )
 
 if args.mode == "get":
     zres = uzeep.getnode( args.ns, args.ac )
@@ -134,6 +140,28 @@ elif args.mode == "set":
             args.out = args.out.replace(".dxf","")            
         with open(args.out, "w") as logh:
             logh.write("#AC\tUPR\n")
+
+            maxac = 0
+            with open(args.file, "r") as fh:
+                for ln in fh:
+                    if  not ln.startswith("#"):
+                        cols = ln.split('\t')
+                        upr = cols[1].strip()
+
+                        if len( cols[0].strip() ) > 0:
+                            ac = int(re.sub("\D","",cols[0]))
+                        else:
+                            ac = 0
+                        if ac > maxac:
+                            maxac=ac
+                            
+            print( "Accession Max: " + str(maxac) )
+
+            if maxac > 0 and args.setac:
+                # set acc
+                if uzeep.setidgen( maxac, "node") > 0:
+                    sys.exit(1)
+                
             with open(args.file, "r") as fh:
                 for ln in fh:
                     if  not ln.startswith("#"):
@@ -194,8 +222,7 @@ elif args.mode == "set":
         
         swpath = acc2path( uloc + "/swissprot", args.upr)
         trpath = acc2path( uloc + "/trembl", args.upr)
-           
-        
+                   
         if os.path.isfile(swpath):
             ufile = swpath
         elif os.path.isfile(trpath):

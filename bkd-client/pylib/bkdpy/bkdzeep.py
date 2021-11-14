@@ -1,6 +1,7 @@
 from http.client import HTTPSConnection, HTTPResponse
 import json
 import re
+import urllib.request
 import ssl
 
 from requests import Session
@@ -15,7 +16,7 @@ import bkdpy as BKD
 
 class BkdZeep():
  
-    def __init__( self, wsdlurl, user='guest', password='guest',
+    def __init__( self, srvurl, user='guest', password='guest',
                   mode='dev', debug=False ):
 
         self.dxfns = { 'dxf': 'http://dip.doe-mbi.ucla.edu/services/dxf20' }
@@ -24,7 +25,8 @@ class BkdZeep():
         self.mode = mode
         self._debug = debug    
         
-        self._zeepWsdlUrl = wsdlurl
+        self._dbmgrUrl = srvurl + "/databasemgr"
+        self._zeepWsdlUrl = srvurl + "/services/soap?wsdl"
     
         self._zsettings = zSettings( strict=False,
                                      xml_huge_tree=True,
@@ -70,6 +72,21 @@ class BkdZeep():
     def ssfactory(self):
         return self._ssfactory
 
+    def setidgen(self, idval, idgen="node"):
+
+        mgrurl = self._dbmgrUrl + "?op=set&idgen=" + idgen
+        mgrurl += "&value=" + str(idval)
+        
+        urlcontext=ssl.SSLContext()
+        urlcontext.verify_mode=ssl.VerifyMode.CERT_NONE
+        
+        data = urllib.request.urlopen( mgrurl, context=urlcontext )
+        if data.status != 200:
+            return data.status
+        else:
+            return 0
+        
+    
     def getnode( self, ns, ac, detail='default', format='dxf20', debug = False ):
         print("BkdClinet: getnode")
         client = self._zclient                 
