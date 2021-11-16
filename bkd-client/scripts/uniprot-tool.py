@@ -214,7 +214,7 @@ elif args.mode == "set":
                                     
                         logh.write( "\t".join( (acl[0], upr,"\n") ) )
                         logh.flush()
-                        os.fsync()
+                        os.fsync(logh)
     else:
 
         uloc = upr_loc[args.uloc]
