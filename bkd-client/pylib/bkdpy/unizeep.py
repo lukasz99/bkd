@@ -115,14 +115,15 @@ class UniZeep(BKD.BkdZeep):
 
     def appendGeneName( self, rec, znode ):
 
-        zdxf = self._dxfactory
+        if rec.protein.gene is not None:
+            zdxf = self._dxfactory
         
-        zattr = zdxf.attrType(value = rec.protein.gene,
-                              name = "gene-name",
-                              ns="dxf",ac ="dxf:0102",
-                              attrList = xsd.SkipValue)
+            zattr = zdxf.attrType(value = rec.protein.gene,
+                                  name = "gene-name",
+                                  ns="dxf",ac ="dxf:0102",
+                                  attrList = xsd.SkipValue)
 
-        znode.attrList["attr"].append( zattr )
+            znode.attrList["attr"].append( zattr )
 
 
     def appendSynonyms( self, rec, znode ):
@@ -262,7 +263,7 @@ class UniZeep(BKD.BkdZeep):
             
         for comment_type in rec.comment.values():            
             for comment in comment_type:
-                print(type(comment))
+                #print(type(comment))
                 if comment["type"] in self._ctypes.keys():
                     zattr = zdxf.attrType(value = comment["text"]["value"],
                                           name = self._ctypes[comment["type"]]["name"],

@@ -68,7 +68,7 @@
         <service.esindex.url>http://10.1.8.102:9200/cvdb-%%STATE%%-%%TYPE%%-index-000000</service.esindex.url>
       </properties>
       <build>
-       <finalName>dipdev0</finalName>
+       <finalName>cvdb</finalName>
       </build>
     </profile>
 

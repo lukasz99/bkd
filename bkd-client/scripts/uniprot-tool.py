@@ -133,7 +133,7 @@ elif args.mode == "set":
                         arow[k]=row[k]
                 if nkey is not None: 
                     annot[nkey]=arow
-    print(annot)
+    
     
     if len(args.file) > 0: 
         if args.out.endswith(".dxf"):
@@ -235,7 +235,7 @@ elif args.mode == "set":
         
         rec = pymex.uprot.Record().parseXml( ufile ) # parse uniprot record
 
-        print(json.dumps(rec.root,indent=3))
+        #print(json.dumps(rec.root,indent=3))
 
         #xx
         
