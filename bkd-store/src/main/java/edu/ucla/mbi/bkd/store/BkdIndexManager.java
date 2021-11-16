@@ -40,7 +40,10 @@ public class BkdIndexManager {
     public BkdRecordManager getRecordManager() {
         return recManager;
     }
-    
+
+    public String getState(){    
+        return recManager.getDaoContext().getState();
+    }
     
     //--------------------------------------------------------------------------
     // Index Url
@@ -56,7 +59,8 @@ public class BkdIndexManager {
         if( indexUrl == null ){
             indexUrl ="";
         }
-        return indexUrl;
+        
+        return indexUrl.replace( "%%STATE%%", getState() );
     }
     
     //---------------------------------------------------------------------
@@ -481,6 +485,7 @@ public class BkdIndexManager {
         Logger log = LogManager.getLogger( this.getClass() ); 
         try{
 
+           
             String url = getIndexUrl().replace( "%%TYPE%%", type );
 
             

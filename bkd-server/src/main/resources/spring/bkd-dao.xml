@@ -137,7 +137,7 @@
      <property name="daoContext" ref="bkdDaoContext" />
    </bean>
    
-   <!-- Idex Manager -->
+   <!-- Index Manager -->
 
    <bean id="bkdIndexManager" class="edu.ucla.mbi.bkd.store.BkdIndexManager"
          init-method="initialize" >

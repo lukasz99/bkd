@@ -213,7 +213,8 @@ elif args.mode == "set":
                         acl = zres.xpath("//dxf:dataset/dxf:node/@ac",namespaces=uzeep.dxfns)
                                     
                         logh.write( "\t".join( (acl[0], upr,"\n") ) )
-                        
+                        logh.flush()
+                        os.fsync()
     else:
 
         uloc = upr_loc[args.uloc]

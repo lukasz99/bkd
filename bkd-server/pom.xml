@@ -56,6 +56,23 @@
 
   <profiles>
     <profile>
+      <id>cvdb</id>
+      <activation>
+       <activeByDefault>false</activeByDefault>
+      </activation>
+      <properties>
+        <site>dip</site>
+        <srv.ver>cvdb</srv.ver>
+        <db.ver>cvdb</db.ver>
+        <rec.prefix>DIP</rec.prefix>
+        <service.esindex.url>http://10.1.8.102:9200/cvdb-%%STATE%%-%%TYPE%%-index-000000</service.esindex.url>
+      </properties>
+      <build>
+       <finalName>dipdev0</finalName>
+      </build>
+    </profile>
+
+    <profile>
       <id>dipdev0</id>
       <activation>
        <activeByDefault>false</activeByDefault>
