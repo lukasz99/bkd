@@ -243,7 +243,7 @@ elif args.mode == "set":
 
         if args.debug:
             print("**")
-            print(ET.tostring( znode, pretty_print=True).decode() )
+            #print(ET.tostring( znode, pretty_print=True).decode() )
             print("**")
         
         zres = uzeep.setnode(znode, mode=args.mode, debug=args.debug)

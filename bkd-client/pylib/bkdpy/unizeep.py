@@ -168,7 +168,7 @@ class UniZeep(BKD.BkdZeep):
                                            ns = "upr", ac = upr_id + "-" + element["molecule"]["value"].split(" ")[1])
                     zelement.xrefList["xref"].append(zxref)
             else:
-                print(upr_id + "\t" + "Molecule NOT Isoform: " + element["molecule"])
+                print(upr_id + "\t" + "Molecule NOT Isoform: " + element["molecule"]["value"])
                 zxref = zdxf.xrefType( type = "describes",
                                        typeNs = "dxf",
                                        typeAc = "dxf:0024",
@@ -364,7 +364,11 @@ class UniZeep(BKD.BkdZeep):
         zdxf = self._dxfactory
     
         unhandled_types = set([])
-    
+
+        if "feature" not in rec.root["uniprot"]["entry"][0]:
+            znode.featureList = xsd.SkipValue
+            return
+        
         for feature in rec.root["uniprot"]["entry"][0]["feature"]:
             if feature["type"] in self._ftypes.keys():
                 featureType = zdxf.typeDefType(ns= self._ftypes[feature["type"]]["ns"], 
