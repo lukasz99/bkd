@@ -188,7 +188,7 @@ CREATE TABLE taxon (
     pkey bigint DEFAULT nextval(('"taxon_pkey_seq"'::text)::regclass) NOT NULL CONSTRAINT taxon_pk PRIMARY KEY,   
     taxid integer DEFAULT 0 NOT NULL,
     sciname character varying(64) DEFAULT ''::character varying NOT NULL,
-    comname text DEFAULT ''::text NOT NULL 
+    comname character varying(256) DEFAULT ''::character varying NOT NULL 
 );
 
 CREATE SEQUENCE taxon_pkey_seq START WITH 1 INCREMENT BY 1
@@ -235,7 +235,6 @@ CREATE SEQUENCE attr_pkey_seq START WITH 1 INCREMENT BY 1
 CREATE INDEX attr_01 ON attribute USING btree (fk_node, fk_cvtype);
 CREATE INDEX attr_02 ON attribute USING btree (fk_cvtype);
 CREATE INDEX attr_02a ON attribute USING btree (fk_source);
-CREATE INDEX attr_03 ON attribute USING btree (value);
 CREATE INDEX attr_04 ON attribute USING btree (sclass);
 
 CREATE TABLE xref (
@@ -373,7 +372,7 @@ CREATE TABLE range (
     rstop int DEFAULT 0 NOT NULL,
     rstop2 int DEFAULT 0 NOT NULL,
     fk_cvstop bigint DEFAULT 0 NOT NULL, 
-    sequence text DEFAULT ''::text,
+    sequence character varying(1024) DEFAULT ''::character varying NOT NULL,
     t_cr timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone,                                                                               
     t_mod timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone
 );

@@ -15,7 +15,11 @@ count2 = 0
 with open(sys.argv[2],"r") as fh:
 
     for ln in fh:
-        count2 += 1
+        if ln.startswith('#'):
+            if not ln.startswith('#AC\tUPR'):
+                print(ln, end="")
+        else:
+            count2 += 1
         if count2 <= count1:
             pass
         elif count2 == count1+1:
