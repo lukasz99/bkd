@@ -65,7 +65,8 @@
         <srv.ver>cvdb</srv.ver>
         <db.ver>cvdb</db.ver>
         <rec.prefix>DIP</rec.prefix>
-        <service.esindex.url>http://10.1.8.102:9200/cvdb-%%STATE%%-%%TYPE%%-index-000000</service.esindex.url>
+        <service.dbip>10.1.8.203</service.dbip>
+        <service.esindex.url>http://10.1.8.202:9200/cvdb-%%STATE%%-%%TYPE%%-index-000000</service.esindex.url>
       </properties>
       <build>
        <finalName>cvdb</finalName>

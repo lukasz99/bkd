@@ -254,13 +254,15 @@ class UniZeep(BKD.BkdZeep):
 
         # comment.molecule
 
-        print(rec.comm.keys())
+        #print(rec.comm.keys())
         for comment_type in rec.comm.values():
             for comment in comment_type:
                 #print("TEXT:", comment.text)
                 #print("EVID:", comment.molecule)
                 pass
-            
+        if rec.comment is None:
+            return
+        
         for comment_type in rec.comment.values():            
             for comment in comment_type:
                 #print(type(comment))
