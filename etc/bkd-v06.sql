@@ -372,7 +372,7 @@ CREATE TABLE range (
     rstop int DEFAULT 0 NOT NULL,
     rstop2 int DEFAULT 0 NOT NULL,
     fk_cvstop bigint DEFAULT 0 NOT NULL, 
-    sequence character varying(1024) DEFAULT ''::character varying NOT NULL,
+    sequence character varying(1024) DEFAULT ''::character varying,
     t_cr timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone,                                                                               
     t_mod timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone
 );
