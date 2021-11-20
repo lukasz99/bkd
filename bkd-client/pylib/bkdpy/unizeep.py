@@ -2,7 +2,7 @@ import sys
 import os
 
 from lxml import etree as ET
-
+ 
 from requests import Session
 from requests.auth import HTTPBasicAuth
 
@@ -44,8 +44,12 @@ class UniZeep(BKD.BkdZeep):
                          "IntAct":{"name":"has-links", "ns":"dxf", "ac":"dxf:0082"},
                          "MIM":{"name":"has-phenotype", "ns":"dxf", "ac":"dxf:0077"}}
         
-        self._ftypes={"mutagenesis site":{"name":"mutation","ns":"psi-mi","ac":"MI:0118"},
-                      "glycosylation site":{"name":"glycolysated residue","ns":"psi-mod","ac":"MOD:00693"}
+        #self._ftypes={"mutagenesis site":{"name":"mutation","ns":"psi-mi","ac":"MI:0118"},
+        #              "glycosylation site":{"name":"glycolysated residue","ns":"psi-mod","ac":"MOD:00693"}
+        #}
+
+        self._ftypes={"mutation":{"name":"mutation","ns":"psi-mi","ac":"MI:0118"},
+                      "variant":{"name":"variant","ns":"psi-mi","ac":"MI:1241"}
         }
 
         mypath = os.path.realpath(__file__)
@@ -148,27 +152,29 @@ class UniZeep(BKD.BkdZeep):
                 znode.attrList["attr"].append( zattr )
             else:
                 if alias.type != "gene name":
-                    print( "Uncertain how to handle alias of type: "
-                           + alias.type)
+                    print( "Unrecognized alias type:", alias.type)
 
 
     def appendIsoforms(self, rec, element, zelement ):
         '''generates splice xrefList'''
 
         zdxf = self._dxfactory
-        
+        #print("isoform",type(element))
         upr_id = rec.accession["primary"]
-        if "molecule" in element.keys():
-            if (element["molecule"]["value"].split(" ")[0] == "Isoform"):
-                for isoform_num in element["molecule"]["value"].split(" ")[0][1:]:
+        if element.molecule is not None:
+            if (element.molecule.split(" ")[0] == "Isoform"):
+                #print(element.molecule)
+                for isoform_num in element.molecule.split(" ")[1:]:
+                    
                     zxref = zdxf.xrefType( type = "describes",
                                            typeNs = "dxf",
                                            typeAc = "dxf:0024",
                                            node = xsd.SkipValue,
-                                           ns = "upr", ac = upr_id + "-" + element["molecule"]["value"].split(" ")[1])
+                                           ns = "upr", ac = upr_id + "-" + element.molecule.split(" ")[1])
                     zelement.xrefList["xref"].append(zxref)
+                    
             else:
-                print(upr_id + "\t" + "Molecule NOT Isoform: " + element["molecule"]["value"])
+                #print(upr_id + "\t" + "Molecule NOT Isoform: " + element.molecule)
                 zxref = zdxf.xrefType( type = "describes",
                                        typeNs = "dxf",
                                        typeAc = "dxf:0024",
@@ -185,11 +191,11 @@ class UniZeep(BKD.BkdZeep):
 
 
     def appendEvidence(self, rec, element, zelement ):   # element == feature ?
- 
+
+        #print(type(element),type(zelement))
+        #print(element._feature)
         zdxf = self._dxfactory
-        if "evidence" not in element:
-            return        
-        
+
         evidence_dict = rec.root["uniprot"]["entry"][0]["evidence"]
         #print("XXX:",element.evidence)
 
@@ -197,13 +203,65 @@ class UniZeep(BKD.BkdZeep):
         #    print("evid:", evidence_key, ":")
         #    evidence = evidence_dict[evidence_key]
 
+        for ev in element.evidence:
+            #print("EV type",ev.type, ev.source)
+            #print("EV source", ev.source)
+            #print("EV",zelement)
+
+            if ev.type in self._eco_label_dict.keys():
+                eco_label = self._eco_label_dict[ev.type]
+            else:
+                eco_id = ev.type.replace(":","_")
+                #print("New ECO id", eco_id)
+                eco_file = urlopen(self._eco_url%eco_id).read()
+                sleep(1)
+                eco_text = eco_file.decode("utf-8")
+                eco_json = json.loads(eco_text)
+                eco_label = eco_json["_embedded"]["terms"][0]["label"]
+                self._eco_label_dict[ev.type] = eco_label
+
+                if os.access(self._eco_path, os.W_OK):
+                    # only when allowed to write
+                    json_object = json.dumps(self._eco_label_dict, indent = 4)                
+                    with open(self._eco_path, "w") as outfile:
+                        outfile.write(json_object)                         
+            
+                        
+            if ev.source is not None:
+
+                if ev.source["ns"] == "UniprotKB":
+                    ns = "uprot"
+                else:
+                    ns = ev.source["ns"]
+                    
+                zxref = zdxf.xrefType( type = eco_label,
+                                       typeNs = "eco",
+                                       typeAc = ev.type,
+                                       node = xsd.SkipValue,
+                                       ns = ns,
+                                       ac = ev.source["ac"])
+                zelement.xrefList["xref"].append(zxref)
+            else:
+                zxref = zdxf.xrefType( type = eco_label,
+                                       typeNs = "eco",
+                                       typeAc = ev.type,
+                                       node = xsd.SkipValue,
+                                       ns = "",
+                                       ac = "")
+                zelement.xrefList["xref"].append(zxref)
+            
+
+            
+        
+        return
+        
         for evidence in element["_evidence"]:
 
             if evidence["type"] in self._eco_label_dict.keys():
                 eco_label = self._eco_label_dict[evidence["type"]]
             else:
                 eco_id = evidence["type"].replace(":","_")
-                print("New ECO id", eco_id)
+                #print("New ECO id", eco_id)
                 eco_file = urlopen(self._eco_url%eco_id).read()
                 sleep(1)
                 eco_text = eco_file.decode("utf-8")
@@ -254,30 +312,42 @@ class UniZeep(BKD.BkdZeep):
 
         # comment.molecule
 
-        #print(rec.comm.keys())
-        for comment_type in rec.comm.values():
-            for comment in comment_type:
-                #print("TEXT:", comment.text)
-                #print("EVID:", comment.molecule)
-                pass
         if rec.comment is None:
             return
         
-        for comment_type in rec.comment.values():            
+        #print(rec.comm.keys())
+        for comment_type in rec.comm.values():
+            #print("\nCTYP:",comment_type)
+
             for comment in comment_type:
-                #print(type(comment))
-                if comment["type"] in self._ctypes.keys():
-                    zattr = zdxf.attrType(value = comment["text"]["value"],
-                                          name = self._ctypes[comment["type"]]["name"],
-                                          ns=self._ctypes[comment["type"]]["ns"],
-                                          ac =self._ctypes[comment["type"]]["ac"], 
-                                          attrList = xsd.SkipValue, 
-                                          xrefList = {"xref":[]})
-                    self.appendIsoforms( rec, comment, zattr )
+                #print(comment)
+                #print("TEXT:", comment.text)
+                #print("MOLE:", comment.molecule)
+                #print("TYPE:", comment.type)
+                #print("EVID:", comment.evidence)
+
+                if comment.type in self._ctypes.keys():
+                   val = comment.text
+                   nme = self._ctypes[comment.type]["name"]
+                   #print( "***", val, nme )
+                   
+                   zattr = zdxf.attrType(value = comment.text,
+                                         name = self._ctypes[comment.type]["name"],
+                                         ns=self._ctypes[comment.type]["ns"],
+                                         ac =self._ctypes[comment.type]["ac"], 
+                                         attrList = xsd.SkipValue, 
+                                         xrefList = {"xref":[]})
+
+                   self.appendIsoforms( rec, comment, zattr )
+                   self.appendEvidence( rec, comment, zattr )
+                   znode.attrList["attr"].append(zattr)
                 else:
-                    print(rec.accession["primary"]+"\tComment Type: "+comment["type"])
-                    return -1
-                znode.attrList["attr"].append(zattr)
+                    pass
+                    #print(rec.accession["primary"]+"\tComment Type (skipped): " + comment.type )
+                    #return -1
+                
+
+        return
 
                 
     def appendDbReferences(self, rec, znode ):
@@ -287,7 +357,12 @@ class UniZeep(BKD.BkdZeep):
         isoforms = set([])
 
         for refType in self._dbtypes:
+            #LS: nore - needs fixing 
             refList = [dbref for dbref in rec.root["uniprot"]["entry"][0]["dbReference"] if dbref["type"] == refType]
+
+            #print(rec.xref)
+            #refList = [dbref for dbref in rec.xref if dbref["type"] == refType]
+            
             if refType == "RefSeq" and len(refList) == 1 and "molecule" not in refList[0].keys():
                 zxref = zdxf.xrefType( type = "identical-to",
                                        typeNs = "dxf",
@@ -299,6 +374,7 @@ class UniZeep(BKD.BkdZeep):
 
             else:
                 for ref in refList:
+                    #print("REF:",ref)
                     if refType == "RefSeq":
                         if "molecule" in ref.keys():
                             isoforms.add(ref["molecule"]["id"])
@@ -310,7 +386,7 @@ class UniZeep(BKD.BkdZeep):
                                            typeNs = self._dbtypes[refType]["ns"],
                                            typeAc = self._dbtypes[refType]["ac"],
                                            node = xsd.SkipValue,
-                                           ns = refType, ac = refList[0]["id"])
+                                           ns = refType, ac = ref["id"])
                     
                     znode.xrefList["xref"].append( zxref )
 
@@ -362,74 +438,78 @@ class UniZeep(BKD.BkdZeep):
 
 
     def appendFeatures(self, rec, znode ):
-
+        #print("\n\nFEATURES\n--------")
         zdxf = self._dxfactory
     
         unhandled_types = set([])
 
-        if "feature" not in rec.root["uniprot"]["entry"][0]:
-            znode.featureList = xsd.SkipValue
-            return
+        #if "feature" not in rec.root["uniprot"]["entry"][0]:
+        #    znode.featureList = xsd.SkipValue
+        #    return
         
-        for feature in rec.root["uniprot"]["entry"][0]["feature"]:
-            if feature["type"] in self._ftypes.keys():
-                featureType = zdxf.typeDefType(ns= self._ftypes[feature["type"]]["ns"], 
-                                               ac=self._ftypes[feature["type"]]["ac"],
-                                               typeDef = xsd.SkipValue,
-                                               name=self._ftypes[feature["type"]]["name"])
+        for fname in rec.feat:
+            #print( "\nffname", fname )
+            if fname in self._ftypes.keys():            
+                for ff in rec.feat[fname]:
+                    #print( "\nff: ", repr(ff) )
+                    featureType = zdxf.typeDefType(ns= self._ftypes[fname]["ns"], 
+                                                   ac=self._ftypes[fname]["ac"],
+                                                   typeDef = xsd.SkipValue,
+                                                   name=self._ftypes[fname]["name"])
 
-                zfeature = zdxf.featureType(type = featureType,
-                                            label = feature["type"], #TODO: filler for now
-                                            locationList = {"location":[] },
-                                            xrefList = {"xref":[]},
-                                            attrList = {"attr":[]} )
+                    zfeature = zdxf.featureType(type = featureType,
+                                                label = fname, #TODO: filler for now
+                                                locationList = {"location":[] },
+                                                xrefList = {"xref":[]},
+                                                attrList = {"attr":[]} )
 
-                self.appendIsoforms(rec, feature, zfeature)
-                self.appendEvidence(rec, feature, zfeature)
+                    for r in ff.ranges:
+                        zlocation = zdxf.locationType(begin = r.begPosition[0],
+                                                      end = r.endPosition[0],
+                                                      attrList = {"attr":[]}) 
+                        
+                        if r.newSequence is not None:                        
+                            zattr = zdxf.attrType( value = r.newSequence,
+                                                   name = "resulting sequence",
+                                                   ns = "psi-mi",
+                                                   ac = "MI:1308",
+                                                   attrList = xsd.SkipValue)
+                            zlocation.attrList["attr"].append(zattr)
+                     
+                        zfeature.locationList["location"].append(zlocation)
 
-                if "position" in feature["location"].keys():
-                    zlocation = zdxf.locationType(begin = feature["location"]["position"]["position"],
-                                                  end = feature["location"]["position"]["position"],
-                                                  attrList = {"attr":[]}) 
-                else:
-                    zlocation = zdxf.locationType(begin = feature["location"]["begin"]["position"],
-                                                  end = feature["location"]["end"]["position"],
-                                                  attrList = {"attr":[]})
-
-                if "variation" in feature.keys():
-                    for variation in feature["variation"]:
-                        zattr = zdxf.attrType(value = variation,
-                                              name = "resulting sequence",
-                                              ns = "psi-mi",
-                                              ac = "MI:1308",
-                                              attrList = xsd.SkipValue)
+                    for a in ff.attrs:
+                        #print(a.name, a.nameAc, a.value)
+                        
+                        zattr = zdxf.attrType( value = a.value,
+                                               name = a.name,
+                                               ns = "dxf",
+                                               ac = a.nameAc,
+                                               attrList = xsd.SkipValue)
                         zlocation.attrList["attr"].append(zattr)
-                else:
-                    zlocation.attrList = xsd.SkipValue
+                            
+                    self.appendIsoforms(rec, ff, zfeature)
+                    self.appendEvidence(rec, ff, zfeature)
+                        
+                    if len(zlocation.attrList["attr"]) == 0:                    
+                        zlocation.attrList = xsd.SkipValue
 
-                if "decription" in feature.keys():
-                    zattr = zdxf.attrType(value = feature["description"],
-                                          name = "description",
-                                          ns = "dxf",
-                                          ac = "dxf:0089",
-                                          attrList = xsd.SkipValue)
-                
-                    zfeature.attrList["attr"].append(zattr)
+                    if len(zfeature.xrefList["xref"]) == 0:                    
+                        zfeature.xrefList = xsd.SkipValue
+                        
+                    if len(zfeature.attrList["attr"]) == 0:                    
+                        zfeature.attrList = xsd.SkipValue
 
-                else:
-                    zfeature.attrList = xsd.SkipValue
-
-                zfeature.locationList["location"].append(zlocation)
-
-                znode.featureList["feature"].append( zfeature )
-            else:
-                unhandled_types.add(feature["type"])
-    
+                        
+                    #print(zfeature)
+                    znode.featureList["feature"].append( zfeature )           
+        
         if len( znode.featureList["feature"] ) == 0:
+            #print("Features: skip")
             znode.featureList = xsd.SkipValue
         
         print("Unhandled Feature Types: ", unhandled_types)
-
+        
 
     def buildZnode(self, rec, ns, ac):  # rec: pymex.uprot.record
                 
@@ -446,7 +526,7 @@ class UniZeep(BKD.BkdZeep):
         self.appendComments(rec, znode)
         
         self.appendSequence(rec, znode)
-    
+        
         self.appendDbReferences(rec, znode)
         
         self.appendFeatures(rec, znode)
