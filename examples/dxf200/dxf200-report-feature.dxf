@@ -1,0 +1,54 @@
+<dataset xmlns="http://dip.doe-mbi.ucla.edu/services/dxf200">
+  <node id="1" ns="" ac="">
+    <type ns="dxf" name="report" ac="dxf:0000"/>
+    <label>mutation report</label>
+    <xrefList>
+      <xref ns="upr" ac="O00180" type="describes" typeAc="DXF:0024" typeNs="dxf">
+        <node>
+          <type ns="dxf" name="feature-report" ac="dxf:0000"/>
+          <label>O00180</label>           
+          <featureList>
+            <feature>
+              <type ns="mi" name="mutation" ac="MI:0118"/>   <!-- mutation -->
+              <label>p.[Val113Ile]
+              <locationList>
+                <location>
+                  <begin>113</begin>
+                  <end>113</end>
+                  <attrlist>
+                    <attr name="resulting sequence" ns="mi" ac="MI:1308">
+                      <value>I</value>
+                    </attr>
+                  </attrList>
+                <location>
+              </locationList>
+            </feature>
+          </featureList>
+        </node>
+      </xref>
+      <xref ns="dbSNP" ac="rs:757933370" type="mutation" typeAc="MI:0118" typeNs="mi"/>
+      <xref ns="pubmed" ac="16636649" type="described-by" typeAc="dxf" typeNs="dxf:0014"/>
+      <!-- <xref ns="mim" ac="" type="has-phenotype" typeAc="" typeNs=""/> -->          
+    </xrefList>
+    <attrlist>          
+      <attr name="data-source" ns="dxf" ac="dxf:0016">
+        <value ns="orcid"  ac="orcid:1234-1234-1234" type="person" typeNs="dxf" typeAc="dxf:0056"/>
+      </attr>
+      <attr name="field-1" ns="dxf" ac="dxf:0000">
+        <value>value 1</value>
+      </attr>  
+      <attr name="field-2" ns="dxf" ac="dxf:0000">
+        <value>value 1</value>
+      </attr>  
+      <attr name="field-3" ns="dxf" ac="dxf:0000">
+        <value>value 1</value>
+      </attr>  
+      <attr name="field-4" ns="dxf" ac="dxf:0000">
+        <value>value 1</value>
+      </attr>  
+      <attr name="field-5" ns="dxf" ac="dxf:0000">
+        <value>value 1</value>
+      </attr>  
+    <attrlist>        
+  </node>
+</dataset>

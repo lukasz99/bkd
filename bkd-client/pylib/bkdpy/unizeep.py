@@ -1,6 +1,6 @@
 import sys
 import os
-
+ 
 from lxml import etree as ET
  
 from requests import Session
@@ -28,6 +28,8 @@ class UniZeep(BKD.BkdZeep):
 
     def __init__( self, zeepWsdlUrl, debug=False ):
         super().__init__(zeepWsdlUrl)
+
+        self.debug = debug
 
         self._eco_file="ECO_label_dict.json"
         self._eco_url = "https://www.ebi.ac.uk/ols/api/ontologies/eco/terms?iri=http://purl.obolibrary.org/obo/%s"
@@ -190,11 +192,66 @@ class UniZeep(BKD.BkdZeep):
             zelement.xrefList["xref"].append(zxref)
 
 
-    def appendEvidence(self, rec, element, zelement ):   # element == feature ?
+    def appendEvidence(self, rec, feat, zelement ):   # element == feature ?
+        if self.debug:
+            print("EV", feat.evidence)
 
-        #print(type(element),type(zelement))
-        #print(element._feature)
         zdxf = self._dxfactory
+
+        for ev in feat.evidence:
+            if self.debug:
+                print("      EV:" , type(ev.type), ev.type)
+
+            if ev.type in self._eco_label_dict.keys():
+                eco_label = self._eco_label_dict[ev.type]
+            else:
+                eco_id = ev.type.replace(":","_")                
+                eco_file = urlopen(self._eco_url%eco_id).read()
+                sleep(1)
+                eco_text = eco_file.decode("utf-8")
+                eco_json = json.loads(eco_text)
+                eco_label = eco_json["_embedded"]["terms"][0]["label"]
+                self._eco_label_dict[ev.type] = eco_label
+                
+                if os.access(self._eco_path, os.W_OK):
+                    # only when allowed to write
+                    json_object = json.dumps(self._eco_label_dict, indent = 4)                
+                    with open(self._eco_path, "w") as outfile:
+                        outfile.write(json_object)                         
+
+            evs=ev.source
+            if evs is not None:
+                if self.debug:
+                    print("      EVS: ns=",evs["ns"], " ac=", evs["ac"])
+                    
+                if evs["ns"] == "UniprotKB":
+                    ns = "upr"
+                else:
+                    ns = evs["ns"]
+                    
+                zxref = zdxf.xrefType( type = eco_label,
+                                       typeNs = "eco",
+                                       typeAc = ev.type,
+                                       node = xsd.SkipValue,
+                                       ns = ns,
+                                       ac = ev.source["ac"])
+                zelement.xrefList["xref"].append(zxref)
+               
+            else:
+                zxref = zdxf.xrefType( type = eco_label,
+                                       typeNs = "eco",
+                                       typeAc = ev.type,
+                                       node = xsd.SkipValue,
+                                       ns = "",
+                                       ac = "")
+                zelement.xrefList["xref"].append(zxref)
+                        
+        return
+        
+        #if "_evidence" in element._feature.keys():
+        #    print(" ***",element._feature["_evidence"])
+        #print(element._feature)
+        
 
         evidence_dict = rec.root["uniprot"]["entry"][0]["evidence"]
         #print("XXX:",element.evidence)
@@ -202,7 +259,7 @@ class UniZeep(BKD.BkdZeep):
         #for evidence_key in element["evidence"]:
         #    print("evid:", evidence_key, ":")
         #    evidence = evidence_dict[evidence_key]
-
+        
         for ev in element.evidence:
             #print("EV type",ev.type, ev.source)
             #print("EV source", ev.source)
@@ -226,29 +283,29 @@ class UniZeep(BKD.BkdZeep):
                     with open(self._eco_path, "w") as outfile:
                         outfile.write(json_object)                         
             
-                        
-            if ev.source is not None:
-
-                if ev.source["ns"] == "UniprotKB":
-                    ns = "uprot"
-                else:
-                    ns = ev.source["ns"]
-                    
-                zxref = zdxf.xrefType( type = eco_label,
-                                       typeNs = "eco",
-                                       typeAc = ev.type,
-                                       node = xsd.SkipValue,
-                                       ns = ns,
-                                       ac = ev.source["ac"])
-                zelement.xrefList["xref"].append(zxref)
-            else:
-                zxref = zdxf.xrefType( type = eco_label,
-                                       typeNs = "eco",
-                                       typeAc = ev.type,
-                                       node = xsd.SkipValue,
-                                       ns = "",
-                                       ac = "")
-                zelement.xrefList["xref"].append(zxref)
+        
+            #if ev.source is not None:
+            #    
+            #   if ev.source["ns"] == "UniprotKB":
+            #       ns = "uprot"
+            #   else:
+            #       ns = ev.source["ns"]
+            #       
+            #   zxref = zdxf.xrefType( type = eco_label,
+            #                          typeNs = "eco",
+            #                          typeAc = ev.type,
+            #                          node = xsd.SkipValue,
+            #                          ns = ns,
+            #                          ac = ev.source["ac"])
+            #   zelement.xrefList["xref"].append(zxref)
+            #else:
+            #    zxref = zdxf.xrefType( type = eco_label,
+            #                           typeNs = "eco",
+            #                           typeAc = ev.type,
+            #                           node = xsd.SkipValue,
+            #                           ns = "",
+            #                           ac = "")
+            #    zelement.xrefList["xref"].append(zxref)
             
 
             
@@ -438,20 +495,15 @@ class UniZeep(BKD.BkdZeep):
 
 
     def appendFeatures(self, rec, znode ):
-        #print("\n\nFEATURES\n--------")
+        if self.debug:
+            print("\nFEATURES(append)\n--------")
         zdxf = self._dxfactory
     
         unhandled_types = set([])
-
-        #if "feature" not in rec.root["uniprot"]["entry"][0]:
-        #    znode.featureList = xsd.SkipValue
-        #    return
-        
-        for fname in rec.feat:
-            #print( "\nffname", fname )
+               
+        for fname in rec.feat:        
             if fname in self._ftypes.keys():            
                 for ff in rec.feat[fname]:
-                    #print( "\nff: ", repr(ff) )
                     featureType = zdxf.typeDefType(ns= self._ftypes[fname]["ns"], 
                                                    ac=self._ftypes[fname]["ac"],
                                                    typeDef = xsd.SkipValue,
@@ -478,9 +530,7 @@ class UniZeep(BKD.BkdZeep):
                      
                         zfeature.locationList["location"].append(zlocation)
 
-                    for a in ff.attrs:
-                        #print(a.name, a.nameAc, a.value)
-                        
+                    for a in ff.attrs:                        
                         zattr = zdxf.attrType( value = a.value,
                                                name = a.name,
                                                ns = "dxf",
@@ -489,6 +539,13 @@ class UniZeep(BKD.BkdZeep):
                         zlocation.attrList["attr"].append(zattr)
                             
                     self.appendIsoforms(rec, ff, zfeature)
+
+                    if self.debug:
+                        print("FF:", type(ff))
+                        if "evidence" in dir(ff):
+                            if len(ff.evidence) > 0:
+                                print( "FF-EV:",ff._feature["_evidence"])
+
                     self.appendEvidence(rec, ff, zfeature)
                         
                     if len(zlocation.attrList["attr"]) == 0:                    
@@ -499,13 +556,10 @@ class UniZeep(BKD.BkdZeep):
                         
                     if len(zfeature.attrList["attr"]) == 0:                    
                         zfeature.attrList = xsd.SkipValue
-
-                        
-                    #print(zfeature)
+                                            
                     znode.featureList["feature"].append( zfeature )           
         
-        if len( znode.featureList["feature"] ) == 0:
-            #print("Features: skip")
+        if len( znode.featureList["feature"] ) == 0:        
             znode.featureList = xsd.SkipValue
         
         print("Unhandled Feature Types: ", unhandled_types)
