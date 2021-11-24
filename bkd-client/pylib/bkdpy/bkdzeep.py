@@ -211,7 +211,8 @@ class BkdZeep():
             zdtsnode = self._dxfactory.datasetType([zdtsnode])        
 
         if debug:
-            print("BkdClinet.addnode: input node=" + str(zdtsnode))
+            pass
+            #print("BkdClinet.addnode: input node=" + str(zdtsnode))
         #else:
         #    print("BkdClinet.addnode: input node=",len(str(zdtsnode)))
         if zdtsnode is not None:

@@ -1,0 +1,65 @@
+<dataset xmlns="http://dip.doe-mbi.ucla.edu/services/dxf200">
+  <node id="1" ns="dip" ac="DIP-2345X">   <-- forces accession if present
+    <type ns="dxf" name="interaction-experiment-report" ac="dxf:0111"/>
+    <label></label>  <--- same as ac above (if present) or empty  
+    <xrefList>
+      <xref ns="dip" ac="DIP-32E" type="describes" typeAc="DXF:0024" typeNs="dxf">
+        <node ac="" ns="" id="1">  <-- exactly the same as for link 
+          <type name="link" ac="dxf:0004" ns="dxf"/>
+          <label></label>     <----   it's got to be present but can be left empty     
+          <partList>
+            <part id="1" name="">
+              <type name="linked-node" ac="dxf:0010" ns="dxf"/>
+              <node ac="DIP621P" ns="dip" id="1">
+                <type name="protein" ac="dxf:0003" ns="dxf"/>
+                <label>...</label>    <---- whatever comes from the preeexisting protien record
+                <xrefList>
+                  <xref type="produced-by" typeAc="dxf:0007" typeNs="dxf" ac="4932" ns="TaxId"/>
+                </xrefList>
+              </node>
+            </part>
+            <part id="2" name="">
+              <type name="linked-node" ac="dxf:0010" ns="dxf"/>
+              <node ac="DIP611P" ns="dip" id="1">
+                <type name="protein" ac="dxf:0003" ns="dxf"/>
+                <label>....</label>
+                <xrefList>
+                  <xref type="produced-by" typeAc="dxf:0007" typeNs="dxf" ac="4932" ns="TaxId"/>
+                </xrefList>
+              </node>
+            </part>
+            <part id="3" name="">
+              <type name="linked-node" ac="dxf:0010" ns="dxf"/>
+              <node ac="DIP612P" ns="dip" id="1">
+                <type name="protein" ac="dxf:0003" ns="dxf"/>
+                <label>....</label>
+                <xrefList>
+                  <xref type="produced-by" typeAc="dxf:0007" typeNs="dxf" ac="4932" ns="TaxId"/>
+                </xrefList>
+              </node>
+            </part>
+          </partList>
+        </node>
+      </xref>
+      <xref ns="imex" ac="IM-12345-2" type="identical-to" typeAc="dxf:009" typeNs="dxf"/>
+      <xref ns="pubmed" ac="16636649" type="described-by" typeAc="dxf" typeNs="dxf:0014"/>
+    </xrefList>
+    <attrlist>                
+      <attr name="interaction detection method" ns="MI" ac="MI:0001">
+        <value ns="mi" ac="MI:0019">coimmunoprecipitation</value>
+      </attr>  
+      <attr name="interaction type" ns="MI" ac="MI:0190">
+        <value ns="MI" ac="MI:0915"></value>
+      </attr>
+      <attr name="location" ns="dxf" ac="dxf:0116">
+        <value ns="TaxId" ac="4932">S.ceravisiae</value>
+      </attr>  
+      <attr name="xml-mif-report" ns="dxf" ac="dxf:0114">
+        <value> <!-- xml mif--> </value>
+      </attr>  
+      <attr name="json-mif-mif-report" ns="dxf" ac="dxf:0115">
+        <value><!-- json mif --></value>
+      </attr>  
+    <attrlist>        
+  </node>
+</dataset>

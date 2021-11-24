@@ -27,6 +27,7 @@ bkd_dest = {"dip0-local":"http://10.1.7.100:9999/dipdev0",
             "dip0-public":"https://dip.mbi.ucla.edu/dipdev0",
             "dip2-local":"http://10.1.7.102:9999/dipdev2",
             "dip2-public":"https://dip.mbi.ucla.edu/dipdev2",
+            "cvdb-local":"http://10.1.8.201:8080/cvdb",
             "cvdb0-local":"http://10.1.7.100:9999/cvdbdev0",
             "cvdb0-public":"https://dip.mbi.ucla.edu/cvdbdev0",
             "cvdb2-local":"http://10.1.7.102:9999/cvdbdev2",
@@ -237,16 +238,19 @@ elif args.mode == "set":
 
         #print(json.dumps(rec.root,indent=3))
 
-        #xx
+        
         
         znode = uzeep.buildZnode(rec, args.ns, args.ac) # build zeep request node
-
+        
+        #xx
+        
         if args.debug:
             print("**")
             #print(ET.tostring( znode, pretty_print=True).decode() )
             print("**")
         
-        zres = uzeep.setnode(znode, mode=args.mode, debug=args.debug)
+        #zres = uzeep.setnode(znode, mode=args.mode, debug=args.debug)
+        zres = uzeep.setnode(znode, mode=args.mode, debug=True)
                 
         if not args.debug:
             if len(args.out)  > 0:
