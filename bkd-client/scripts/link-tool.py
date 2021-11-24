@@ -40,7 +40,7 @@ parser.add_argument('--slocation', '-sl', dest="sloc", type=str,
                     help='Server location.')
 
 parser.add_argument('--ns', '-n', dest="ns", type=str,
-                    required=False, default='DIP',
+                    required=False, default='',
                     help='Record namespace.')
 
 parser.add_argument('--acc', '-a', dest="ac", type=str,
@@ -104,49 +104,62 @@ elif args.mode == "set":
                 for ln in fh:
                     if  not ln.startswith("#"):
                         cols = ln.split('\t')
-                        if len(cols > 1):
+                        if len(cols) > 1:
                             dip_ids = [id2ac(ac2id(x)) for x in cols[1].split(' ')]
 
                             if len( cols[0].strip() ) > 0:
                                 ac = cols[0]
+                                ns = "DIP"
                             else:
                                 ac = ""
+                                ns = ""
 
-                            print( "DIP IDs: " + dip_ids)     
+                            print( "DIP IDs: " + str(dip_ids))     
 
-                            znode = lzeep.buildZnode(dip_ids, args.ns, ac) # build zeep request node
+                            znode = lzeep.buildZnode(dip_ids, ns, ac) # build zeep request node
+                            if type(znode) == list:
+                                logh.write( "\t".join( (ac, " ".join(znode),"\n") ) )
 
                             zres = lzeep.setlink(znode, mode="add", debug=args.debug)
                             nsl = zres.xpath("//dxf:dataset/dxf:node/@ns",namespaces=lzeep.dxfns)
                             acl = zres.xpath("//dxf:dataset/dxf:node/@ac",namespaces=lzeep.dxfns)
-
-                            logh.write( "\t".join( (acl[0], " ".join(dip_ids),"\n") ) )
+                            
+                            if ac == acl[0] or ac == "":
+                                logh.write( "\t".join( (acl[0], " ".join(dip_ids),"\n") ) )
+                            else:
+                                logh.write( "\t".join( (":".join([ac,acl[0]]), " ".join(dip_ids),"\n") ) )
                         
     else:
-        dip_ids = args.dip_ids.split(',')
-        
+        dip_ids = [id2ac(ac2id(x)) for x in args.dip_ids.split(',')]
+        print("Building interaction node from the DIP IDS:", str(dip_ids))
+
         znode = lzeep.buildZnode(dip_ids, args.ns, args.ac) # build zeep request node
-
-        #if args.debug:
-        #    print("**")
-        #    print(ET.tostring( znode, pretty_print=True).decode() )
-        #    print("**")
         
-        zres = lzeep.setlink(znode, mode=args.mode, debug=args.debug)
-        acl = zres.xpath("//dxf:dataset/dxf:node/@ac",namespaces=lzeep.dxfns)
-        
-        pacl = zres.xpath("//dxf:partList/dxf:part/dxf:node/@ac",namespaces=lzeep.dxfns)
+        if type(znode) == list:
+            print("Unable to submit link")
+            print("Invalid DIP IDs marked with ':*':", znode)
+            if not args.debug:
+                if len(args.out)  > 0:
+                    if not args.out.endswith(".dxf"):
+                        args.out+= ".dxf"
 
-        print(acl[0],"\t","\t".join(pacl))
-
-        if not args.debug:
-            if len(args.out)  > 0:
-                if not args.out.endswith(".dxf"):
-                    args.out+= ".dxf"
-
-                with open( args.out, "w" ) as of:
-                    of.write( ET.tostring(zres, pretty_print=True).decode() )
-                    of.write( "\n" )
+                    with open( args.out, "w" ) as of:
+                        of.write( " ".join(znode) )
+                        of.write( "\n" )
         else:
-            print(ET.tostring(zres, pretty_print=True).decode() )
-            print()
+            zres = lzeep.setlink(znode, mode="add", debug=args.debug)
+            acl = zres.xpath("//dxf:dataset/dxf:node/@ac",namespaces=lzeep.dxfns)
+
+            print("Set link-node:", acl[0])
+
+            if not args.debug:
+                if len(args.out)  > 0:
+                    if not args.out.endswith(".dxf"):
+                        args.out+= ".dxf"
+
+                    with open( args.out, "w" ) as of:
+                        of.write( ET.tostring(zres, pretty_print=True).decode() )
+                        of.write( "\n" )
+            else:
+                print(ET.tostring(zres, pretty_print=True).decode() )
+                print()
