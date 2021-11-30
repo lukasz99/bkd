@@ -28,18 +28,20 @@ class LinkZeep(BKD.BkdZeep):
 
     def __init__( self, zeepWsdlUrl, debug=False ):
         super().__init__(zeepWsdlUrl)
+        self._invalid_ids = []
     
         
     def initiateNode(self, ns = "", ac = ""):
         #zdxf = zclient.type_factory("ns1")
+        self._invalid_ids = []
         zdxf = self._dxfactory
         
         ntype = zdxf.typeDefType( ns= "dxf", ac="dxf:0004",
                           typeDef = xsd.SkipValue,
                           name="link" )
 
-        znode = zdxf.nodeType(ns="",
-                              ac="",
+        znode = zdxf.nodeType(ns=ns,
+                              ac=ac,
                               type=ntype, 
                               id=1,
                               label="",
@@ -57,63 +59,68 @@ class LinkZeep(BKD.BkdZeep):
         '''
         zdxf = self._dxfactory
         dip_ids = set(dip_ids)
-        print(dip_ids)
         
         for i, dip_id in enumerate(dip_ids):
-            upr_node = self.getnode(ns = "DIP", ac = dip_id)        
-            ptype = zdxf.typeDefType( ns= "dxf", ac="dxf:0010",
-                                      typeDef = xsd.SkipValue,
-                                      name="linked-node" )
-
-            ntype = zdxf.typeDefType( ns= "dxf", ac="dxf:0003",
-                                      typeDef = xsd.SkipValue,
-                                      name="protein" )
-
-            pnode = zdxf.nodeType(ns=upr_node[0].attrib["ns"],
-                          ac=upr_node[0].attrib["ac"],
-                          type=ntype, 
-                          id=1,
-                          label=upr_node[0][1].text,
-                          name=xsd.SkipValue,
-                          xrefList = {"xref":[]},
-                          attrList = xsd.SkipValue,
-                          featureList = xsd.SkipValue)            
+            upr_node = self.getnode(ns = "DIP", ac = dip_id)
             
-            for xref in upr_node.xpath("m:node/m:xrefList/m:xref",
-                                       namespaces={"m":"http://dip.doe-mbi.ucla.edu/services/dxf20"}):
-                if xref.xpath("@type")[0] == "produced-by":
-                    zxref = zdxf.xrefType( type = xref.attrib['type'],
-                                           typeNs = xref.attrib['typeNs'],
-                                           typeAc = xref.attrib['typeAc'],
-                                           node = xsd.SkipValue,
-                                           ns = xref.attrib['ns'], ac = xref.attrib['ac'])
-                    pnode.xrefList["xref"].append(zxref)
-                    break
-                    
-            for xref in upr_node.xpath("//m:attr/m:xrefList/m:xref",
-                                       namespaces={"m":"http://dip.doe-mbi.ucla.edu/services/dxf20"}):
-                if xref.xpath("@type")[0] == "describes" and xref.xpath("@ns")[0] == "upr":
-                    zxref = zdxf.xrefType( type = "identical-to",
-                                           typeNs = "dxf",
-                                           typeAc = "dxf:0009",
-                                           node = xsd.SkipValue,
-                                           ns = "upr", ac = xref.attrib["ac"])
-                    pnode.xrefList["xref"].append(zxref)
-                    break
-                                
-            zpart = zdxf.partType(type = ptype,
-                                  node = pnode, 
-                                  xrefList = xsd.SkipValue, 
-                                  attrList = xsd.SkipValue, 
-                                  featureList = xsd.SkipValue, 
-                                  name = "", 
-                                  id = i+1)
-            znode.partList['part'].append(zpart)
-            
+            if len(upr_node) == 0: #invalid DIP ID
+                self._invalid_ids.append(dip_id)
+            else:
+                ptype = zdxf.typeDefType( ns= "dxf", ac="dxf:0010",
+                                          typeDef = xsd.SkipValue,
+                                          name="linked-node" )
+
+                ntype = zdxf.typeDefType( ns= "dxf", ac="dxf:0003",
+                                          typeDef = xsd.SkipValue,
+                                          name="protein" )
+
+                pnode = zdxf.nodeType(ns=upr_node[0].attrib["ns"],
+                              ac=upr_node[0].attrib["ac"],
+                              type=ntype, 
+                              id=1,
+                              label=upr_node[0][1].text,
+                              name=xsd.SkipValue,
+                              xrefList = {"xref":[]},
+                              attrList = xsd.SkipValue,
+                              featureList = xsd.SkipValue)
+
+                for xref in upr_node.xpath("m:node/m:xrefList/m:xref", namespaces={"m":"http://dip.doe-mbi.ucla.edu/services/dxf20"}):
+                    if xref.xpath("@type")[0] == "produced-by":
+                        zxref = zdxf.xrefType( type = xref.attrib['type'],
+                                               typeNs = xref.attrib['typeNs'],
+                                               typeAc = xref.attrib['typeAc'],
+                                               node = xsd.SkipValue,
+                                               ns = xref.attrib['ns'], ac = xref.attrib['ac'])
+                        pnode.xrefList["xref"].append(zxref)
+                        break
+
+                for xref in upr_node.xpath("//m:attr/m:xrefList/m:xref", namespaces={"m":"http://dip.doe-mbi.ucla.edu/services/dxf20"}):
+                    if xref.xpath("@type")[0] == "describes" and xref.xpath("@ns")[0] == "upr":
+                        zxref = zdxf.xrefType( type = "identical-to",
+                                               typeNs = "dxf",
+                                               typeAc = "dxf:0009",
+                                               node = xsd.SkipValue,
+                                               ns = "upr", ac = xref.attrib["ac"])
+                        pnode.xrefList["xref"].append(zxref)
+                        break
+
+
+                zpart = zdxf.partType(type = ptype,
+                                      node = pnode, 
+                                      xrefList = xsd.SkipValue, 
+                                      attrList = xsd.SkipValue, 
+                                      featureList = xsd.SkipValue, 
+                                      name = "", 
+                                      id = i+1)
+                znode.partList['part'].append(zpart)
+    
     def buildZnode(self, dip_ids, ns, ac):
 
         znode  = self.initiateNode( ns = ns, ac = ac )
 
         self.appendParticipants(dip_ids, znode)
+        
+        if len(self._invalid_ids) > 0:
+            return [x if x not in self._invalid_ids else x+':*' for x in dip_ids]
         
         return znode
