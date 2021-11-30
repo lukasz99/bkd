@@ -237,8 +237,6 @@ elif args.mode == "set":
         rec = pymex.uprot.Record().parseXml( ufile ) # parse uniprot record
 
         #print(json.dumps(rec.root,indent=3))
-
-        
         
         znode = uzeep.buildZnode(rec, args.ns, args.ac) # build zeep request node
         

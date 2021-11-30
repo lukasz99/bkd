@@ -242,8 +242,8 @@ class UniZeep(BKD.BkdZeep):
                                        typeNs = "eco",
                                        typeAc = ev.type,
                                        node = xsd.SkipValue,
-                                       ns = "",
-                                       ac = "")
+                                       ns = "upr",
+                                       ac = rec.accession["primary"])
                 zelement.xrefList["xref"].append(zxref)
                         
         return
@@ -529,7 +529,7 @@ class UniZeep(BKD.BkdZeep):
                             zlocation.attrList["attr"].append(zattr)
                      
                         zfeature.locationList["location"].append(zlocation)
-
+                    
                     for a in ff.attrs:                        
                         zattr = zdxf.attrType( value = a.value,
                                                name = a.name,
