@@ -190,6 +190,7 @@ elif args.mode == "set":
                             ufile = trpath
                         else:
                             print( "ERROR: no uniprot file" )
+                            continue
         
                         print("UniprotKB record: " + ufile)        
 
