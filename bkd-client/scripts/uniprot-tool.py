@@ -140,7 +140,7 @@ elif args.mode == "set":
         if args.out.endswith(".dxf"):
             args.out = args.out.replace(".dxf","")            
         with open(args.out, "w") as logh:
-            logh.write("#AC\tUPR\n")
+            logh.write("#AC\tUPR\tRFS\tTAXID\tODIP\tOUPR\n")
 
             maxac = 0
             with open(args.file, "r") as fh:
@@ -168,6 +168,13 @@ elif args.mode == "set":
                     if  not ln.startswith("#"):
                         cols = ln.split('\t')
                         upr = cols[1].strip()
+                        
+                        #for maintaining columns in input file
+                        if len(cols) == 6:
+                            rfs = cols[2].strip()
+                            taxid = cols[3].strip()
+                            odip = cols[4].strip()
+                            oupr = cols[5].strip()
 
                         if len( cols[0].strip() ) > 0:
                             ac = cols[0]
@@ -189,7 +196,13 @@ elif args.mode == "set":
                         elif os.path.isfile(trpath):
                             ufile = trpath
                         else:
-                            print( "ERROR: no uniprot file" )
+                            print( "ERROR: no uniprot file", upr )
+                            if len(cols) == 6:
+                                logh.write( "\t".join( ("", upr, rfs, taxid, odip, oupr, "\n") ) )
+                            else:
+                                logh.write( "\t".join( ("", upr, "\n") ) )
+                            logh.flush()
+                            os.fsync(logh)
                             continue
         
                         print("UniprotKB record: " + ufile)        
@@ -214,7 +227,10 @@ elif args.mode == "set":
                         nsl = zres.xpath("//dxf:dataset/dxf:node/@ns",namespaces=uzeep.dxfns)
                         acl = zres.xpath("//dxf:dataset/dxf:node/@ac",namespaces=uzeep.dxfns)
                                     
-                        logh.write( "\t".join( (acl[0], upr,"\n") ) )
+                        if len(cols) == 6:
+                            logh.write( "\t".join( (acl[0], upr, rfs, taxid, odip, oupr,"\n") ) )
+                        else:
+                            logh.write( "\t".join( (acl[0], upr, "\n") ) )
                         logh.flush()
                         os.fsync(logh)
     else:
