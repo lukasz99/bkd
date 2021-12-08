@@ -967,7 +967,7 @@ function Lollipop(target, chartType, width) {
     const ChartTypes = { "circle": 0, "pie": 1 };
     const ChartTypeDefault = "circle";
     const WidthDefault = 800;
-    const LollipopTrackHeightDefault = 420, DomainTractHeightDefault = 30;
+    const LollipopTrackHeightDefault = 220, DomainTractHeightDefault = 30;
 
     const SnvDataDefaultFormat = {
         x: "AA_Position",
@@ -1020,6 +1020,7 @@ function Lollipop(target, chartType, width) {
         xAxisDefsId: Prefix + "-xAxis-defs-" + uniqueID,
         height: LollipopTrackHeightDefault,
         background: "rgb(233,233,233)",
+        lollipopHook: null,
         lollipopClassName: {
             group: "lollipop",
             line: "lollipopLine",
@@ -1421,7 +1422,7 @@ function Lollipop(target, chartType, width) {
     };
 
     var _popClick = function (d, parentG) {
-        // show the most representative node
+        // show the most representative node       
         if (d._currentState.showLabel) {
             // hide label
             d._currentState.showLabel = false;
@@ -1467,6 +1468,11 @@ function Lollipop(target, chartType, width) {
 
             // text rotation
             txtHolder.transition().duration(options.transitionTime).attr("transform", "rotate("+options.highlightTextAngle+")");
+        }
+        // NOTE: LS
+        if( lollipopOpt.lollipopHook != null ){
+           lollipopOpt.lollipopHook.action( d._currentState.showLabel, d,
+                                           lollipopOpt.lollipopHook.options );
         }
     };
 
@@ -2190,6 +2196,12 @@ function Lollipop(target, chartType, width) {
         set lollipopColorScheme(_) { lollipopOpt.popColorSchemeName = _; lollipopOpt.popColorScheme = scaleOrdinal(_); },
         get lollipopColorScheme() { return lollipopOpt.popColorSchemeName; },
 
+
+        set lollipopHook(_) { lollipopOpt.lollipopHook = _; }, 
+        get lollipopHook() { return lollipopOpt.lollipopHook; }, 
+
+
+
         // title related settings (text / font / color / alignment / y-adjustment)
         // note : font (font-style font-variant font-weight font-size/line-height font-family)
         // i.e., italic small-caps normal 13px sans-serif
@@ -2257,6 +2269,9 @@ function Lollipop(target, chartType, width) {
 
         set zoom(_) { domainOpt.zoom = _; }, 
         get zoom() { return domainOpt.zoom; },
+ 
+
+
     };
 
     lollipop.setOptions = function (options) {

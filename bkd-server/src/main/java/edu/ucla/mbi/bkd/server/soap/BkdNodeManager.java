@@ -586,12 +586,12 @@ public class BkdNodeManager {
                 // attribute scan
                 //---------------
                 if( cf.getAttrList() != null ){
-
-                    
+                                        
                     for( AttrType catt: cf.getAttrList().getAttr() ){
                         //String ns = catt.getNs();
                         //String ac = catt.getAc();
-
+                        log.info( " ATTRIBUTE: " + catt );
+                        
                         if( catt.getValue() != null ){
 
                             AttrType.Value aval = catt.getValue();
@@ -796,6 +796,7 @@ public class BkdNodeManager {
         for( NodeFeat cnft: featureList ){
             cnft.setNode( curNode );
             log.info("feature source: " + source);
+            log.info("feature jval: " + cnft.getJval());
             cnft.setSource( source );
             //for( NodeAttr ccnft: cnft.getAttrList() ){
             //    ccnft.setSource( source );

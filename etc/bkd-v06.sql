@@ -224,6 +224,7 @@ CREATE TABLE attribute (
     pkey bigint DEFAULT nextval(('"attr_pkey_seq"'::text)::regclass) NOT NULL CONSTRAINT attr_pk PRIMARY KEY,   
     sclass character varying(32) DEFAULT ''::character varying,  
     fk_node bigint DEFAULT 0 NOT NULL,  
+    fk_feat bigint DEFAULT 0 NOT NULL,  
     fk_cvtype bigint DEFAULT 0 NOT NULL,
     fk_source bigint DEFAULT 0 NOT NULL,
     value text DEFAULT ''::text NOT NULL
@@ -232,10 +233,11 @@ CREATE TABLE attribute (
 CREATE SEQUENCE attr_pkey_seq START WITH 1 INCREMENT BY 1
     NO MINVALUE NO MAXVALUE CACHE 1;
 
-CREATE INDEX attr_01 ON attribute USING btree (fk_node, fk_cvtype);
-CREATE INDEX attr_02 ON attribute USING btree (fk_cvtype);
+CREATE INDEX attr_01a ON attribute USING btree (fk_node, fk_cvtype);
+CREATE INDEX attr_01b ON attribute USING btree (fk_feat, fk_cvtype);
+CREATE INDEX attr_02  ON attribute USING btree (fk_cvtype);
 CREATE INDEX attr_02a ON attribute USING btree (fk_source);
-CREATE INDEX attr_04 ON attribute USING btree (sclass);
+CREATE INDEX attr_04  ON attribute USING btree (sclass);
 
 CREATE TABLE xref (
     pkey bigint DEFAULT nextval(('"xref_pkey_seq"'::text)::regclass) NOT NULL CONSTRAINT xref_pk PRIMARY KEY,

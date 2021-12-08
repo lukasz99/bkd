@@ -4,7 +4,6 @@ saved-by: lukasz
 auto-generated-by: OBO-Edit 1.101
 default-namespace: dxf
 ontology: DXF
-owl-axioms: Prefix(owl:=<http://www.w3.org/2002/07/owl#>)\nPrefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)\nPrefix(xml:=<http://www.w3.org/XML/1998/namespace>)\nPrefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)\nPrefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)\n\n\nOntology(\nDeclaration(AnnotationProperty(<http://www.geneontology.org/formats/oboInOwl#id>))\n\n\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#id> <http://www.co-ode.org/ontologies/dxf#dxf_0087> \"dxf:0087\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#id> <http://www.co-ode.org/ontologies/dxf#dxf_0088> \"dxf:0088\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#id> <http://www.co-ode.org/ontologies/dxf#dxf_0090> \"dxf:0090\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#id> <http://www.co-ode.org/ontologies/dxf#dxf_0093> \"dxf:0093\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#id> <http://www.co-ode.org/ontologies/dxf#dxf_0094> \"dxf:0094\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#id> <http://www.co-ode.org/ontologies/dxf#dxf_0096> \"dxf:0096\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#id> <http://www.co-ode.org/ontologies/dxf#dxf_0097> \"dxf:0097\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#id> <http://www.co-ode.org/ontologies/dxf#dxf_0098> \"dxf:0098\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#id> <http://www.co-ode.org/ontologies/dxf#dxf_0099> \"dxf:0094\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#id> <http://www.co-ode.org/ontologies/dxf#dxf_0100> \"dxf:0100\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#id> <http://www.co-ode.org/ontologies/dxf#dxf_0101> \"dxf:0101\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#id> <http://www.co-ode.org/ontologies/dxf#dxf_0102> \"dxf:0102\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#id> <http://www.co-ode.org/ontologies/dxf#dxf_0103> \"dxf:0103\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#id> <http://www.co-ode.org/ontologies/dxf#dxf_0104> \"dxf:0104\"^^xsd:string)\n)
 
 [Term]
 id: dxf:0000
@@ -640,11 +639,66 @@ property_value: http://purl.org/dc/elements/1.1/date 2021-09-17T02:06:52Z xsd:da
 
 [Term]
 id: dxf_0104
-name: protein-synonym
-is_a: dxf:0031 ! synonym
-is_a: dxf_0101 ! protein-name
+name: function
+is_a: dxf:0011 ! attribute
 property_value: http://purl.org/dc/elements/1.1/creator "lukasz" xsd:string
 property_value: http://purl.org/dc/elements/1.1/date 2021-09-17T01:41:54Z xsd:dateTime
 property_value: http://purl.org/dc/elements/1.1/date 2021-09-17T01:43:23Z xsd:dateTime
 property_value: http://purl.org/dc/elements/1.1/date 2021-09-17T02:08:58Z xsd:dateTime
+
+[Term]
+id: dxf_0106
+name: subcellular-location
+is_a: dxf:0011 ! attribute
+property_value: http://purl.org/dc/elements/1.1/creator "lukasz" xsd:string
+property_value: http://purl.org/dc/elements/1.1/date 2021-09-17T01:41:54Z xsd:dateTime
+property_value: http://purl.org/dc/elements/1.1/date 2021-09-17T01:43:23Z xsd:dateTime
+property_value: http://purl.org/dc/elements/1.1/date 2021-09-17T02:08:58Z xsd:dateTime
+
+[Term]
+id: dxf_0107
+name: tissue-specificity
+is_a: dxf:0011 ! attribute
+property_value: http://purl.org/dc/elements/1.1/creator "lukasz" xsd:string
+property_value: http://purl.org/dc/elements/1.1/date 2021-09-17T01:41:54Z xsd:dateTime
+property_value: http://purl.org/dc/elements/1.1/date 2021-09-17T01:43:23Z xsd:dateTime
+property_value: http://purl.org/dc/elements/1.1/date 2021-09-17T02:08:58Z xsd:dateTime
+
+[Term]
+id: dxf_0108
+name: function108
+is_a: dxf:0011 ! attribute
+property_value: http://purl.org/dc/elements/1.1/creator "lukasz" xsd:string
+property_value: http://purl.org/dc/elements/1.1/date 2021-09-17T01:41:54Z xsd:dateTime
+property_value: http://purl.org/dc/elements/1.1/date 2021-09-17T01:43:23Z xsd:dateTime
+property_value: http://purl.org/dc/elements/1.1/date 2021-09-17T02:08:58Z xsd:dateTime
+
+[Term]
+id: dxf_0109
+name: activity-regulation
+is_a: dxf:0011 ! attribute
+property_value: http://purl.org/dc/elements/1.1/creator "lukasz" xsd:string
+property_value: http://purl.org/dc/elements/1.1/date 2021-09-17T01:41:54Z xsd:dateTime
+property_value: http://purl.org/dc/elements/1.1/date 2021-09-17T01:43:23Z xsd:dateTime
+property_value: http://purl.org/dc/elements/1.1/date 2021-09-17T02:08:58Z xsd:dateTime
+
+[Term]
+id: dxf_0110
+name: interaction-report
+is_a: dxf_0090 ! report
+
+[Term]
+id: dxf_0111
+name: interaction-experiment-report
+is_a: dxf_0110 ! interaction-report
+
+[Term]
+id: dxf_0112
+name: interaction-inference-report
+is_a: dxf_0110 ! interaction-report
+
+[Term]
+id: dxf_0120
+name: status
+is_a: dxf:0011 ! attribute
 

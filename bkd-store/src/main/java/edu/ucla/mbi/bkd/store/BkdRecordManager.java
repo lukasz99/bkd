@@ -318,8 +318,90 @@ public class BkdRecordManager {
                         daoContext.getRangeDao().updateRange( range );
                     }                                        
                 }
-            }
 
+                // attributes
+                //------------
+
+                log.info("Feature ATTRs: update ");
+                if( feat.getAttrs() != null ){
+                    for( FeatureAttr a: feat.getAttrs()){
+                        log.info("(*) attr" + a.toString() );
+                        
+                        a.setFeature( feat );
+
+                        // attribute type 
+                        //---------------
+                    
+                        CvTerm acvtype = daoContext
+                            .getCvTermDao().getByAccession( a.getCvType().getAc() );
+                    
+                        if( acvtype == null ){
+                            acvtype = daoContext
+                                .getCvTermDao().updateCvTerm( a.getCvType() );                    
+                        }
+                    
+                        log.info("acvtype: " + acvtype);
+                        a.setCvType( acvtype );
+                    
+                        // attribute source
+                        //------------------
+                    
+                        Source asource = null;                 
+                        log.info(" asource: " + a.getSource().toString());
+                    
+                        if(  a.getSource() != null ){
+                        
+                            CvTerm ascvtype = daoContext
+                                .getCvTermDao().getByAccession( a.getSource().getCvType().getAc() );
+                        
+                            if( ascvtype == null ){
+                                ascvtype = daoContext
+                                    .getCvTermDao().updateCvTerm( a.getSource().getCvType() );
+                            }
+                            log.info("ascvtype: " + ascvtype);
+                            a.getSource().setCvType( ascvtype );
+                        
+                            asource = daoContext
+                                .getSourceDao().updateSource( a.getSource() );
+                        }
+                        log.info(" attr source: " + asource);
+                    
+                        a.setSource( asource );
+                    
+                        log.info(" attr source updated");
+                    
+                        a = (FeatureAttr) daoContext.getAttributeDao().updateAttribute( a );
+
+                        try{
+
+                            // attribute xrefs
+                            //----------------
+
+                            log.info("Attribute XREFs: update ");
+                            if( a.getXrefs() != null ){
+                                for( AttrXref x: a.getXrefs()){
+                                    CvTerm xcvtype = daoContext
+                                        .getCvTermDao().getByAccession( x.getCvType().getAc() );
+                                
+                                    if( xcvtype == null ){
+                                        xcvtype = daoContext
+                                            .getCvTermDao().updateCvTerm( x.getCvType() );
+                                        log.info("Attribute XREF: " + xcvtype );
+                                    }
+                                    x.setCvType( xcvtype );                    
+                                    x.setAttr( a );
+                                    x.setSource(asource);
+                                    daoContext.getXrefDao().updateXref( x );                                    
+                                }
+                                log.info("Attr XREFs: update DONE");
+                            }
+                        }catch( Exception ex ) {
+                            log.error(ex);
+                        }
+                    }                    
+                }                
+            }
+            
             
         } catch( Exception ex ) {
             log.error(ex);

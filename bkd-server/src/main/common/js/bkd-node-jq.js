@@ -180,8 +180,8 @@ BKDnode = {
     
     $(nodeViewAnchor).empty();
     $(nodeViewAnchor).append( "<div id='bkd-hv-field'></div>"
-                              +"<div id='bkd-nv-field'></div>"
-                              +"<div id='bkd-fv-field'></div>" );
+                              +"<div id='bkd-nv-field'></div>" );
+    
     // view type
     //----------
 
@@ -230,7 +230,7 @@ BKDnode = {
     if( format.field != null){
        for( var f = 0; f<format.field.length; f++){
          var cfield = format.field[f];
-         console.log("FIELD: " + cfield.name + " :: " + cfield.type);
+         console.log("FIELD: " + cfield.name + ": " + cfield.type);
 
          switch( cfield.type ){
            case "text":
@@ -252,7 +252,7 @@ BKDnode = {
            case "sequence":
              this.showSequence( "#bkd-hv-field", cfield, data );    
              break;
-           case "feature":
+           case "feature":             
              this.showFeature( "#bkd-hv-field", cfield, data );    
              break;
            
@@ -333,6 +333,9 @@ BKDnode = {
                 break;
               case "sequence":
                 this.showSequence( "#bkd-nv-"+cid, cfield, data );    
+                break;
+              case "feature":
+                this.showFeature( "#bkd-nv-"+cid, cfield, data );    
                 break;
               case "xref":
                 this.showXref( "#bkd-nv-"+cid, cfield, data );    
@@ -1064,9 +1067,153 @@ var pfam_data_default_settings = {
 
      showFeature: function( tgt, format, data ){
        var value = this.getVal( data, format.vpath);
-       $( tgt ).append( "<div>"+format.name+ ": " + format.type + "</div>" );
+       
+       $( tgt ).append( "<table border='1' width='100%'>" +
+                        "<tr><td id='flist' width='1024'>"+
+                        "<div id='flist-lolipop'></div>"+
+                        "</td>"+
+                        "<td id='fview' rowspan='2'>"+
+                        "<div id='viewport' style='width:600px; height:650px;'></div>"+
+                        "</td></tr>"+
+                        "<tr><td id='fdets' style='width:1024px; height:380px;' valign='top'></td></tr>"+
+                        "</table>" );
+
+       // sequence
+       
+       var fdata = [];
+       var seq = data.sequence;
+       
+       for( var i = 0; i < value.length; i ++){ 
+          console.log("F: " + value[i].ranges[0].start + ":" +
+                              value[i].ranges[0].stop + ":" +
+                              value[i].ranges[0].sequence );
+
+          if( value[i].ranges[0].start ==  value[i].ranges[0].stop){
+
+             var posaa = seq[ parseInt(value[i].ranges[0].start) - 1 ] +
+                         value[i].ranges[0].start;
+                         
+             var short = 'p.' + seq[ parseInt(value[i].ranges[0].start) - 1 ] 
+                              + value[i].ranges[0].start 
+                              + value[i].ranges[0].sequence;
+
+             var mdta = {"Hugo_Symbol": "PIK3CA",
+                         "Mutation Type": "Missense",
+                         "HGVSp_Short": short,
+                         "PosAA": posaa,
+                         "Mutation_Class": value[i].ranges[0].sequence,
+                         "AA_Position": parseInt(value[i].ranges[0].start)}
+             fdata.push(mdta);
+          }
+       }
+
+        var mutation_data_default_settings = {
+          x: "AA_Position", // mutation position
+          y: "PosAA",       // amino-acid changes
+          factor: "Mutation Type", // classify mutations by certain factor (optional)
+        };
+       
+       console.log( JSON.stringify (fdata ) );
+
+       mutation_data = fdata;
+       
+        var pfam_data = {  
+           "hgnc_symbol":"TP53",
+           "protein_name":"tumor protein p53",
+           "uniprot_id":"P04637",
+           "length":seq.length,
+           "pfam":[  
+              {  
+                 "pfam_ac":"PF08563",
+                 "pfam_start":1,
+                 "pfam_end":seq.length,
+                 "pfam_id":"my protein"
+              }
+           ]
+        }; 
+ 
+        var pfam_data_default_settings = {
+           domainType: "pfam",       // key to the domain annotation entries
+           length: "length",         // protein length
+           details: {
+               start: "pfam_start",  // protein domain start position
+               end: "pfam_end",      // protein domain end position
+               name: "pfam_id",      // protein domain name
+           },
+       };
+
+       var lollipop = g3.Lollipop('flist-lolipop');
+
+       var popa = function(state,data){
+            alert("click: " + state + JSON.stringify(data) );
+            if( state ){
+               BKD.buildFDets("#fdets", data.values);
+               $("#fdets").show();
+            } else {
+               $("#fdets").hide();
+            }
+       };  
+
+
+       lollipop.options.chartMargin = {
+           "left": 40, "right": 40, "top": 30, "bottom": 25
+       };
+       lollipop.options.titleFont = "normal 20px Sans";
+       lollipop.options.titleColor = "steelblue";
+       lollipop.options.titleAlignment = "middle";
+       lollipop.options.titleDy = "0.3em";
+       lollipop.options.chartWidth = 1024;
+       lollipop.options.chartHeight= 200;
+       lollipop.options.lollipopHook = { action: BKDnode.buildFDets,
+                                         options: { anchor: "#fdets",
+                                                    cols:["Mutation Type",
+                                                          "HGVSp_Short",
+                                                          "Mutation_Class"]}
+                                       };
+
+      // add mutation data
+      lollipop.data.snvData = mutation_data;
+      // mutation data format settings
+      lollipop.format.snvData = mutation_data_default_settings;
+
+      // Pfam domain data
+      lollipop.data.domainData = pfam_data;
+      // Pfam data format settings
+      lollipop.format.domainData = pfam_data_default_settings;
+ 
+      lollipop.draw();
+
+
+      // structure
+
+      var colorScheme = NGL.ColormakerRegistry.addSelectionScheme([
+          ["green", "*"]]);
+
+      var ngl = new NGL.Stage("viewport");
+      ngl.loadFile("rcsb://7dhy").then( function(o){
+         console.log("NGL:" + typeof o );
+         BKDnode.nglsc = o;
+          
+         o.setSelection(":A");       
+         BKDnode.nglrep = o.addRepresentation("cartoon",{color: colorScheme});  
+         o.autoView(":A");
+          
+
+      });
      },
 
+     setSelScheme: function(pos){
+
+       var colorScheme = NGL.ColormakerRegistry.addSelectionScheme([
+                   ["yellow", pos.toString() ],["green","*"]]);
+       var newrep = BKDnode.nglsc.addRepresentation("cartoon",{color: colorScheme});
+       if( BKDnode.nglrep !== undefined){
+         BKDnode.nglsc.removeRepresentation(BKDnode.nglrep);
+         BKDnode.nglrep = newrep;
+       }
+
+       BKDnode.nglsc.autoView(":A");
+     },
 
      getVal: function( data, path ){
        var cval = data;
@@ -1122,6 +1269,40 @@ var pfam_data_default_settings = {
        } else {
            return this.getVal2( rval, path.slice(1) );
        }            
-    }
+    },
 
+     buildFDets: function( show, data, options ){
+
+       console.log("FD:" + JSON.stringify(data));
+
+       if( show ){
+         $(options.anchor).hide();
+         $(options.anchor + " #fdet-table").remove();
+         $(options.anchor).append( "<table id='fdet-table' width='100%' border='1'>"
+                                   +"</table>");
+         var head ="";
+         for(var h = 0; h < options.cols.length; h++){
+            head += "<th>"+options.cols[h]+"</th>";
+         }
+         $("#fdet-table").append("<tr>"+head+"</tr>");
+         console.log("data.values.length: " + data.values.length);
+         for( var r = 0; r < data.values.length; r++){
+            console.log(r + " : " + JSON.stringify(data.values[r]) );
+
+            var row =""; 
+            for(var c =0; c < options.cols.length; c++ ){
+              row += "<td>" + data.values[r][options.cols[c]] + "</td>";
+            }
+            $("#fdet-table").append( "<tr>"+row+"</tr>");
+         }
+         $(options.anchor ).show();
+
+         BKDnode.setSelScheme(data.position);
+
+
+       } else{        
+         // $(options.anchor).hide();
+         $(" #fdet-table").remove();
+       }
+    }
 };

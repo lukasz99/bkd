@@ -103,6 +103,24 @@ BKDconf = {
          'id': 'report_type',
          "type":"label",
          "edit": false},
+       {"name":'Report Status',
+         'ns':"dxf",  
+         'ac':"dxf:0125",  
+         'value':'status',
+         'label':'Report status',
+         'id': 'report_value_status',
+         'type': 'cvterm',
+         'cvt-list':[{ns:"dxf", ac:"dxf:0000", name:"",
+                      label:"-- not specified --"},
+                     {ns:"dxf", ac:"dxf:0121", name:"processing",
+                      label:"Processing"},
+                     {ns:"dxf", ac:"dxf:0122", name:"processed",
+                      label:"Processed"},
+                     {ns:"dxf", ac:"dxf:0123", name:"validated",
+                      label:"Validated"},
+                     {ns:"dxf", ac:"dxf:0124", name:"released",
+                      label:"Released"}],
+         "edit": true},
        {"name":'Channel activation',
          'ns':"cvd",  
          'ac':"cvd:0002",  
@@ -578,14 +596,32 @@ BKDconf = {
         protein:{
             "type":{
               "val":"protein",
-              "label":"Protein: ",
+              "label":"Protein:: ",
             },
             "ac":{
               "vpath":['name'],
               "id":"node_ac"
             },
-            defpane: "function",
+            defpane: "feature",
             pane:[
+              {id:"feature",
+               label:"Features",
+               header: true,
+               field:[
+                 {name:"Features",
+                  vpath:['feats'],
+                  type:"feature",
+                  condition:[{  
+                    test:['cvType','name'],
+                    equal:"mutation"
+                  }],
+                  header:true,
+                  list:true,
+                  miss: "%DROP%",
+                  header:true
+                 }
+               ]
+              },
               {id:"function",
                label:"Function",
                header: true,
@@ -638,20 +674,7 @@ BKDconf = {
                header: true,
                field:[]
               },
-              {id:"feature",
-               label:"Features",
-               header: true,
-               field:[
-                 {name:"Features",
-                  vpath:['feats'],
-                  type:"feature",
-                  header:true,
-                  list:true,
-                  miss: "%DROP%",
-                  header:true
-                 }
-               ]
-              },
+              
               {id:"structure",
                label:"Structure",
                header: true,

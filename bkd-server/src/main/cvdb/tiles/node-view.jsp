@@ -15,13 +15,12 @@
    <!--   <script src="js/sequence-viewer.bundle.js" type="text/javascript" language="JavaScript"></script>  -->
 
    <!--<script src="js/d3.min.js" type="text/javascript" language="JavaScript"></script>  -->
-
    <script src="https://d3js.org/d3.v4.min.js" type="text/javascript" language="JavaScript"></script> 
    <script src="js/g3-lollipop.js" type="text/javascript" language="JavaScript"></script> 
    <script src="js/pviz-bundle.min.js" type="text/javascript" language="JavaScript"></script> 
    <script src="js/bkd-node-jq.js" type="text/javascript" language="JavaScript"></script>
    <script src="js/bkd-site.js" type="text/javascript" language="JavaScript"></script>
-
+   <script src="js/ngl.js"></script>
    <script type="text/javascript">
          
      $( function(){
@@ -100,7 +99,7 @@
            <div id="bkd-node-view">
               <div id="bkd-hv-field"></div>
               <div id="bkd-nv-field"></div>
-              <div id="bkd-fv-field"></div>             
+            
            </div> 
          </td>
        </tr>    

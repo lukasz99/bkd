@@ -536,7 +536,8 @@ class UniZeep(BKD.BkdZeep):
                                                ns = "dxf",
                                                ac = a.nameAc,
                                                attrList = xsd.SkipValue)
-                        zlocation.attrList["attr"].append(zattr)
+                        #zlocation.attrList["attr"].append(zattr)
+                        zfeature.attrList["attr"].append(zattr)
                             
                     self.appendIsoforms(rec, ff, zfeature)
 

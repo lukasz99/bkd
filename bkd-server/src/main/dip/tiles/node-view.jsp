@@ -95,7 +95,7 @@
            <div id="bkd-node-view">
               <div id="bkd-hv-field"></div>
               <div id="bkd-nv-field"></div>
-              <div id="bkd-fv-field"></div>             
+                           
            </div> 
          </td>
        </tr>    

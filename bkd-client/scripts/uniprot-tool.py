@@ -134,8 +134,8 @@ elif args.mode == "set":
                         arow[k]=row[k]
                 if nkey is not None: 
                     annot[nkey]=arow
-    
-    
+    #print(annot)
+
     if len(args.file) > 0: 
         if args.out.endswith(".dxf"):
             args.out = args.out.replace(".dxf","")            
@@ -221,8 +221,10 @@ elif args.mode == "set":
                         if upr in annot.keys():
                             cann = annot[upr]
                             if "label" in cann and cann["label"] is not None and len(cann["label"]) > 0:  
+                                print( "ANN(label):",znode.label , "->", annot[upr]["label"])
                                 znode.label=annot[upr]["label"]
-                                               
+                                print( "ANN(label):",znode.label)
+                                
                         zres = uzeep.setnode(znode, mode="add", debug=args.debug)
                         nsl = zres.xpath("//dxf:dataset/dxf:node/@ns",namespaces=uzeep.dxfns)
                         acl = zres.xpath("//dxf:dataset/dxf:node/@ac",namespaces=uzeep.dxfns)
@@ -264,8 +266,8 @@ elif args.mode == "set":
             #print(ET.tostring( znode, pretty_print=True).decode() )
             print("**")
         
-        #zres = uzeep.setnode(znode, mode=args.mode, debug=args.debug)
-        zres = uzeep.setnode(znode, mode=args.mode, debug=True)
+        zres = uzeep.setnode(znode, mode=args.mode, debug=args.debug)
+        #zres = uzeep.setnode(znode, mode=args.mode, debug=True)
                 
         if not args.debug:
             if len(args.out)  > 0:

@@ -106,6 +106,29 @@
     <url-pattern>/services/*</url-pattern>
   </servlet-mapping>
 
+
+<!--  
+  <security-constraint>
+    <web-resource-collection>
+       <web-resource-name>Wildcard means</web-resource-name>
+       <url-pattern>/*</url-pattern>
+       <http-method>GET</http-method>
+       <http-method>POST</http-method>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>cvus-admin</role-name>
+    </auth-constraint>
+
+    <user-data-constraint>
+      <transport-guarantee>NONE</transport-guarantee>
+    </user-data-constraint>
+  </security-constraint>
+
+  <login-config>
+    <auth-method>BASIC</auth-method>
+  </login-config>
+-->
+
   <mime-mapping>
         <extension>inc</extension>
         <mime-type>text/plain</mime-type>

@@ -81,6 +81,19 @@ public abstract class Feature{
     public void setReps(Set<FeatureReport> reps){
         this.reps = reps;
     }
+
+    @OneToMany(mappedBy="feature",fetch = FetchType.EAGER)
+    private Set<FeatureAttr> attrs;
+
+    public Set<FeatureAttr> getAttrs(){
+	if(this.attrs == null)
+	    this.attrs = new HashSet<FeatureAttr>();	
+        return this.attrs;
+    }
+
+    public void setAttrs(Set<FeatureAttr> attrs){
+        this.attrs = attrs;
+    }
     
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "fk_source")
