@@ -4,8 +4,12 @@ BKDnode = {
   nodeAnchor: null,
   srcAnchor: null,
   flist: null,
+  fldet: null,
+  flport: null,
+  flview: "#swmod",
   paneon: null,
-
+  data: null,
+  
   init: function( data, srcAnchor, nodeAnchor, flist, mode){
     BKDnode.view( data, srcAnchor, nodeAnchor, flist, mode);
   },
@@ -22,6 +26,7 @@ BKDnode = {
       BKDnode.search( data, node.srcAnchor );
       $( srcAnchor ).show();            
     }else{
+      BKDnode.data = data;
       $( srcAnchor ).hide();            
       $( srcViewAnchor ).hide();            
       BKDnode.nodeView( data, this.srcAnchor, this.srcViewAnchor,
@@ -1067,17 +1072,57 @@ var pfam_data_default_settings = {
 
      showFeature: function( tgt, format, data ){
        var value = this.getVal( data, format.vpath);
-       
+       console.log("DATA:"+JSON.stringify(data))
+
        $( tgt ).append( "<table border='1' width='100%'>" +
-                        "<tr><td id='flist' width='1024'>"+
-                        "<div id='flist-lolipop'></div>"+
-                        "</td>"+
-                        "<td id='fview' rowspan='2'>"+
-                        "<div id='viewport' style='width:600px; height:650px;'></div>"+
-                        "</td></tr>"+
-                        "<tr><td id='fdets' style='width:1024px; height:380px;' valign='top'></td></tr>"+
+                        " <tr>"+
+                        "  <td id='flist' width='1024' colspan='1' rowspan='1' valign='top'>"+
+                        "   <div id='flist-lolipop'></div>"+
+                        "   <div id='flist-details'></div>"+
+                        "  </td>"+                                            
+                        "  <td valign='top' align='center'>"+
+                        "   <table>"+
+                        "    <tr>"+
+                        "     <td id='track-tab'>Genome&nbsp;Viewer</td>"+
+                        "     <td id='homo-tab'>Homology</td>"+
+                        "     <td id='topo-tab'><b>Membrane&nbsp;Topology</b></td>"+
+                        "     <td id='swmod-tab'><b>Swissmodel</b></td>"+
+                        "     <td id='struc-tab'>Structure</td>"+
+                        "    </tr>"+
+                        "    <tr>"+
+                        "     <td id='flist-view' valign='top' colspan='5'></td>"+
+                        "    </tr>"+
+                        "   </table>"+
+                        "  </td>"+
+                        " </tr>"+
                         "</table>" );
 
+
+       $( '#flist-view' ).append("<div id='track-port' style='width:600px; height:625px;'></div>");
+       $( '#track-port').hide();
+       $( '#track-tab').on('click',BKDnode.flviewToggle);
+
+       $( '#flist-view' ).append("<div id='homo-port' style='width:600px; height:625px;'></div>");       
+       $( '#homo-port').hide();
+       $( '#homo-tab').on('click',BKDnode.flviewToggle);
+
+
+       $( '#flist-view' ).append("<div id='topo-port' style='width:600px; height:625px;'></div>");
+       $( '#topo-port').hide();
+       $( '#topo-tab').on('click',BKDnode.flviewToggle);
+
+
+       $( '#flist-view' ).append("<div id='swmod-port' style='width:600px; height:625px;'></div>");
+       $( '#swmod-port').show();
+       $( '#swmod-tab').on('click',BKDnode.flviewToggle);
+
+
+       $( '#flist-view' ).append("<div id='struc-port' style='width:600px; height:625px;'></div>");
+       $( '#struc-port').hide();
+       $( '#struct-tab').on('click',BKDnode.flviewToggle);
+
+
+   
        // sequence
        
        var fdata = [];
@@ -1147,10 +1192,10 @@ var pfam_data_default_settings = {
        var popa = function(state,data){
             alert("click: " + state + JSON.stringify(data) );
             if( state ){
-               BKD.buildFDets("#fdets", data.values);
-               $("#fdets").show();
+               BKD.buildFDets("#flist-details", data.values);
+               $("#flist-details").show();
             } else {
-               $("#fdets").hide();
+               $("flist-details").hide();
             }
        };  
 
@@ -1165,7 +1210,7 @@ var pfam_data_default_settings = {
        lollipop.options.chartWidth = 1024;
        lollipop.options.chartHeight= 200;
        lollipop.options.lollipopHook = { action: BKDnode.buildFDets,
-                                         options: { anchor: "#fdets",
+                                         options: { anchor: "#flist-details",
                                                     cols:["Mutation Type",
                                                           "HGVSp_Short",
                                                           "Mutation_Class"]}
@@ -1185,34 +1230,73 @@ var pfam_data_default_settings = {
 
 
       // structure
-
+      //----------
       var colorScheme = NGL.ColormakerRegistry.addSelectionScheme([
-          ["green", "*"]]);
+          ["atomindex", "*"]]);
 
-      var ngl = new NGL.Stage("viewport");
-      ngl.loadFile("rcsb://7dhy").then( function(o){
-         console.log("NGL:" + typeof o );
+      var ngl = new NGL.Stage("swmod-port");
+      url="http://10.1.7.100:9999/cvdbdev0/";
+      //url="https://dip.mbi.ucla.edu/cvdbdev0/";
+      //url="https://dip.mbi.ucla.edu/cvdb/";
+      id = BKDnode.data.ac;
+      console.log("PDB:" + url+"swissmodel/"+id+"-1_swm.pdb");
+      ngl.loadFile(url+"swissmodel/"+id+"-1_swm.pdb").then( function(o){      
          BKDnode.nglsc = o;
-          
-         o.setSelection(":A");       
+         o.setSelection("all");       
          BKDnode.nglrep = o.addRepresentation("cartoon",{color: colorScheme});  
-         o.autoView(":A");
-          
+         o.autoView("all");
+      });
+      
+     //topology
+     //--------
+     
+      purl = url+"protter/"+ id +".svg";
+      console.log("PROTTER:" + purl);      
+
+      $("#topo-port").load( purl, function(){
+                  
+         console.log( "TOPO: width= " + $( "#topo-port > svg").width() );
+         console.log( "TOPO: height=" +  $( "#topo-port > svg").height() );
+         console.log( "TOPO: bb=" +  $( "#topo-port > svg") );
+
+         var svgw = $( "#topo-port > svg").width();
+         var svgh = $( "#topo-port > svg").height();
+
+         var scl = 580.0 / svgh;
+         var trX = svgw/2.0*(scl-1); 
+         var trY = svgh/2.0*(scl-1);   
+      
+         $("#topo-port > svg" ).attr('transform','translate('+trX+','+trY+') scale('+scl+')');     
 
       });
+
+
+
+
+
      },
 
-     setSelScheme: function(pos){
+     setSelScheme: function(pos, show ){
 
-       var colorScheme = NGL.ColormakerRegistry.addSelectionScheme([
-                   ["yellow", pos.toString() ],["green","*"]]);
-       var newrep = BKDnode.nglsc.addRepresentation("cartoon",{color: colorScheme});
-       if( BKDnode.nglrep !== undefined){
-         BKDnode.nglsc.removeRepresentation(BKDnode.nglrep);
-         BKDnode.nglrep = newrep;
+       if(show=='on'){
+         var colorScheme = NGL.ColormakerRegistry.addSelectionScheme([
+                     ["yellow", pos.toString() ],["green","*"]]);
+         var newrep = BKDnode.nglsc.addRepresentation("cartoon",{color: colorScheme});
+         if( BKDnode.nglrep !== undefined){
+           BKDnode.nglsc.removeRepresentation(BKDnode.nglrep);
+           BKDnode.nglrep = newrep;
+         }
        }
-
-       BKDnode.nglsc.autoView(":A");
+       if(show=='off'){
+         var colorScheme = NGL.ColormakerRegistry.addSelectionScheme([
+                     ["atomindex","*"]]);
+         var newrep = BKDnode.nglsc.addRepresentation("cartoon",{color: colorScheme});
+         if( BKDnode.nglrep !== undefined){
+           BKDnode.nglsc.removeRepresentation(BKDnode.nglrep);
+           BKDnode.nglrep = newrep;
+         }
+       }
+       BKDnode.nglsc.autoView("all");
      },
 
      getVal: function( data, path ){
@@ -1273,6 +1357,7 @@ var pfam_data_default_settings = {
 
      buildFDets: function( show, data, options ){
 
+       console.log("FD(options):" + JSON.stringify(options));
        console.log("FD:" + JSON.stringify(data));
 
        if( show ){
@@ -1297,12 +1382,22 @@ var pfam_data_default_settings = {
          }
          $(options.anchor ).show();
 
-         BKDnode.setSelScheme(data.position);
+         BKDnode.setSelScheme(data.position, 'on');
 
 
-       } else{        
+       } else{
+         BKDnode.setSelScheme(data.position, 'off');
          // $(options.anchor).hide();
          $(" #fdet-table").remove();
        }
+    },
+
+    flviewToggle:   function(event){
+                        var nview = "#" + event.currentTarget.id.replace('-tab','');
+                        console.log("Toggle: "+ BKDnode.flview +"->" + nview);
+                        $( BKDnode.flview + "-port" ).hide();
+                        BKDnode.flview = nview;
+                        $( nview + "-port" ).show();
     }
+
 };
