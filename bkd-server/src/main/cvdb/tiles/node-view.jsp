@@ -21,6 +21,7 @@
    <script src="js/bkd-node-jq.js" type="text/javascript" language="JavaScript"></script>
    <script src="js/bkd-site.js" type="text/javascript" language="JavaScript"></script>
    <script src="js/ngl.js"></script>
+   <script src="js/igv.js" type="text/javascript" charset="utf-8"></script>
    <script type="text/javascript">
          
      $( function(){
@@ -59,7 +60,15 @@
     
        });
   </script>
-  
+  <style>
+        .jbrowse {
+            height: 300px;
+            width: 600px;
+            padding: 0;
+            margin-left: 5em;
+            border: 1px solid #ccc;
+        }
+  </style>  
  </head>
  <body class="yui-skin-sam" onLoad="var nos = document.getElementById('noscript'); if ( nos !== null ) { nos.innerHTML='';}">
   <center>

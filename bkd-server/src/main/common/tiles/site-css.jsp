@@ -4,7 +4,7 @@
 
 <link rel="stylesheet" href="css/main.css" type="text/css">
 <link rel="stylesheet" href="css/site-tab.css" type="text/css">
-<link rel="stylesheet" href="css/sitestruts.css" type="text/css">
+<!--<link rel="stylesheet" href="css/sitestruts.css" type="text/css"> -->
 
 <link rel="stylesheet" href="css/pubmgr.css" type="text/css">
 <link rel="stylesheet" href="css/pubnew.css" type="text/css">

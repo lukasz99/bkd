@@ -1,6 +1,9 @@
 console.log("bkd-node-jq: common");
     
 BKDnode = {
+  //siteurl: "http://10.1.7.100:9999/cvdbdev0/",
+  //siteurl: "https://dip.mbi.ucla.edu/cvdbdev0/",
+  siteurl: "https://dip.mbi.ucla.edu/cvdb/",
   nodeAnchor: null,
   srcAnchor: null,
   flist: null,
@@ -1083,7 +1086,7 @@ var pfam_data_default_settings = {
                         "  <td valign='top' align='center'>"+
                         "   <table>"+
                         "    <tr>"+
-                        "     <td id='track-tab'>Genome&nbsp;Viewer</td>"+
+                        "     <td id='track-tab'><b>Genome&nbsp;Viewer</b></td>"+
                         "     <td id='homo-tab'>Homology</td>"+
                         "     <td id='topo-tab'><b>Membrane&nbsp;Topology</b></td>"+
                         "     <td id='swmod-tab'><b>Swissmodel</b></td>"+
@@ -1119,11 +1122,10 @@ var pfam_data_default_settings = {
 
        $( '#flist-view' ).append("<div id='struc-port' style='width:600px; height:625px;'></div>");
        $( '#struc-port').hide();
-       $( '#struct-tab').on('click',BKDnode.flviewToggle);
-
-
+       $( '#struc-tab').on('click',BKDnode.flviewToggle);
    
        // sequence
+       //---------
        
        var fdata = [];
        var seq = data.sequence;
@@ -1231,13 +1233,13 @@ var pfam_data_default_settings = {
 
       // structure
       //----------
+
       var colorScheme = NGL.ColormakerRegistry.addSelectionScheme([
           ["atomindex", "*"]]);
 
       var ngl = new NGL.Stage("swmod-port");
-      url="http://10.1.7.100:9999/cvdbdev0/";
-      //url="https://dip.mbi.ucla.edu/cvdbdev0/";
-      //url="https://dip.mbi.ucla.edu/cvdb/";
+      
+      url = BKDnode.siteurl;
       id = BKDnode.data.ac;
       console.log("PDB:" + url+"swissmodel/"+id+"-1_swm.pdb");
       ngl.loadFile(url+"swissmodel/"+id+"-1_swm.pdb").then( function(o){      
@@ -1270,9 +1272,27 @@ var pfam_data_default_settings = {
 
       });
 
+      // genome
+      //-------
+      
+      var igvDiv = document.getElementById("track-port");
+      var options = {
+                   genome: "hg19",
+            locus: "chr8:127,736,588-127,739,371",
+            tracks: [
+                //{
+                //    "name": "HG00103",
+                //    "url": "https://s3.amazonaws.com/1000genomes/data/HG00103/alignment/HG00103.alt_bwamem_GRCh38DH.20150718.GBR.low_coverage.cram",
+                //    "indexURL": "https://s3.amazonaws.com/1000genomes/data/HG00103/alignment/HG00103.alt_bwamem_GRCh38DH.20150718.GBR.low_coverage.cram.crai",
+                //    "format": "cram"
+                //}
+            ]
+        };
 
-
-
+        igv.createBrowser(igvDiv, options)
+                .then( function (browser) {
+                    console.log("Created IGV browser");
+                })
 
      },
 
