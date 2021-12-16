@@ -9,18 +9,15 @@
 
   <t:insertDefinition name="htmlhead"/>  
    <script src="jq/jquery-3.6.0.js" type="text/javascript" language="JavaScript"></script>
-
    <script src="js/bkd-config.js" type="text/javascript" language="JavaScript"></script>
    <script src="js/bkd-links.js" type="text/javascript" language="JavaScript"></script>
-   <!--   <script src="js/sequence-viewer.bundle.js" type="text/javascript" language="JavaScript"></script>  -->
-
    <!--<script src="js/d3.min.js" type="text/javascript" language="JavaScript"></script>  -->
    <script src="https://d3js.org/d3.v4.min.js" type="text/javascript" language="JavaScript"></script> 
    <script src="js/g3-lollipop.js" type="text/javascript" language="JavaScript"></script> 
    <script src="js/pviz-bundle.min.js" type="text/javascript" language="JavaScript"></script> 
    <script src="js/bkd-node-jq.js" type="text/javascript" language="JavaScript"></script>
    <script src="js/bkd-site.js" type="text/javascript" language="JavaScript"></script>
-   <script src="js/ngl.js"></script>
+   <script src="js/ngl.js"></script> 
    <script src="js/igv.js" type="text/javascript" charset="utf-8"></script>
    <script type="text/javascript">
          
@@ -101,6 +98,13 @@
        <tr>
          <td colspan="3">
            <t:insertDefinition name="node-search"/>
+         </td>
+       </tr>
+       <tr>
+         <td colspan="3" align='center'>
+           <div id="bkd-node-spinner" style="display: none;">
+             <img src="img/spinner.gif" class="bkd-spinner">
+           </div>
          </td>
        </tr>
        <tr>

@@ -2,13 +2,14 @@ console.log("bkd-node-jq: common");
     
 BKDnode = {
   //siteurl: "http://10.1.7.100:9999/cvdbdev0/",
-  //siteurl: "https://dip.mbi.ucla.edu/cvdbdev0/",
-  siteurl: "https://dip.mbi.ucla.edu/cvdb/",
+  siteurl: "https://dip.mbi.ucla.edu/cvdbdev0/",
+  //siteurl: "https://dip.mbi.ucla.edu/cvdb/",
   nodeAnchor: null,
   srcAnchor: null,
   flist: null,
   fldet: null,
   flport: null,
+  igvbrowse:null,
   flview: "#swmod",
   paneon: null,
   data: null,
@@ -44,12 +45,15 @@ BKDnode = {
 
       console.log(qmode + ":" + squery);
       
-      myurl ="search?query="+squery+"&qmode="+qmode;          
+      myurl ="search?query="+squery+"&qmode="+qmode;
+      $("#bkd-search-table").hide();   
+      $("#bkd-node-spinner").show();
       $.ajax( { url: myurl} )
           .done( function(data, textStatus, jqXHR){
             console.log( JSON.stringify(textStatus)
                          + " || data.length: "  + JSON.stringify(data).length); 
-
+             $("#bkd-node-spinner").hide();
+             $("#bkd-search-table").show();
              BKDnode.searchView( data.rdata,
                                  "#bkd-search", "#bkd-search-view", 
                                  "#bkd-node-view",
@@ -1274,11 +1278,23 @@ var pfam_data_default_settings = {
 
       // genome
       //-------
+
+      console.log( JSON.stringify(data) );
+
+      gname=data["label"];
+      for( a in data.alias){
+          console.log("A: "+ JSON.stringify(data.alias[a]) );
+          if( data.alias[a]["cvType"]["name"] == "gene-name" ){
+              gname=data.alias[a]["alias"]
+          }
+      }         
       
+      console.log("Gene Name: ", gname );
+
       var igvDiv = document.getElementById("track-port");
       var options = {
                    genome: "hg19",
-            locus: "chr8:127,736,588-127,739,371",
+            locus: gname,
             tracks: [
                 //{
                 //    "name": "HG00103",
@@ -1292,6 +1308,16 @@ var pfam_data_default_settings = {
         igv.createBrowser(igvDiv, options)
                 .then( function (browser) {
                     console.log("Created IGV browser");
+                    BKDnode.igvbrowse = browser;
+
+                    browser.loadROI([
+                        {
+                            name: 'ROI test01',
+                            url: BKDnode.siteurl+"roi_test_01.html",
+                            indexed: false,
+                            color: "rgba(68, 134, 247, 0.25)"
+                        }])
+
                 })
 
      },
@@ -1417,7 +1443,11 @@ var pfam_data_default_settings = {
                         console.log("Toggle: "+ BKDnode.flview +"->" + nview);
                         $( BKDnode.flview + "-port" ).hide();
                         BKDnode.flview = nview;
-                        $( nview + "-port" ).show();
+                        $( nview + "-port" ).show()
+                        console.log("Toggle: BKDnode.igvbrowse "+BKDnode.igvbrowse) ;
+                        if( BKDnode.igvbrowse !== null){
+                           BKDnode.igvbrowse.visibilityChange();
+                        }
     }
 
 };

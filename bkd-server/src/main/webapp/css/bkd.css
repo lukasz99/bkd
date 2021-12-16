@@ -211,6 +211,15 @@
     color: #003B5C;
 }
 
+.bkd-spinner {
+    margin: 50px;
+    border-style: solid;
+    border-color: #A8A8A8;
+    border-width: 1px;
+    width: 100px;
+    height:100px;
+}
+
 #topo-port {
     display: block;
     overflow-x: scroll;
@@ -221,6 +230,8 @@
     border-width: 0px;
     margin: 0px;
 }
+
+
 
 #foo {
     height: 100%;
