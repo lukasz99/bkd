@@ -27,8 +27,8 @@ bkd_dest = {"dip0-local":"http://10.1.7.100:9999/dipdev0",
             "dip0-public":"https://dip.mbi.ucla.edu/dipdev0",
             "dip2beta-local":"http://10.1.8.211:8080/dip2beta",
             "dip2beta-public":"https://dip.mbi.ucla.edu/dip2beta",
-            "dip2-local":"http://10.1.7.102:9999/dipdev2",
-            "dip2-public":"https://dip.mbi.ucla.edu/dipdev2",
+            "dip2-local":"http://%%USER%%:%%PASS%%@10.1.7.102:9999/dipdev2",
+            "dip2-public":"https://%%USER%%:%%PASS%%@dip.mbi.ucla.edu/dipdev2",
             "cvdb-local":"http://10.1.8.201:8080/cvdb",
             "cvdb0-local":"http://10.1.7.100:9999/cvdbdev0",
             "cvdb0-public":"https://dip.mbi.ucla.edu/cvdbdev0",
@@ -78,6 +78,14 @@ parser.add_argument('--setac', dest="setac", type=bool,
                     required=False, default=False,
                     help='Set accession')
 
+parser.add_argument('--user', dest="user", type=str,
+                    required=False, default='',
+                    help='User (when needed)')
+
+parser.add_argument('--pass', dest="password", type=str,
+                    required=False, default='',
+                    help='password (when needed)')
+
 parser.add_argument('--out', '-o', dest="out", type=str,
                     required=False, default='',
                     help='Output file.')
@@ -103,7 +111,12 @@ def acc2path( dir, acc ):
 
 args = parser.parse_args()
 
-uzeep = BKD.UniZeep( bkd_dest[args.sloc] )
+srvUrl = bkd_dest[args.sloc]
+
+srvUrl = srvUrl.replace( "%%USER%%", args.user)
+srvUrl = srvUrl.replace( "%%PASS%%", args.password)
+
+uzeep = BKD.UniZeep( srvUrl )
 
 if args.mode == "get":
     zres = uzeep.getnode( args.ns, args.ac )
