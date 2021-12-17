@@ -25,6 +25,8 @@ import bkdpy as BKD
 
 bkd_dest = {"dip0-local":"http://10.1.7.100:9999/dipdev0",
             "dip0-public":"https://dip.mbi.ucla.edu/dipdev0",
+            "dip2beta-local":"http://10.1.8.211:8080/dip2beta",
+            "dip2beta-public":"https://dip.mbi.ucla.edu/dip2beta",
             "dip2-local":"http://10.1.7.102:9999/dipdev2",
             "dip2-public":"https://dip.mbi.ucla.edu/dipdev2",
             "cvdb-local":"http://10.1.8.201:8080/cvdb",

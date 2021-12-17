@@ -61,10 +61,10 @@
        <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
-        <site>dip</site>
+        <site>cvdb</site>
         <srv.ver>cvdb</srv.ver>
         <db.ver>cvdb</db.ver>
-        <rec.prefix>DIP</rec.prefix>
+        <rec.prefix>CVDB</rec.prefix>
         <service.dbip>10.1.8.203</service.dbip>
         <service.esindex.url>http://10.1.8.202:9200/cvdb-%%STATE%%-%%TYPE%%-index-000000</service.esindex.url>
       </properties>
@@ -73,6 +73,24 @@
       </build>
     </profile>
 
+    <profile>
+      <id>dip2beta</id>
+      <activation>
+       <activeByDefault>false</activeByDefault>
+      </activation>
+      <properties>
+        <site>dip2beta</site>
+        <srv.ver>dip</srv.ver>
+        <db.ver>dip</db.ver>
+        <rec.prefix>DIP</rec.prefix>
+        <service.dbip>10.1.8.213</service.dbip>
+        <service.esindex.url>http://10.1.8.212:9200/dip-%%STATE%%-%%TYPE%%-index-000000</service.esindex.url>
+      </properties>
+      <build>
+       <finalName>dip2beta</finalName>
+      </build>
+    </profile>
+    
     <profile>
       <id>dipdev0</id>
       <activation>
