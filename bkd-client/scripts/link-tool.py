@@ -9,7 +9,7 @@ from lxml import etree as ET
 import logging
 logging.basicConfig(level=logging.WARN)     # needs logging configured
 
-pymex_dir="/home/lukasz/git/pymex/pylib"
+pymex_dir="../git/pymex/pylib"
 if os.path.isdir( pymex_dir ):
     print( "#pymex: using source library version" )
     sys.path.insert( 0, pymex_dir )
@@ -105,7 +105,7 @@ elif args.mode == "set":
                     if  not ln.startswith("#"):
                         cols = ln.split('\t')
                         if len(cols) > 1:
-                            dip_ids = [id2ac(ac2id(x)) for x in cols[1].split(' ')]
+                            dip_ids = [id2ac(ac2id(x)) for x in cols[1].split('|')]
 
                             if len( cols[0].strip() ) > 0:
                                 ac = cols[0]
@@ -125,9 +125,9 @@ elif args.mode == "set":
                             acl = zres.xpath("//dxf:dataset/dxf:node/@ac",namespaces=lzeep.dxfns)
                             
                             if ac == acl[0] or ac == "":
-                                logh.write( "\t".join( (acl[0], " ".join(dip_ids),"\n") ) )
+                                logh.write( "\t".join( (acl[0], "|".join(dip_ids),"\n") ) )
                             else:
-                                logh.write( "\t".join( (":".join([ac,acl[0]]), " ".join(dip_ids),"\n") ) )
+                                logh.write( "\t".join( (":".join([ac,acl[0]]), "|".join(dip_ids),"\n") ) )
                         
     else:
         dip_ids = [id2ac(ac2id(x)) for x in args.dip_ids.split(',')]
@@ -144,7 +144,7 @@ elif args.mode == "set":
                         args.out+= ".dxf"
 
                     with open( args.out, "w" ) as of:
-                        of.write( " ".join(znode) )
+                        of.write( "|".join(znode) )
                         of.write( "\n" )
         else:
             zres = lzeep.setlink(znode, mode="add", debug=args.debug)
