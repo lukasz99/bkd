@@ -47,7 +47,7 @@ parser.add_argument('--ulocation', '-ul', dest="uloc", type=str,
                     help='Uniprot record location: local/remote.')
 
 parser.add_argument('--upr', '-u', dest="upr", type=str,
-                    required=False, default='P60010',
+                    required=False, default='Q13936',
                     help='UniprotKB accession.')
 
 parser.add_argument('--slocation', '-sl', dest="sloc", type=str,
@@ -224,7 +224,6 @@ elif args.mode == "set":
 
                         
                         rec = pymex.uprot.Record().parseXml( ufile ) # parse uniprot record
-
                             
                         if len(ac) > 0 and len(args.ns) == 0:
                             ns  = re.sub("-?\d+\D","",ac)
@@ -270,7 +269,9 @@ elif args.mode == "set":
         
         rec = pymex.uprot.Record().parseXml( ufile ) # parse uniprot record
 
-        #print(json.dumps(rec.root,indent=3))
+                                
+        if args.debug:                                   
+            print(json.dumps(rec.root,indent=3))
         
         znode = uzeep.buildZnode(rec, args.ns, args.ac) # build zeep request node
         
