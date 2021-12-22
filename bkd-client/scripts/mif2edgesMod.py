@@ -189,7 +189,8 @@ def processMif( spmid, year, rec, maps, nlst2edge, out, error_log):
             
             if len(part_dip_ids) == 1:
                 if type(participant.stoich[0]) != str: #stoich is (0,0)
-                    invalid_interaction = True
+                    if participant.stoich[0] < 2:
+                        invalid_interaction = True
                 elif:
                     int(participant.stoich[0].split("'")[3]) < 2:
                         invalid_interaction = True
