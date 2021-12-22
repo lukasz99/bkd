@@ -97,6 +97,7 @@ def processMif( spmid, year, rec, maps, nlst2edge, out, error_log):
         
         part_dip_ids = []
         invalid_interaction = False
+        dropped_participant = False
         pubmed_id = interaction.experiment.bibref.primaryRef.ac
         imex_id = interaction.imexid
         if str(spmid) != str(pubmed_id):
@@ -105,8 +106,10 @@ def processMif( spmid, year, rec, maps, nlst2edge, out, error_log):
 
             for participant in interaction.participants:
 
-                # skip ancillaty proteins
-                if 'ancillary' not in [exprole['names']['fullName'] for exprole in participant._exprole]:
+                # skip non-proteins and ancillary proteins
+                if participant.interactor.type.label != 'protein' or ancillary' in [exprole['names']['fullName'] for exprole in participant._exprole]:
+                    dropped_participant = True
+                else:
                     upr_ids = []
                     dip_ids = []
                     rfs_ids = []
@@ -161,8 +164,6 @@ def processMif( spmid, year, rec, maps, nlst2edge, out, error_log):
                                     part_dip_ids.append(mapped_id+"(TAXIDERROR)")
                                     invalid_interaction = True
 
-                    #print(part_dip_ids)
-
             # find old edge id
             #-----------------
 
@@ -183,7 +184,16 @@ def processMif( spmid, year, rec, maps, nlst2edge, out, error_log):
 
             rec_line = "\t".join( ( edgeid, '|'.join( part_dip_ids ),
                                     pubmed_id, imex_id, year  ) ) 
-                
+            
+            #if there is only one participant, check if stoichiometry is >= 2
+            
+            if len(part_dip_ids) == 1:
+                if type(participant.stoich[0]) != str: #stoich is (0,0)
+                    invalid_interaction = True
+                elif:
+                    int(participant.stoich[0].split("'")[3]) < 2:
+                        invalid_interaction = True
+            
             if invalid_interaction:
                 error_log.write( "INVALID EDGE:" + "\t" + rec_line + "\n" )
             else:                
