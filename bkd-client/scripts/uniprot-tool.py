@@ -94,6 +94,10 @@ parser.add_argument('--debug', '-d', dest="debug", type=bool,
                     required=False, default=False,
                     help='Debug option.')
 
+parser.add_argument('--variant-map', '-vm', dest="vmap", type=bool,
+                    required=False, default=False,
+                    help='Variant mapping.')
+
 #spyder hack: add '-i' option only if present (as added by spyder)
 
 if '-i' in sys.argv:
@@ -229,7 +233,7 @@ elif args.mode == "set":
                             ns  = re.sub("-?\d+\D","",ac)
                         else:
                             ns = args.ns
-                            
+
                         znode = uzeep.buildZnode(rec, ns, ac) # build zeep request node
 
                         if upr in annot.keys():
@@ -272,7 +276,17 @@ elif args.mode == "set":
                                 
         if args.debug:                                   
             print(json.dumps(rec.root,indent=3))
+
+
         
+
+        if args.vmap:
+            rs = BKD.RefSNP().get('534447939')
+            print(rs.keys())
+        xxx    
+    
+
+            
         znode = uzeep.buildZnode(rec, args.ns, args.ac) # build zeep request node
         
         #xx
