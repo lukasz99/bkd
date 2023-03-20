@@ -1,10 +1,10 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="t" %>
 <%@ taglib prefix="s" uri="/struts-tags" %>
-
-<script src="js/util-yui.js" type="text/javascript"></script>
-<script src="js/journaledit-yui.js" type="text/javascript"></script>
-<script src="js/attach-yui.js" type="text/javascript"></script>
-
+<!--
+<scr ipt src="js/util-yui.js" type="text/javascript"></script>
+<scr ipt src="js/journaledit-yui.js" type="text/javascript"></script>
+<scr ipt src="js/attach-yui.js" type="text/javascript"></script>
+-->
 <h1>Journal Editor</h1>
 
 <div class="pub-edit-head main-width">

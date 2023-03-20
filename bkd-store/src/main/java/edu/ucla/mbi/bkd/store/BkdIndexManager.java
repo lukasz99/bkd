@@ -134,12 +134,12 @@ public class BkdIndexManager {
     // index Node
     //-----------
     
-    public void indexNode( String ac ) {
+    public void indexNode( String ac, String depth ) {
         Logger log = LogManager.getLogger( this.getClass() );     
         log.info( " index node -> ac=" + ac );
         
         try{
-            Node nde =  (Node) recManager.getNode( ac );
+            Node nde =  (Node) recManager.getNode( ac, depth );
             log.info( " retrieved -> ac=" + nde );
             String idoc = node2idoc( nde );
             log.info( " idoc -> " + idoc );
@@ -154,7 +154,7 @@ public class BkdIndexManager {
         }
     }
 
-    // index Report
+    // Index Report
     //-------------
     
     public void indexReport( String ac) {
@@ -163,9 +163,17 @@ public class BkdIndexManager {
         
         try{
             Report rep = (Report) recManager.getReport( ac );
+           
+            ProteinNode pnode = null;
+                        
+            if( rep instanceof NodeFeatureReport ){
+                pnode = (ProteinNode) recManager
+                    .getNodeByPkey( ((NodeFeatureReport) rep ).getNodeId(),
+                                    Node.BASE);
+            }
                       
-            String idoc = report2idoc( rep );
-                       
+            String idoc = report2idoc( rep, pnode );
+            
             if( ! getIndexUrl().equals("") ){
                 esIndex( "report", ac, idoc );
             }
@@ -177,6 +185,29 @@ public class BkdIndexManager {
         }
     }
 
+    // Index Feature
+    //--------------
+    /*
+    public void indexFeature( int fpk) {
+        Logger log = LogManager.getLogger( this.getClass() ); 
+        log.info( " index feature -> pk=" + fpk );
+        
+        try{
+            Feature feat = (Feature) recManager.getFeature( fpk );
+                      
+            String idoc = feat2idoc( feat );
+                       
+            if( ! getIndexUrl().equals("") ){
+                esIndex( "feature", Integer.toString(fpk), idoc );
+            }
+            
+            log.info( "DONE" );
+        } catch( Exception ex ){ 
+            ex.printStackTrace();
+            log.info( "FAILED" );           
+        }
+    }
+    */
     public void reindex( String index ) {
         Logger log = LogManager.getLogger( this.getClass() ); 
         log.info( " reindex -> index=" + index );
@@ -199,12 +230,12 @@ public class BkdIndexManager {
 
                 rxposition.put( index, minrec );
                 
-                if( "node".equalsIgnoreCase(index) ){                                    
+                if( "node".equalsIgnoreCase(index) ){
                     List<Integer> ndid = recManager.getDaoContext()
                         .getNodeDao().getIdList( minrec, minrec + bsize );
                     
                     for( int cid : ndid ){
-                        Node cnd = (Node) recManager.getNode( cid );
+                        Node cnd = (Node) recManager.getNode( cid, Node.FULL );
                         log.info(cnd);
                         String idoc = node2idoc( cnd );                       
                         if( ! getIndexUrl().equals("") ){
@@ -219,12 +250,20 @@ public class BkdIndexManager {
                         .getReportDao().getIdList( minrec, minrec + bsize );
                     
                     for( int cid : ndid ){
-                        Report cnd = (Report) recManager.getReport( cid );                      
-                        String idoc = report2idoc( cnd );                       
-                        if( ! getIndexUrl().equals("") ){
-                            esIndex( "report", cnd.getAc(), idoc );
+                        Report crep = (Report) recManager.getReport( cid );
+                        ProteinNode pnode = null;
+                       
+                        if( crep instanceof NodeFeatureReport ){
+                            pnode = (ProteinNode) recManager
+                                .getNodeByPkey( ((NodeFeatureReport)crep).getNodeId(),
+                                                Node.BASE );
                         }
-                        log.info("cnd" + cnd);
+                        
+                        String idoc = report2idoc( crep, pnode );                       
+                        if( ! getIndexUrl().equals("") ){
+                            esIndex( "report", crep.getAc(), idoc );
+                        }
+                        log.info("crep" + crep);
                     }
                 }                
             }
@@ -240,21 +279,23 @@ public class BkdIndexManager {
     }
 
 
-
-
     
     //--------------------------------------------------------------------------
     // Query Nodes
     //------------
     
     public List<Node> getNodeListSimple( String queryStr ){
-        return getNodeList( 0, 500, "", true, null, queryStr, "simple" );  
+        return getNodeList( 0, 500, "", true, null, queryStr, Node.BASE );  
+    }
+
+    public List<Node> getNodeListSimple( String queryStr, int first, int max ){
+        return getNodeList( first, max, "", true, null, queryStr, "simple" );
     }
     
     public List<Node> getNodeList( int firstRecord, int blockSize,
                                    String skey, boolean asc,
                                    Map<String,String> flt,
-                                   String queryStr, String queryType  ){
+                                   String queryStr, String queryType ){
         
         Logger log = LogManager.getLogger( this.getClass() );
         log.info( "BkdIndexManager: getNodeList" );
@@ -271,20 +312,63 @@ public class BkdIndexManager {
             log.info( "EsQueryResult: " + sres);
             JSONObject jres = new JSONObject( sres );
 
+
+            if( jres.has("hits") == false ) return res; // no hits
+            
             JSONArray harr = jres.getJSONObject("hits").getJSONArray("hits");
+            int total = jres.getJSONObject("hits").getJSONObject("total").getInt("value");
 
             for( int j=0; j < harr.length(); j++ ){
                 String cacc = harr.getJSONObject( j ).getString("_id");
                 log.info( "ACC: " + cacc );
 
-                Node cnd=  (Node) recManager.getNode( cacc );
-                if( cnd != null)  res.add( cnd );
+                if( "simple".equals( queryType ) ){
+                    Node cnd = (Node) recManager.getNodeSimple( cacc, Node.BASE );
+                    if( cnd != null) res.add( cnd );
+                } else {
+                    Node cnd = (Node) recManager.getNode( cacc, Node.BASE );
+                    if( cnd != null)  res.add( cnd );
+                }
             }
+                       
+        }catch( Exception ex ){
+            ex.printStackTrace();
+        }
+        return res; 
+    }
+
+    public int getNodeListSimpleTotal( String queryStr, int first, int max ){
+        return getNodeListTotal( first, max, "", true, null, queryStr, "simple" );        
+    }
+
+    
+    public int getNodeListTotal( int firstRecord, int blockSize,
+                                 String skey, boolean asc,
+                                 Map<String,String> flt,
+                                 String queryStr, String queryType ){
+        
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( "BkdIndexManager: getNodeListSize" );
+        
+        try{
+            
+            String esquery = buildEsQuery( firstRecord, blockSize,
+                                           skey, asc, flt,
+                                           queryStr, queryType );
+
+            String sres = esQueryResult( "node", esquery );          
+            log.info( "EsQueryResult: " + sres);
+            JSONObject jres = new JSONObject( sres );
+            
+            int total = jres.getJSONObject("hits").getJSONObject("total").getInt("value");
+
+            return total;
                        
         }catch( Exception ex){
             ex.printStackTrace();
         }
-        return res; 
+        
+        return -1; 
     }
 
     //--------------------------------------------------------------------------
@@ -299,34 +383,39 @@ public class BkdIndexManager {
                                        String skey, boolean asc,
                                        Map<String,String> flt,
                                        String queryStr, String queryType ){
-        
-        //String query = buildQuery( firstRecord, blockSize,
-        //                           skey, asc, flt, queryStr, queryType );
-        
-        List<Report> plst = new ArrayList<Report>();
-        Logger log = LogManager.getLogger( this.getClass() );
-        /*
-        try{
-            List<Integer> idList = getReportIdList( query );
-            
-            log.info( idList );
-            
-            List<Node> pl = tracContext
-                .getPubDao().getPublicationList( idList );
 
-            if( pl != null ){
-                for( Iterator<Publication> ip = pl.iterator(); ip.hasNext(); ){
-                    Publication cp = ip.next();
-                    if( cp instanceof IcPub ){
-                        plst.add( (IcPub) cp );
-                    }
-                }
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( "BkdIndexManager: getReportList" );
+        
+        String esquery = buildEsQuery( firstRecord, blockSize,
+                                       skey, asc, flt,
+                                       queryStr, queryType );
+
+        String sres = esQueryResult( "report", esquery );          
+        log.info( "EsQueryResult: " + sres);
+        JSONObject jres = new JSONObject( sres );
+       
+        List<Report> rlst = new ArrayList<Report>();
+        
+        JSONArray harr = jres.getJSONObject("hits").getJSONArray("hits");
+        int total = jres.getJSONObject("hits").getJSONObject("total").getInt("value");
+
+        
+        for( int j=0; j < harr.length(); j++ ){
+            String cacc = harr.getJSONObject( j ).getString("_id");
+            log.info( "BkdIndexManager: getReportList: acc->  " + cacc );
+            
+            if( "simple".equals( queryType ) ){
+                Report crep = (Report) recManager.getReport( cacc );
+                if( crep != null) rlst.add( crep );
+            } else {
+                Report crep = (Report) recManager.getReport( cacc);
+                if( crep != null)  rlst.add( crep );
             }
-        }catch( Exception ex){
-            //ex.printStackTrace();
         }
-        */
-        return plst;
+        log.info( "BkdIndexManager: getReportList: DONE" );
+
+        return rlst;
     }
 
     //--------------------------------------------------------------------------
@@ -336,6 +425,7 @@ public class BkdIndexManager {
         
         Map<String,Object> mnde = new HashMap<String,Object>();
         Logger log = LogManager.getLogger( this.getClass() ); 
+
         // accession
         //----------
 
@@ -371,7 +461,6 @@ public class BkdIndexManager {
         
         mname.put( "full", node.getName());
 
-
         if(  node.getAlias() != null ){
 
             List<String> malt = new ArrayList<String>();
@@ -401,9 +490,9 @@ public class BkdIndexManager {
         // xrefs
         //------
 
+        List<Object> mxref = new ArrayList<Object>();
+        
         if( node.getXrefs() != null ){
-
-            List<Object> mxref = new ArrayList<Object>();
             
             for( NodeXref nx : node.getXrefs() ){
                 
@@ -416,11 +505,43 @@ public class BkdIndexManager {
                 mxref.add( cxref );
             }
        
-            if( mxref.size() > 0 ){
-                mnde.put( "xref", mxref );
-            }
         }
-        
+
+        if( node instanceof ProteinNode ){
+            ProteinNode pnode = (ProteinNode) node;
+
+            if( pnode.getUpr() != null && pnode.getUpr().length() > 0){ 
+                
+                Map<String,Object> cxref = new HashMap<String,Object>();
+                cxref.put( "ns", "upr" );
+                cxref.put( "ac", pnode.getUpr() );
+                cxref.put( "tac", "dxf:0009" );
+                cxref.put( "type", "identical-to" );
+
+                mxref.add( cxref );
+
+            }
+
+            if( pnode.getDip() != null && pnode.getDip().length() > 0){ 
+                
+                Map<String,Object> cxref = new HashMap<String,Object>();
+                cxref.put( "ns", "dip" );
+                cxref.put( "ac", pnode.getDip() );
+                cxref.put( "tac", "dxf:0009" );
+                cxref.put( "type", "identical-to" );
+
+                mxref.add( cxref );
+
+            }
+
+        }
+
+        if( mxref.size() > 0 ){
+            mnde.put( "xref", mxref );
+        }
+
+
+            
         // attributes
         //-----------
 
@@ -445,13 +566,13 @@ public class BkdIndexManager {
         // features
         //---------
         
-        if( node.getFeats() != null ){
-            Map<String,Object> mfeat = new HashMap<String,Object>(); 
-                    
-            for( NodeFeat nf : node.getFeats() ){
-                
-            }
-        }
+        //if( node.getFeats() != null ){
+        //    Map<String,Object> mfeat = new HashMap<String,Object>(); 
+        //            
+        //    for( NodeFeat nf : node.getFeats() ){
+        //        
+        //    }
+        //}
         
         try{
             JSONObject  jnde = new JSONObject( mnde );
@@ -463,7 +584,93 @@ public class BkdIndexManager {
 
     }
 
-    public String report2idoc( Report report ){
+    // build report index document
+    //----------------------------
+    
+    
+    public String report2idoc( Report report, ProteinNode tgt ){
+        
+        Map<String,Object> mrep = new HashMap<String,Object>();
+        Logger log = LogManager.getLogger( this.getClass() );
+
+        // accession
+        //----------
+        
+        mrep.put("ac",report.getAc());
+               
+        // type
+        //-----
+
+        Map<String,Object> mtpe = new HashMap<String,Object>();
+        mrep.put( "type", mtpe );
+        mtpe.put( "ac", report.getCvType().getAc() ); 
+        mtpe.put( "name", report.getCvType().getName() ); 
+
+        // target node
+        //------------
+
+        if( tgt != null ){
+            Map<String,Object> mtgt = new HashMap<String,Object>();           
+            mrep.put("tgt", mtgt);
+
+            // target accession
+            //-----------------
+             
+            mtgt.put( "ac",tgt.getAc() );
+
+            // names
+            //------
+            
+            Map<String,Object> mname = new HashMap<String,Object>();
+            mtgt.put( "name", mname );
+            mname.put( "short", tgt.getLabel());
+            
+            if( "protein".equalsIgnoreCase( tgt.getCvType().getName())){ 
+                mname.put( "protein", tgt.getLabel() );
+            } else if( "gene".equalsIgnoreCase( tgt.getCvType().getName())){ 
+                mname.put( "gene", tgt.getLabel() );
+            }
+            
+            mname.put( "full", tgt.getName());
+            log.info("alias:", tgt.getAlias());
+            if( tgt.getAlias() != null ){
+                
+                List<String> malt = new ArrayList<String>();
+                
+                for( NodeAlias na : tgt.getAlias() ){
+                    String tac = na.getCvType().getAc();
+                    
+                    if( "dxf:0031".equalsIgnoreCase( tac ) ){   // synonym
+                        malt.add( na.getAlias() );
+                    } else if( "dxf:0102".equalsIgnoreCase( tac ) ){ // gene-name
+                        malt.add( na.getAlias() );
+                        mname.put( "gene", na.getAlias() ); 
+                    } else if( "dxf:0103".equalsIgnoreCase( tac ) ){ // gene-synonym
+                        malt.add( na.getAlias() );
+                    } else if( "dxf:0101".equalsIgnoreCase( tac ) ){ // protein-name
+                        malt.add( na.getAlias() );
+                        mname.put( "protein", na.getAlias() );
+                    } else if( "dxf:0104".equalsIgnoreCase( tac ) ){ // protein-synonym
+                        malt.add( na.getAlias() );
+                    }            
+                }
+                if(malt.size() > 0){
+                    mname.put( "alt", malt );
+                }
+            }         
+        }
+        
+        try{
+            JSONObject  jrep = new JSONObject( mrep );
+            return jrep.toString(2);
+        } catch( JSONException ex){
+            ex.printStackTrace();
+            return null;
+        }   
+
+    }
+
+    public String feat2idoc( Feature feat ){
         
         Map<String,Object> mrep = new HashMap<String,Object>();
         Logger log = LogManager.getLogger( this.getClass() ); 

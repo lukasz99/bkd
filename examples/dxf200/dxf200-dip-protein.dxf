@@ -2,10 +2,20 @@
   <node id="1" ns="" ac="">
     <type ns="dxf" name="protein" ac="dxf:0003"/>
     <label>Beta ig-h3</label>
-    <name>Transforming growth factor-beta-induced protein ig-h3</name>
+    <name>Transforming growth factor-beta-induced protein ig-h3</name> 
     <xrefList>
       <xref ns="upr" ac="Q15582-1.209" type="identical-to" typeNs="dxf" typeAc="dxf:0009"/>
-      <xref ns="rsq" ac="NP_000349.1" type="identical-to" typeNs="dxf" typeAc="dxf:0009"/>
+      <xref ns="rsq" ac="NP_000349.1" type="has-instance" typeNs="dxf" typeAc="dxf:0009">  <!-- has instance ? -->
+        <node id="1" ns="rsq" ac="NP_000349.1">
+          <type ns="dxf" name="protein" ac="dxf:0003"/>
+          <label>Beta ig-h3</label>
+          <xrefList>
+           <xref ns="rsq" ac="NM_000358.2" type="translated-from" typeNs="dxf" typeAc="dxf:0080"/>
+           <xref ns="upr" ac="Q15582-1" type="identical-to" typeNs="dxf" typeAc="dxf:0009"/>   <!-- splice form varaint -->    
+          </xrefList>  
+        </node>  
+      </xref>
+
       <xref ns="rsq" ac="NM_000358.2" type="translated-from" typeNs="dxf" typeAc="dxf:0080"/>
       <xref ns="geneid" ac="7045" type="encoded-by" typeNs="dxf" typeAc="dxf:0022"/>
       <xref ns="taxid" ac="9606" type="produced-by" typeNs="dxf" typeAc="dxf:0007">

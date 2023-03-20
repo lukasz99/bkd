@@ -58,9 +58,9 @@ public class EdgeAction extends PortalSupport{
             this.getAc() != null && this.getAc().length() > 0 ){
 
             if( manager.getBkdConfig().getPrefix().equalsIgnoreCase(ns) ){
-                node = manager.getNode( ac );  // native record
+                node = manager.getNode( ac, Node.FULL );  // native record
             } else {
-                node = manager.getNode( ns, ac); 
+                node = manager.getNode( ns, ac, Node.FULL); 
             }
         }
             

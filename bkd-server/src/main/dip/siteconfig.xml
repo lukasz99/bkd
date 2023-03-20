@@ -12,7 +12,7 @@
       http://www.springframework.org/schema/aop/spring-aop.xsd">
 
   <bean id="siteConfig" class="edu.ucla.mbi.bkd.BkdConfig">
-    <property name="prefix" value="DIP"/>
+    <property name="prefix" value="DIP-"/>
     <property name="storedAliasAcList">
       <list>
         <value>dxf:0031</value>

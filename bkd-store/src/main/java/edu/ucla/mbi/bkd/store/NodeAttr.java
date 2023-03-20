@@ -17,7 +17,7 @@ import javax.persistence.*;
 @DiscriminatorValue("nattr")
 public class NodeAttr extends Attribute{
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)  // LAZY
     @JoinColumn(name="fk_node", nullable=false)
     private Node node;
 

@@ -7,6 +7,7 @@ import java.net.*;
 import java.util.*;
 
 import org.hibernate.*;
+import edu.ucla.mbi.bkd.dao.*;
 import edu.ucla.mbi.bkd.store.*;
 
 public class XrefDao extends AbstractDAO {
@@ -125,4 +126,39 @@ public class XrefDao extends AbstractDAO {
         super.saveOrUpdate( xref );
         return xref;
     }
+
+
+    public Set<NodeXref> getNodeXref( Node node ){
+
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info(  "getNodeXref(" + node.getAc() + "):");
+
+        Set<NodeXref> rset = new HashSet<NodeXref>();
+        
+        Session session = getCurrentSession();
+        //Transaction tx = session.beginTransaction();
+        
+        try {           
+            Query query = session.createQuery( "select x from NodeXref" +
+                                               " where x.node.pkey   =:pk " );
+            query.setParameter( "pk", node.getPkey() );
+
+
+            
+            
+
+            
+        } catch ( HibernateException e ) {
+            handleException( e );
+            // log error ?
+        } finally {
+            //tx.commit();                       
+            session.close();
+        }
+        return rset;
+
+
+    }
+
+    
 }

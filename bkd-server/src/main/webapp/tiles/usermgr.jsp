@@ -5,19 +5,17 @@
  <t:insertDefinition name="useredit"/>
 </s:if>
 <s:else>
-    
-<!--  Navigation  -->
- <div id="mgr-tabs" class="main-width">
- <ul class="yui-nav"> 
-       <li class="selected"><a href="#tab1"><em>Add User</em></a></li> 
-       <li><a href="#tab2"><em>Users</em></a></li> 
- </ul>   
- <div class="yui-content">
-     
-<!--  First Tab  -->
 
-<div id="tab1">
-
+ 
+<!--  Navigation  Tabs -->
+ <div id="umgr-tabs" class="main-width">
+  <ul class="yui-nav"> 
+       <li><a href="#umgr-tab1">Add User</a></li> 
+       <li><a href="#umgr-tab2">Users</a></li> 
+  </ul>
+  
+  <!--  First Tab  -->
+  <div id="umgr-tab1">
    <s:form theme="simple" action="usermgr" cssClass="align-label"> 
    <fieldset>
    <legend><h2>Add User</h2></legend>
@@ -92,9 +90,8 @@
      </fieldset>
     </div>
     
-<!--  Second Tab  -->
-
-    <div id="tab2">
+    <!--  Second Tab  -->
+    <div id="umgr-tab2">
      <div id="dt-pag-nav"></div>
      <div id="usermgr-table"></div>
     </div>
@@ -121,11 +118,14 @@
                paginationRecordOffset : "firstRecord", 
                paginationRowsPerPage : "blockSize" 
             }
-        }; 
-        var container = "usermgr-table";
+        };
 
-        YAHOO.imex.usermgr.init(columnDefinitions, dataSourceLink, datasourceSchema, container);
-  
+        
+        //var container = "usermgr-table";
+        //YAHOO.imex.usermgr.init(columnDefinitions, dataSourceLink, datasourceSchema, container);
+        
+        $('#umgr-tabs').tabs();
+
     </script>
    </div>
   </div>

@@ -3,6 +3,7 @@ package edu.ucla.mbi.bkd.store.dao;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import edu.ucla.mbi.bkd.dao.*;
 import edu.ucla.mbi.bkd.store.*;
 
 import org.hibernate.*;

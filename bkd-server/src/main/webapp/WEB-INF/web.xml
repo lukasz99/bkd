@@ -90,6 +90,14 @@
     <load-on-startup>2</load-on-startup>
   </servlet>
 
+  <servlet>
+    <servlet-name>RoiServlet</servlet-name>
+    <display-name>RoiServlet</display-name>
+    <description>Roi Servlet</description>                 
+    <servlet-class>edu.ucla.mbi.bkd.servlet.RoiServlet</servlet-class>    
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+
 <!-- =================================================== =============== -->
 <!-- =================================================== Servlet mapping -->
 <!-- =================================================== =============== -->
@@ -104,6 +112,16 @@
   <servlet-mapping>
     <servlet-name>CXFServlet</servlet-name>
     <url-pattern>/services/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>RoiServlet</servlet-name>
+    <url-pattern>/roi.*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>RoiServlet</servlet-name>
+    <url-pattern>/roi</url-pattern>
   </servlet-mapping>
 
 

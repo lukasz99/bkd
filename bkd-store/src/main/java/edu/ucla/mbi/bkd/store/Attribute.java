@@ -99,6 +99,27 @@ public abstract class Attribute{
     public Source getSource(){
         return source;
     }
+
+    public Map<String, Object> toMap(){
+
+        Map<String, Object> map = new HashMap<String,Object>();
+
+        map.put( "value", this.value );
+
+        if( this.cvtype != null){
+            map.put( "type-name", this.cvtype.getName());
+            map.put( "type-cv", this.cvtype.getAc());
+        }
+
+        if( this.getXrefs().size() > 0 ){
+            List<Object> xlst = new ArrayList<Object>();
+            for( Xref x: this.getXrefs() ){
+                xlst.add( x.toMap() );
+            }
+            map.put("xref",xlst );
+        }
+        return map;
+    }
     
     public String toString(){
         return "Atrribute:" + this.value ;

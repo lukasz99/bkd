@@ -2,15 +2,16 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
 
 <s:if test="captcha != null and captcha.active">
- <script src="${icentral.recaptcha.apiURL}" async defer></script>
+ <script src="${dipsite.recaptcha.apiURL}" async defer></script>
 </s:if>
 
  <div class="main-width">
- <h1>Sign up for ImexCentral Account</h1>  
+ </br></br></br></br></br></br>
+ <h1>Sign up for ${bkd.site} Account</h1>  
 
- <p>Already have an account? <a href="javascript:YAHOO.mbi.login.sendUrlFragment();">Log in</a></p>
- <!-- <p>Forgotten your password? <a href="mailto:dip@mbi.ucla.edu">Contact Us</a></p> -->
- <p>In order to gain full access to ImexCentral you must register.</p>
+ <p>Already have an account? <a href="user">Log in</a></p>
+ <p>Forgotten your password? <a href="mailto:${bkd.contact}">Contact Us</a></p>
+
  <s:form action="register">
   <s:hidden theme="simple" name="op" value="reg" />
   <s:hidden name="captchaResponse" value=""/>  
@@ -115,7 +116,7 @@
            </span>
          </div>
          </s:if>
-         <div class="g-recaptcha" data-sitekey="${icentral.recaptcha.publicKey}"></div> 
+         <div class="g-recaptcha" data-sitekey="${dipsite.recaptcha.publicKey}"></div> 
        </div>
     </div>  
     </s:if>
@@ -128,7 +129,7 @@
   </p>
   <center> 
    <s:submit theme="simple" name="submit" value="Submit"
-             onclick="YAHOO.util.Dom.get('register_captchaResponse').value = grecaptcha.getResponse()"/>
+             onclick="var res = grecaptcha.getResponse(); $('#register_captchaResponse').val(res);"/>
   </center>
  </div>   
  </s:form>

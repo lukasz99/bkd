@@ -1,8 +1,9 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="t" %>
 <%@ taglib prefix="s" uri="/struts-tags" %>
-<script src="js/util-yui.js" type="text/javascript"></script>
-<script src="js/pubmgr-yui.js" type="text/javascript"></script>
-
+<!--
+<scr ipt src="js/util-yui.js" type="text/javascript"></script>
+<scr ipt src="js/pubmgr-yui.js" type="text/javascript"></script>
+-->
 <!--    history   -->
 
   <h1>Publication Manager</h1>

@@ -5,6 +5,9 @@ curl -X PUT "10.1.7.103:9200/cvdb-node-index-000000?pretty" -H 'Content-Type: ap
       "node": { 
         "properties": {
           "ac":{ "type": "text", "copy_to":"full_text"},
+          "upr":{ "type": "text", "copy_to":"full_text"},
+          "dip":{ "type": "text", "copy_to":"full_text"},          
+          "ac":{ "type": "text", "copy_to":"full_text"},
           "type": { 
             "properties": {
               "name": { "type": "text", "copy_to":"full_text" },

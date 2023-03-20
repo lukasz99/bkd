@@ -1,0 +1,118 @@
+{
+    "legend":"User Preferences", 
+    "tableLayout":"null",
+    "tableLayoutMap":{},
+    "options":["auto-watch","message-mail"], 
+    "option-def":{      
+      "auto-watch": {
+        "legend":"Watch List",
+        "label": "Automatic watch list generation",
+        "type": "boolean", 
+        "value": "true",
+        "opp": "aw",         
+          "options":["record-add",
+                     "record-owner",
+                     "comment-owner",
+                     "attachment-owner"],
+        "option-def":{
+          "record-add": {
+            "label": "Add all newly created records",
+            "type": "boolean",
+            "value": "false",
+            "opp":"awra", 
+            "opcode": "watchlistAllRecords"
+          },
+          "record-owner": {
+            "label": "Add the records that I create",
+            "type": "boolean",
+            "value": "false",
+            "opp":"awro",
+            "opcode": "watchlistRecordOwner"   
+          },
+          "comment-owner": {
+            "label": "Add the records with comments I created",
+            "type": "boolean",
+            "value": "true",
+            "opp":"awco",
+            "opcode": "commentRecord"
+          },
+          "attachment-owner": {
+            "label": "Add the records with attachments I created",
+            "type": "boolean",
+            "value": "true",
+            "opp":"awao", 
+            "opcode": "attachmentRecord"
+          }
+        }
+    },
+    "message-mail": {
+      "legend":"Mail Options",
+      "label": "Send out mail notifications",
+      "value": "false",
+      "opp": "mm",
+        "options": ["mail-record-watched",
+                    "mail-comment-new",
+                    "mail-attachment-new",
+                    "mail-news",
+                    "mail-record-new",
+                    "mail-account-new" ],
+      "option-def":{
+        "mail-news": {
+          "label": "News announcements",
+          "value": "false",
+          "opp": "mmna", 
+          "opcode": "newsMail"
+        },
+        "mail-account-new": {
+          "acl-role":["administrator"],
+          "label": "New account creation (administrators only)",
+          "value": "false",
+          "opp": "mmacc", 
+          "opcode": "accountMail"
+        },
+        "mail-record-new": {
+          "label": "New record creation",
+          "value": "false",
+          "opp": "mmrec",
+          "opcode": "recordMail"
+        },
+        "mail-record-watched": {
+          "legend":"Watched Records",
+          "label": "Watched record updates",
+          "value": "false",
+          "opp": "mmreu", 
+          "opcode": "watchMail",
+            "options": ["mail-comment-watched",
+                        "mail-attachment-watched"],
+          "option-def":{
+              "mail-comment-watched": {          
+              "label": "Include comments",
+              "value": "false",
+              "opp": "mmcomw", 
+              "opcode": "attachMail"
+             },
+            "mail-attachment-watched": {          
+              "label": "Include attachments (curators/owners only)",
+              "value": "false",
+              "opp": "mmattw", 
+              "opcode": "attachMail"
+             }
+          }
+       },
+        "mail-comment-new": {          
+          "label": "All comments",
+          "value": "false",
+          "opp": "mmcom", 
+          "opcode": "attachMail"
+        },
+        "mail-attachment-new": {          
+          "label": "All attachments (curators/owners only)",
+          "value": "false",
+          "opp": "mmatt", 
+          "opcode": "attachMail"
+        }
+      }
+    }
+  },
+  "opcode": "update"
+}

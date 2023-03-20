@@ -2,16 +2,16 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
 
 <s:if test="captcha != null and captcha.active">
- <script src="${icentral.recaptcha.apiURL}" async defer></script>
+ <script src="${dipsite.recaptcha.apiURL}" async defer></script>
 </s:if>
-
+<br/><br/><br/><br/><br/><br/>
 <h1>Contact Us</h1>
 <table width="98%" cellspacing="10">
  <tr>
   <td align="left" colspan="2">
    To send us comments, please complete the form below<br/>
    or send them directly to:
-   <A HREF="mailto:lukasz@mbi.ucla.edu">lukasz@mbi.ucla.edu</A>
+   <A HREF="mailto:${bkd.contact}">${bkd.contact}</A>
    <br/>
   </td>
  </tr>
@@ -78,7 +78,7 @@
          </tr>
          <tr>
           <td align="left" valign="middle">
-            <div class="g-recaptcha" data-sitekey="${icentral.recaptcha.publicKey}"></div>
+            <div class="g-recaptcha" data-sitekey="${dipsite.recaptcha.publicKey}"></div>
           </td>
          </tr>
         </table>
@@ -90,7 +90,7 @@
       <td align="left" colspan="2">
        <s:submit name="submit"
                  value="Submit"
-                 onclick="YAHOO.util.Dom.get('feedback_captchaResponse').value = grecaptcha.getResponse()"/>
+                 onclick="var res = grecaptcha.getResponse(); $('#register_captchaResponse').val(res);"/>
       </td>
      </tr>
     </table>

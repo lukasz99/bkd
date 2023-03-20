@@ -10,7 +10,6 @@ import java.util.*;
 import edu.ucla.mbi.dxf20.*;
 
 import javax.xml.bind.JAXB;
-
 import javax.persistence.*;
 
 @Entity
@@ -43,7 +42,7 @@ public class ProteinNode extends Node{
     }
 
     public String getDip(){
-        return dip;
+        return dip  == null ? "" : dip ;
     }
         
     public void setUpr( String upr ){
@@ -61,7 +60,24 @@ public class ProteinNode extends Node{
     public String getRsq(){
         return rsq == null ?  "" : rsq;
     }
-   
+
+    public Map<String, Object> toMap(){
+        Map map = super.toMap();
+
+        if(this.getUpr().length() > 0){
+            map.put("upr",this.getUpr() );
+        }
+        
+        if(this.getRsq().length() > 0){
+            map.put("rsq",this.getRsq() );
+        }
+        
+        if(this.getDip().length() > 0){
+            map.put("dip",this.getDip());
+        }
+        
+        return map;    
+    }
 }
 
 

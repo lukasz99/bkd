@@ -1,0 +1,44 @@
+#ftmain{
+  border: 1px solid lightGrey;
+  border-spacing: 0;
+}
+
+.fttitle {
+  padding: 1px 10px;
+  width:   100%;
+  text-align: center; 
+  font-size: medium;
+  height: 2em;
+  border-bottom: 1px solid lightGray;
+  background-color: #eeeeee; 
+}
+
+.ftbody{
+  height: 13.5em;
+  width:   100%;
+  text-align: left;
+  font-size: 0.9em;
+  padding: 8px;
+  
+}
+
+.ftfoot{
+  margin:  0px;
+  padding: 8px 4px 4px 12px;
+  font-size: smaller;
+  height: 1.5em;
+}
+
+
+.fnews {
+  padding: 8px 0 0 0 ; 
+}
+
+.fnews-date {
+ font-weight: bold;
+ padding: 0 0 0 0.3em;
+}
+
+.fnews-head {
+  padding: 0 0 0.3em 1.2em;
+}

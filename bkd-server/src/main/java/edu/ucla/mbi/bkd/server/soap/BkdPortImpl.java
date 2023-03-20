@@ -400,16 +400,19 @@ public class BkdPortImpl implements BkdPort {
 
             case "dxf:0003":  rnode = nodeManager.processProteinNode( nd, mode );
                 break;
-
-            case "dxf:0090":  rnode = nodeManager.processReportNode( nd, mode );
-                break;
                 
-            case "dxf:0093":  rnode = nodeManager.processReportNode( nd, mode );
+            case "dxf:0090": 
+            case "dxf:0093": 
+            case "dxf:0094": 
+            case "dxf:0096": 
+            case "dxf:0097": 
+            case "dxf:0098": 
+            case "dxf:0099": 
+            case "dxf:0110": 
+            case "dxf:0111": 
+            case "dxf:0112": rnode = nodeManager.processReportNode( nd, mode );
                 break;
-                
-            case "dxf:0094":  rnode = nodeManager.processReportNode( nd, mode );
-                break;
-                
+                                
             case "dxf:0053":  rnode = nodeManager.processTranscriptNode( nd, mode );
                 break;
                 

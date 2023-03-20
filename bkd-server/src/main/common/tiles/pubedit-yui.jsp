@@ -3,14 +3,13 @@
 
 <%-- FROM: pubmgr-yui.js --%>
 
+<!--
  <script src="js/util-yui.js" type="text/javascript"></script>
-
  <script src="js/calendar-yui.js" type="text/javascript"></script>
  <script src="js/pubedit-yui.js" type="text/javascript"></script>
-
  <script src="js/adi-yui.js" type="text/javascript"></script>
-
  <script src="js/attach-yui.js" type="text/javascript"></script>
+-->
 
 <%-- END --%>
  <h1>Publication Editor</h1>

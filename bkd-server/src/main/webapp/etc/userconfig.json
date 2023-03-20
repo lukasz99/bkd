@@ -15,8 +15,8 @@
  ],
  user:[
    {login:"ADMIN",
-    roles:["user","administrator"],
-    groups:["ADMIN"]
+    roles:["administrator"],
+    groups:["USR"]
    }
  ],
  default:{

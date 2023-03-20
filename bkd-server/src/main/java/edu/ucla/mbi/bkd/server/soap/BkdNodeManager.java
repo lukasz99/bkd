@@ -117,8 +117,19 @@ public class BkdNodeManager {
         if( ac.endsWith("R") ){
             Report rep = (Report) recordManager.getReport( ns, ac );
             
-            if( rep != null && rep instanceof FeatureReport ){
-                return this.toDxfReportNode( (FeatureReport) rep );	
+            if( rep != null && rep instanceof NodeFeatureReport ){
+
+                NodeFeatureReport nfr = (NodeFeatureReport)  rep;
+                
+                log.info( "BkdNodeManager.getReport: node id" + nfr.getNodeId() );
+
+                ProteinNode pn = (ProteinNode) recordManager
+                    .getNodeByPkey(  nfr.getNodeId(), Node.STUB );
+                
+                log.info( "BkdNodeManager.getReport: node " + pn );
+                
+                return this.toDxfReportNode( nfr );
+               
             }            
         }
         
@@ -126,9 +137,11 @@ public class BkdNodeManager {
         if( node == null ){
             return null;
         }
+
+        List<NodeFeat> nflist = new ArrayList<NodeFeat>();  // fix me
         
         if( node instanceof ProteinNode ){
-            return this.toDxfProteinNode( (ProteinNode) node );	
+            return this.toDxfProteinNode( (ProteinNode) node, nflist );	
         }
         
         return null; 
@@ -268,7 +281,6 @@ public class BkdNodeManager {
         //      <value>my comment</value>
         //   </attr>
 
-
         //   <attr ns="dxf" ac="dxf:0031" name="synonym">   
         //      <value>alias</value>              -> alias
         //   </attr>
@@ -339,8 +351,13 @@ public class BkdNodeManager {
             curNode = oldNode;
             
             if( mode.equalsIgnoreCase( "add" ) ){
-                return this.toDxfProteinNode( oldNode );
+                return this.toDxfProteinNode( oldNode, new ArrayList<NodeFeat>() );  // LS: Fix me ? 
             }
+
+            if( mode.equalsIgnoreCase( "add" ) ){
+                return this.toDxfProteinNode( oldNode, new ArrayList<NodeFeat>() );  // LS: Fix me ? 
+            }
+            
             if( mode.equalsIgnoreCase( "update" ) ){
                 //return this.toDxfProteinNode( oldNode );
             }
@@ -568,7 +585,15 @@ public class BkdNodeManager {
                 //---------------
                 String flab = cf.getLabel();
                 String fnam = cf.getName();
-            
+
+                if( flab != null && flab.length() > 0 ){
+                    cnf.setLabel(flab);
+                }
+
+                if( fnam != null && fnam.length() > 0 ){
+                    cnf.setName(fnam);
+                }
+                
                 // retrieve/persist/add type
                 //--------------------------
                 TypeDefType cft = cf.getType();
@@ -620,6 +645,26 @@ public class BkdNodeManager {
                                 }
                             }
                             
+                        } else if( catt.getAc().equalsIgnoreCase("dxf:0155") ){ // dataset
+                            log.info("feature: var-dts->" + catt.getValue());
+                            if( catt.getValue() != null ){
+                                String cval = catt.getValue().getValue();
+                                if( cval != null && cval.length() > 0 ){
+                                    cnf.setDataset( cval );
+                                }
+                            }
+                            
+                            // JSON value 
+                            
+                            JSONObject jatt = this.buildJAtt( catt );
+                            if( jatt != null ){
+                                try{
+                                    jval.put(catt.getName(), jatt) ;
+                                } catch(JSONException jx){
+                                    // shouldn't happen
+                                }
+                            }                                                     
+
                         } else if( catt.getAc().equalsIgnoreCase("dxf:0052") ){ // ev method
                             
                             if( catt.getValue() != null ){
@@ -682,11 +727,11 @@ public class BkdNodeManager {
                                       jatt.put( "ac",catt.getAc() );
                                       if( catt.getValue().getNs() != null &&
                                       catt.getValue().getNs().length() > 0  ){
-                                      jatt.put( "vns", catt.getValue().getNs() );                                 
+                                      jatt.put( "vns", catt.getValue().getNs() );
                                       }
                                       if( catt.getValue().getAc() != null &&
                                       catt.getValue().getAc().length() > 0  ){
-                                      jatt.put( "vac", catt.getValue().getAc() );                                 
+                                      jatt.put( "vac", catt.getValue().getAc() );
                                       }
                                       jval.put(catt.getName(), jatt) ;
                                       }catch(JSONException jx){
@@ -704,25 +749,27 @@ public class BkdNodeManager {
                 
                 // feature xrefs
                 //--------------
-            
-                if( cf.getXrefList().getXref().size() > 0){            
-                    for( XrefType cx: cf.getXrefList().getXref() ){
 
-                        FeatureXref fxref = (FeatureXref)
-                            this.buildXref( cx,  new FeatureXref(), source );
+                if( cf.getXrefList() !=  null && cf.getXrefList().getXref() != null){
+                    if( cf.getXrefList().getXref().size() > 0){            
+                        for( XrefType cx: cf.getXrefList().getXref() ){
+                            
+                            FeatureXref fxref = (FeatureXref)
+                                this.buildXref( cx,  new FeatureXref(), source );
 
-                        /*
-                          FeatureXref fxref = new FeatureXref();
+                            /*
+                              FeatureXref fxref = new FeatureXref();
                     
-                          fxref.setNs( cx.getNs() );
-                          fxref.setAc( cx.getAc() );
+                              fxref.setNs( cx.getNs() );
+                              fxref.setAc( cx.getAc() );
                     
-                          CvTerm ftype = new CvTerm( cx.getTypeNs(), cx.getTypeAc(), cx.getType() );
-                          fxref.setCvType( ftype );
+                              CvTerm ftype = new CvTerm( cx.getTypeNs(), cx.getTypeAc(), cx.getType() );
+                              fxref.setCvType( ftype );
                     
-                          fxref.setSource( source );  // test for local overwrite ?
-                        */
-                        cnf.getXrefs().add( fxref );                
+                              fxref.setSource( source );  // test for local overwrite ?
+                            */
+                            cnf.getXrefs().add( fxref );                
+                        }
                     }
                 }
                 
@@ -794,7 +841,7 @@ public class BkdNodeManager {
         }
 
         for( NodeFeat cnft: featureList ){
-            cnft.setNode( curNode );
+            //cnft.setNode( curNode );
             log.info("feature source: " + source);
             log.info("feature jval: " + cnft.getJval());
             cnft.setSource( source );
@@ -805,14 +852,14 @@ public class BkdNodeManager {
                 ccxft.setSource( source );
             }
             
-            curNode.getFeats().add( cnft );	   
+            //curNode.getFeats().add( cnft );	   
         }
                 
-        curNode = (ProteinNode) recordManager.addNode( curNode );
+        curNode = (ProteinNode) recordManager.addNode( curNode, featureList );
         if( curNode == null ){
             return null;
         }	
-        return this.toDxfProteinNode( curNode );	
+        return this.toDxfProteinNode( curNode,featureList );	
     }
 
     public NodeType processReportNode( NodeType node, String mode ){
@@ -877,17 +924,22 @@ public class BkdNodeManager {
         }
         
         Source rSource = null;     // report source
-        Node tgtNode = null;        // target node
-        NodeFeat tgtFeat = null;    // target feature        
+        String rComment = null;    // report comment
         
-        JSONObject jval = new JSONObject();
+        Source fSource = null;     // feature source
+
+        Node tgtNode = null;       // target node
+        NodeFeat tgtFeat = null;   // target feature        
+        
+        JSONObject jval = new JSONObject();   // report jvals
+        JSONObject fjval = new JSONObject();  // feature jvalse
          
         // attribute scan
         //---------------
 
         if( node.getAttrList() != null ){
             for( AttrType att: node.getAttrList().getAttr() ){
-                log.info(att.getName());
+                log.info( att.getName() );
                 String aval = null;
                 if( att.getValue() != null ){
                     aval = att.getValue().getValue();
@@ -902,26 +954,49 @@ public class BkdNodeManager {
                     log.info("Attribute: data-source :SRC: " + att.toString() );
                     
                     rSource = this.buildSource( att );
+                    fSource = this.buildSource( att );
                     
-                } else {                    
-                    if( att.getValue() != null ){
-                        String cval = att.getValue().getValue();
-                        if( cval != null && cval.length() > 0 ){
+                } else if( "dataset".equalsIgnoreCase( att.getName() ) ){
 
-                            // JSON value 
-                            
-                            JSONObject jatt = this.buildJAtt( att );
-                            if( jatt != null ){
-                                try{
-                                    jval.put(att.getName(), jatt) ;
-                                } catch(JSONException jx){
-                                    // shouldn't happen
-                                }                                
-                            }
-                        } else {
-                            // cval here ?
-                        }                           
-                    }
+                    // special case: "describes"
+                    // "var-dts":{"ac":"dxf:0155","ns":"dxf","value":"bkdts"} 
+                    
+                    // JSON feature value
+                    //-------------------
+                    
+                    JSONObject jatt = this.buildJAtt( "dxf", "dxf:0155", att.getValue().getValue() );
+                    if( jatt != null ){
+                        try{
+                            fjval.put( "var-dts", jatt );
+                        } catch(JSONException jx){
+                            // shouldn't happen
+                        }
+                    }   
+
+                } else if( "comment".equalsIgnoreCase( att.getName()) ){
+
+                    // special case: report comment
+                    
+                    rComment =  att.getValue().getValue();
+                    
+                } else if( att.getValue() != null ){
+
+                    String cval = att.getValue().getValue();
+                    if( cval != null && cval.length() > 0 ){
+                        
+                        // JSON value 
+                        
+                        JSONObject jatt = this.buildJAtt( att );
+                        if( jatt != null ){
+                            try{
+                                jval.put(att.getName(), jatt) ;
+                            } catch(JSONException jx){
+                                // shouldn't happen
+                            }                                
+                        }
+                    } else {
+                        // cval here ?
+                    }                           
                 }
             }
         }
@@ -939,9 +1014,9 @@ public class BkdNodeManager {
                 log.info( "TGT: NS=" + tgtNs + " AC=" + tgtAc );
                 
                 // test if present
-
-                tgtNode = (Node) recordManager.getNode( tgtNs, tgtAc );
-                log.info( "TGT: " + tgtNode);
+                
+                tgtNode = (Node) recordManager.getNode( tgtAc, Node.STUB );
+                log.info( "TGT: " + tgtNode.getPkey() + " : " + tgtNode);
                                 
                 // find/set tgtNode
                 
@@ -961,12 +1036,15 @@ public class BkdNodeManager {
                     if( f.getLocationList() == null) break;
                     
                     tgtFeat = new NodeFeat();
-
+                    
+                    tgtFeat.setSource( fSource );
+                    
+                    
                     // feature label/name
                     //-------------------
 
                     tgtFeat.setLabel( f.getLabel() );
-
+                    
 
                     if( f.getName() != null ){
                         tgtFeat.setName( f.getName() );
@@ -993,14 +1071,32 @@ public class BkdNodeManager {
                     // xref scan
                     //----------
 
+                    // special case: "describes"
+                    // "var-seq":{"ac":"dxf:0156","ns":"dxf","value":"Q71RS6-1"} 
+                    
                     if( f.getXrefList() != null ){
                         
                         for( XrefType cx: f.getXrefList().getXref() ){
-                            FeatureXref fxref = (FeatureXref)
-                                this.buildXref( cx, new FeatureXref(), null );
-                            
-                            fxref.setFeature( tgtFeat );
-                            tgtFeat.getXrefs().add( fxref );                                               
+                            if( "describes".equalsIgnoreCase( cx.getType() ) ){
+
+                                // JSON feature value 
+                                
+                                JSONObject jatt = this.buildJAtt( "dxf", "dxf:0156", cx.getAc() );
+                                if( jatt != null ){
+                                    try{
+                                        fjval.put("var-seq", jatt) ;
+                                    } catch(JSONException jx){
+                                        // shouldn't happen
+                                    }                                                               
+                                 }                               
+                            } else {
+                                
+                                FeatureXref fxref = (FeatureXref)
+                                    this.buildXref( cx, new FeatureXref(), null );
+                                
+                                fxref.setFeature( tgtFeat );
+                                tgtFeat.getXrefs().add( fxref );
+                            }
                         }
                     }                    
                                      
@@ -1017,31 +1113,20 @@ public class BkdNodeManager {
             }        
         }
 
-        /*
-          NodeReport nrep = new NodeReport();
-
-          Node tgtNode = null;        // target node
-          NodeFeat tgtFeat = null;    // target feature        
-          
-          Source rSource = null;     // report source
-          
-          JSONObject jval = new JSONObject();
-        */
+        
+        Report rep = null; 
         
         if( tgtNode == null || rSource == null) return null;
-
-        Report rep = null;
         
         if( tgtFeat != null ){
-            rep = new FeatureReport();
-            tgtFeat.setNode( tgtNode );
-            tgtFeat.setSource( rSource );
-            
-            ((FeatureReport) rep).setFeature( tgtFeat );
-            
+            rep = new NodeFeatureReport();
+            ((NodeFeatureReport) rep).setNodeId( tgtNode.getPkey() );
+
+            tgtFeat.setJval( fjval.toString() );
+            ((NodeFeatureReport) rep).setFeature( tgtFeat );
         } else {
             rep = new NodeReport();
-            ((NodeReport) rep).setNode( tgtNode );
+            ((NodeReport) rep).setNodeId( tgtNode.getPkey() );
         }
         
         if( rlabel != null && rlabel.length() > 0 ){ 
@@ -1049,13 +1134,14 @@ public class BkdNodeManager {
         }
 
         if( rname != null && rname.length() > 0 ){ 
-            rep.setName(rname);
+            rep.setName( rname );
         }
 
-        //rep.setNs(rns);
-        //rep.setAc(rac);
+        if( rComment != null ){
+            rep.setComment( rComment );
+        }
         
-        rep.setCvType(rtype);
+        rep.setCvType( rtype );
         rep.setSource( rSource );
         rep.setJval( jval.toString() );
         rep.getXrefs().addAll( rxrefList );            
@@ -1063,6 +1149,7 @@ public class BkdNodeManager {
         if( rns.length() == 0 && rac.length() == 0 ){
             rep = recordManager.addReport( rep );
         } else{
+            rep = recordManager.addReport( rep );
             //rep = recordManager.updateReport( rns, rac, rep );
         }
         if( rep == null ){
@@ -1072,7 +1159,7 @@ public class BkdNodeManager {
         return this.toDxfReportNode( rep );                
     }
 
-    private NodeType toDxfProteinNode( ProteinNode node ){
+    private NodeType toDxfProteinNode( ProteinNode node, List<NodeFeat> nflist){
         
         // Returned:
         //<node ac="$ns" ns="$rac" id="1">
@@ -1187,11 +1274,13 @@ public class BkdNodeManager {
             
         }
 
-        if( ! node.getFeats().isEmpty()  ){
+        //if( ! node.getFeats().isEmpty()  ){
+        if( ! nflist.isEmpty()  ){
             dxfNode.setFeatureList( dxfFactory.createNodeTypeFeatureList() );
         }
         
-        for( NodeFeat f: node.getFeats() ){
+        //for( NodeFeat f: node.getFeats() ){
+        for( NodeFeat f: nflist ){
             
             FeatureType df = dxfFactory.createFeatureType();
             TypeDefType dt = dxfFactory.createTypeDefType();
@@ -1239,6 +1328,8 @@ public class BkdNodeManager {
             }
             
             if(f.getJval() != null){
+                System.out.println("node feature: jval->");
+                System.out.println(f.getJval());
                 try{
                     JSONObject jval = new JSONObject(f.getJval());
 
@@ -1319,6 +1410,18 @@ public class BkdNodeManager {
     //----------------------------------------------------------------------------    
     // privates
     //---------
+
+    private NodeType toDxfNodeFeatureReportNode( NodeFeatureReport report,
+                                                 ProteinNode pnode){
+        
+        Logger log = LogManager.getLogger( BkdNodeManager.class );
+        log.info("BkdNodeManager.toDxfNodeFeatureReportNode");
+
+
+
+        return null;
+      
+    }
     
     private NodeType toDxfReportNode( Report report ){
 
@@ -1364,16 +1467,19 @@ public class BkdNodeManager {
 
         if( report instanceof NodeReport ){
 
-            Node nd = ((NodeReport)report).getNode();
+            long node_id = ((NodeReport)report).getNodeId();
             
-            dxfXref.setNs( nd.getNs() );
-            dxfXref.setAc( nd.getAc());
+            Node pn = (Node) recordManager.getNodeByPkey( node_id, Node.STUB );
             
-        } else if( report instanceof FeatureReport ){
+            dxfXref.setNs( pn.getNs() );
+            dxfXref.setAc( pn.getAc());
+            
+        } else if( report instanceof NodeFeatureReport ){
 
-            NodeFeat nf = (NodeFeat) ((FeatureReport)report).getFeature();
+            NodeFeat nf = (NodeFeat) ((NodeFeatureReport)report).getFeature();
 
-            ProteinNode pn = (ProteinNode) nf.getNode();  // must test type !!!
+            long node_id = ((NodeFeatureReport)report).getNodeId();
+            ProteinNode pn = (ProteinNode) recordManager.getNodeByPkey( node_id, Node.STUB );
             
             dxfXref.setNs( pn.getNs() );
             dxfXref.setAc( pn.getAc() );
@@ -1384,11 +1490,11 @@ public class BkdNodeManager {
             dxfXref.setNode( xnode );
 
             xnode.setId(0);
-            xnode.setNs(nf.getNode().getNs() );
-            xnode.setAc(nf.getNode().getAc() );
-            xnode.setLabel(nf.getNode().getLabel());
-            if( nf.getNode().getName().length() > 0 ){
-                xnode.setName( nf.getNode().getName() );
+            xnode.setNs(pn.getNs() );
+            xnode.setAc(pn.getAc() );
+            xnode.setLabel(pn.getLabel());
+            if( pn.getName().length() > 0 ){
+                xnode.setName( pn.getName() );
             }
             
             xnode.setXrefList( dxfFactory.createNodeTypeXrefList() );
@@ -1655,7 +1761,10 @@ public class BkdNodeManager {
             int rend = Integer.parseInt(arrEnd[0]);
             
             range.setStart(rbeg);
-            range.setStop(rend);                   
+            range.setCvStart(new CvTerm("","","unspecified"));
+            range.setStop(rend);
+            range.setCvStop(new CvTerm("","","unspecified"));
+
         } catch(Exception ex){
             // shouldnt happen
         }
@@ -1719,6 +1828,25 @@ public class BkdNodeManager {
                 att.getValue().getAc().length() > 0  ){
                 jatt.put( "vac", att.getValue().getAc() );                                 
             }
+            
+            return jatt;
+            
+        }catch(JSONException jx){
+            // shouldn't happen
+        }
+
+        return null;        
+    }
+    
+    private JSONObject buildJAtt( String ns, String ac, String value ){
+        
+        try{
+            
+            JSONObject jatt = new JSONObject();
+            
+            jatt.put( "ns", ns );
+            jatt.put( "ac", ac );
+            jatt.put( "value", value );
             
             return jatt;
             

@@ -17,6 +17,9 @@ import edu.ucla.mbi.bkd.store.*;
 
 public class SearchAction extends PortalSupport{
 
+    private static String NSVIEW = "node-search-view";
+    private static String RSVIEW = "report-search-view";
+    
     // record access
     
     BkdRecordManager mngr = null;
@@ -64,11 +67,13 @@ public class SearchAction extends PortalSupport{
 
     public String dispatch() throws Exception {
 
+        Logger log = LogManager.getLogger( SearchAction.class );
+        log.info( "DISPATCH: " );
         if( this.getNs() != null && this.getNs().length() > 0 &&
             this.getAc() != null && this.getAc().length() > 0 ){
 
             // record = mngr.getReportMap(ns,ac);
-            if( "report".equalsIgnoreCase(qmode) ){ 
+            if( "report".equalsIgnoreCase( this.getQmode() ) ){ 
                 rdlist = qmngr.getReportList(ns, ac, sort);
             } else {
                 rdlist = qmngr.getNodeList(ns, ac, qmode, sort);
@@ -76,17 +81,33 @@ public class SearchAction extends PortalSupport{
             }            
         } else if( this.getQuery() != null && this.getQuery().length() > 0){
             
-            if( "report".equalsIgnoreCase( this.getQmode() ) ){ 
-                rdlist = qmngr.getReportListSimple( query, sort );
+            log.info( " qmode: " + this.getQmode() );
+            
+            if( "report".equalsIgnoreCase( this.getQmode() ) ){
+                
+                log.info( "SearchAction.getReportListSimple()" );
+                
+                rdlist = qmngr.getReportListSimple( query, sort );                
+                log.info( "SearchAction.getReportListSimple(): DONE" );
+                
             } else { 
-                rdlist = qmngr.getNodeListSimple( query, sort );
+                rdlist = qmngr.getNodeListSimple( query, sort, qfirst, qmax );
+                total = qmngr.getNodeListTotal( query, sort, qfirst, qmax );
             }           
         }
-                    
+        
+
+        log.info( "SearchAction.java: rdlist: " + rdlist );
+        
         if ( getRet() == null || getRet().equals( "data" ) ) {              
             return JSON;
          } else if( getRet().equals( "view" ) ) {
-            return SUCCESS;
+            if( "node".equalsIgnoreCase( this.getQmode() ) ){
+                return NSVIEW;
+            }
+            if( "report".equalsIgnoreCase( this.getQmode() ) ){
+                return RSVIEW;
+            }            
         }
         return SUCCESS;
     }
@@ -165,6 +186,26 @@ public class SearchAction extends PortalSupport{
         return this.query;
     }
 
+    int qfirst = 0;
+    
+    public void setFirst( String first ){                
+        this.qfirst= Integer.parseInt( first );
+    }
+
+    public int getFirst(){
+        return this.qfirst;
+    }
+
+    int qmax = 0;
+    
+    public void setMax( String max ){                
+        this.qmax= Integer.parseInt( max );
+    }
+
+    public int getMax(){
+        return this.qmax;
+    }
+    
     String qmode = "report";
     
     public void setQmode( String mode){
@@ -228,5 +269,17 @@ public class SearchAction extends PortalSupport{
             }
             return rdlist;
         }            
-    }       
+    }
+
+    int total = 0;
+    
+    public Map<String,Object> getRstats(){
+        HashMap<String,Object> rstats = new HashMap<String,Object>();
+        rstats.put("total",total);
+        return rstats;
+
+    }
+    
+
+    
 }

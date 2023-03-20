@@ -1,5 +1,6 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="t" %>
 <%@ taglib prefix="s" uri="/struts-tags" %>
+<br/><br/><br/><br/><br/><br/><br/>
 <center>
  <table border="0">
   <tr>

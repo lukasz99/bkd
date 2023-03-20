@@ -17,18 +17,16 @@ import javax.persistence.*;
 @DiscriminatorValue("nrep")
 public class NodeReport extends Report{
 
-    @ManyToOne
-    @JoinColumn(name="fk_node", nullable=false)
-    private Node node;
-
-    public void setNode(Node node){
-	this.node = node;
+    @Column(name="fk_node", insertable=false, updatable=false)
+    long node_id;
+    
+    public void setNodeId(long id){
+        this.node_id =id;
     }
 
-    public Node getNode(){
-	return this.node;
+    public long getNodeId(){
+        return this.node_id;
     }
     
-
 }
 

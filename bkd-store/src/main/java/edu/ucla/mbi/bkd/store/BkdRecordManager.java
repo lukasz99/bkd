@@ -5,11 +5,21 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 
+import org.json.*;
+
 import edu.ucla.mbi.bkd.*;
-import edu.ucla.mbi.bkd.store.dao.*;
+import edu.ucla.mbi.bkd.access.*;
+import edu.ucla.mbi.bkd.dao.*;
 
 public class BkdRecordManager {
-    
+
+    /*
+    private static List<String> featureXrefList
+        = Arrays.asList( "dbsnp", "clinvar", "upr", "refseq", "gnomad", "clingen",
+                         "pfam", "cdd", "cathgene3d", "upr", "ipro", "prints",
+                         "grch37","grch37.p13",
+                         "grch38","grch38.p13","mim");
+    */
     public BkdRecordManager() {
         Logger log = LogManager.getLogger( this.getClass() );
         log.info( "RecordManager: creating manager" );
@@ -38,7 +48,8 @@ public class BkdRecordManager {
     }
 
     // DaoContext
-
+    //-----------
+    
     BkdDaoContext daoContext;
     
     public void setDaoContext( BkdDaoContext daoContext ){
@@ -48,6 +59,22 @@ public class BkdRecordManager {
     public BkdDaoContext getDaoContext(){
         return this.daoContext;
     }
+
+    // UserDaoContext
+    //---------------
+    
+    BkdUserContext usrContext;
+    
+    public void setUserContext( BkdUserContext usrContext ){
+        this.usrContext = usrContext;
+    }
+
+    public BkdUserContext getUsrContext(){
+        return this.usrContext;
+    }
+
+    
+    
     
     //---------------------------------------------------------------------
     // Operations
@@ -55,27 +82,43 @@ public class BkdRecordManager {
     // Node management
     //----------------
     
-    public Node getNode( String acc ) {
+    public Node getNode( String acc, String depth ) {
 	
         Logger log = LogManager.getLogger( this.getClass() );
-        log.info( " get node -> ac=" + acc );
+        log.info( " get node(2) -> ac=" + acc );
         
-        //try{
-        Node node = daoContext.getNodeDao().getByAcc( acc );            
+        Node node = daoContext.getNodeDao().getByAcc( acc, depth );            
         return node;
-        //} catch( Exception ex ) {
-        //log.error(ex);
-        //return null;
-        //}
+        
     }
 
-    public Node getNode( int id ) {
+    public Node getNodeByPkey( long pkey, String depth ) {
+	
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( " get node(pk) -> pk=" + pkey +" (" + depth + ")" );
+        
+        Node node = daoContext.getNodeDao().getByPkey( pkey, depth );            
+        return node;
+        
+    }
+
+    public Object getNodeMap( String acc, String depth ) {
+	
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( " get node(2) -> ac=" + acc );
+        
+        Node node = daoContext.getNodeDao().getByAcc( acc, depth );            
+        return node;
+        
+    }
+
+    public Node getNode( int id, String depth ) {
 	
         Logger log = LogManager.getLogger( this.getClass() );
         log.info( " get node -> nac(int)=" + id );
         
         try{
-            Node node = daoContext.getNodeDao().getByNac( id );            
+            Node node = daoContext.getNodeDao().getByNac( id, depth );            
             return node;
         } catch( Exception ex ) {
             log.error(ex);
@@ -83,24 +126,176 @@ public class BkdRecordManager {
         }
     }
 
-    public Node getNode( String ns, String acc ) {
-	
+    public Node getNodeSimple( String acc, String depth ) {
+        
         Logger log = LogManager.getLogger( this.getClass() );
-        log.info( " get node -> ns=" + ns + "  ac=" + acc );
-
+        log.info( " get node(simple,2) -> nac(str)=" + acc );
+        
         try{
-            if( bkdconf.getPrefix().equalsIgnoreCase( ns ) ){
-                return daoContext.getNodeDao().getByAcc( acc );            
-            } else {
-                return daoContext.getNodeDao().getById( ns, acc );            
-            }            
+            Node node = daoContext.getNodeDao().getByAcc( acc, depth );            
+            return node;
         } catch( Exception ex ) {
             log.error(ex);
             return null;
         }
     }
 
-    public Node addNode( Node node ) {
+    public Node getNode( String ns, String acc, String depth ) {
+	
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( " get node(3)-> ns=" + ns + "  ac=" + acc );
+
+        try{
+            if( bkdconf.getPrefix().equalsIgnoreCase( ns ) ){
+                return daoContext.getNodeDao().getByAcc( acc, depth );            
+            } else {
+                return daoContext.getNodeDao().getById( ns, acc, depth );            
+            }            
+        } catch( Exception ex ) {
+            log.error(ex);
+            return null;
+        }
+    }
+    
+    public Object buildNodeFeature( String ns, String ac, int pos, String iso ){
+
+        Node mynode = null;
+        if( ns == null
+            || "".equals( ns )
+            || getBkdConfig().getPrefix().equalsIgnoreCase( ns ) ){
+            
+            // native record accession
+            mynode = daoContext.getNodeDao().getByAcc( ac,
+                                                       Depth.BASE.toString() ); 
+        } else {
+            // non-native accession: (same for now ?)
+            mynode = daoContext.getNodeDao().getByAcc( ac,
+                                                       Depth.BASE.toString() );   
+        }
+
+        if( mynode == null ) return new HashMap();  // unknown node
+        
+        // node exists
+        
+        Map rmap = new HashMap<String,Object>();
+
+        List<NodeFeat> feats = daoContext.getFeatureDao().getByNode( mynode,
+                                                                     pos,
+                                                                     iso );                
+        if( feats.size() > 0 ){
+            
+            List afl = new ArrayList();
+
+            Map rnode = new HashMap<String,Object>();
+            rmap.put("node",rnode);
+            
+            rnode.put("ns", mynode.getNs());
+            rnode.put("ac", mynode.getAc());
+            rnode.put("label", mynode.getLabel());
+            
+            List flst = new ArrayList();
+            rnode.put("feature", flst);            
+
+            for( NodeFeat nf: feats ){
+                flst.add( nf.toMap() );
+            }   
+        }
+        
+        return rmap;
+    }
+
+    public Object buildNodeFeatLstMap( Node node,
+                                       String mode, 
+                                       String isoform,
+                                       String dataset ){
+
+        // isoform: if not "" get only with matched var-seq
+        // dataset: if not "" get only with matched var-dts/dataset
+        
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( "buildNodeFeatLst: " + mode );
+ 
+        Map rnode = new HashMap();
+        rnode.put("ns", node.getNs());
+        rnode.put("ac", node.getAc());
+        rnode.put("label", node.getLabel());
+
+        List flst = new ArrayList();
+        rnode.put("feature", flst);
+
+        List<NodeFeat> feats =
+            daoContext.getFeatureDao().getByNode( node, dataset );
+
+        log.info( "buildNodeFeatLst: FeatureDao().getByNode(node)" + " DONE" );
+
+        for( NodeFeat f: feats ){
+                     
+            if( "SHORT".equals( mode ) 
+                && "MI:1241".equals( f.getCvType().getAc() ) ){ 
+
+                continue;  // exclude sequence variants
+            }
+
+            //if( f.getPosIdx() == 0 ){
+            //    
+            //}
+            
+            Map rf = f.toMap("SINGLE");
+            flst.add( rf );
+            
+            if( "SHORT".equals( mode ) ){
+                // append attrs
+                //-------------
+                //log.info( "buildNodeFeatLst: attrs");         
+                List rfa = new ArrayList();
+                rf.put( "attrs", rfa );
+                
+                for( FeatureAttr a: f.getAttrs()){                
+                    Map fa = new HashMap();
+                    fa.put( "value", a.getValue() );                    
+                    Map acvt = new HashMap();
+                    acvt.put( "ns", a.getCvType().getNs() );
+                    acvt.put( "ac", a.getCvType().getNs() );
+                    acvt.put( "name", a.getCvType().getName() );                
+                    fa.put( "cvType", acvt );                  
+                    rfa.add( fa );                    
+                }
+
+                // parse json fields other than clin significance
+
+                JSONObject fjo = null;
+                
+                try {
+                    fjo = new JSONObject( f.getJval() );                
+                } catch ( JSONException jex ) {
+                    //log.info( "parsing error: " + jex.toString() );
+                }                
+                
+                if( fjo != null ){
+                    for( Iterator<String> ik = fjo.keys(); ik.hasNext(); ){
+                        String k = ik.next();                                                               
+                        if( ! k.equals("clinical-significance") ){
+                            Map fam = new HashMap();
+                            fam.put("name",k);
+                            JSONObject fcs = fjo.getJSONObject(k);
+                            for( Iterator<String> iak=fcs.keys();iak.hasNext(); ){
+                                String ak = iak.next();
+                                fam.put(ak, fcs.getString(ak) );
+                            }
+                            rfa.add(fam);
+                        }
+                    }
+                }                
+            }
+        }
+        
+        //Map ret = new HashMap();        
+        //ret.put( "node", rnode );       
+        return rnode;
+
+    }
+    
+    public Node addNode( Node node, List<NodeFeat> nflist ) {
 	
         Logger log = LogManager.getLogger( this.getClass() );
         log.info( " add node -> node=" + node.toString() );
@@ -111,8 +306,7 @@ public class BkdRecordManager {
         }
 
         node.setPrefix( bkdconf.getPrefix() );
-        
-        
+                
         try{
 
             // cvtype - persist if needed
@@ -223,20 +417,19 @@ public class BkdRecordManager {
         
         log.info(" XREFs: updated");
 
-        try{
-
-        
-            // features - persist fetures (and components if neeed)
-            //-----------------------------------------------------
+        // features - persist fetures (and components if neeed)
+        //-----------------------------------------------------
             
-            log.info(" FEATUREs: update");
+        log.info(" FEATUREs: update");
+        
+        for( NodeFeat feat: nflist ){
 
-            for( NodeFeat feat: node.getFeats() ){
+            try{
                 log.info("(*) feature" + feat.toString() );
-
-                feat.setNode(node);
-
+                feat.setNodeId(node.getPkey());
+                
                 // source
+                //-------
                 
                 Source fsource = null;
                 if( fsource == null ){
@@ -248,7 +441,7 @@ public class BkdRecordManager {
                         scvtype = daoContext
                             .getCvTermDao().updateCvTerm( feat.getSource().getCvType() );
                     }
-                    log.info("scvtype: " + scvtype);
+                    log.info("scvtype: " + scvtype + "(pk:"+scvtype.getPkey()+")" );
                     feat.getSource().setCvType( scvtype );
 
                     fsource = daoContext
@@ -261,6 +454,7 @@ public class BkdRecordManager {
                 log.info(" feature source updated");
 
                 // feature type
+                //--------------
                 
                 CvTerm fcvtype = daoContext
                     .getCvTermDao().getByAccession( feat.getCvType().getAc() );
@@ -270,149 +464,212 @@ public class BkdRecordManager {
                         .getCvTermDao().updateCvTerm( feat.getCvType() );
                     
                 }
-                log.info("fcvtype: " + fcvtype);
+                log.info("fcvtype: " + fcvtype + "(pk:" + fcvtype.getPkey() + ")" );
                 feat.setCvType( fcvtype );			   
+                
+                log.info(" feature cvtype updated"); 
+ 
+                // keep aside xrefs/attrs/ranges
+                //------------------------------
+                
+                Set<FeatureXref> fxl = feat.getXrefs();
+                feat.setXrefs(new HashSet<FeatureXref>());
+
+                Set<FeatureAttr> fal = feat.getAttrs();
+                feat.setAttrs(new HashSet<FeatureAttr>());
                
+                Set<Range> frl = feat.getRanges();
+                feat.setRanges(new HashSet<Range>());
+                
                 // persist feature
+                //----------------
                 
                 daoContext.getFeatureDao().updateFeature( feat );
+                log.info(" feature updated (core)");
                 
                 // xrefs
                 //------
 
-                log.info("Feature XREFs: update ");
-                if( feat.getXrefs() != null ){
-                    for( FeatureXref x: feat.getXrefs()){
-                        CvTerm xcvtype = daoContext
-                            .getCvTermDao().getByAccession( x.getCvType().getAc() );
+                log.info("Feature XREFs: persist ");
+                for( FeatureXref x: fxl ){
+                    CvTerm xcvtype = daoContext
+                        .getCvTermDao().getByAccession( x.getCvType().getAc() );
                         
-                        if( xcvtype == null ){
-                            xcvtype = daoContext
-                                .getCvTermDao().updateCvTerm( x.getCvType() );
-                            log.info("Feature XREF: " + xcvtype );
-                        }
-                        x.setCvType( xcvtype );                    
-                        x.setFeature( feat );                    
-                        daoContext.getXrefDao().updateXref( x );                                    
+                    if( xcvtype == null ){
+                        xcvtype = daoContext
+                            .getCvTermDao().updateCvTerm( x.getCvType() );
+                        log.info("Feature XREF: " + xcvtype );
                     }
-                    log.info("Feature XREFs: update DONE");
+                    x.setCvType( xcvtype );                    
+                    x.setFeature( feat );                    
+                    daoContext.getXrefDao().updateXref( x );
+                    feat.getXrefs().add( x );
+                }
+                log.info("Feature XREFs: update DONE");
+                
+                // ranges
+                //-------
+                
+                log.info("Feature Ranges: persist ");
+
+                boolean idxFlag = false;                                
+                int posidx = 0;
+                String seqidx = "";
+                
+                for( Range r: frl ){
                     
-                    // Ranges
+                    if( idxFlag ){  // consecutive passes
+                        posidx = 0;    // reset to 0
+                        seqidx = "";   // reset to "" 
+                    } else {           // first pass: set only if single pos
+                        idxFlag = true;
+                        if( r.getStart() == r.getStop()
+                            && r.getSequence() != null
+                            && r.getSequence().length() == 1 ){
+                            
+                            posidx = r.getStart();
+                            seqidx = r.getSequence(); 
+                        }
+                    }
+                    
+                    r.setFeature( feat );
+
+                    // CvStart
+                    //--------
+                    
+                    CvTerm cvstart = daoContext
+                        .getCvTermDao().getByAccession( r.getCvStart().getAc() );
+                    
+                    if( cvstart == null ){
+                        cvstart = daoContext
+                            .getCvTermDao().updateCvTerm( r.getCvStart() );
+                    }
+                    log.info("cvstart: " + cvstart + "(pk:"+cvstart.getPkey()+")" );
+                    r.setCvStart( cvstart );
+
+                    // CvStop
                     //-------
                     
-                    for(Range range: feat.getRanges() ){
-                        
-                        range.setFeature(feat);
-                        
-                        if(range.getCvStart() == null){                        
-                            CvTerm cdef =
-                                daoContext.getCvTermDao().getByName("unspecified");                        
-                            range.setCvStart(cdef);
-                        }
-                        
-                        if(range.getCvStop() == null){
-                            CvTerm cdef =
-                                daoContext.getCvTermDao().getByName("unspecified");                        
-                            range.setCvStop(cdef);
-                        }
-                        daoContext.getRangeDao().updateRange( range );
-                    }                                        
+                    CvTerm cvstop = daoContext
+                        .getCvTermDao().getByAccession( r.getCvStop().getAc() );
+                    
+                    if( cvstop == null ){
+                        cvstop = daoContext
+                            .getCvTermDao().updateCvTerm( r.getCvStop() );
+                    }
+                    log.info("cvstop: " + cvstop + "(pk:"+cvstop.getPkey()+")" );
+                    r.setCvStop( cvstop );
+                    
+                    daoContext.getRangeDao().updateRange( r );
+                    feat.getRanges().add( r );
                 }
-
+                
+                log.info("Feature Ranges: update DONE ");
+                
                 // attributes
                 //------------
 
                 log.info("Feature ATTRs: update ");
-                if( feat.getAttrs() != null ){
-                    for( FeatureAttr a: feat.getAttrs()){
-                        log.info("(*) attr" + a.toString() );
+               
+                for( FeatureAttr a: fal ){
+                    log.info("(*) attr" + a.toString() );
                         
-                        a.setFeature( feat );
+                    a.setFeature( feat );
 
-                        // attribute type 
-                        //---------------
+                    // attribute type 
+                    //---------------
                     
-                        CvTerm acvtype = daoContext
-                            .getCvTermDao().getByAccession( a.getCvType().getAc() );
+                    CvTerm acvtype = daoContext
+                        .getCvTermDao().getByAccession( a.getCvType().getAc() );
                     
-                        if( acvtype == null ){
-                            acvtype = daoContext
-                                .getCvTermDao().updateCvTerm( a.getCvType() );                    
+                    if( acvtype == null ){
+                        acvtype = daoContext
+                            .getCvTermDao().updateCvTerm( a.getCvType() );                    
+                    }
+                    
+                    log.info("acvtype: " + acvtype);
+                    a.setCvType( acvtype );
+                    
+                    // attribute source
+                    //------------------
+                    
+                    Source asource = null;                 
+                    log.info(" asource: " + a.getSource().toString());
+                    
+                    if(  a.getSource() != null ){
+                        
+                        CvTerm ascvtype = daoContext
+                            .getCvTermDao().getByAccession( a.getSource().getCvType().getAc() );
+                        
+                        if( ascvtype == null ){
+                            ascvtype = daoContext
+                                .getCvTermDao().updateCvTerm( a.getSource().getCvType() );
                         }
-                    
-                        log.info("acvtype: " + acvtype);
-                        a.setCvType( acvtype );
-                    
-                        // attribute source
-                        //------------------
-                    
-                        Source asource = null;                 
-                        log.info(" asource: " + a.getSource().toString());
-                    
-                        if(  a.getSource() != null ){
+                        log.info("ascvtype: " + ascvtype);
+                        a.getSource().setCvType( ascvtype );
                         
-                            CvTerm ascvtype = daoContext
-                                .getCvTermDao().getByAccession( a.getSource().getCvType().getAc() );
+                        asource = daoContext
+                            .getSourceDao().updateSource( a.getSource() );
+                    }
+                    log.info(" attr source: " + asource);
+                    
+                    a.setSource( asource );
+                    
+                    log.info(" attr source updated");
+                    
+                    a = (FeatureAttr) daoContext.getAttributeDao().updateAttribute( a );
+                    
+                    try{
                         
-                            if( ascvtype == null ){
-                                ascvtype = daoContext
-                                    .getCvTermDao().updateCvTerm( a.getSource().getCvType() );
-                            }
-                            log.info("ascvtype: " + ascvtype);
-                            a.getSource().setCvType( ascvtype );
+                        // attribute xrefs
+                        //----------------
                         
-                            asource = daoContext
-                                .getSourceDao().updateSource( a.getSource() );
-                        }
-                        log.info(" attr source: " + asource);
-                    
-                        a.setSource( asource );
-                    
-                        log.info(" attr source updated");
-                    
-                        a = (FeatureAttr) daoContext.getAttributeDao().updateAttribute( a );
-
-                        try{
-
-                            // attribute xrefs
-                            //----------------
-
-                            log.info("Attribute XREFs: update ");
-                            if( a.getXrefs() != null ){
-                                for( AttrXref x: a.getXrefs()){
-                                    CvTerm xcvtype = daoContext
-                                        .getCvTermDao().getByAccession( x.getCvType().getAc() );
+                        log.info("Attribute XREFs: update ");
+                        if( a.getXrefs() != null ){
+                            for( AttrXref x: a.getXrefs()){
+                                CvTerm xcvtype = daoContext
+                                    .getCvTermDao().getByAccession( x.getCvType().getAc() );
                                 
-                                    if( xcvtype == null ){
-                                        xcvtype = daoContext
-                                            .getCvTermDao().updateCvTerm( x.getCvType() );
-                                        log.info("Attribute XREF: " + xcvtype );
-                                    }
-                                    x.setCvType( xcvtype );                    
-                                    x.setAttr( a );
-                                    x.setSource(asource);
-                                    daoContext.getXrefDao().updateXref( x );                                    
+                                if( xcvtype == null ){
+                                    xcvtype = daoContext
+                                        .getCvTermDao().updateCvTerm( x.getCvType() );
+                                    log.info("Attribute XREF: " + xcvtype );
                                 }
-                                log.info("Attr XREFs: update DONE");
+                                x.setCvType( xcvtype );                    
+                                x.setAttr( a );
+                                x.setSource(asource);
+                                daoContext.getXrefDao().updateXref( x );                                    
                             }
-                        }catch( Exception ex ) {
-                            log.error(ex);
+                            log.info("Attr XREFs: update DONE");
                         }
-                    }                    
-                }                
-            }
-            
-            
-        } catch( Exception ex ) {
-            log.error(ex);
-            return null;
-        }
+                    }catch( Exception ex ) {
+                        log.error(ex);
+                    }
 
+                    feat.getAttrs().add( a );
+                }                    
+                
+                // set posidex
+                //------------
+            
+                feat.setPosIdx( posidx );
+                feat.setSeqIdx( seqidx );
+                
+                // persist feature
+                //----------------
+                
+                daoContext.getFeatureDao().updateFeature( feat );
+                log.info(" feature updated (full)");
+                                                   
+            } catch( Exception ex ) {
+                log.error(ex);
+                return null;
+            }
+        }
         log.info(" FEATs: done");
         
         try{
-            
-        
+                    
             // attributes - persist attribute (and components)
             //------------------------------------------------
 
@@ -798,7 +1055,11 @@ public class BkdRecordManager {
         Logger log = LogManager.getLogger( this.getClass() );
         log.info( " getReport -> ns=" + ns + " ac=" + ac );
         
-        Report report =  daoContext.getReportDao().getById( ns, ac );
+        //Report report =  daoContext.getReportDao().getById( ns, ac );
+
+        NodeFeatureReport report =
+            daoContext.getReportDao().getNodeFeatureReportById( ns, ac );
+        
         return report;
     }
 
@@ -807,7 +1068,7 @@ public class BkdRecordManager {
         Logger log = LogManager.getLogger( this.getClass() );
         log.info( " getReport ->  acc=" + acc );
         
-        Report report =  daoContext.getReportDao().getById( "", acc );
+        Report report =  daoContext.getReportDao().getNodeFeatureReportById( "", acc );
         return report;
     }
 
@@ -825,13 +1086,39 @@ public class BkdRecordManager {
         }
     }
 
+    public Object getNewFeatureReportMap( String tgtNs, String tgtAc ){
 
-    
-    public FeatureReport getNewFeatureReport( String tgtNs, String tgtAc ){
-        return getNewFeatureReport(tgtNs,tgtAc, null );
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( "getNewFeatureReportMap(ns,ac): "
+                  +"ns->" + tgtNs + " ac->" + tgtAc);
+        
+        return getNewFeatureReportMap( tgtNs,tgtAc, null );        
+    }
+
+    public Object getNewFeatureReportMap( String tgtNs, String tgtAc,
+                                          String cvtype ){
+
+        Logger log = LogManager.getLogger( this.getClass() );
+                
+        NodeFeatureReport nfr = getNewFeatureReport( tgtNs, tgtAc, cvtype );
+
+        log.info("New NodeFeatureReport" + nfr );
+        log.info(" Target: " + tgtNs + " : " + tgtAc );
+        log.info(" Type: " + cvtype );
+        
+        ProteinNode tgt = (ProteinNode) daoContext.getNodeDao().getByAcc( tgtAc, Node.BASE );
+
+        log.info( "Target" + tgt );
+        
+        nfr.setNodeId( tgt.getPkey() );
+        return nfr.toMap( tgt );
     }
     
-    public FeatureReport getNewFeatureReport( String tgtNs, String tgtAc, String rtype ){
+    public NodeFeatureReport getNewFeatureReport( String tgtNs, String tgtAc ){
+        return getNewFeatureReport( tgtNs,tgtAc, null );
+    }
+    
+    public NodeFeatureReport getNewFeatureReport( String tgtNs, String tgtAc, String rtype ){
 
         Logger log = LogManager.getLogger( this.getClass() );
         log.info( " getNewFeatureReport -> tgt=" + tgtAc + " rtype=" + rtype);
@@ -840,23 +1127,24 @@ public class BkdRecordManager {
         Node tnode;
 
         if( bkdconf.getPrefix().equalsIgnoreCase(tgtNs) ){
-            tnode = daoContext.getNodeDao().getByAcc( tgtAc );
+            tnode = daoContext.getNodeDao().getByAcc( tgtAc, Node.BASE );
         } else {
-            tnode = daoContext.getNodeDao().getById( tgtNs, tgtAc );
+            tnode = daoContext.getNodeDao().getById( tgtNs, tgtAc, Node.BASE );
         }
 
         log.info( " getNewFeatureReport -> tnode=" + tnode );
         
-        FeatureReport report = new FeatureReport();
+        NodeFeatureReport report = new NodeFeatureReport();
         report.setPrefix( bkdconf.getPrefix() );
         
         NodeFeat nfeat = new NodeFeat();
-        nfeat.setNode( tnode );
+        //nfeat.setNode( tnode );
         report.setFeature( nfeat );
 
         if( rtype != null ){
             CvTerm tcv = daoContext.getCvTermDao().getByAccession( rtype );
-            report.setCvType(tcv);
+            log.info( " getNewFeatureReport -> cvtype " + tcv );
+            report.setCvType( tcv );
         }
             
         return report;
@@ -865,15 +1153,15 @@ public class BkdRecordManager {
     public  Map<String, Object> getReportMap( String ns, String ac ) {
 
         Logger log = LogManager.getLogger( this.getClass() );
-        log.info( " getReportMap -> ns=" + ns + " ac=" + ac );
+        log.info( "getReportMap -> ns=" + ns + " ac=" + ac );
         
         if( "upr".equalsIgnoreCase(ns) ){  
 
-            ProteinNode pn = (ProteinNode) daoContext.getNodeDao().getById( ns, ac );
+            ProteinNode pn = (ProteinNode) daoContext.getNodeDao().getById( ns, ac, Node.FULL );
 
             FeatureReport protRep = new FeatureReport();
             NodeFeat nfeat = new NodeFeat();
-            nfeat.setNode(pn);
+            //nfeat.setNode(pn);
             protRep.setFeature(nfeat);
 
           
@@ -884,26 +1172,27 @@ public class BkdRecordManager {
             map.put( "report", protRep);
                
             //Map<String,Map<String,String>>
-            
+             
             map.put( "report-value", protRep.getJvalMap() );
                         
             return map;            
             
         } else {
             
-            Report rep = this.getReport( ns, ac );
-
-                   
+            NodeFeatureReport rep = (NodeFeatureReport) this.getReport( ns, ac );
+            
             Map<String, Object> map = new HashMap<String,Object>();
 
             if( rep == null ) return map;
-        
-            map.put( "report", rep);
-               
-            //Map<String,Map<String,String>> rval = ;
-            
-            map.put( "report-value", rep.getJvalMap() );
-                        
+
+            log.info( "BkdRecordManager.getReportMap:  nodeId -> " + rep.getNodeId() );
+
+            if( rep.getNodeId() > 0 ){
+                ProteinNode tgtn = (ProteinNode) daoContext.getNodeDao()
+                    .getByPkey( rep.getNodeId(), Node.BASE );
+                return rep.toMap( tgtn );
+            }
+                
             return map;
         }
     }
@@ -919,36 +1208,71 @@ public class BkdRecordManager {
             report.setPrefix( bkdconf.getPrefix() );
             report.setNacc( rid );            
         }
+
+        // CV Type
+        //--------
+        
+        CvTerm rcvt = report.getCvType();
+
+        rcvt = daoContext.getCvTermDao().getByAccession(rcvt.getAc());
+        if( rcvt == null ){
+            rcvt = daoContext.getCvTermDao()
+                .updateCvTerm( report.getCvType() );
+        }
+        report.setCvType(rcvt);
+
+        // Owner
+        //------
+
+        if( report.getOwner() == null ){
+            log.info( "addReport -> defowner: userContext ->" + usrContext);
+            BkdUser defowner = (BkdUser) usrContext.getUserDao().getUser("ADMIN");
+            log.info( "addReport -> defowner: " + defowner );
+            
+            report.setOwner( defowner );
+        } else {
+            BkdUser owner = report.getOwner();
+            log.info( "addReport -> owner: " + owner );
+            
+            owner = (BkdUser) usrContext.getUserDao()
+                .getUser( owner.getLogin() );
+            report.setOwner( owner );
+        }
+
+        log.info( "addReport -> owner", report.getOwner());
+        
+        
+        //-------------------
         
         if( report instanceof NodeReport){
             log.info( "addReport -> NodeReport here...");
-            log.info(((NodeReport) report).getNode()); // node must preexist !!!
+            log.info(((NodeReport) report).getNodeId()); // node must preexist !!!
             
-        } else if( report instanceof FeatureReport){
+        } else if( report instanceof NodeFeatureReport){
 
             log.info( "addReport -> FeatureReport here...");
-            log.info(((FeatureReport) report).getFeature());  // feature is new !!! 
+            log.info(((NodeFeatureReport) report).getFeature());  // feature is new !!! 
             
             // commit feature here
             //--------------------
             
-            log.info( ((NodeFeat) ((FeatureReport) report).getFeature()).getNode() );
+            //log.info( ((NodeFeat) ((FeatureReport) report).getFeature()).getNode() );
 
             // feature cv type: commit if needed
             //----------------------------------
             
-            CvTerm fcvt = ((FeatureReport) report).getFeature().getCvType();
+            CvTerm fcvt = ((NodeFeatureReport) report).getFeature().getCvType();
             fcvt = daoContext.getCvTermDao().getByAccession(fcvt.getAc());
             if( fcvt == null ){
                 fcvt = daoContext.getCvTermDao()
-                    .updateCvTerm( ((FeatureReport) report).getFeature().getCvType() );
+                    .updateCvTerm( ((NodeFeatureReport) report).getFeature().getCvType() );
             }
-            ((FeatureReport) report).getFeature().setCvType(fcvt);
+            ((NodeFeatureReport) report).getFeature().setCvType(fcvt);
             
             // feature source type/source: commit
             //-----------------------------------
             
-            Source fsrc = ((FeatureReport) report).getFeature().getSource();
+            Source fsrc = ((NodeFeatureReport) report).getFeature().getSource();
             log.info("fsrc= " + fsrc); 
 
             // source cv type
@@ -969,51 +1293,107 @@ public class BkdRecordManager {
             //-------
                        
             fsrc = daoContext.getSourceDao().updateSource( fsrc );
-            ((FeatureReport) report).getFeature().setSource( fsrc );          
+            ((NodeFeatureReport) report).getFeature().setSource( fsrc );          
 
             // feature: node
             //--------------
             
-            Node rnode = ((NodeFeat) ((FeatureReport) report).getFeature()).getNode();
-            log.info("feature node:" + rnode);
-            log.info("feature node: ns=" + rnode.getNs() + "ac=" + rnode.getAc());
+            //Node rnode = ((NodeFeat) ((FeatureReport) report).getFeature()).getNode();
+            //log.info("feature node:" + rnode);
+            //log.info("feature node: ns=" + rnode.getNs() + "ac=" + rnode.getAc());
 
-            Node testNode = null;
+            //Node testNode = null;
             
-            if( bkdconf.getPrefix().equalsIgnoreCase( rnode.getNs() ) ){                                        
-                testNode = (Node) daoContext.getNodeDao().getByAcc( rnode.getAc() );
-            } else { 
-                testNode = (Node) daoContext.getNodeDao().getById( rnode.getNs(),
-                                                                   rnode.getAc() );
-            }
+            //if( bkdconf.getPrefix().equalsIgnoreCase( rnode.getNs() ) ){                                        
+            //    testNode = (Node) daoContext.getNodeDao().getByAcc( rnode.getAc(), Node.FULL );
+            //} else { 
+            //    testNode = (Node) daoContext.getNodeDao().getById( rnode.getNs(),
+            //                                                       rnode.getAc(), Node.FULL );
+            //}
             
-            log.info("feature node(test):" + testNode);  // node must exist
-            ((NodeFeat) ((FeatureReport) report).getFeature()).setNode( testNode );
+            //log.info("feature node(test):" + testNode);  // node must exist
+            //((NodeFeat) ((FeatureReport) report).getFeature()).setNode( testNode );
 
-            Feature rfeature = ((FeatureReport) report).getFeature();
+            NodeFeat rfeature = ((NodeFeatureReport) report).getFeature();
+
+            // Persist CV Type
+            //----------------
+            
+            CvTerm rcdef =
+                daoContext.getCvTermDao().getByAccession( rfeature.getCvType().getAc() );
+            rfeature.setCvType( rcdef );                    
+            
+            Set<Range> frl = rfeature.getRanges();
+            rfeature.setRanges(new HashSet<Range>());
+            
+            // persist feature
+            //----------------
+            
             rfeature = daoContext.getFeatureDao().updateFeature( rfeature );
+            log.info(" feature updated (core)");
+
+            ((NodeFeatureReport) report).setFeature( rfeature );
+
+            boolean idxFlag = false;
+            int posidx = 0;
+            String seqidx = "";
             
-            ((FeatureReport) report).setFeature( rfeature );
-            
-            for(Range r: rfeature.getRanges() ){
+            for( Range r: frl ){
                 log.info("R: "+r);
 
+                if( idxFlag ){  // consecutive passes
+                    posidx = 0;    // reset to 0
+                    seqidx = "";   // reset to "" 
+                } else {           // first pass: set only if single pos
+                    idxFlag = true;
+                    if( r.getStart() == r.getStop()
+                        && r.getSequence() != null
+                        && r.getSequence().length() == 1 ){
+                        
+                        posidx = r.getStart();
+                        seqidx = r.getSequence(); 
+                    }
+                }
+
+                if( idxFlag ){  // consecutive passes
+                    posidx = 0;    // reset to 0
+                } else {           // first pass: set only if single pos
+                    idxFlag = true;
+                    if( r.getStart() == r.getStop() ) posidx = r.getStart();                    
+                }
+                
                 r.setFeature( rfeature );
                 
                 if(r.getCvStart() == null){                        
-                    CvTerm cdef =
+                    CvTerm rbcdef =
                         daoContext.getCvTermDao().getByName("unspecified");                        
-                    r.setCvStart(cdef);
+                    r.setCvStart(rbcdef);
+                } else {
+                    CvTerm rbcdef =
+                        daoContext.getCvTermDao().getByAccession( r.getCvStart().getAc() );
+                    r.setCvStart(rbcdef);
                 }
 
                 if(r.getCvStop() == null){
-                    CvTerm cdef =
+                    CvTerm recdef =
                         daoContext.getCvTermDao().getByName("unspecified");                        
-                    r.setCvStop(cdef);
+                    r.setCvStop(recdef);
+                } else {
+                    CvTerm recdef =
+                        daoContext.getCvTermDao().getByAccession( r.getCvStop().getAc() );
+                    r.setCvStop( recdef );                    
                 }
-                daoContext.getRangeDao().updateRange(r);                                   
+
+                daoContext.getRangeDao().updateRange(r);
+                rfeature.getRanges().add( r );
             }
 
+            // set posidex
+            //------------
+            
+            rfeature.setPosIdx( posidx );
+            rfeature.setSeqIdx( seqidx );
+            
             // feature xrefs
             //--------------
             
@@ -1047,8 +1427,9 @@ public class BkdRecordManager {
             rcvtype = daoContext
                 .getCvTermDao().updateCvTerm( report.getCvType() );
         }
+        
         report.setCvType( rcvtype );
-
+        
         // source - persist
         //-----------------
 
@@ -1061,12 +1442,16 @@ public class BkdRecordManager {
             scvtype = daoContext
                 .getCvTermDao().updateCvTerm(report.getSource().getCvType());
         }
+        
         report.getSource().setCvType(scvtype);
-            
+        
         Source rsource = daoContext
             .getSourceDao().updateSource( report.getSource() );
+
         report.setSource(rsource);
 
+        // recommit updated report
+        //------------------------
         
         report = daoContext.getReportDao().updateReport( report );
         
@@ -1099,7 +1484,7 @@ public class BkdRecordManager {
             }
             log.info("xcvtype: " + xcvtype);
             x.setCvType(xcvtype);
-		
+            
             log.info(" cvt updated");
             
             // source

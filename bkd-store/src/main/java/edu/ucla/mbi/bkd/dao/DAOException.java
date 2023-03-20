@@ -1,4 +1,4 @@
-package edu.ucla.mbi.bkd.store.dao;
+package edu.ucla.mbi.bkd.dao;
 
 public class DAOException extends RuntimeException {
 

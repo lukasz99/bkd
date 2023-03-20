@@ -1,0 +1,89 @@
+{news:{
+   "2013":[
+      {"date":"2013-09-01",
+       "time":"11-15-00",
+       "auid":"1",
+       "amail":"lukasz@mbi.ucla.edu",
+       "aini":"LS",
+       "header":"BETA-0.93 Has Been Deployed",
+       "body":"This is a bug-fixing release that corrects micsonfigured user registration page. In addition, the log in page should now retain the browser status by returning to the page immediately preceding loging in. Last but not least, the curation progress page got updated to report the number of publications with assigned IMEx accessions."
+      },
+      {"date":"2013-08-13",
+       "time":"20-00-00",
+       "auid":"1",
+       "amail":"lukasz@mbi.ucla.edu",
+       "aini":"LS",
+       "header":"BETA-0.92 Has Been Deployed",
+       "body":"Even less changes than in BETA-0.91; just minor user account preferences reorganisation and page formatting fixes."
+      },
+      {"date":"2013-08-03",
+       "time":"20-00-00",
+       "auid":"1",
+       "amail":"lukasz@mbi.ucla.edu",
+       "aini":"LS",
+       "header":"BETA-0.91 Has Been Deployed",
+       "body":"This is mostly maintanance release that includes minor updates to the page layout and user account preferences."
+      },
+      {"date":"2013-03-31",
+       "time":"20-00-00",
+       "auid":"1",
+       "amail":"lukasz@mbi.ucla.edu",
+       "aini":"LS",
+       "header":"PRE-BETA-0.90 Deployed on the Test Site",
+       "body":"New features include:<ul><li>User Account Settings Page (see <a href='page?id=help-user-prefs'>Account Settings help page</a>)</li><li>Watch List (see <a href='page?id=help-watchlist'>Watch List help page</a>)</li><li>News Panel (as seen on this page)</li><li>Mail Notification module (see <a href='page?id=help-user-prefs'h>Account Settings help page</a>)</li></ul>"
+      },
+      {"date":"2013-02-15",
+       "time":"10-15-00",
+       "auid":"1",
+       "amail":"lukasz@mbi.ucla.edu",
+       "aini":"LS",
+       "header":"BETA-0.90 Goes On-Line Soon",
+       "body":"It will feature the Imex Central News Panel and the watch/notification module."
+      },
+      {"date":"2013-01-29",
+       "time":"16-38-00",
+       "auid":"1",
+       "amail":"lukasz@mbi.ucla.edu",
+       "aini":"LS",
+       "header":"BETA-0.89 Has Been Deployed",
+       "body":"The new version fully implements access controls, and also places restrictions on the possible admin group assignments - in particular, it does not allow to assign two admin groups with 'IMEx partner' role to the same publication.  In addition, the new code grants access to the records according to the roles of the users and also ownership and curator access settings of the individual records.  These restrictions are needed in order to make icentral able to track direct, and thus likely pre-publication, submissions. This becuase the access to such records should be limited only to the record creators and a database and/or curators responsible to the submission processing. <p>Besides access control changes, we have also added the ability to annotate icentral records with comments and, also, with arbitrary data attachments; the procedure is described on our <a href='page?id=help'>updated help pages</a> (there's also information on signing up and on record creation). Note, that the access to the attachments is restricted to the creator of the record and database curators; thus the attachments could be, in principle, used by the authors while directly submitting data.  Whereas, at the moment, the attachment tab suggests that only text-based files can be used (this includes any xml-based format), it is just a minor tweak to accept binary files. <p>Last but not least, some of the pages got a significant facelift and the site seems to be easier to navigate due to proper handling of the browser history."
+      }
+   ],
+   "2012":[
+      {"date":"2012-09-05",
+       "time":"18-24-00",
+       "auid":"1",
+       "amail":"lukasz@mbi.ucla.edu",
+       "aini":"LS",
+       "header":"BETA-0.86 Has Been Deployed",
+       "body":"Another version of icentral, BETA-0.86, has been installed on the beta site. Practically identical version has been also installed on the test site. The new version improves functionality of the v2.0 web service by accepting/returning all record identifiers (pmid, doi, journal/internal) when searching for and/or modifying publication records. Access to the individual records is now controlled by a set of rules that take into account the identity and status of the service user and administrative settings of each record."
+      },
+      {"date":"2012-03-09",
+       "time":"18-45-00",
+       "auid":"1",
+       "amail":"lukasz@mbi.ucla.edu",
+       "aini":"LS",
+       "header":"BETA-0.84 Has Been Deployed",
+       "body":"Another version of icentral, BETA-0.84, has been installed on both beta and test sites. Besides fixing a few bugs (most notably the one related to the relocation of the recaptcha server that rendered signing-in page dysfunctional) the new version makes the publication manager table history-aware. In practice, it means, it is now possible, after visiting one of the records found in the publication manager table, to return back to the publication manager in the very state that was preceding the visit to the publication record page. In particular, settings of the filters, sorting direction/column, and table page size and selections will be retained (before this release, the publication manager table was always reverting back to its default state)."
+      } 
+   ],
+   "2011":[
+      {"date":"2011-12-15",
+       "time":"9-57-00",
+       "auid":"1",
+       "amail":"lukasz@mbi.ucla.edu",
+       "aini":"LS",
+       "header":"BETA-0.83 Has Been Installed",
+       "body":"The newest version of icentral has been installed on both beta and test sites. Besides fixing a few bugs, the new version features 'flaggable' record comments. At the moment, 'QControl' is the only flag there, but, if there's a need I can either add more flags (values) manually (it's just another row in the sql cflags table) or add an administrative GUI similar to the one for the Curation Status values. Publications with flagged comments can be quickly identified through the publication search page ('By Comment Flag' search). One possible use of flags (in particular, 'QControl') is to mark publications for inter-database quality control checks/validation. If you think a particular paper deserves special attention or is worth discussing at curator's meetings, please, add to it a comment flagged as 'QControl' and provide some sort of explanation of the possible curation issues." 
+      },
+      {"date":"2011-08-15",
+       "time":"15-57-00",
+       "auid":"1",
+       "amail":"lukasz@mbi.ucla.edu",
+       "aini":"LS",
+       "header":"BETA-0.82 Has Been Deployed",
+       "body":"The new version simplifies updating information about records curated before publication. Such records are most often created before they are assigned PMID and thus have to be created manually; this might result in information that is inaccurate or incomplete. To ensure such records contain up to date information simply enter (and save) publication's PMID and then click on the 'Synchronize' button added to the Publication Details' tab - hopefully this will result in icentral connecting to PubMed and updating relevant fields. The other new feature is 'Record History' tab - it should list most (all?) of the operations that were performed on a given record, both, through GUI and Web service interfaces (starting from the time this feature was added; no past operations are reported). Operation logging will simplify generation of more accurate progress reports covering arbitrary time intervals. This is because originally the records were annotated only with a timestamp set at the time they were created and thus I had to assume the _current_ state of the record corresponds to this date in the _past_. Thanks to the operation log it is now possible to reconstruct record state at any point in time."
+      }
+   ]
+  }
+}

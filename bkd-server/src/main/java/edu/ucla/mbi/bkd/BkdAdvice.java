@@ -11,6 +11,7 @@ import java.util.GregorianCalendar;
 import java.util.Calendar;
 import java.lang.reflect.*;
        
+import edu.ucla.mbi.bkd.access.*;
 import edu.ucla.mbi.bkd.store.*;
 import edu.ucla.mbi.bkd.store.dao.*;
 
@@ -32,31 +33,31 @@ public class BkdAdvice {
 
     //------------------------------------------------------------------------
     // Watch Manager
-    /*
-    private WatchManager watchManager;
+    
+    private BkdWatchManager watchManager;
 
-    public void setWatchManager( WatchManager manager ) {
+    public void setWatchManager( BkdWatchManager manager ) {
         this.watchManager = manager;
     }
 
-    public WatchManager getWatchManager() {
+    public BkdWatchManager getWatchManager() {
         return this.watchManager;
     }
-    */
+    
 
     //------------------------------------------------------------------------
     // Notification Manager
-    /*
-    private NotificationManager notificationManager;
+    
+    private BkdNotificationManager notificationManager;
 
-    public void setNotificationManager( NotificationManager manager ) {
+    public void setNotificationManager( BkdNotificationManager manager ) {
         this.notificationManager = manager;
     }
 
-    public NotificationManager getNotificationManager() {
+    public BkdNotificationManager getNotificationManager() {
         return this.notificationManager;
     }
-    */
+    
 
 
     //-----------------------------------------------------------------------
@@ -116,8 +117,23 @@ public class BkdAdvice {
         //----------------
         
         if( rnode != null && getIndexManager() != null ){
-            getIndexManager().indexNode( ((Node) rnode).getAc() );
+            getIndexManager().indexNode( ((Node) rnode).getAc(), "BASE" );
         }         
     }
 
+    public void newAccountMonitor( Object user ){
+
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( "new account monitor called:");
+        log.info( " new user:" + user);
+        if( watchManager != null && notificationManager != null ){
+            List<BkdUser> usrNewObsLst
+                = watchManager.getNewAccountObserverList();
+            log.info( " obslist:" + usrNewObsLst );             
+            notificationManager.newAccountNotify((BkdUser) user, usrNewObsLst);
+        } else {
+            log.info( " watchManager:" + watchManager
+                      + " notificationManager:" + notificationManager );
+        }
+    }
 }

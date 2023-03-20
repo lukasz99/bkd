@@ -9,6 +9,7 @@ import java.util.*;
 import org.hibernate.*;
 
 import edu.ucla.mbi.bkd.store.*;
+import edu.ucla.mbi.bkd.dao.*;
 
 public class AttributeDao extends AbstractDAO {
     

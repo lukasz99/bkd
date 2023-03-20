@@ -6,8 +6,10 @@ import org.apache.logging.log4j.Logger;
 import java.io.StringWriter;
 
 import java.util.*;
+import org.json.*;
 
-import edu.ucla.mbi.dxf20.*;
+
+//import edu.ucla.mbi.dxf20.*;
 
 import javax.xml.bind.JAXB;
 
@@ -27,6 +29,10 @@ public abstract class Feature{
     @Column(name = "pkey")
     private long pkey;
 
+    public long getPkey(){
+        return this.pkey;
+    }
+       
     /**
        CREATE TABLE feature (
          pkey bigint DEFAULT nextval(('"prop_pkey_seq"'::text)::regclass) NOT NULL CONSTRAINT xref_pk PRIMARY KEY,
@@ -35,16 +41,23 @@ public abstract class Feature{
          fk_node bigint DEFAULT 0 NOT NULL,   -- foreign key (parent)
          fk_source bigint DEFAULT 0 NOT NULL,  -- unspecified property source
          fk_cval bigint DEFAULT 0 NOT NULL,    -- cv value
+         dataset character varying(32) DEFAULT ''::character varying, -- subsets of features - ClinVar, dbSNP, CVDB,...
          jval text DEFAULT ''::text NOT NULL,  -- json value
          comment text DEFAULT ''::text NOT NULL,
+         
          t_cr timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone,
          t_mod timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone
        );
     **/
 
-    @OneToMany(mappedBy="feature", fetch = FetchType.EAGER,cascade = CascadeType.REMOVE )
-    private Set<Range> ranges;
+    //@OneToMany(mappedBy="feature", fetch = FetchType.EAGER,cascade = CascadeType.REMOVE )
+    //private Set<Range> ranges;
 
+    //--------------------------------------------------------------------------
+    
+    @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval = true)
+    @JoinColumn(name="fk_feature")
+    private Set<Range> ranges;
     
     public Set<Range> getRanges(){
 	if(this.ranges == null)
@@ -56,7 +69,36 @@ public abstract class Feature{
         this.ranges = ranges;
     }    
 
-    @OneToMany(mappedBy="feature",fetch = FetchType.EAGER)
+    //--------------------------------------------------------------------------
+    // feature pos/seq index: NOTE: set for single point feature location only
+    
+    @Column(name = "posidx")    
+    private int posidx = 0;
+    public int getPosIdx(){
+        return this.posidx;
+    }
+
+    public void setPosIdx(int pos){
+        this.posidx = pos;
+    }       
+
+    @Column(name = "seqidx")
+    private String seqidx ="";
+    public String getSeqIdx(){
+        return this.seqidx;
+    }
+
+    public void setSeqIdx( String seq ){
+        if( seq != null && seq.length() == 1 ){
+            this.seqidx = seq;
+        } else{
+            this.seqidx ="";
+        }
+    }       
+    
+    //--------------------------------------------------------------------------
+    
+    @OneToMany(mappedBy="feature",fetch = FetchType.LAZY)  // LAZY better ?
     private Set<FeatureXref> xrefs;
     
     public Set<FeatureXref> getXrefs(){
@@ -69,20 +111,9 @@ public abstract class Feature{
         this.xrefs = xrefs;
     }    
 
-    @OneToMany(mappedBy="feature",fetch = FetchType.EAGER)
-    private Set<FeatureReport> reps;
-
-    public Set<FeatureReport> getReps(){
-	if(this.reps == null)
-	    this.reps = new HashSet<FeatureReport>();	
-        return this.reps;
-    }
-
-    public void setReps(Set<FeatureReport> reps){
-        this.reps = reps;
-    }
-
-    @OneToMany(mappedBy="feature",fetch = FetchType.EAGER)
+    //--------------------------------------------------------------------------
+    
+    @OneToMany(mappedBy="feature",fetch = FetchType.LAZY) // LAZY better ?
     private Set<FeatureAttr> attrs;
 
     public Set<FeatureAttr> getAttrs(){
@@ -94,52 +125,12 @@ public abstract class Feature{
     public void setAttrs(Set<FeatureAttr> attrs){
         this.attrs = attrs;
     }
+
+    //--------------------------------------------------------------------------
     
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER) // LAZY better ?
     @JoinColumn(name = "fk_source")
     Source source;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "fk_type")
-    CvTerm cvtype;
-    
-    @Column(name = "jval")
-    String jval = "";
-           
-    @Column(name = "label")
-    String label ="";
-
-    @Column(name = "name")
-    String name ="";
-
-    @Column(name = "comment")
-    String comment ="";
-
-    @Column(name = "status")
-    String status ="";
-
-    @Column(name = "t_cr")
-    Date ctime;
-
-    @Column(name = "t_mod")
-    Date utime;
-
-
-    public void setLabel( String label ){
-        this.label = label;
-    }
-
-    public String getLabel(){
-        return label;
-    }
-
-    public void setName( String name ){
-        this.name = name;
-    }
-
-    public String getName(){
-        return name;
-    }
 
     public void setSource( Source source ){
         this.source = source;
@@ -149,14 +140,66 @@ public abstract class Feature{
         return source;
     }
 
+    //--------------------------------------------------------------------------
+
+    
+    @Column(name = "dataset")
+    String dataset ="";
+    
+    public void setDataset( String dataset ){
+        this.dataset = dataset;
+    }
+
+    public String getDataset(){
+        return dataset;
+    }
+    
+    //--------------------------------------------------------------------------
+    
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "fk_type")
+    
+    CvTerm cvtype;
+    
     public void setCvType( CvTerm cvtype ){
         this.cvtype = cvtype;
     }
 
     public CvTerm getCvType(){
-        return this.cvtype;
+        return this.cvtype;        
     }
     
+    //--------------------------------------------------------------------------
+    
+    @Column(name = "label")
+    String label ="";
+    
+    public void setLabel( String label ){
+        this.label = label;
+    }
+
+    public String getLabel(){
+        return label;
+    }
+
+    //--------------------------------------------------------------------------
+
+    @Column(name = "name")
+    String name ="";
+
+    public void setName( String name ){
+        this.name = name;
+    }
+
+    public String getName(){
+        return name;
+    }
+    
+    //--------------------------------------------------------------------------
+    
+    @Column(name = "jval")
+    String jval = "";
+           
     public void setJval( String jval ){
         this.jval = jval;
     }
@@ -165,6 +208,11 @@ public abstract class Feature{
         return jval;
     }
 
+    //--------------------------------------------------------------------------
+    
+    @Column(name = "status")
+    String status ="";
+
     public void setStatus( String status ){
         this.status = status;
     }
@@ -172,6 +220,11 @@ public abstract class Feature{
     public String getStatus(){
         return status == null ? "" : status;       
     }
+    
+    //--------------------------------------------------------------------------    
+
+    @Column(name = "comment")
+    String comment ="";
 
     public void setComment( String comment ){
         this.comment = comment;
@@ -180,7 +233,12 @@ public abstract class Feature{
     public String getComment(){
         return comment == null ? "" : comment;
     }
-    
+
+    //--------------------------------------------------------------------------    
+
+    @Column(name = "t_cr")
+    Date ctime;
+
     public Date getCTime(){
         return ctime;
     }
@@ -188,7 +246,12 @@ public abstract class Feature{
     public void setCTime( Date timestamp ){
         this.ctime = timestamp;
     }
+    
+    //--------------------------------------------------------------------------    
 
+    @Column(name = "t_mod")
+    Date utime;
+    
     public Date getUTime(){
         return utime;
     }
@@ -197,9 +260,13 @@ public abstract class Feature{
         this.utime = timestamp;
     }
 
+    //--------------------------------------------------------------------------    
+    //--------------------------------------------------------------------------    
+    
     public String toString(){
 
         String ret = " Feature:";
+        /*
         if( ranges != null ){
             ret = ret + "[";
         
@@ -211,10 +278,119 @@ public abstract class Feature{
             }
             ret = ret + "]";
         }
-        
+        */
         return ret;
     }
+    
+    public Map<String, Object> toMap(){
+        return toMap( "ALL" );        
+    }
+    
+    public Map<String, Object> toMap( String mode ){
+        Map<String, Object> map = new HashMap<String,Object>();
 
+        Logger log = LogManager.getLogger( this.getClass() );
+        //log.info( "Feature->toMap: mode)=" + mode  );
+        
+        // name/label
+        //-----------
+        
+        if( this.label != null && this.label.length() > 0 ){
+            map.put("label", this.label );
+        }
+        
+        if( this.name != null && this.name.length() > 0 ){
+            map.put("name", this.name );
+        }
+
+        // cv type
+        //--------
+
+        if( this.getCvType() != null ){
+            map.put( "type-cv", this.getCvType().getAc() );
+            map.put( "type-name", this.getCvType().getName() );
+        } else {
+            map.put( "type-cv", "" );
+            map.put( "type-name", "" );
+        }
+        
+        // (clinical) significance
+        //------------------------
+                
+        // parse json fields
+        
+        JSONObject fjo = null;
+
+        try {
+            fjo = new JSONObject( this.getJval() );                
+        } catch ( JSONException jex ) {
+                //log.info( "parsing error: " + jex.toString() );
+        }                
+                          
+        // get clinical significance ac & value
+        
+        if( fjo != null && fjo.has("clinical-significance") ){
+            JSONObject fcs =
+                fjo.getJSONObject("clinical-significance");
+            map.put("csig-cv", fcs.getString("vac") );
+            map.put("csig-name", fcs.getString("value"));
+        }
+
+        if( fjo != null && fjo.has("var-seq") ){
+            JSONObject fseq = fjo.getJSONObject("var-seq");
+            map.put("var-seq", fseq.getString("value") );
+        } else {
+             map.put("var-seq", "all" );
+        }
+        
+        if( fjo != null && fjo.has("var-dts") ){
+            JSONObject fdts = fjo.getJSONObject("var-dts");
+            map.put("var-dts", fdts.getString("value") );
+        } else {
+            map.put("var-dts","all" );
+        }
+
+        // ranges
+        //-------
+        map.put( "range", new ArrayList<Object>() );
+
+        if( this.posidx != 0 ){  // single pos
+            Map<String,Object>  rmap = new HashMap();
+            rmap.put("pos", this.posidx);
+            rmap.put("sequence", this.seqidx);
+            
+            ((List<Object>) map.get("range")).add( rmap );            
+        } else {
+            for( Range r: this.getRanges() ){
+                ((List<Object>) map.get("range")).add( r.toMap() );             
+            }
+        }
+        
+         // attrs
+
+         if( this.getAttrs().size() > 0 ) {
+             map.put( "attr", new ArrayList<Object>() );
+             
+             for( Attribute a: this.getAttrs() ){
+                 ((List<Object>) map.get("attr")).add( a );             
+             }
+         }
+         // xrefs
+         
+         if(  this.getXrefs().size() > 0 ) {
+             map.put( "xref", new ArrayList<Object>() );
+         
+             for( Xref x: this.getXrefs() ){
+                 ((List<Object>) map.get("xref")).add( x.toMap() );             
+             }
+         } else {
+             map.put( "xref", new ArrayList<Object>() ); // XXX
+         }
+                        
+         return map;
+    }
+
+    
     public void dump(){
         System.out.println("Source:" + source);        
         System.out.println("jval:" + jval);

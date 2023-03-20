@@ -73,6 +73,18 @@ public abstract class Alias{
         this.cvtype = term;
     }
 
+    Map<String,Object> toMap(){
+
+        Map<String,Object> map = new HashMap();
+        map.put("alias",this.alias);
+
+        if( cvtype != null){
+            map.put("type-cv", this.cvtype.getAc());
+            map.put("type-name", this.cvtype.getName());
+        }
+        return map;        
+    }
+    
     public String toString(){
         return "Alias:" + this.alias ;
     }        

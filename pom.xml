@@ -31,20 +31,32 @@
 
     <bkd-services-api.version>1.0.0</bkd-services-api.version>
     <dip-util.version>3.0.0</dip-util.version>
+
+    <email.version>1.6.2</email.version>
     
     <jaxws-api.version>2.3.1</jaxws-api.version>
     <jaxws-rt.version>2.3.0</jaxws-rt.version>
     <javax.jws-api.version>1.1</javax.jws-api.version>
 
-    <hibernate.version>3.2.6.ga</hibernate.version>
+    <!-- START: from dip-utils pom.xml -->
+    
+    <hibernate.version>5.6.14.Final</hibernate.version>
+    <spring.version>5.3.24</spring.version>
+    <spring-security-core.version>5.7.5</spring-security-core.version>
+
+    <!-- END: from dip-utils pom.xml -->
+    
+    <!-- <hibernate.version>3.2.6.ga</hibernate.version> -->
+    <!-- <hibernate.version>6.1.6.Final</hibernate.version> -->
  
-    <spring.version>5.2.3.RELEASE</spring.version>
+    <!-- <spring.version>5.2.3.RELEASE</spring.version> -->
+    <!-- <hibernate.version>5.4.4.Final</hibernate.version> -->
+
     <aspectj.version>1.9.5</aspectj.version>
 
     <cglib.version>3.3.0</cglib.version>
     <cxf.version>3.4.3</cxf.version>
 
-    <hibernate.version>5.4.4.Final</hibernate.version>
     <c3p0.version>0.9.5.4</c3p0.version>
     <postgresql.version>42.2.6</postgresql.version>
     <json.version>20210307</json.version>

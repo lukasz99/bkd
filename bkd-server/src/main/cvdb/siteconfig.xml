@@ -26,8 +26,31 @@
         <value>dxf:0106</value>
         <value>dxf:0107</value>
         <value>dxf:0109</value>
+        <value>dxf:0134</value>
+        <value>dxf:0135</value>
+        <value>dxf:0138</value>
       </list>
-    </property>  
+    </property>
+    <property name="featureXrefList">                                    
+      <list>
+        <value>dbsnp</value>
+        <value>clinvar</value>
+        <value>upr</value>
+        <value>refseq</value>
+        <value>gnomad</value>
+        <value>clingen</value>
+        <value>pfam</value>
+        <value>cdd</value>
+        <value>cathgene3d</value>
+        <value>upr</value>
+        <value>ipro</value>
+        <value>prints</value>                
+        <value>grch37</value>
+        <value>grch37.p13</value>                          
+        <value>grch38</value>
+        <value>grch38.p13</value>
+        <value>mim</value>         
+      </list>
+    </property>
   </bean>
-
 </beans>

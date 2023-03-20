@@ -38,4 +38,15 @@ public class BkdConfig{
             this.aliasAcList = new ArrayList<String>();
         return this.aliasAcList;        
     }        
+
+    List<String> featureXrefList = null;
+    public void setFeatureXrefList(List<String> nslist){
+        this.featureXrefList = nslist;        
+    }
+    
+    public List<String> getFeatureXrefList(){
+        if( this.featureXrefList == null )
+            this.featureXrefList = new ArrayList<String>();
+        return this.featureXrefList;        
+    }        
 }

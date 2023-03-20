@@ -1,9 +1,10 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="t" %>
 <%@ taglib prefix="s" uri="/struts-tags" %>
-<script src="js/util-yui.js" type="text/javascript"></script>
-<script src="js/record-edit-yui.js" type="text/javascript"></script>
-<script src="js/stagemgr-yui.js" type="text/javascript"></script>
-
+<!--
+<scr ipt src="js/util-yui.js" type="text/javascript"></script>
+<scr ipt src="js/record-edit-yui.js" type="text/javascript"></script>
+<scr ipt src="js/stagemgr-yui.js" type="text/javascript"></script>
+-->
 <!--    history   -->
 
   <h1><s:property value="stage"/> Manager</h1>

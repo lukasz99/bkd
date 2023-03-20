@@ -1,0 +1,75 @@
+
+<script>
+  $(function(){
+     BkdNews.boxinit( '#newsbox', 'news' );
+     
+     $("#bkd-head-search-go").on( 'click',
+        function (event) { 
+           console.log("head search clicked");
+           var qmode = $("#bkd-head-qmode").val();
+           var query = $("#bkd-head-squery").val();
+
+           console.log( qmode + ":" + query );
+           if( query !== undefined ){
+              if(query.trim().length > 0 ){
+                 var myurl = "search?qmode=" + qmode
+                           + "&ret=view"  
+                           + "&query=" + query.trim();  
+                 window.location.href = myurl;
+              }
+           }
+        });
+  });
+</script>
+
+<div style="width: 20em; float:left; padding: 0 1.5em 20em 0">
+  <table cellspacing="0" width="100%" class="ftmain" id="ftmain">
+   <tr>
+    <td class="fttitle">CVUS Database News</td>
+   </tr>
+   <tr>
+    <td class="ftbody" valign="top">
+     Recent News:
+     <table class="fnews" id="newsbox"></table>
+    </td>
+   </tr>
+   <tr>
+    <td class="ftfoot" align="right" valign="bottom" nowrap>
+              <i>See more <a href="news">CVUS Database News</a></i>
+    </td>
+   </tr>
+  </table>
+ </div>
+
+<h1>Welcome to Channel Variants of Unknown Significance (CVUS) Database</h1>
+
+<p>CVUS Database is designed to simplify access to information about known missense variants
+  of selected Human voltage gated channels, channels transporters and related proteins, and
+  present it in the context of genomic and proteomic data.
+  
+<p>The database currently covers:
+<dl>
+ <dt>Voltage Gated Potassium Channels:</dt>
+  <dd>&nbsp;&nbsp;&nbsp;
+   <a href='node?ns=CVDB&ac=CVDB100P&mode=view'>KCNJ1</a>,
+   <a href='node?ns=CVDB&ac=CVDB101P&mode=view'>KCNJ2</a>,
+   <a href='node?ns=CVDB&ac=CVDB105P&mode=view'>KCNJ3</a>,
+   <a href='node?ns=CVDB&ac=CVDB103P&mode=view'>KCNJ4</a>, ...
+  </dd>
+  </br>
+ <dt>Voltage Gated Sodium Channels:</dt>
+ <dd>&nbsp;&nbsp;&nbsp;
+   <a href='node?ns=CVDB&ac=CVDB27P&mode=view'>SCN1A</a>, ...
+  </dd>
+  </br>
+ <dt>Accessory Proteins</dt>
+  <dd>&nbsp;&nbsp;&nbsp;
+   <a href='node?ns=CVDB&ac=CVDB22P&mode=view'>CALM1</a>,
+   <a href='node?ns=CVDB&ac=CVDB23P&mode=view'>CALM2</a>,
+   <a href='node?ns=CVDB&ac=CVDB24P&mode=view'>CALM3</a>, ...
+  </dd>
+</dl>  
+
+<br/><br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/>
+

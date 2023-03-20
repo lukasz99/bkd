@@ -1,4 +1,4 @@
-package edu.ucla.mbi.bkd.store.dao;
+package edu.ucla.mbi.bkd.dao;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -7,37 +7,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 
+import edu.ucla.mbi.orm.context.*;
+
+import edu.ucla.mbi.bkd.access.*;
 import edu.ucla.mbi.bkd.store.*;
 import edu.ucla.mbi.bkd.store.dao.*;
 
 import org.hibernate.*;
 
-public class BkdDaoContext{
+public class BkdDaoContext extends DaoContext{
 
-    String state ="flip";
-
-    SessionFactory flipSF = null;
-    SessionFactory flopSF = null;
-   
-    public void setFlipSF( SessionFactory factory ){
-	flipSF = factory;
-    }
-
-    public void setFlopSF( SessionFactory factory ){
-	flopSF = factory;
-    }
-
-    public void setState(String state){
-	if(state.equalsIgnoreCase("flop") ){
-	    this.state = "flop";
-	} else {
-	    this.state = "flip";
-	}
-    }
-    public String getState(){
-	return state;
-    }
-    
     // Node
     //-----
     
@@ -48,14 +27,9 @@ public class BkdDaoContext{
     }
     
     public NodeDao getNodeDao(){
-        if( this.state.equals("flip") ){
-            nodeDao.setSessionFactory( flipSF );
-        } else{
-            nodeDao.setSessionFactory( flopSF );
-        }
+        nodeDao.setSessionFactory( getSessionFactory() );        
         return this.nodeDao;
     }
-    
     
     // Feature
     //--------
@@ -67,11 +41,7 @@ public class BkdDaoContext{
     }
     
     public FeatureDao getFeatureDao(){
-        if( this.state.equals("flip") ){
-            featureDao.setSessionFactory( flipSF );
-        } else{
-            featureDao.setSessionFactory( flopSF );
-        }
+        featureDao.setSessionFactory( getSessionFactory() );        
         return this.featureDao;
     }
 
@@ -85,11 +55,7 @@ public class BkdDaoContext{
     }
     
     public RangeDao getRangeDao(){
-        if( this.state.equals("flip") ){
-            rangeDao.setSessionFactory( flipSF );
-        } else{
-            rangeDao.setSessionFactory( flopSF );
-        }
+        rangeDao.setSessionFactory( getSessionFactory() );        
         return this.rangeDao;
     }
     
@@ -103,12 +69,8 @@ public class BkdDaoContext{
     }
 
     public SourceDao getSourceDao(){
-	if( this.state.equals("flip") ){
-	    sourceDao.setSessionFactory( flipSF );
-        } else{
-            sourceDao.setSessionFactory( flopSF );
-        }
-	return this.sourceDao;
+	    sourceDao.setSessionFactory( getSessionFactory() );
+        return this.sourceDao;
     }
 
     // Report
@@ -121,15 +83,24 @@ public class BkdDaoContext{
     }
     
     public ReportDao getReportDao(){
-        if( this.state.equals("flip") ){
-            reportDao.setSessionFactory( flipSF );
-        } else{
-            reportDao.setSessionFactory( flopSF );
-        }
+        reportDao.setSessionFactory( getSessionFactory() );        
         return this.reportDao;
     }
 
+    // EORel
+    //-------
     
+    BkdEorelDao eorelDao;
+    
+    public void setEorelDao( BkdEorelDao dao ){
+        this.eorelDao = dao;
+    }
+    
+    public BkdEorelDao getEorelDao(){
+        eorelDao.setSessionFactory( getSessionFactory() );        
+        return this.eorelDao;
+    }
+
     /*
     // Producer
     //-------
@@ -155,13 +126,8 @@ public class BkdDaoContext{
     }
 
     public TaxonDao getTaxonDao(){
-        
-	if( this.state.equals("flip") ){
-	    this.taxonDao.setSessionFactory(flipSF);
-	} else{
-	    this.taxonDao.setSessionFactory(flopSF);
-	}
-	return this.taxonDao;
+        taxonDao.setSessionFactory( getSessionFactory() );        
+        return taxonDao;
     }
 
     // CvTerm 
@@ -173,13 +139,9 @@ public class BkdDaoContext{
         this.termDao = dao;
     }
 
-    public CvTermDao getCvTermDao(){       
-	if( this.state.equals("flip") ){
-	    this.termDao.setSessionFactory( flipSF );
-	} else{
-	    this.termDao.setSessionFactory( flopSF );
-	}
-	return this.termDao;
+    public CvTermDao getCvTermDao(){
+	    termDao.setSessionFactory( getSessionFactory() );
+        return termDao;
     }
 
     // Xref 
@@ -192,12 +154,8 @@ public class BkdDaoContext{
     }
 
     public XrefDao getXrefDao(){       
-	if( this.state.equals("flip") ){
-	    this.xrefDao.setSessionFactory( flipSF );
-	} else{
-	    this.xrefDao.setSessionFactory( flopSF );
-	}
-	return this.xrefDao;
+	    xrefDao.setSessionFactory( getSessionFactory() );
+        return xrefDao;
     }
 
     // Alias 
@@ -210,12 +168,8 @@ public class BkdDaoContext{
     }
 
     public AliasDao getAliasDao(){       
-        if( this.state.equals("flip") ){
-            this.aliasDao.setSessionFactory( flipSF );
-        } else{
-            this.aliasDao.setSessionFactory( flopSF );
-        }
-        return this.aliasDao;
+        aliasDao.setSessionFactory( getSessionFactory() );        
+        return aliasDao;
     }
 
 
@@ -229,14 +183,10 @@ public class BkdDaoContext{
     }
 
     public AttributeDao getAttributeDao(){       
-        if( this.state.equals("flip") ){
-            this.attrDao.setSessionFactory( flipSF );
-        } else{
-            this.attrDao.setSessionFactory( flopSF );
-        }
-        return this.attrDao;
+        attrDao.setSessionFactory( getSessionFactory() );        
+        return attrDao;
     }
-       
+    
     // IdGen
     //------
     
@@ -247,12 +197,8 @@ public class BkdDaoContext{
     }
 
     public IdGenDao getIdGenDao(){        
-	if( this.state.equals("flip") ){
-	    this.idGenDao.setSessionFactory( flipSF );
-	} else{
-	    this.idGenDao.setSessionFactory( flopSF );
-	}
-	return this.idGenDao;
+	    idGenDao.setSessionFactory( getSessionFactory() );        
+        return idGenDao;
     }
 
     // Edge
@@ -265,15 +211,51 @@ public class BkdDaoContext{
     }
 
     public EdgeDao getEdgeDao(){
-        
-        if( this.state.equals("flip") ){
-            this.edgeDao.setSessionFactory( flipSF );
-        } else{
-            this.edgeDao.setSessionFactory( flopSF );
-        }
-        return this.edgeDao;  
+        edgeDao.setSessionFactory( getSessionFactory() );
+        return edgeDao;  
     }
 
+    // Role
+    //-----
+    
+    BkdRoleDao roleDao;
+    
+    public void setRoleDao( BkdRoleDao dao ){
+        this.roleDao = dao;
+    }
+
+    public BkdRoleDao getRoleDao(){
+        roleDao.setSessionFactory( getSessionFactory() );
+        return roleDao;  
+    }
+
+    // Group
+    //-----
+    
+    BkdGroupDao groupDao;
+    
+    public void setGroupDao( BkdGroupDao dao ){
+        this.groupDao = dao;
+    }
+
+    public BkdGroupDao getGroupDao(){
+        groupDao.setSessionFactory( getSessionFactory() );
+        return groupDao;  
+    }
+
+    // User
+    //-----
+    
+    BkdUserDao userDao;
+    
+    public void setUserDao( BkdUserDao dao ){
+        this.userDao = dao;
+    }
+
+    public BkdUserDao getUserDao(){
+        userDao.setSessionFactory( getSessionFactory() );
+        return userDao;  
+    }
     
     /**
     // Experiment

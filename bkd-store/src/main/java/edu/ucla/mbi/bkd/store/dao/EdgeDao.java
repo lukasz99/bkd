@@ -10,9 +10,10 @@ import java.util.*;
 import java.math.BigInteger;
 import org.hibernate.*;
 
+import edu.ucla.mbi.bkd.dao.*;
 import edu.ucla.mbi.bkd.store.*;
 
-public class EdgeDao extends edu.ucla.mbi.bkd.store.dao.AbstractDAO {
+public class EdgeDao extends edu.ucla.mbi.bkd.dao.AbstractDAO {
     
     public Edge getByPkey( int pk ){ 
 

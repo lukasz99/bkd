@@ -22,7 +22,7 @@
     <bkd-api.version>1.0.0</bkd-api.version>
     <spring.version>5.1.9.RELEASE</spring.version>
     <slf4j.version>1.7.28</slf4j.version>
-    <hibernate.version>5.4.4.Final</hibernate.version>
+    <!--<hibernate.version>5.4.4.Final</hibernate.version> -->
     <c3p0.version>0.9.5.4</c3p0.version>
     <postgresql.version>42.2.6</postgresql.version>
     
@@ -64,7 +64,6 @@
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
       <version>${hibernate.version}</version>
-
     </dependency>
     
     <dependency>
@@ -103,14 +102,56 @@
       <version>1.9</version>
     </dependency>
 
-
    <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
       <version>4.5.12</version>
     </dependency>
 
+   <dependency>
+    <groupId>javax.mail</groupId>
+    <artifactId>javax.mail-api</artifactId>
+    <version>${email.version}</version>
+   </dependency>
 
+   <dependency>
+    <groupId>com.sun.mail</groupId>
+    <artifactId>javax.mail</artifactId>
+    <version>${email.version}</version>
+   </dependency>
+
+   <dependency>
+     <groupId>commons-codec</groupId>
+     <artifactId>commons-codec</artifactId>
+     <version>1.11</version>
+   </dependency>
+
+
+   <dependency>
+    <groupId>edu.ucla.mbi.dip</groupId>
+    <artifactId>dip-util-data</artifactId>
+    <version>${dip-util.version}</version>
+   </dependency>
+
+   <dependency>
+    <groupId>edu.ucla.mbi.dip</groupId>
+    <artifactId>dip-util-struts</artifactId>
+    <version>${dip-util.version}</version>
+   </dependency>
+
+   <dependency>
+    <groupId>edu.ucla.mbi.dip</groupId>
+    <artifactId>dip-util-orm</artifactId>
+    <version>${dip-util.version}</version>
+   </dependency>
+
+
+
+
+
+
+
+    
     
   </dependencies>
 

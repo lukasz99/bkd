@@ -10,7 +10,7 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 # defaults
 
-dbhost = "10.1.7.101"
+dbhost = "10.1.7.203"
 dbname = "cvdb_flip"
 dbuser = "bkd"
 dbpass = "444bkd444"
@@ -58,9 +58,10 @@ print(" PSQL User:" , dbuser)
 print(" PSQL Pass:" , dbpass) 
 
 try:
+
+    con = psycopg2.connect( host=dbhost, dbname="postgres",
+                            user=dbuser, password=dbpass )
     
-    con = psycopg2.connect( host=dbhost, dbname="bkd_flip",
-                            user=dbuser,password=dbpass )
     
     con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
     cur = con.cursor()
@@ -77,9 +78,11 @@ try:
     cur.close()
     con.close()
 
-    connect_str = "dbname='" + dbname + "' user='bkd' host='10.1.7.101' " + \
-                  "password='444bkd444'"
+    #connect_str = "dbname='" + dbname + "' user='bkd' host='10.1.7.203' " + \
+    #              "password='444bkd444'"
 
+    print( dbhost, dbname, dbuser, dbpass )
+    
     con2 = psycopg2.connect( host=dbhost, dbname=dbname,
                              user=dbuser, password=dbpass )
     
@@ -88,18 +91,19 @@ try:
 except Exception as e:
     print("Can't connect. Invalid dbname, user or password?")
     print(e)
+    sys.exit()
 
 with open("etc/bkd-v06.sql","r") as fh:
     q = ""
     
     for ln in fh:
         if ';' not in ln:
-            q += ln.strip()
+            q += " " + ln.strip()
         else:
-            q += ln.strip()
+            q += " " + ln.strip()
             try:
                 cur = con2.cursor()
-                #print(q);
+                print(q.strip());
                 cur.execute(q)
                 con2.commit()
                 cur.close()

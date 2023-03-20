@@ -55,6 +55,10 @@ class BkdClient():
             print("\nDONE: __init__") 
 
     @property
+    def client(self): 
+        return self._zclient
+
+    @property
     def dxf(self): 
         return self._dxfactory
 

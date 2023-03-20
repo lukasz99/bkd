@@ -10,7 +10,6 @@ import java.util.*;
 import edu.ucla.mbi.dxf20.*;
 
 import javax.xml.bind.JAXB;
-
 import javax.persistence.*;
 
 import org.json.*;
@@ -19,7 +18,7 @@ import org.json.*;
 @DiscriminatorValue("frep")
 public class FeatureReport extends Report{
 
-    @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name="fk_feat", nullable=false)
     private Feature feature;
 
@@ -226,16 +225,16 @@ public class FeatureReport extends Report{
             report.setJval( jval.toString() );
 
             NodeFeat tgtFeat = new NodeFeat();
-            tgtFeat.setNode( new Node() );
+            //tgtFeat.setNode( new Node() );
             
             
             try{
                 String sid = tgtAc.replaceAll( "[^0-9]", "" );
                 int lid = Integer.parseInt( sid );
-                tgtFeat.getNode().setNacc( lid );
-                System.out.println(lid );
-                System.out.println( "tgt node:  " + tgtFeat.getNode().toString() );                
-                log.info("feature: tgtnode set to -> " + tgtFeat.getNode());
+                //tgtFeat.getNode().setNacc( lid );
+                //System.out.println(lid );
+                //System.out.println( "tgt node:  " + tgtFeat.getNode().toString() );                
+                //log.info("feature: tgtnode set to -> " + tgtFeat.getNode());
 
             } catch( Exception ex ){
                 // shouldn't happen                
@@ -275,11 +274,12 @@ public class FeatureReport extends Report{
 
     public String toString(){
         
-        if( feature != null ){
-            return "Feature:" + feature.toString() + " : " + super.toString();
-        } else {
-            return "Feature:" + feature + " : " + super.toString();
-        }
+        //if( feature != null ){
+        //    return "Feature:" + feature.toString() + " : " + super.toString();
+        //} else {
+        //    return "Feature:" + feature + " : " + super.toString();
+        //}
+        return "FeatureReport";
     }
    
 }

@@ -17,11 +17,16 @@
 
   <bean id="bkdFlipSessionFactory"
 	class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+
     <property name="dataSource" ref="bkdFlipSource"/>
-    
-    <property name="packagesToScan"
-              value="edu.ucla.mbi.bkd.store"/>
-    
+
+    <property name="packagesToScan">
+       <list>
+         <value>edu.ucla.mbi.bkd.store</value>
+         <value>edu.ucla.mbi.bkd.access</value>
+       </list>
+    </property>
+      
     <property name="hibernateProperties">
       <props>
 	<prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
@@ -35,8 +40,12 @@
         class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
     <property name="dataSource" ref="bkdFlopSource"/>
     
-    <property name="packagesToScan"
-              value="edu.ucla.mbi.bkd.store"/>
+    <property name="packagesToScan">
+       <list>
+         <value>edu.ucla.mbi.bkd.store</value>
+         <value>edu.ucla.mbi.bkd.access</value>
+       </list>
+    </property>
     
     <property name="hibernateProperties">
       <props>
@@ -63,7 +72,7 @@
   
   <!-- data access objects -->
   
-  <bean id="bkdEdgeDao" class="edu.ucla.mbi.bkd.store.dao.EdgeDao"/>
+  <!-- <bean id="bkdEdgeDao" class="edu.ucla.mbi.bkd.store.dao.EdgeDao"/> -->
   <bean id="bkdNodeDao" class="edu.ucla.mbi.bkd.store.dao.NodeDao"/>
   <bean id="bkdReportDao" class="edu.ucla.mbi.bkd.store.dao.ReportDao"/>
   <bean id="bkdFeatureDao" class="edu.ucla.mbi.bkd.store.dao.FeatureDao"/>
@@ -75,12 +84,19 @@
   <bean id="bkdAttrDao" class="edu.ucla.mbi.bkd.store.dao.AttributeDao"/>
   <bean id="bkdIdGenDao" class="edu.ucla.mbi.bkd.store.dao.IdGenDao"/>
   <bean id="bkdSourceDao" class="edu.ucla.mbi.bkd.store.dao.SourceDao"/>
+
+  <!-- User Access DAOs-->
+   
+  <bean id="bkdUserDao" class="edu.ucla.mbi.bkd.dao.BkdUserDao" />
+  <bean id="bkdGroupDao" class="edu.ucla.mbi.bkd.dao.BkdGroupDao"/>
+  <bean id="bkdRoleDao" class="edu.ucla.mbi.bkd.dao.BkdRoleDao"/>
+  
+  <bean id="bkdEorelDao" class="edu.ucla.mbi.bkd.store.dao.BkdEorelDao"/>
   
   <!--
       <bean id="imxdipSourceDao" class="edu.ucla.mbi.dip.database.imxdip.dao.SourceDao">
     <property name="sessionFactory" ref="imxdipSessionFactory"/>
   </bean>
-
 
   <bean id="imxdipExptDao" class="edu.ucla.mbi.dip.database.imxdip.dao.ExptDao">
     <property name="sessionFactory" ref="imxdipSessionFactory"/>
@@ -93,10 +109,7 @@
   <bean id="imxdipEdgeDao" class="edu.ucla.mbi.dip.database.imxdip.dao.EdgeDao">
     <property name="sessionFactory" ref="imxdipSessionFactory"/>
   </bean>
--->
-
-
-<!--
+ 
   <bean id="imxdipProdDao" class="edu.ucla.mbi.dip.database.imxdip.dao.ProdDao">
     <property name="sessionFactory" ref="imxdipSessionFactory"/>
   </bean>
@@ -104,9 +117,9 @@
   <bean id="imexDao" class="edu.ucla.mbi.dip.database.imxdip.dao.ImexDao">
     <property name="sessionFactory" ref="imxdipSessionFactory"/>
   </bean>
--->
+  -->
 
-  <bean id="bkdDaoContext" class="edu.ucla.mbi.bkd.store.dao.BkdDaoContext">
+  <bean id="bkdDaoContext" class="edu.ucla.mbi.bkd.dao.BkdDaoContext">
     
     <property name="state" value="flop"/>
     
@@ -117,7 +130,7 @@
     <property name="cvTermDao" ref="bkdCvTermDao"/>
     <property name="taxonDao" ref="bkdTaxonDao"/>
     <property name="nodeDao"  ref="bkdNodeDao"/>
-    <property name="edgeDao"  ref="bkdEdgeDao"/>
+<!--    <property name="edgeDao"  ref="bkdEdgeDao"/> -->
     <property name="reportDao"  ref="bkdReportDao"/>
     <property name="featureDao"  ref="bkdFeatureDao"/>
     <property name="rangeDao"  ref="bkdRangeDao"/>
@@ -125,34 +138,75 @@
     <property name="aliasDao"  ref="bkdAliasDao"/>
     <property name="attributeDao"  ref="bkdAttrDao"/>
     <property name="sourceDao"  ref="bkdSourceDao"/>
+    <property name="roleDao"  ref="bkdRoleDao"/>
+    <property name="groupDao"  ref="bkdGroupDao"/>
+    <property name="userDao"  ref="bkdUserDao"/>
+    <property name="eorelDao"  ref="bkdEorelDao"/>
     
   </bean>
+  
+  <!--  MANAGERS =========================================================== --> 
+  <!-- ====================================================== RECORD MANAGER -->
+ 
+  <bean id="bkdRecordManager" class="edu.ucla.mbi.bkd.store.BkdRecordManager"
+        init-method="initialize">
+    <property name="bkdConfig" ref="siteConfig" />
+    <property name="daoContext" ref="bkdDaoContext" />
+    <property name="userContext" ref="userContext" />
+  </bean>
+  
+  <!-- ====================================================== INDEX MANAGER -->  
+  
+  <bean id="bkdIndexManager" class="edu.ucla.mbi.bkd.store.BkdIndexManager"
+        init-method="initialize" >
+    <property name="recordManager" ref="bkdRecordManager" />
+    <property name="indexUrl" value="${service.esindex.url}" />
+    <property name="indexActive" value="${service.esindex.active}" />
+    <property name="batchSize" value="500" />
+  </bean>
 
+  <!-- ======================================================= QUERY MANAGER -->
+
+  <bean id="bkdQueryManager" class="edu.ucla.mbi.bkd.store.BkdQueryManager"
+        init-method="initialize" >
+    <property name="bkdConfig" ref="siteConfig" />
+    <property name="daoContext" ref="bkdDaoContext" />
+    <property name="indexManager" ref="bkdIndexManager" />     
+  </bean>
+  
+  <!-- ==================================================== USERPREF MANAGER -->
+  
+   <bean id="uprefManager" init-method="initialize" destroy-method="cleanup"
+         class="edu.ucla.mbi.bkd.UserPrefManager">
+
+     <property name="userContext" ref="userContext"/>
+     <property name="uprefContext" ref="uprefContext"/>
      
-   <!-- Record Manager -->
-
-   <bean id="bkdRecordManager" class="edu.ucla.mbi.bkd.store.BkdRecordManager"
-         init-method="initialize">
-     <property name="bkdConfig" ref="siteConfig" />
-     <property name="daoContext" ref="bkdDaoContext" />
    </bean>
+
+   <!-- ====================================================== WATCH MANAGER -->   
    
-   <!-- Index Manager -->
+   <bean id="bkdWatchManager" init-method="initialize" destroy-method="cleanup"
+         class="edu.ucla.mbi.bkd.store.BkdWatchManager">
+     
+     <property name="tracContext" ref="tracContext"/>
+     <property name="daoContext" ref="bkdDaoContext"/>
+     
+  </bean>
 
-   <bean id="bkdIndexManager" class="edu.ucla.mbi.bkd.store.BkdIndexManager"
-         init-method="initialize" >
-     <property name="recordManager" ref="bkdRecordManager" />
-     <property name="indexUrl" value="${service.esindex.url}" />
-     <property name="indexActive" value="${service.esindex.active}" />
-     <property name="batchSize" value="500" />
-   </bean>
+  <!-- =============================================== NOTIFIACATION MANAGER -->
+  
+  <bean id="bkdNotificationManager" init-method="initialize" 
+        class="edu.ucla.mbi.bkd.BkdNotificationManager">
+    <property name="queueDir" value="${bkd.notificationqueue}" />   
+  </bean>
+ 
 
-   <!-- Query Manager -->
+  <!-- ======================================================== NEWS MANAGER -->
+  
+  <bean id="newsManager" class="edu.ucla.mbi.bkd.BkdNewsManager">
 
-   <bean id="bkdQueryManager" class="edu.ucla.mbi.bkd.store.BkdQueryManager"
-         init-method="initialize" >
-     <property name="bkdConfig" ref="siteConfig" />
-     <property name="daoContext" ref="bkdDaoContext" />
-     <property name="indexManager" ref="bkdIndexManager" />     
-   </bean>
+  </bean>
+ 
+
  </beans>

@@ -8,7 +8,6 @@
   <title>Report</title>
 
   <t:insertDefinition name="htmlhead"/>  
-   <script src="jq/jquery-3.6.0.js" type="text/javascript" language="JavaScript"></script>
 
    <script src="js/bkd-config.js" type="text/javascript" language="JavaScript"></script>
    <script src="js/bkd-links.js" type="text/javascript" language="JavaScript"></script>
@@ -21,32 +20,80 @@
          
      $( function(){
 
-        hhght =  $("#header").height(); 
+       $("#bkd-head-search-go").on( 'click', function (event) {           
+           //BKDnodeSearch.doHeadSearch();
+           var qmode = $("#bkd-head-qmode").val();
+           var query = $("#bkd-head-squery").val();
 
-        $("#bkd-sidebar").css('padding-top',3);
-        $("#bkd-main").css('margin-top',hhght);
+           console.log("head search:" +  qmode + ":" + query );
+           if( query !== undefined ){
+              if(query.trim().length > 0 ){
+                 var myurl = "search?qmode=" + qmode
+                           + "&ret=view"  
+                           + "&query=" + query.trim();  
+                 window.location.href = myurl;
+              }
+           }     
+         });
+       
+       $("#bkd-modal-div").hide();
+
+       hhght =  $("#header").height(); 
+       sbwdth = $("#bkd-sidebar").width();
      
-        var ns   = "<s:property value='ns'/>";
-        var ac   = "<s:property value='ac'/>";
-        var op   = "<s:property value='op'/>";
-        var rt   = "<s:property value='rtype'/>";
-        var query  = "<s:property value='query'/>";
-        var qmode  = "<s:property value='qmode'/>";
+       fpos = $("#footer").position(); 
+       fhght = $("#footer").height();
 
-        var mode = "<s:property value='mode'/>"; // set to edit if editor mode
-    
-        if( query.length > 0 && qmode.length >0 ){
+       $("#bkd-sidebar").css('padding-top', 3 );
+       $("#bkd-main").css('margin-top',hhght );
+       $("#bkd-main").css('margin-left',sbwdth+10 );
+        
+       var ns   = "<s:property value='ns'/>";
+       var ac   = "<s:property value='ac'/>";
+       var op   = "<s:property value='op'/>";
+       var rt   = "<s:property value='rtype'/>";
+       var query  = "<s:property value='query'/>";
+       var qmode  = "<s:property value='qmode'/>";
+
+       op = op.replace(/({|})/g,'').split("=")[0];
+     
+       var mode = "<s:property value='mode'/>"; // set to edit if editor mode
+
+       //alert( qmode + ":" + query + ":" + mode  );
+
+        $("#bkd-search-go").on( 'click',
+           function (event) {                           
+              var query = $("#bkd-squery").val();
+              console.log( "body search: " + query );
+              if( query !== undefined ){
+                 if(query.trim().length > 0 ){
+                    var myurl = "report?qmode=report"  
+                              + "&query=" + query.trim();                   
+                    window.location.href = myurl;
+                 }
+              }
+           });
+
+       if( query.length > 0 && qmode.length >0 ){
              
-           $( "#bkd-sidebar" ).hide(); 
-           BKDrep.view( {qmode:qmode, query:query},
-                        "#bkd-report-search",
+          $( "#bkd-sidebar" ).hide(); 
+          BKDrep.view( {qmode:qmode, query:query},
+                        //"#bkd-report-search",
+                        "#bkd-search-form",
+                        "#bkd-report-header",
                         "#bkd-report-target",
                         "#bkd-report-value", "edit");            
 
-        } else if( ns.length > 0 && ac.length >0 ){     // show report
+       } else if( ns.length > 0 && ac.length >0 ){     // show report
+
           myurl ="report?ns="+ns+"&ac="+ac+"&ret=data&format=json";
+
+          //if( op.includes("create") ){
+          //  myurl += "&op.create=create&rtype=";
+          //}
+
           if( op.length> 0){
-             myurl += "&op=" + op;
+             myurl += "&op." + op + "=" + op;
              //if( op == "new" ) myurl += "&mode=edit";
           }
           if( rt.length> 0) myurl += "&rtype=" + rt;
@@ -64,20 +111,22 @@
                        }
                        BKDrep.view( dta,         
                                     "#bkd-report-search",
+                                    "#bkd-report-header",
                                     "#bkd-report-target",
                                     "#bkd-report-value" , mode) } );
                   
         } else {                               // show empty form
            $( "#bkd-sidebar" ).hide(); 
            BKDrep.view( null, "#bkd-report-search",
+                              "#bkd-report-header",
                               "#bkd-report-target",
                               "#bkd-report-value", "edit");
         }
     
        });
-  </script>
-  
+  </script> 
  </head>
+
  <body class="yui-skin-sam" onLoad="var nos = document.getElementById('noscript'); if ( nos !== null ) { nos.innerHTML='';}">
   <center>
   <s:if test="big">
@@ -87,45 +136,45 @@
   <div id="bkd-main">
    <table class="pagebody" width="98%" cellspacing="0" cellpadding="0" border="0" >
 
-     <s:if test="hasActionErrors()">
-     <tr>
-      <td colspan="3">
-       <div  class="upage" id="errorDiv">
-        <span class="pgerror">
-         <s:iterator value="actionErrors">
-          <span class="errorMessage"><s:property escapeHtml="false" /></span>
-         </s:iterator>
-        </span>
-       </div>
-       <br/>
-      </td>
-     </tr>
-    </s:if>
-      <tr>
-        <td colspan="3">
-          <div id="bkd-main-name"></div>
-        </td>
-     </tr>
-
+<s:if test="hasActionErrors()">
+    <tr>
+     <td colspan="3">
+      <div  class="upage" id="errorDiv">
+       <span class="pgerror">
+        <s:iterator value="actionErrors">
+         <span class="errorMessage"><s:property escapeHtml="false" /></span>
+        </s:iterator>
+       </span>
+      </div>
+      <br/>
+     </td>
+    </tr>
+</s:if> 
 <s:if test="ac == null || ac.length == 0">
     <tr>
-      <td colspan="3">
- <t:insertDefinition name="report-search"/>
-      </td>
+     <td colspan="3">
+        <t:insertDefinition name="bkd-search"/>
+     </td>
     </tr>
 </s:if>
     <tr>
       <td colspan="3">
-        <div id="bkd-report-target"></div> 
-      </td>
-    </tr>    
+          <div id="bkd-main-name"></div>
+     </td>
+    </tr>
     <tr>
-      <td colspan="3">
-        <div id="bkd-report-value"></div>        
-      </td>
+      <td colspan="3"> 
+       <div id="bkd-report-header"></div>
+       <div id="bkd-report-target"></div>
+       <div id="bkd-report-value"></div>   
+     </td>
     </tr>    
    </table>
-  </div> 
+  </div>
+  </div>
+  <div id="modals">
+   <div id="bkd-modal-div" class='bkd-modal-anchor'>
+  </div>     
   <s:if test="big">
    <t:insertTemplate template="/tiles/footer.jsp" flush="true"/>
   </s:if>

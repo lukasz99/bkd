@@ -4,6 +4,7 @@ saved-by: lukasz
 auto-generated-by: OBO-Edit 1.101
 default-namespace: dxf
 ontology: DXF
+owl-axioms: Prefix(owl:=<http://www.w3.org/2002/07/owl#>)\nPrefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)\nPrefix(xml:=<http://www.w3.org/XML/1998/namespace>)\nPrefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)\nPrefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)\n\n\nOntology(\nDeclaration(AnnotationProperty(<http://www.geneontology.org/formats/oboInOwl#id>))\n\n\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#id> <http://purl.obolibrary.org/obo/DXF.owl#dxf_0113> \"dxf:0113\"^^xsd:string)\n)
 
 [Term]
 id: dxf:0000
@@ -696,6 +697,12 @@ is_a: dxf_0110 ! interaction-report
 id: dxf_0112
 name: interaction-inference-report
 is_a: dxf_0110 ! interaction-report
+
+[Term]
+id: dxf_0113
+name: located-at
+def: "described by" [XX:1]
+is_a: dxf:0005 ! reference type
 
 [Term]
 id: dxf_0120

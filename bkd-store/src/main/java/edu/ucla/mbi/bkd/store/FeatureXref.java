@@ -17,8 +17,8 @@ import javax.persistence.*;
 @DiscriminatorValue("feature")
 public class FeatureXref extends Xref{
 
-    @ManyToOne
-    @JoinColumn(name="fk_feature", nullable=false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="fk_feature", nullable=true)
     private Feature feature;
 
     public void setFeature(Feature feature){

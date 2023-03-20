@@ -8,31 +8,68 @@ import java.util.*;
 import java.math.BigInteger;
 import org.hibernate.*;
 
+import edu.ucla.mbi.bkd.dao.*;
 import edu.ucla.mbi.bkd.store.*;
 
 public class NodeDao extends AbstractDAO {
     
-    public Node getByPkey( int pk ){ 
-
+    public Node getByPkey( long pk, String depth ){ 
+        
         Logger log = LogManager.getLogger( this.getClass() );
-        log.debug( "NodeDao->getNode: pkey(int)=" + pk  );
+        log.debug( "NodeDao->getNode: pkey(long)=" + pk  + " (" + depth + ")" );
+        
+        Session session = getCurrentSession();
+        Transaction tx = session.beginTransaction();
+
+        Node node = null;
+        try {
+            Query query =
+                session.createQuery( "select n from Node n" + 
+                                     " where n.pkey=:pkey" );
+            
+            query.setParameter( "pkey", pk );
+            
+            query.setFirstResult( 0 );
+            node = (Node) query.uniqueResult(); 
+
+            node = setDepth( node, depth );  // select sections
+            
+            tx.commit();
+
+        } catch( NumberFormatException ne ){
+
+            // wrong accession fromat
+            
+        } catch( HibernateException e ) {
+            handleException( e );
+            // log error ?
+        } finally {
+            session.close();
+        }
+
+        return node;
+
+        /*
         
         try{
-            Node node = (Node) super.find( Node.class, new Integer( pk ) );
+            Node node = (Node) super.find( Node.class, new Long( pk ) );
             log.debug( "NodeDao->getNode: pk=" + pk + " ::DONE"  );
+
+            node = setDepth( node, depth );  // select sections
+            
             return node;
         } catch( Exception ex ){
             return null;
-        } 
+        }
+        */ 
     }
 
     //--------------------------------------------------------------------------
     
-    public Node getByDip( String id ){ 
+    public Node getByDip( String id, String depth ){ 
 
         Logger log = LogManager.getLogger( this.getClass() );
         log.info( "NodeDao->getNode: dip(int)=" + id  );
-
                
         Node node = null;
         
@@ -47,6 +84,11 @@ public class NodeDao extends AbstractDAO {
             query.setParameter( "id", id );
             query.setFirstResult( 0 );
             node = (Node) query.uniqueResult();
+
+            node = setDepth( node, depth);
+            
+            //int xlen = node.getXrefs().size(); // force loading on lazy xrefs
+            //int flen = node.getFeats().size(); // force loading on lazy xrefs              
             tx.commit();
             
         } catch( NumberFormatException ne ){
@@ -65,11 +107,10 @@ public class NodeDao extends AbstractDAO {
 
     //--------------------------------------------------------------------------
     
-    public Node getByNac( int nac ){ 
+    public Node getByNac( int nac, String depth ){ 
 
         Logger log = LogManager.getLogger( this.getClass() );
         log.info( "NodeDao->getNode: nac(int)=" + nac  );
-
                
         Node node = null;
         
@@ -84,6 +125,10 @@ public class NodeDao extends AbstractDAO {
             query.setParameter( "nac", nac );
             query.setFirstResult( 0 );
             node = (Node) query.uniqueResult();
+            node = setDepth( node, depth);
+            
+            //int xlen = node.getXrefs().size(); // force loading on lazy xrefs
+            //int flen = node.getFeats().size(); // force loading on lazy xrefs              
             tx.commit();
             
         } catch( NumberFormatException ne ){
@@ -100,9 +145,119 @@ public class NodeDao extends AbstractDAO {
         return node; 
     }
 
+
+    private Node setDepth( Node node, String depth ){
+
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( "NodeDao->setDepth: " + depth + "->" + Node.DEPTH.indexOf(depth));        
+        switch( Node.DEPTH.indexOf(depth) ){
+            
+        case 0:  // STUB
+            node.setAlias(new HashSet<NodeAlias>());                
+            node.setAttrs(new HashSet<NodeAttr>());                
+            node.setXrefs(new HashSet<NodeXref>());                
+            //node.setFeats(new HashSet<NodeFeat>());
+            //node.setReps(new HashSet<NodeReport>());            
+            break;
+                
+        case 1:  // BASE
+            node.getAlias().size();
+            node.getAttrs().size();
+            node.getXrefs().size();                
+            //node.setFeats(new HashSet<NodeFeat>());
+            //node.setReps(new HashSet<NodeReport>());
+            log.info( "NodeDao->setDepth: done(BASE)" );
+            break;
+                
+        case 2:  // FEAT
+            node.getAlias().size();                
+            node.getAttrs().size();                
+            node.getXrefs().size();                
+            //node.getFeats().size();
+            //node.setReps(new HashSet<NodeReport>());
+            log.info( "NodeDao->setDepth: done(FEAT)" );
+            break;
+            
+        case 3:  // REPT
+            node.getAlias().size();                
+            node.getAttrs().size();                
+            node.getXrefs().size();                
+            //node.setFeats(new HashSet<NodeFeat>());
+            //node.getReps().size();
+            log.info( "NodeDao->setDepth: done(REPT)" );
+            break;
+                
+        case 4:  // FULL
+            node.getAlias().size();                
+            node.getAttrs().size();                
+            node.getXrefs().size();                
+            //node.getFeats().size();
+            //node.getReps().size();
+            log.info( "NodeDao->setDepth: done(FULL)" );
+            break;
+            
+        case 5:  // FEATL           
+            node.setAlias(new HashSet<NodeAlias>());                
+            node.setAttrs(new HashSet<NodeAttr>());                
+            node.setXrefs(new HashSet<NodeXref>());                
+            //node.getFeats().size();           
+            //node.setReps(new HashSet<NodeReport>());
+            log.info( "NodeDao->setDepth: done(FETL)" );
+        } 
+        
+        return node;
+    }
+    
+  
+    public Node getByAcc( String acc, String depth ){ 
+        
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( "NodeDao->getByAcc: nac(str)=" + acc + " depth: " + depth);
+
+        if( ! Node.DEPTH.contains( depth ) ){  // undefined depth
+            return null;
+        }
+        
+        // convert accession to uid
+        
+        int nacc = Integer.parseInt(acc.replaceAll("[^0-9]", "") );
+        
+        Node node = null;
+        
+        Session session = getCurrentSession();
+        Transaction tx = session.beginTransaction();
+        
+        try {
+            
+            Query query =
+                session.createQuery( "from Node n where " +
+                                     " n.nacc = :nac order by n.id desc");
+            query.setParameter( "nac", nacc );
+            query.setFirstResult( 0 );
+            node = (Node) query.uniqueResult();
+
+            node = setDepth( node, depth );  // select sections
+
+            tx.commit();
+            
+        } catch( NumberFormatException ne ){
+
+            // wrong accession fromat
+            
+        } catch( HibernateException e ) {
+            handleException( e );
+            // log error ?
+        } finally {
+            session.close();
+        }
+        
+        log.info( "NodeDao-> found: " + node );
+        return node; 
+    }
+
     //--------------------------------------------------------------------------
 
-    public Node getById( String ns, String sid ){ 
+    public Node getById( String ns, String sid, String depth ){ 
         
         Node node = null;
         
@@ -149,6 +304,9 @@ public class NodeDao extends AbstractDAO {
             
             if( nodes.size() > 0 ){
                 node = nodes.get(0);
+                node = setDepth( node, depth);
+                //int xlen = node.getXrefs().size(); // force loading on lazy xrefs
+                //int flen = node.getFeats().size(); // force loading on lazy xrefs              
             }
             
             tx.commit();
@@ -167,7 +325,7 @@ public class NodeDao extends AbstractDAO {
     
     //--------------------------------------------------------------------------
 
-    public Node getByAcc( String acc ){ 
+    public Node getByAcc( String acc, String depth, int i ){ 
         
         Node node = null;
         
@@ -186,6 +344,9 @@ public class NodeDao extends AbstractDAO {
             query.setParameter( "nacc", id );
             query.setFirstResult( 0 );
             node = (Node) query.uniqueResult();
+            node = setDepth( node, depth);
+            //int xlen = node.getXrefs().size(); // force loading on lazy xrefs
+            //int flen = node.getFeats().size(); // force loading on lazy xrefs              
             tx.commit();
 
         } catch( NumberFormatException ne ){
@@ -202,7 +363,7 @@ public class NodeDao extends AbstractDAO {
     }
     
     public List<Object> getListById( String ns, String ac,
-                                     String ndtype, String sort ){
+                                     String ndtype, String sort, String depth ){
         
         Logger log = LogManager.getLogger( this.getClass() );
         log.info( "NodeDao->getListById: ns=" + ns + " ac=" + ac  );
@@ -282,7 +443,7 @@ public class NodeDao extends AbstractDAO {
     **/
     //--------------------------------------------------------------------------
     
-    public List<Node> getBySequence( String sequence ){ 
+    public List<Node> getBySequence( String sequence, String depth ){ 
         
         List<Node> nodes =  null;
         

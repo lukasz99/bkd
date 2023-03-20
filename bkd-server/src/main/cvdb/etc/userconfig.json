@@ -1,0 +1,36 @@
+{
+    role:[
+        {name:"administrator",
+         comments:"administrator role"},
+        {name:"editor",
+         comments:"editor role"},
+        {name:"curator",
+         comments:"curator role"},
+        {name:"user",
+         comments:"user role"}
+    ],
+    group:[
+        {label:"ADMIN",name:"admins",
+         roles:[],
+         comments:"administrator group"},
+        {label:"EDITOR",name:"editors",
+         roles:[],
+         comments:"editor group"},
+        {label:"CURATOR",name:"curators",
+         roles:[],
+         comments:"curator group"}
+        
+    ],
+    user:[
+        {login:"ADMIN",
+         roles:["administrator"],
+         groups:["ADMIN"]
+        }
+    ],
+    default:{
+        owner:"ADMIN",
+        group:"ADMIN",
+        adminuser:"ADMIN",
+        admingroup:"ADMIN"
+    }
+}

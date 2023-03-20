@@ -9,9 +9,251 @@ import java.math.BigInteger;
 
 import org.hibernate.*;
 
+import edu.ucla.mbi.bkd.dao.*;
 import edu.ucla.mbi.bkd.store.*;
 
 public class ReportDao extends AbstractDAO {
+
+
+    public NodeFeatureReport getNFR( int pk ){
+        NodeFeatureReport nfr = null;
+        return nfr;
+    }
+
+    //--------------------------------------------------------------------------
+    
+    public NodeFeatureReport getNodeFeatureReportById( String ns, String sid ){
+
+        NodeFeatureReport nfr = null;
+        
+        Session session = getCurrentSession();
+        Transaction tx = session.beginTransaction();
+        
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( "-> getNodeFeatureReportById: ns=" + ns + " ac=" + sid);
+        
+        try {
+            
+            int id = Integer.parseInt(sid.replaceAll("[^0-9]", "") );
+             
+            Query query =
+                session.createQuery( "from NodeFeatureReport n where " +
+                                     " n.nacc = :nacc order by n.id desc");
+            
+            query.setParameter( "nacc", id );            
+            query.setFirstResult( 0 );
+            log.info( "prequery...");
+            List<NodeFeatureReport> reps = (List<NodeFeatureReport>) query.list();            
+            log.info( "...postquery");
+            log.info("-> getById(ns/ac): count=" + reps.size() );
+            
+            if( reps.size() > 0 ){
+                nfr = reps.get(0);
+                log.info( "report type: " + nfr.getCvType() );                
+                log.info( "report node pk: " + nfr.getNodeId()  );                
+                log.info( "report feature pk: " + nfr.getFeatureId()  );
+
+                nfr.getFeature().getXrefs().size(); // force load
+                nfr.getFeature().getAttrs().size(); // force load
+                nfr.getFeature().getSource().getPkey(); // force load
+                
+            }
+
+            tx.commit();            
+        } catch( HibernateException e ) {
+            log.error(e);                        
+            handleException( e );           
+        }catch( Exception ex){
+            log.error( ex );
+        } finally {
+            session.close();
+        }
+        log.info( "-> getNodeFeatureReportById: DONE");
+        
+        return nfr; 
+        
+    }
+    
+    //--------------------------------------------------------------------------
+                    
+    public NFReport getNFReportById( String ns, String sid ){ 
+        
+        NFReport nfr = null;
+        
+        Session session = getCurrentSession();
+        Transaction tx = session.beginTransaction();
+
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( "-> getNFReportById: ns=" + ns + " ac=" + sid);
+        
+        try {
+            
+            int id = Integer.parseInt(sid.replaceAll("[^0-9]", "") );
+             
+            Query query =
+                session.createQuery( "from NFReport n where " +
+                                     " n.nacc = :nacc order by n.id desc");
+            
+            query.setParameter( "nacc", id );            
+            query.setFirstResult( 0 );
+            log.info( "prequery...");
+            List<NFReport> reps = (List<NFReport>) query.list();            
+            log.info( "...postquery");
+            log.info("-> getById(ns/ac): count=" + reps.size() );
+            
+            if( reps.size() > 0 ){
+                nfr = reps.get(0);
+                log.info( "report type: " + nfr.getCvType() );                
+                log.info( "report node pk: " + nfr.getNodeId()  );                
+                log.info( "report feature pk: " + nfr.getFeatureId()  );   
+            }
+
+            tx.commit();            
+        } catch( HibernateException e ) {
+            log.error(e);                        
+            handleException( e );           
+        }catch( Exception ex){
+            log.error( ex );
+        } finally {
+            session.close();
+        }
+        log.info( "-> getNFReportById: DONE");
+        
+        return nfr; 
+    }
+
+    //--------------------------------------------------------------------------
+
+    public NodeFeatureReport saveNFRecord( NFReport report ) {
+
+        NodeFeatureReport nfr = null;
+        
+        return nfr;
+    }
+
+    
+    //--------------------------------------------------------------------------
+    
+    public NFReport updateNFRecord( NFReport report ) { 
+        
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( "->updateReport: " + report.toString()  );
+        
+        // quit if no persisted report 
+        
+        if( report == null || report.getNacc() == 0) return null;
+                   
+        Report oldRep = this.getByNac( report.getNacc() );
+        
+        /*
+
+        if( oldRep != null &&
+            oldRep.getRpid() != report.getRpid() ) return null;
+
+        // reports exists: update all the fields
+
+        // label
+        
+        if( report.getLabel() == null ){
+            oldRep.setLabel("Report " + report.getAc() );
+        } else{
+            oldRep.setLabel( report.getLabel() );
+        }
+        
+        if( oldRep.getLabel().length() > 32 ){
+            String slabel = oldRep.getLabel().substring(0,28) + "..";
+            oldRep.setLabel( slabel );
+        }
+
+        //version
+        oldRep.setVersion( report.getVersion() );
+
+        //name
+        oldRep.setName( report.getName() );
+
+        // jvals
+        oldRep.setJval( report.getJval() );
+        
+        //source
+        oldRep.setSource( report.getSource() );
+                
+        //xrefs
+        oldRep.setXrefs( report.getXrefs() );
+
+        //comment
+        oldRep.setComment( report.getComment() );
+
+        Feature ofeature = null;
+        
+        //NodeReport: update node
+        if( oldRep instanceof NodeReport) {
+            ((NodeReport)oldRep).setNode( ((NodeReport)report).getNode() );
+        } else if( oldRep instanceof FeatureReport){
+
+            / *
+            ofeature = ((FeatureReport)oldRep).getFeature();
+            Node onode = ((NodeFeat) ofeature).getNode();
+
+            // drop old feature            
+            //super.delete(((FeatureReport)oldRep).getFeature());            
+                        
+            // save new feature
+            
+            Feature nf = ((FeatureReport)report).getFeature();
+
+            // set old node
+            ((NodeFeat)nf).setNode(onode);
+            
+            for(Range range: nf.getRanges() ){
+                range.setFeature(nf);
+                range.setCTime(nf.getCTime());
+                range.setUTime(new Date());
+                super.saveOrUpdate( range );
+            }
+
+            for(FeatureXref f: nf.getXrefs()){
+                f.setFeature(nf);
+                f.setCTime(nf.getCTime());
+                f.setUTime(new Date());
+                super.saveOrUpdate( f );
+            }
+
+            if(nf.getCTime() == null){
+                nf.setCTime(new Date());
+            }
+            
+            nf.setUTime(new Date());            
+            
+            super.saveOrUpdate(nf);
+            
+            ((FeatureReport)oldRep).setFeature( nf );
+            * /
+        }
+        
+        // status
+        oldRep.setStatus( report.getStatus() );
+
+        // reset update time
+        oldRep.setUTime(new Date());
+        */
+
+            
+        //super.saveOrUpdate( oldRep );
+
+        super.saveOrUpdate( report );
+        if( oldRep != null ){            
+            super.delete(oldRep);
+        }
+        //if(ofeature != null){
+        //    super.delete( ofeature );
+        //}
+        
+        //return oldRep;
+        return report;
+    }
+
+    //--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
     
     public Report getByPkey( int pk ){ 
 
@@ -50,11 +292,11 @@ public class ReportDao extends AbstractDAO {
             query.setFirstResult( 0 );
             
             List<Report> reps= (List<Report>) query.list();            
-            
             log.info("-> getByNac(int): count=" + reps.size() );
             
             if( reps.size() > 0 ){
                 report = reps.get(0);
+                log.info( "report type:" + report.getCvType() );
             }            
             tx.commit();
             
@@ -95,12 +337,33 @@ public class ReportDao extends AbstractDAO {
                         
             List<Report> reps= (List<Report>) query.list();            
 
-            System.out.println("size");
-            System.out.println(reps.size());
-            System.out.println("...");
-           
+            log.info("-> getById(ns/ac): count=" + reps.size() );
+
             if( reps.size() > 0 ){
                 report = reps.get(0);
+                log.info( "report type:" + report.getCvType() );                
+                log.info( "report type:" + report  );                
+                if( report instanceof FeatureReport ){
+                    
+                    
+                    Feature rf = ( (FeatureReport) report ).getFeature();
+                    log.info( "report->feature:" + rf.getLabel()  );
+                    
+                    if( rf instanceof NodeFeat ){
+                        //((NodeFeat)rf).setNode(null);
+                       
+                        //Node rfn = ((NodeFeat)rf).getNode();
+                        //log.info( "report->feature->node:" + rfn.getAc()  );
+
+                        //rfn.setAttrs(new HashSet<NodeAttr>());
+                        //rfn.setAlias(new HashSet<NodeAlias>());
+                        //rfn.setXrefs(new HashSet<NodeXref>());
+                        //rfn.setFeats(new HashSet<NodeFeat>());
+                        //rfn.setReps(new HashSet<NodeReport>());
+                        
+                    }
+                    
+                }               
             }            
             tx.commit();            
         } catch( HibernateException e ) {
@@ -111,6 +374,11 @@ public class ReportDao extends AbstractDAO {
         } finally {
             session.close();
         }
+        log.info( "-> getById: DONE");
+        
+        //((NodeFeat)((FeatureReport)report).getFeature()).setNode(new ProteinNode());
+        //((FeatureReport)report).setFeature(new NodeFeat());
+                
         return report; 
     }
 
@@ -134,14 +402,13 @@ public class ReportDao extends AbstractDAO {
             query.setFirstResult( 0 );
                         
             List<Report> reps= (List<Report>) query.list();            
-
-            System.out.println("size");
-            System.out.println(reps.size());
-            System.out.println("...");
-           
+            log.info("-> getByAcc(acc): count=" + reps.size() );
+            
             if( reps.size() > 0 ){
                 report = reps.get(0);
-            }            
+                log.info( "report type:" + report.getCvType() );                
+            }
+            
             tx.commit();            
         } catch( HibernateException e ) {
             log.error(e);                        
@@ -395,15 +662,27 @@ public class ReportDao extends AbstractDAO {
         Logger log = LogManager.getLogger( this.getClass() );
         log.info( "->updateReport: " + report.toString()  );
         log.info( "->updateReport: class" + report.getClass()  );
+
+
+        if( report.getLabel() == null ||
+            report.getLabel().length() == 0 ){
+            report.setLabel( report.getCvType().getName() );
+        }
         
-                
         // quit if no persisted report 
         
         if( report == null || report.getNacc() == 0) return null;
                    
         Report oldRep = this.getByNac( report.getNacc() );
 
+        super.saveOrUpdate( report );
 
+        //if( oldRep != null ){    // do not remove to keep uipdatr trail ?
+        //    super.delete(oldRep);
+        //}
+
+        return report;
+        
         /*
 
         if( oldRep != null &&
@@ -494,7 +773,7 @@ public class ReportDao extends AbstractDAO {
 
         // reset update time
         oldRep.setUTime(new Date());
-        */
+        //---------------
 
             
         //super.saveOrUpdate( oldRep );
@@ -509,5 +788,6 @@ public class ReportDao extends AbstractDAO {
         
         //return oldRep;
         return report;
+        */
     }
 }

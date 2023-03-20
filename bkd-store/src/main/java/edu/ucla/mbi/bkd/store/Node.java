@@ -19,6 +19,17 @@ import javax.persistence.*;
 @Table(name = "node")
 public class Node implements Comparable<Node>{
 
+    public static String STUB = "STUB";
+    public static String BASE = "BASE";
+    public static String SEQ = "SEQ";
+    public static String FEAT = "FEAT";
+    public static String FEATL = "FEATL";
+    public static String REPT = "REPT";
+    public static String FULL = "FULL";
+    
+    public static List<String> DEPTH =
+        Arrays.asList( STUB, BASE, FEAT, REPT, FULL, FEATL );
+
     private static String generator = "node";
     
     @Id
@@ -51,7 +62,7 @@ public class Node implements Comparable<Node>{
     @JoinColumn(name = "taxon")
     Taxon taxon;
 
-    @OneToMany(mappedBy="node", fetch = FetchType.EAGER )
+    @OneToMany(mappedBy="node", fetch = FetchType.EAGER)
     private Set<NodeAlias> alias;
 
     @OneToMany(mappedBy="node", fetch = FetchType.EAGER)
@@ -60,11 +71,16 @@ public class Node implements Comparable<Node>{
     @OneToMany(mappedBy="node",fetch = FetchType.EAGER)
     private Set<NodeXref> xrefs;
 
-    @OneToMany(mappedBy="node",fetch = FetchType.EAGER)
+    /*
+    @OneToMany(mappedBy="node",fetch = FetchType.LAZY)
     private Set<NodeReport> reps;
-
+    */
+    /*
     @OneToMany(mappedBy="node",fetch = FetchType.EAGER)   
-    private Set<NodeFeat> feats;
+    //@OneToMany(fetch = FetchType.LAZY)
+    //@JoinColumn(name = "fk_node")    
+    private Set<NodeFeat> featsxxx;
+    */
     
     @Column(name = "comment")
     String comment ="";
@@ -87,6 +103,20 @@ public class Node implements Comparable<Node>{
         
     public Node() { }
 
+    public Node( long pkey, int nacc, CvTerm cvtype, String label, String name, Taxon taxon ) {
+        this.pkey = pkey;
+        this.nacc = nacc;
+        this.cvtype = cvtype;
+        this.label = label;
+        this.name = name;
+        this.taxon = taxon;
+        
+    }
+
+    public long getPkey(){
+        return this.pkey;
+    }
+    
     public static String generator(){
         return generator;
     }
@@ -164,49 +194,49 @@ public class Node implements Comparable<Node>{
     public void setAlias(Set<NodeAlias> alias){
         this.alias = alias;
     }
-
     
     public Set<NodeAttr> getAttrs(){
 	if(this.attrs == null)
 	    this.attrs = new HashSet<NodeAttr>();	
         return this.attrs;
     }
-
     
     public void setAttrs(Set<NodeAttr> attrs){
         this.attrs = attrs;
     }
-
     
-    public void setXrefs(Set<NodeXref> xrefs){
-        this.xrefs = xrefs;
-    }
-
     public Set<NodeXref> getXrefs(){
 	if(this.xrefs == null)
 	    this.xrefs = new HashSet<NodeXref>();	
         return this.xrefs;
     }
 
+    public void setXrefs(Set<NodeXref> xrefs){
+        this.xrefs = xrefs;
+    }
+    /*
     public Set<NodeReport> getReps(){
 	if(this.reps == null)
 	    this.reps = new HashSet<NodeReport>();	
         return this.reps;
     }
-
-    public void setProps(Set<NodeReport> reps){
+    
+    public void setReps(Set<NodeReport> reps){
         this.reps = reps;
     }
-
+    */
+    /*
     public Set<NodeFeat> getFeats(){
-	if(this.feats == null)
-	    this.feats = new HashSet<NodeFeat>();	
-        return this.feats;
+        //if(this.featsxxx == null)
+        //    this.featsxxx = new HashSet<NodeFeat>();       
+        //return this.featsxxx;
+        return new HashSet<NodeFeat>();
     }
 
     public void setFeats(Set<NodeFeat> feats){
-        this.feats = feats;
+        //this.featsxxx = feats;
     }
+    */
     
     public void setComment( String comment ){
         this.comment = comment;
@@ -251,7 +281,85 @@ public class Node implements Comparable<Node>{
     public String toString(){
         return "[AC:" + this.getAc() +
             " name:" + name + " label:" + label +"]";
-    }        
+    }
+
+    public Map<String, Object> toMap(){
+
+        Map<String, Object> map = new HashMap<String,Object>();
+
+        map.put( "ns", this.getNs() );
+        map.put( "ac", this.getAc());
+
+        if(this.getVersion().length() > 0){
+            map.put("version",this.getComment());
+        }
+        
+        if(this.getTaxon() != null ){
+            map.put("taxon",this.getTaxon() );
+        }
+        
+        if( this.getLabel().length() > 0 ){
+            map.put("label",this.getLabel() );
+        }
+        
+        if(this.getName().length() > 0){
+            map.put("name",this.getName() );
+        }
+
+        if( this.cvtype != null){
+            map.put( "type-name", this.cvtype.getName());
+            map.put( "type-cv", this.cvtype.getAc());
+        }
+        
+        if(this.getComment().length() > 0){
+            map.put("comment",this.getComment());
+        }
+        
+        if(this.getSequence().length() > 0){
+            map.put("sequence",this.getSequence());
+        }
+
+        if( this.getAlias().size() > 0 ){
+            List<Object> allst = new ArrayList<Object>();
+            for( Alias a: this.getAlias() ){
+                allst.add( a.toMap() );
+            }
+            map.put("alias",allst );
+        }
+
+        if( this.getAttrs().size() > 0 ){
+            List<Object> atlst = new ArrayList<Object>();
+            for( Attribute a: this.getAttrs() ){
+                atlst.add( a.toMap() );
+            }
+            map.put("attr",atlst );
+        }
+        
+        if( this.getXrefs().size() > 0 ){
+            List<Object> xlst = new ArrayList<Object>();
+            for( Xref x: this.getXrefs() ){
+                xlst.add( x.toMap() );
+            }
+            map.put("xref",xlst );
+        }
+
+        /*
+        if( this.getFeats().size() > 0 ){
+            List<Object> flst = new ArrayList<Object>();
+            for( Feature f: this.getFeats() ){
+                flst.add( f.toMap() );
+            }
+            map.put("feature",flst );
+
+
+            
+            map.put("feature",this.getFeats() );
+        }
+        */
+        return map;
+    }
+    
 }
+
 
 

@@ -5,5 +5,6 @@
     "ECO:0000250": "sequence similarity evidence used in manual assertion",
     "ECO:0000256": "match to sequence model evidence used in automatic assertion",
     "ECO:0000305": "curator inference used in manual assertion",
-    "ECO:0000303": "author statement without traceable support used in manual assertion"
+    "ECO:0000303": "author statement without traceable support used in manual assertion",
+    "ECO:0000312": "imported information used in manual assertion"
 }

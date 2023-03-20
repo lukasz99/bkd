@@ -17,7 +17,7 @@ import javax.persistence.*;
 @DiscriminatorValue("report")
 public class ReportXref extends Xref{
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="fk_report", nullable=false)
     private Report report;
     

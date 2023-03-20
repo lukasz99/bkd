@@ -7,6 +7,7 @@ import java.net.*;
 import java.util.*;
 
 import org.hibernate.*;
+import edu.ucla.mbi.bkd.dao.*;
 import edu.ucla.mbi.bkd.store.*;
 
 public class CvTermDao extends AbstractDAO {

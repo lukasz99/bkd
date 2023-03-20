@@ -1,4 +1,4 @@
-package edu.ucla.mbi.bkd.store.dao;
+package edu.ucla.mbi.bkd.dao;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,8 +14,7 @@ public abstract class AbstractDAO {
 
     public AbstractDAO(){
     }
-
-
+    
     public AbstractDAO( SessionFactory sessionFactory ){
         this.sessionFactory = sessionFactory;
     }
@@ -68,17 +67,21 @@ public abstract class AbstractDAO {
         
         Session session = getCurrentSession();
         Transaction tx = session.beginTransaction();
+        Logger log = LogManager.getLogger( this.getClass() );                                                                                                          
         
         try {
-            System.out.println(obj);
+
+            log.info("saveOrUpdate: obj=" + obj);
             session.saveOrUpdate( obj );
+            session.flush();
+            log.info("saveOrUpdate: DONE");
             tx.commit();
+            
         } catch ( HibernateException e ) {
 
-            Logger log = LogManager.getLogger( this.getClass() );                                                                                                          
-            log.info( "saveOrUpdate exception" + e  );                                                                                                          
-            
+            log.info( "saveOrUpdate exception: " + e  );                                                                                                                      
             handleException( e, tx );
+
         } finally {
             session.close();
         }
@@ -143,7 +146,7 @@ public abstract class AbstractDAO {
     }
 
     protected Object find( Class clazz, Serializable id ) throws DAOException {
-
+        
         Object obj = null;
         
         Session session = getCurrentSession();
@@ -176,8 +179,7 @@ public abstract class AbstractDAO {
         } finally {
             session.close();
         }
-
-
+        
         return obj;
     }
    
@@ -267,7 +269,7 @@ public abstract class AbstractDAO {
     }
 
     protected void handleException( HibernateException e ) throws DAOException {
-        //e.printStackTrace();
+        e.printStackTrace();
         throw new DAOException( "Hibernate DAO Exception." );
     }
 

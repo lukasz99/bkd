@@ -1,0 +1,59 @@
+/* menu edit panel */
+
+.edit_menu {
+	background:#fff url(/img/global/gradient/h600.png) 0 0;
+	width: 100%;
+	border:1px solid #333;
+        -moz-border-radius: 4px;
+}
+
+/* edit header */
+.edit_menu_header {
+	background:#888888;
+	margin:0;
+	padding:4px 10px;
+	font-size:12px;
+	font-weight:bold;
+	border:1px solid #000;
+	-moz-border-radius: 4px;
+	cursor:pointer;	
+        color:#eee;	
+}
+/* edit body */
+.edit_menu_body {
+	background:#eeeeee;
+	margin:0;
+	padding:5px 10px;
+	font-size:10px;
+	font-weight:normal;
+	border:1px solid #000;
+	-moz-border-radius: 4px;
+	cursor:pointer;	
+        color:#111;	
+}
+
+/* menu item list */
+
+.edit_menu_ilist {
+	background:#eeeeee;
+	margin:0;
+	padding:0px 0px;
+	font-size:10px;
+	font-weight:normal;
+	border:0px solid #000;
+	-moz-border-radius: 4px;
+	cursor:pointer;	
+        color:#111;	
+}
+
+/* menu item */
+.edit_menu_item {
+	background:#cccccc;
+	margin:0;
+	padding:5px 10px;
+	font-size:10px;
+	font-weight:normal;
+	border:1px solid #000;
+	cursor:pointer;	
+        color:#111;	
+}

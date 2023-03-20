@@ -53,7 +53,7 @@ public abstract class Source{
       );
     **/
     
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "fk_cvtype")
     CvTerm cvtype;
         
@@ -77,6 +77,9 @@ public abstract class Source{
 
     public abstract String toString();
 
+    public long getPkey(){
+        return this.pkey;
+    }
     
     public String getName(){
         return name;

@@ -1,163 +1,195 @@
 BKDconf = {
- "report": {     
-   "feature":{
-     "channel-report":{
-      active: true,
-      type:"channel-report",
-      cvType:{"ac":"dxf:0096","definition":"","name":"channel-report","ns":"dxf"},
-      label:"Channel report",
-      ac:{
-       "id":"ac",
-       "vpath":['ac'],
-       "type":"hidden"
-       },
-      target:[
-       {"name":"ns",
-        "vpath":['feature','node','ns'],
-        "id":"report_target_ns",
-        "type":"hidden" },
-       {"name":"ac",
-        "vpath":['feature','node','ac'],
-        "id":"report_target_ac",
-        "type":"hidden" },
-       {"name":"Protein name",
-        "css-class": "bkd-rep-head-1",
-        "vpath":['feature','node','name']},
-       {"name":"Gene",
-        "vpath":['feature','node','gene']},
-       {"name":"Taxon",
-        "vpath":['feature','node','taxon'],
-        "type":"taxon" },
-       {"name":"Cross-references",
-        "css-class": "bkd-rep-head-3",
-        "vpath":['feature','node','xrefs'],
-        "type":"xref",
-        "id":"report_target_feature_node_xrefs",
-        "list":true,
-        "collapse":true
-       },
-       {name:"Protein Sequence Variant",
-        "css-class": "bkd-rep-head-2",
-        id:"report_target_feature",
-        list: true,
-        value:[ 
-         {"name":"Name",
-           'id':'report_target_feature_label',
-            "vpath":['feature','label'],
-            "edit": true
-         },
-         {"name":"Type",
-            "id":"report_target_feature_cvtype",
-            "vpath":['feature','cvType'],
-            "type": 'cvterm',
-            "cvt-list":[{ns:"psi-mi", ac:"MI:0000", name:"",
-                         label:"-- not specified --"},
-                        {ns:"psi-mi", ac:"MI:1241", name:"variant",
-                         label:"Variant(natural)"},
-                        {ns:"psi-mi", ac:"MI:0118", name:"mutation",
-                         label:"Mutation"}],
-            "edit": true
-         },                      
-         {"name":"Position/Range",
-            "css-class": "bkd-rep-head-3",
-            "id":'report_target_feature_ranges',
-            "list": true,
-            "edit": true,
-            "vpath":['feature','ranges'],
-            "type": 'range'
-         },
-         {"name":"Cross-references",
-          "css-class": "bkd-rep-head-3",
-          "id":'report_target_feature_xrefs', 
-          "vpath":['feature','xrefs'],
-          "type":"xref",
-          "xref-ns":[{ns:"psi-mi",label:"-- database --"},
-                     {ns:"cvdb",label:"CVUS"},
-                     {ns:"dbsnp",label:"dbSNP"},
-                     {ns:"clinvar",label:"ClinVar"},
-                     {ns:"mim",label:"OMIM"},
-                     {ns:"cosmic",label:"Cosmic"},
-                     {ns:"pmid",label:"PubMed"}],
-          "xref-type":[{ns:"dxf",ac:"dxf:0000",
-                        name:"",label:"-- xref type --"},
-                       {ns:"psi-mi","ac":"MI:1241",
-                        "name":"variant",label:"Variant (natural)"},
-                       {ns:"psi-mi","ac":"MI:0118",
-                        "name":"mutation",label:"Mutation"},
-                       {ns:"dxf","ac":"dxf:0077",
-                        "name":"has-phenotype",label:"Phenotype"},
-                       {ns:"dxf","ac":"dxf:0014",
-                        "name":"described-by",label:"Data source"}],
-          "list":true,
-          "edit": true
-         }
-        ]
-       }
-      ],  // end of target section
-      value:[
-       {"name":'Report type',
-         'ns':"cvd",  
-         'ac':"cvd:0001",  
-         'value':'channel-report',
-         'label':'Channel report',
-         'id': 'report_type',
-         "type":"label",
-         "edit": false},
-       {"name":'Report Status',
-         'ns':"dxf",  
-         'ac':"dxf:0125",  
-         'value':'status',
-         'label':'Report status',
-         'id': 'report_value_status',
-         'type': 'cvterm',
-         'cvt-list':[{ns:"dxf", ac:"dxf:0000", name:"",
-                      label:"-- not specified --"},
-                     {ns:"dxf", ac:"dxf:0121", name:"processing",
-                      label:"Processing"},
-                     {ns:"dxf", ac:"dxf:0122", name:"processed",
-                      label:"Processed"},
-                     {ns:"dxf", ac:"dxf:0123", name:"validated",
-                      label:"Validated"},
-                     {ns:"dxf", ac:"dxf:0124", name:"released",
-                      label:"Released"}],
-         "edit": true},
-       {"name":'Channel activation',
-         'ns':"cvd",  
-         'ac':"cvd:0002",  
-         'value':'channel-activation',
-         'id': 'report_value_channel-activation',
-         "type":"text",
-         "edit": true},
-       {"name":'Channel inactivation',
-         'ns':"cvd",  
-         'ac':"cvd:0003",  
-         'id':'report_value_channel-inactivation',
-         'value':'channel-inactivation',
-         "type":"text",
-         "edit": true},
-       {"name":'Channel selectivity',
-         'ns':"cvd",  
-         'ac':"cvd:0004",  
-         'id':'report_value_channel-selectivity',
-         'value':'channel-selectivity',
-         "type":"text",
-         "edit": true},
-       {"name":'Channel expression',
-         'ns':"cvd",  
-         'ac':"cvd:0005",
-         'id':'report_value_channel-expression',
-         'value':'channel-expression',
-         "type":"text",
-         "edit": true},
-       {"name":'Comments',
-         'ns':"cvd",
-         'ac':"cvd:0006",
-         'id':'report_value_comments',
-         'value':'comments',
-         "type":"text",
-         "edit": true}]
-     },   // END: channel-report
-
+    "report": {     
+        "feature":{
+            "channel-report":{
+                "active": true,
+                "type":"channel-report",
+                "cvType":{"ac":"dxf:0096","definition":"","name":"channel-report","ns":"dxf"},
+                "label":"Channel report",
+                "ac":{
+                    "id":"ac",
+                    "vpath":['ac'],
+                    "type":"hidden"
+                },
+                
+                "header":[
+                    { "name":"Experimental Protein Report",
+                      "value":"Voltage-gated Channel Report",                      
+                      "type":"label",
+                      "css-class": "bkd-rep-head-0",
+                      "edit":false
+                    },
+                    { "name":"Report ID",
+                      "vpath":['ac'],
+                      "type":"label",
+                      "css-class": "bkd-rep-head-3",
+                      "edit":false
+                    }
+                ],
+                
+                "target":[
+                    { "name":"ns",
+                      "vpath":['target','ns'],
+                      "id":"report_target_ns",
+                      "type":"hidden" },
+                    { "name":"ac",
+                      "vpath":['target','ac'],
+                      "id":"report_target_ac",
+                      "type":"hidden" },
+                    
+                    { "name":"Protein",
+                      "css-class": "bkd-rep-head-1",
+                      "vpath":['target','name'],
+                      "vpath-short":['target','label']},
+                    { "name":"Gene",
+                      "vpath":['target','gene']},
+                    
+                    {"name":"Experimental Sequence ID",
+                     "value":"O6503-2",
+                     "type":"label",
+                     "css-class": "bkd-rep-head-3",
+                     "edit": true,
+                     "custom-edit": "report-tgt-edit",
+                     "custom-view": "report-tgt-view"                     
+                    },
+                    
+                    {"name":"Taxon",
+                     "vpath":['target','taxon'],
+                     "type":"taxon" },
+                    
+                    {"name":"Cross-references",
+                     "css-class": "bkd-rep-head-3",
+                     "vpath":['target','xrefs'],
+                     "type":"xref",
+                     "id":"report_target_feature_node_xrefs",
+                     "list":true,
+                     "collapse":true
+                    },
+                    
+                    {name:"Protein Sequence Variant",
+                     "css-class": "bkd-rep-head-2",
+                     id:"report_target_feature",
+                     list: true,
+                     value:[ 
+                         {"name":"Name",
+                          'id':'report_target_feature_label',
+                          "vpath":['target','feature','label'],
+                          "edit": true
+                         },
+                         {"name":"Type",
+                          "id":"report_target_feature_cvtype",
+                          "vpath":['target','feature'], 
+                          "type": 'cvtype',
+                          "cvt-list":[{ns:"psi-mi", ac:"MI:0000", name:"",
+                                       label:"-- not specified --"},
+                                      {ns:"psi-mi", ac:"MI:1241", name:"variant",
+                                       label:"Variant(natural)"},
+                                      {ns:"psi-mi", ac:"MI:0118", name:"mutation",
+                                       label:"Mutation"}],
+                          "edit": true
+                         },                      
+                         {"name":"Position/Range",
+                          "css-class": "bkd-rep-head-3",
+                          "id":'report_target_feature_ranges',
+                          "list": true,
+                          "edit": true,
+                          "vpath":['target','feature','range'],
+                          "type": 'range'
+                         },
+                         {"name":"Cross-references",
+                          "css-class": "bkd-rep-head-3",
+                          "id":'report_target_feature_xrefs', 
+                          "vpath":['target','feature','xref'],
+                          "type":"xref",
+                          "xref-ns":[{"ns":"psi-mi",label:"-- database --"},
+                                     {"ns":"cvdb",label:"CVUS"},
+                                     {"ns":"dbsnp",label:"dbSNP"},
+                                     {"ns":"clinvar",label:"ClinVar"},
+                                     {"ns":"mim",label:"OMIM"},
+                                     {"ns":"cosmic",label:"Cosmic"},
+                                     {"ns":"pmid",label:"PubMed"}],
+                          "xref-type":[{"ns":"dxf","ac":"dxf:0000",
+                                        "name":"","label":"-- xref type --"},
+                                       {"ns":"psi-mi","ac":"MI:1241",
+                                        "name":"variant","label":"Variant (natural)"},
+                                       {"ns":"psi-mi","ac":"MI:0118",
+                                        "name":"mutation","label":"Mutation"},
+                                       {"ns":"dxf","ac":"dxf:0077",
+                                        "name":"has-phenotype","label":"Phenotype"},
+                                       {"ns":"dxf","ac":"dxf:0014",
+                                        "name":"described-by","label":"Data source"}],
+                          "list":true,
+                          "edit": true
+                         }
+                     ]
+                    }
+                ],  // end of target section
+                
+                value:[
+                    {"name":'Report type',
+                     'ns':"cvd",  
+                     'ac':"cvd:0001",  
+                     'value':'channel-report',
+                     'label':'Channel report',
+                     'id': 'report_type',
+                     "type":"label",
+                     "css-class": "bkd-rep-head-1",
+                     "edit": false},
+                    {"name":'Report Status',
+                     'ns':"dxf",  
+                     'ac':"dxf:0125",  
+                     'value':'status',
+                     'label':'Report status',
+                     'id': 'report_value_status',
+                     'type': 'cvterm',
+                     'cvt-list':[{ns:"dxf", ac:"dxf:0000", name:"",
+                                  label:"-- not specified --"},
+                                 {ns:"dxf", ac:"dxf:0121", name:"processing",
+                                  label:"Processing"},
+                                 {ns:"dxf", ac:"dxf:0122", name:"processed",
+                                  label:"Processed"},
+                                 {ns:"dxf", ac:"dxf:0123", name:"validated",
+                                  label:"Validated"},
+                                 {ns:"dxf", ac:"dxf:0124", name:"released",
+                                  label:"Released"}],
+                     "edit": true},
+                    {"name":'Channel activation',
+                     'ns':"cvd",  
+                     'ac':"cvd:0002",  
+                     'value':'channel-activation',           
+                     'id': 'report_value_channel-activation',
+                     "type":"text",
+                     "edit": true},
+                    {"name":'Channel inactivation',
+                     'ns':"cvd",  
+                     'ac':"cvd:0003",  
+                     'id':'report_value_channel-inactivation',
+                     'value':'channel-inactivation',
+                     "type":"text",
+                     "edit": true},
+                    {"name":'Channel selectivity',
+                     'ns':"cvd",  
+                     'ac':"cvd:0004",  
+                     'id':'report_value_channel-selectivity',
+                     'value':'channel-selectivity',
+                     "type":"text",
+                     "edit": true},
+                    {"name":'Channel expression',
+                     'ns':"cvd",  
+                     'ac':"cvd:0005",
+                     'id':'report_value_channel-expression',
+                     'value':'channel-expression',
+                     "type":"text",
+                     "edit": true},
+                    {"name":'Comments',
+                     'ns':"cvd",
+                     'ac':"cvd:0006",
+                     'id':'report_value_comments',
+                     'value':'comments',
+                     "type":"text",
+                     "edit": true}]
+            },   // END: channel-report
+       
      "transporter-report":{
             "active": true,
             "type":"transporter-report",
@@ -169,24 +201,24 @@ BKDconf = {
               "type":"hidden"},
             "target":[
                   {"name":"ns",
-                   "vpath":['feature','node','ns'],
+                   "vpath":['target','ns'],
                    "id":"report_target_ns",
                    "type":"hidden" },
                   {"name":"ac",
-                   "vpath":['feature','node','ac'],
+                   "vpath":['target','ac'],
                    "id":"report_target_ac",
                    "type":"hidden" },
                   {"name":"Protein name",
                     "css-class": "bkd-rep-head-1",
-                   "vpath":['feature','node','name']},
+                   "vpath":['target','name']},
                   {"name":"Gene",
-                   "vpath":['feature','node','gene']},
+                   "vpath":['target','gene']},
                   {"name":"Taxon",
-                   "vpath":['feature','node','taxon'],
+                   "vpath":['target','taxon'],
                    "type":"taxon" },
                   {"name":"Cross-references",
                    "css-class": "bkd-rep-head-3",
-                   "vpath":['feature','node','xrefs'],
+                   "vpath":['target','xref'],
                    "type":"xref",
                    "id":"report_target_feature_node_xrefs",
                    "list":true,
@@ -199,12 +231,12 @@ BKDconf = {
                    "value":[
                       {"name":"Name",
                       'id':'report_target_feature_label',
-                       "vpath":['feature','label'],
+                       "vpath":['target','feature','label'],
                        "edit": true
                       },
                       {"name":"Type",
                        "id":"report_target_feature_cvtype",
-                       "vpath":['feature','cvType'],
+                       "vpath":['target','feature','type-cv'],
                        "type": 'cvterm',
                        "cvt-list":[{ns:"psi-mi", ac:"MI:0000", name:"",
                          label:"-- not specified --"},
@@ -218,13 +250,13 @@ BKDconf = {
                        "id":'report_target_feature_ranges',
                        "list": true,
                        "edit": true,
-                       "vpath":['feature','ranges'],
+                       "vpath":['target','feature','range'],
                        "type": 'range'
                        },
                       {"name":"Cross-references",
                        "css-class": "bkd-rep-head-3",
                        "id":'report_target_feature_xrefs', 
-                       "vpath":['feature','xrefs'],
+                       "vpath":['target','feature','xref'],
                        "type":"xref",
                        "xref-ns":[{ns:"psi-mi",label:"-- database --"},
                                   {ns:"cvdb",label:"CVUS"},
@@ -289,7 +321,7 @@ BKDconf = {
                       'ac':"cvd:0006",
                       'id':'report_value_comments',
                       "type":"text",
-                      'value':'comments',
+                      'value':'comment',
                       "edit": true}]
         },
 
@@ -312,24 +344,24 @@ BKDconf = {
               "type":"hidden"},
            "target":[
                   {"name":"ns",
-                   "vpath":['feature','node','ns'],
+                   "vpath":['target','ns'],
                    "id":"report_target_ns",
                    "type":"hidden" },
                   {"name":"ac",
-                   "vpath":['feature','node','ac'],
+                   "vpath":['target','ac'],
                    "id":"report_target_ac",
                    "type":"hidden" },
                   {"name":"Protein name",
                    "css-class": "bkd-rep-head-1",
-                   "vpath":['feature','node','name']},
+                   "vpath":['target','name']},
                   {"name":"Gene",
                    "vpath":['feature','node','gene']},
                   {"name":"Taxon",
-                   "vpath":['feature','node','taxon'],
+                   "vpath":['target','taxon'],
                    "type":"taxon" },
                   {"name":"Cross-references",
                    "css-class": "bkd-rep-head-3",
-                   "vpath":['feature','node','xrefs'],
+                   "vpath":['target','xref'],
                    "type":"xref",
                    "id":"report_target_feature_node_xrefs",
                    "list":true,
@@ -342,12 +374,12 @@ BKDconf = {
                    "value":[
                       {"name":"Name",
                       'id':'report_target_feature_label',
-                       "vpath":['feature','label'],
+                       "vpath":['targert','feature','label'],
                        "edit": true
                       },
                       {"name":"Type",
                        "id":"report_target_feature_cvtype",
-                       "vpath":['feature','cvType'],
+                       "vpath":['target','feature','type'],
                        "type": 'cvterm',
 
                        "cvt-list":[{ns:"psi-mi", ac:"MI:0000", name:"",
@@ -361,25 +393,25 @@ BKDconf = {
                       },
                       {"name":"GRCh37 coordinate", 
                        "id":"report_target_feature_grch37",
-                       "vpath":['feature','grch37'],
+                       "vpath":['target','feature','grch37'],
                        "edit":true                      
                       },
                       {"name":"GRCh38 coordinate", 
                        "id":"report_target_feature_grch38",
-                       "vpath":['feature','grch38'],
+                       "vpath":['target','feature','grch38'],
                        "edit":true                      
                       },
                       {"name":"Position/Range",
                        "id":'report_target_feature_ranges',
                        "list": true,
                        "edit": true,
-                       "vpath":['feature','ranges'],
+                       "vpath":['target','feature','range'],
                        "type": 'range'
                        },
                       {"name":"Cross-references",
                        "css-class": "bkd-rep-head-3",
                        "id":'report_target_feature_xrefs', 
-                       "vpath":['feature','xrefs'],
+                       "vpath":['target','feature','xref'],
                        "type":"xref",
                        "xref-ns":[{ns:"psi-mi",label:"-- database --"},
                                   {ns:"cvdb",label:"CVUS"},
@@ -589,185 +621,267 @@ BKDconf = {
                        "edit": true}]
           }
    },
-   node:{
-    type:{
-      vpath:['cvType','name'],      
-      view:{
-        protein:{
+   "node":{
+    "type":{
+      "vpath":['type-name'],      
+      "view":{
+        "protein":{
             "type":{
-              "val":"protein",
-              "label":"Protein:: ",
+                "val":"protein",
+                "label":"",
             },
-            "ac":{
-              "vpath":['name'],
-              "id":"node_ac"
+            "ac":{                
+                "vpath":['name'],
+                "id":"node_ac"
             },
-            defpane: "feature",
-            pane:[
-              {id:"feature",
-               label:"Features",
-               header: true,
-               field:[
-                 {name:"Features",
-                  vpath:['feats'],
-                  type:"feature",
-                  condition:[{  
-                    test:['cvType','name'],
-                    equal:"mutation"
-                  }],
-                  header:true,
-                  list:true,
-                  miss: "%DROP%",
-                  header:true
-                 }
-               ]
-              },
-              {id:"function",
-               label:"Function",
-               header: true,
-               field:[
-                 {name:"Function",
-                  vpath:['attrs'],
-                  type:"text",
-                  condition:[{  
-                    test:['cvType','name'],
-                    equal:"function"
-                  },                  
-                  {  
-                    test:['xrefs','ac'],
-                    equal:['upr']
-                  }],
-                  value:["value"],
-                  list:false,
-                  miss:"%DROP%"
-                 },
-                 {name:"Activity",
-                  vpath:['attrs'],
-                  type:"text",
-                  condition:[{
-                    test:['cvType','name'],
-                    equal:"activity-regulation"                  
-                  }],
-                  value:["value"],
-                  list:false,
-                  miss:"%DROP%"
-                 }
-               ]
-              },
-              {id:"sequence",
-               label:"Sequence",
-                header: false,
-               field:[
-                 {name:"Sequence",
-                  vpath:['sequence'],
-                  type:"sequence",
-                  header:true
-                 }]
-              },
-              {id:"spliceforms",
-               label:"Splice Forms",
-               header: true,
-               field:[]
-              },
-              {id:"variant",
-               label:"Variants",
-               header: true,
-               field:[]
-              },
-              
-              {id:"structure",
-               label:"Structure",
-               header: true,
-               field:[]
-              },
-              {id:"homologs",
-               label:"Homologs",
-               header: true,
-               field:[]
-              },
-              {id:"medical",
-               label:"Medical",
-               header: true,
-               field:[]
-              },
-              {id:"xrefs",
-               label:"Cross-Refs",
-               header: true,
-               field:[
-                 {name:"Cross-references",
-                  vpath:['xrefs'],
-                  type:"xref",
-                  header:true,
-                  list:true,
-                  miss: "%DROP%"}
-                ]
-              }          
+            "defpane": "feature",
+            "pane":[
+                {id:"function",
+                 label:"Function",
+                 header: true,
+                 field:[
+                     {name:"Function",
+                      vpath:['attrs'],
+                      type:"text",
+                      condition:[
+                          {  
+                              test:['type-name'],
+                              equal:"function"
+                          },                  
+                          {  
+                              test:['xrefs','ac'],
+                              equal:['upr']
+                          }],
+                      value:["value"],
+                      list:false,
+                      miss:"%DROP%"
+                     },
+                     {name:"Activity",
+                      vpath:['attrs'],
+                      type:"text",
+                      condition:[
+                          {
+                              test:['type-name'],
+                              equal:"activity-regulation"                  
+                          }],
+                      value:["value"],
+                      list:false,
+                      miss:"%DROP%"
+                     }
+                 ]
+                },
+                {"id":"sequence",
+                 "label":"Sequence",
+                 "header": true,
+                 "field":[
+                     {name:"Sequence",
+                      vpath:['sequence'],  // 'feats' 
+                      type:"sequence",
+                      "config":{}
+                     }]
+                },                
+                {id:"feature",
+                 label:"Features",
+                 header: true,
+                 field:[
+                     {name:"Features",
+                      vpath:['feature'],  // 'feats' 
+                      type:"feature",
+                      condition:[{  
+                          test:['type-name'],
+                          equal:"mutation"
+                      }],
+                      config:{
+                          lollipanel:{
+                              anchor: "#flist-lollipop",
+                              detailtable:{
+                                  anchor: "#flist-details",
+                                  table_class: 'bkd-fdet-table-style',
+                                  head_class: 'bkd-fdet-th-style',
+                                  aapos_class: 'bkd-fdet-pos-style',
+                                  column:[
+
+                                      { cid:'c1', name:"Variant",
+                                        data_class:'bkd-fdet-td-style',
+                                        value:'shrt', type:'string', "xref-ns": null
+                                      },
+                                      { cid:'c2', name:"Clinical Significance",
+                                        data_class:'bkd-fdet-td-style',
+                                        value:'clinsig',default:'unspecified',
+                                        type:'string', "xref-ns": null
+                                      },
+                                      { cid:'c6', name:"ClinGen",
+                                        data_class:'bkd-fdet-td-style',
+                                        value:'cglink', type:'hlink', "xref-ns": 'clingen',
+                                        url: "https://reg.clinicalgenome.org/redmine/projects/registry/genboree_registry/by_canonicalid?canonicalid="},
+                                      
+                                      { cid:'c4', name:"ClinVar",
+                                        data_class:'bkd-fdet-td-style',
+                                        value:'cvlink', trim:'\\.\\d+$',
+                                        type:'hlink',
+                                        "xref-ns": 'clinvar',
+                                        url: "https://www.ncbi.nlm.nih.gov/clinvar/variation/" },
+                                      
+                                      { cid:'c3', name:"dbSNP", data_class:'bkd-fdet-td-style',
+                                        value:'snlink', type:'hlink', "xref-ns": 'dbsnp',
+                                        url: "https://www.ncbi.nlm.nih.gov/snp/" },
+                                      
+                                      { cid:'c5', name:"Gnomad", data_class:'bkd-fdet-td-style',
+                                        value:'gnlink', type:'hlink', "xref-ns": 'gnomad',
+                                        url: "https://gnomad.broadinstitute.org/variant/" },
+                                      
+                                      { cid:'c7', name:"CVDB", data_class:'bkd-fdet-td-style',
+                                        value:'cvdblink', type:'hlink', "xref-ns": 'cvdb',
+                                        url: "report" }
+                                  ]
+                              }
+                          }
+                      },
+                      header:true,
+                      list:true,
+                      miss: "%DROP%",
+                      header:true
+                     }
+                 ]
+                },                
+                //{id:"variant",
+                // label:"Variants",
+                // header: true,
+                // field:[]
+                //},                
+                //{id:"structure",
+                // label:"Structure",
+                // header: true,
+                // field:[]
+                //},
+                //{id:"homologs",
+                // label:"Homologs",
+                // header: true,
+                // field:[]
+                //},
+                //{id:"medical",
+                // label:"Medical",
+                // header: true,
+                // field:[]
+                //},
+                {id:"xrefs",
+                 label:"Cross-Refs",
+                 header: true,
+                 field:[
+                     {name:"Cross-references",
+                      vpath:['xrefs'],
+                      type:"xref",
+                      header:true,
+                      list:true,
+                      miss: "%DROP%"}
+                 ]
+                }          
             ],
             field:[
-              {name:"Short name",
-               vpath:['label'],
-               type:"text"
-              },            
-              {name:"Accession",
-               vpath:['ac'],
-               type:"text"
-              },
-              {name:"Alternative name(s)",
-               vpath:['alias'],
-               type:"text",
-               condition:[{
-                 test:['cvType','name'],
-                 equal:"synonym"
-               }],
-               value:["alias"],
-               header: true,
-               list: true,
-               hide: true,
-               miss: "%DROP%" 
-              },           
-              {name:"Gene",
-               vpath:['alias'],
-               type:"text",
-               condition:[{
-                 test:['cvType','name'],
-                 equal:"gene-name"
-               }],
-               value:["alias"],              
-               list:false,
-               miss:"%DROP%"
-              },
-              {name:"Gene synonym(s)",
-               vpath:['alias'],
-               type:"text",
-               condition:[{
-                 test:['cvType','name'],
-                 equal:"gene-synonym"
-               }],
-               value:["alias"],
-               header:true,
-               list:false,
-               miss:"%DROP%"
-              },               
-              {"name":"UniprotKB",
-               "vpath":['upr'],
-               "type":"link",
-               "url":"https://www.uniprot.org/uniprot/%%VAL%%",
-               "miss":"N/A"},
-               {"name":"RefSeq",
-               "vpath":['rsq'],
-               "type":"link",
-               "url":"https://www.ncbi.nlm.nih.gov/protein/%%VAL%%",
-               "miss":"N/A"
-              },
+                //{name:"CVDB Accession",
+                // vpath:['ac'],
+                // type:"text"
+                //},
+                {name:"Short name",
+                 vpath:['label'],
+                 type:"text"
+                },            
+                {name:"Alternative name(s)",
+                 vpath:['alias'],
+                 type:"text",
+                 condition:[{
+                     test:['type-name'],
+                     equal:"synonym"
+                 }],
+                 value:["alias"],
+                 header: true,
+                 list: true,
+                 hide: true,
+                 miss: "%DROP%" 
+                },           
+                {name:"Gene Name",
+                 vpath:['alias'],
+                 type:"text",
+                 condition:[{
+                     test:['type-name'],
+                     equal:"gene-name"
+                 }],
+                 value:["alias"],              
+                 list:false,
+                 miss:"%DROP%"
+                },
+                {name:"Gene synonym(s)",
+                 vpath:['alias'],
+                 type:"text",
+                 condition:[{
+                     test:['type-name'],
+                     equal:"gene-synonym"
+                 }],
+                 value:["alias"],
+                 header:true,
+                 list:false,
+                 miss:"%DROP%"
+                },
+                {name:"NCBI Gene",
+                 vpath:['xref'],
+                 type:"link",
+                 "url":"https://www.ncbi.nlm.nih.gov/gene/%%VAL%%",
+                 condition:[{
+                     test:['ns'],
+                     equal:"GeneID"
+                 }],
+                 value:["ac"],              
+                 list:false,
+                 miss:"%DROP%"
+                },
+                {name:"AllianceGenome",
+                 vpath:['xref'],
+                 type:"link",
+                 "url":"https://www.alliancegenome.org/gene/%%VAL%%",
+                 condition:[{
+                     test:['ns'],
+                     equal:"AllianceGenome"
+                 }],
+                 value:["ac"],              
+                 list:false,
+                 miss:"%DROP%"
+                },
 
-              {"name":"Taxon",
-               "vpath":['taxon'],
-               "type":"taxon",
-               "url":"https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=%%VAL%%"
-              }
-             ],
-             "tab":[
-             ]
+                {name:"OMIM Gene",
+                 vpath:['xref'],
+                 type:"link",
+                 "url":"https://www.omim.org/entry/%%VAL%%",
+                 condition:[
+                     { test:['ns'],
+                       equal:"MIM" }
+                 ],
+                 value:["ac"],              
+                 list:false,
+                 miss:"%DROP%"
+                },
+                
+                {"name":"UniprotKB",
+                 "vpath":['upr'],
+                 "type":"link",
+                 "url":"https://www.uniprot.org/uniprot/%%VAL%%",
+                 "miss":"N/A"},
+                
+                {"name":"RefSeq",
+                 "vpath":['rsq'],
+                 "type":"link",
+                 "url":"https://www.ncbi.nlm.nih.gov/protein/%%VAL%%",
+                 "miss":"%DROP%"
+                },
+
+                {"name":"Taxon",
+                 "vpath":['taxon'],
+                 "type":"taxon",
+                 "url":"https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=%%VAL%%"
+                }
+                                
+            ],
+            "tab":[
+            ]
          },
          gene:{
            type:{

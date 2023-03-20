@@ -1,0 +1,67 @@
+
+<script>
+  $(function(){
+     BkdNews.boxinit( '#newsbox', 'news' );
+     
+     $("#bkd-head-search-go").on( 'click',
+        function (event) { 
+           console.log("head search clicked");
+           var qmode = $("#bkd-head-qmode").val();
+           var query = $("#bkd-head-squery").val();
+
+           console.log( qmode + ":" + query );
+           if( query !== undefined ){
+              if(query.trim().length > 0 ){
+                 var myurl = "search?qmode=" + qmode
+                           + "&ret=view"  
+                           + "&query=" + query.trim();  
+                 window.location.href = myurl;
+              }
+           }
+        });
+  });
+</script>
+
+<div style="width: 20em; float:left; padding: 0 1.5em 20em 0">
+  <table cellspacing="0" width="100%" class="ftmain" id="ftmain">
+   <tr>
+    <td class="fttitle">DIP Database News</td>
+   </tr>
+   <tr>
+    <td class="ftbody" valign="top">
+     Recent News:
+     <table class="fnews" id="newsbox"></table>
+    </td>
+   </tr>
+   <tr>
+    <td class="ftfoot" align="right" valign="bottom" nowrap>
+              <i>See more <a href="news">DIP Database News</a></i>
+    </td>
+   </tr>
+  </table>
+ </div>
+
+<!-- ----------------------------------------------------------------------- -->
+
+<h1>Welcome to DIP - The Database of Interacting Proteins</h1>
+
+<p>The Database of Interacting Proteins archives and evaluates experimentally
+  determined interactions between proteins. The interactions in DIP are culled
+  from peer-reviewed literature and are manually entered into the database by
+  expert curators.
+
+<p>DIP is a member of
+  <a target="_bkd_tgt" href="https://www.imexconsortium.org">The International
+    Molecular-interaction Exchange Consortium</a>
+  (<a target="_bkd_tgt" href="https://www.imexconsortium.org">IMEx</a>), a group
+  of the major public providers of interaction data that includes
+  <a target="_bkd_tgt" href="http://www.ebi.ac.uk/intact">IntAct</a>,
+  <a target="_bkd_tgt" href="http://mint.bio.uniroma2.it/mint">MINT</a> and
+  <a target="_bkd_tgt" href="https://www.imexconsortium.org/about">others</a>.
+  The IMEx databases work together to prevent duplication of curation
+  efforts and to maintain consistency of the resulting interaction data they
+  share and maintain.
+  
+<br/><br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/>
+

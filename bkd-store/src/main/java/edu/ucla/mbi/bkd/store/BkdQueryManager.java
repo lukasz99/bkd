@@ -7,7 +7,7 @@ import java.util.*;
 import java.text.NumberFormat;
 
 import edu.ucla.mbi.bkd.*;
-import edu.ucla.mbi.bkd.store.dao.*;
+import edu.ucla.mbi.bkd.dao.*;
 import edu.ucla.mbi.dxf20.*;
 
 public class BkdQueryManager extends QueryManager{
@@ -62,12 +62,23 @@ public class BkdQueryManager extends QueryManager{
 
     public List<Object> getReportListSimple( String query, String sort ){
 
-        List<Node> nlst = indexManager.getNodeListSimple( query );
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( " getReportListSimple -> query=" + query );
+               
+        List<Report> rlst = indexManager.getReportListSimple( query );
+
 
         List<Object> result = new ArrayList<Object>();
         
-        for( Node cn:  nlst ){
+        for( Report crep:  rlst ){
+
+            NodeFeatureReport nfr = (NodeFeatureReport) crep;
+            ProteinNode tgtn = (ProteinNode) daoContext
+                .getNodeDao().getByPkey(nfr.getNodeId(), Node.BASE);
             
+            result.add( nfr.toMap( tgtn ) );
+            
+            /*
             if( bkdconf.getPrefix().equalsIgnoreCase( cn.getNs() ) ){
                 List<Object> crl = daoContext.getReportDao()
                     .getListByTarget( cn.getAc(), sort );
@@ -80,6 +91,7 @@ public class BkdQueryManager extends QueryManager{
                 
                 for( Object cr : crl ) result.add(cr);
             }
+            */
            
         }
         
@@ -95,7 +107,7 @@ public class BkdQueryManager extends QueryManager{
         
         List<Object> rlist = new ArrayList<Object>();
         
-        Node rnode =  daoContext.getNodeDao().getById( ns, ac );        
+        Node rnode =  daoContext.getNodeDao().getById( ns, ac, Node.BASE );        
         
         if(rnode != null){
             rlist.add(rnode);
@@ -104,9 +116,14 @@ public class BkdQueryManager extends QueryManager{
     }
 
     
-    public List<Object> getNodeListSimple( String query, String sort ){
+    public List<Object> getNodeListSimple( String query, String sort, int first, int max ){
         
-        return new ArrayList<Object>( indexManager.getNodeListSimple( query ) );
+        return new ArrayList<Object>( indexManager.getNodeListSimple( query, first, max ) );
+    }
+
+    public int  getNodeListTotal( String query, String sort, int first, int max ){
+        
+        return indexManager.getNodeListSimpleTotal( query, first, max );
     }
 
     public List<Object> getNodeList(String query, String qmode, String sort){

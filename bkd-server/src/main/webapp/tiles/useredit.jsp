@@ -1,9 +1,9 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="t" %>
 <%@ taglib prefix="s" uri="/struts-tags" %>
-
- <script src="js/util-yui.js" type="text/javascript"></script>
- <script src="js/useredit-yui.js" type="text/javascript"></script>
-
+<!--
+ <scr ipt src="js/util-yui.js" type="text/javascript"></script>
+ <scr ipt src="js/useredit-yui.js" type="text/javascript"></script>
+-->
 <s:if test="hasActionErrors()">
  <p>  
   <div id="errorDiv" style="padding-left: 10px; margin-bottom: 5px">

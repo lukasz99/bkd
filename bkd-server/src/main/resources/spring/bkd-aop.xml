@@ -14,10 +14,11 @@
       http://www.springframework.org/schema/aop/spring-aop.xsd">
 
   <bean id="bkdAdviceBean" class="edu.ucla.mbi.bkd.BkdAdvice">
-     <!-- property name="attachmentManager" ref="attachmentManager"/> -->
-     <!-- property name="watchManager" ref="watchManager"/>          -->
-     <!-- property name="notificationManager" ref="notificationManager"/> -->
-     <property name="indexManager" ref="bkdIndexManager"/>
+    <!-- property name="attachmentManager" ref="attachmentManager"/> -->
+    <!-- property name="notificationManager" ref="notificationManager"/> -->
+    <property name="watchManager" ref="bkdWatchManager"/>
+    <property name="indexManager" ref="bkdIndexManager"/>
+    <property name="notificationManager" ref="bkdNotificationManager"/>
   </bean>     
 
   <aop:config>
@@ -27,11 +28,17 @@
         pointcut="execution(* edu.ucla.mbi.bkd.store.BkdRecordManager.addNode(..))
                   and args( node )"
         method="addNodeMonitor" />    
-      
-      <aop:after-returning returning="rreport"
+         
+       <aop:after-returning returning="rreport"
         pointcut="execution(* edu.ucla.mbi.bkd.store.BkdRecordManager.addReport(..)) 
                   and args( report )"        
-        method="addReportMonitor" />    
+        method="addReportMonitor" />
+
+      <aop:after-returning 
+         pointcut="execution(* edu.ucla.mbi.bkd.store.BkdUserManager.notifyRegistrationByMail(..))
+                   and args( user, ..)"
+         method="newAccountMonitor" />      
+
     </aop:aspect>
   </aop:config>
  </beans>

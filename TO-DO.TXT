@@ -1,0 +1,12 @@
+report status: processing - processed - verified - released
+
+search table:
+     - sort by column
+     - uniprot popup page
+     - add report & feature contents to index
+     
+cover page:
+     - initial layout
+
+
+

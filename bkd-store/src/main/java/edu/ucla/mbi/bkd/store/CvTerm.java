@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.StringWriter;
+import java.util.*;
 
 import edu.ucla.mbi.dxf20.*;
 
@@ -49,7 +50,12 @@ public class CvTerm{
         this.name = name;
         this.definition = "";
     }
-     
+
+    public long getPkey(){
+        return pkey;                
+    }
+    
+       
     public void setNs( String ns ){
         this.ns = ns;
     }
@@ -85,5 +91,20 @@ public class CvTerm{
     public String toString(){
         return  "CV[" + ns + "|" + ac + "(" + name + ")]";
     }
+    
+    public Map<String, Object> toMap(){
+        Map<String, Object> map = new HashMap<String,Object>();
+        
+        map.put( "ns", this.ns );
+        map.put( "ac", this.ac );
+        map.put( "name", this.name );
+
+        if( this.definition != null && this.definition.length() > 0 ){
+            map.put( "definition", this.definition ); 
+        }
+        return map;
+     }
+
+
 }
 

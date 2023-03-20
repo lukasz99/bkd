@@ -1,11 +1,14 @@
 console.log("bkd-node-jq: common");
     
 BKDnode = {
-  //siteurl: "http://10.1.7.100:9999/cvdbdev0/",
-  siteurl: "https://dip.mbi.ucla.edu/cvdbdev0/",
-  //siteurl: "https://dip.mbi.ucla.edu/cvdb/",
+  siteurl: "",
   nodeAnchor: null,
   srcAnchor: null,
+  query: "",
+  qmode: "",
+  qtotal: 0,
+  srcFirstNode: 0,
+  srcMaxNode: 10,
   flist: null,
   fldet: null,
   flport: null,
@@ -13,7 +16,8 @@ BKDnode = {
   flview: "#swmod",
   paneon: null,
   data: null,
-  
+  cpos37: "",
+  cpos38: "",
   init: function( data, srcAnchor, nodeAnchor, flist, mode){
     BKDnode.view( data, srcAnchor, nodeAnchor, flist, mode);
   },
@@ -41,11 +45,15 @@ BKDnode = {
 
   doSearch: function(){
       var squery = $("#bkd-squery").val();
+      BKDnode.query=squery;
       var qmode =  $("#bkd-qmode").val();  
+      BKDnode.qmode=qmode;
 
-      console.log(qmode + ":" + squery);
+      BKDnode.srcFirstNode = 0; // reset page
       
-      myurl ="search?query="+squery+"&qmode="+qmode;
+      console.log(qmode + ":" + squery + "first:" + BKDnode.srcFirstNode + "  max: " + BKDnode.srcMaxNode);
+      
+      myurl ="search?qmode="+qmode+"&first="+BKDnode.srcFirstNode+"&max="+BKDnode.srcMaxNode+"&query="+squery;
       $("#bkd-search-table").hide();   
       $("#bkd-node-spinner").show();
       $.ajax( { url: myurl} )
@@ -55,6 +63,7 @@ BKDnode = {
              $("#bkd-node-spinner").hide();
              $("#bkd-search-table").show();
              BKDnode.searchView( data.rdata,
+                                 data.rstats,
                                  "#bkd-search", "#bkd-search-view", 
                                  "#bkd-node-view",
                                  BKDconf["node"], qmode) } );
@@ -73,6 +82,7 @@ BKDnode = {
                          + " || data.length: "  + JSON.stringify(data).length); 
 
              BKDnode.searchView( data.rdata,
+                                 data.rstats,  
                                  "#bkd-search", "#bkd-search-view",
                                  "#bkd-node-view",
                                  BKDconf["node"], qmode) } );
@@ -122,7 +132,7 @@ BKDnode = {
            encode: true,}).done(
              function (data) {
                if( data.rdata != null && data.rdata.length > 0){
-                 BKDnode.searchView( data.rdata, BKDrep.srcAnchor, "view" );  
+                 BKDnode.searchView( data.rdata, data.rstats, BKDrep.srcAnchor, "view" );  
                }else if(data.record !== null){
                  BKDrep.nodeView( data.record, BKDrep.nodeAnchor, "view" );               
                }
@@ -132,18 +142,121 @@ BKDnode = {
       });
   },
 
-  searchView: function(data, srcAnchor, srcViewAnchor, nodeViewAnchor, mode ){
+  searchPage: function(){
+      // run query      
+      myurl ="search?qmode="+BKDnode.qmode+"&first="+BKDnode.srcFirstNode+"&max="+BKDnode.srcMaxNode+"&query="+BKDnode.query;
+      $("#bkd-search-table").hide();   
+      $("#bkd-node-spinner").show();
+      $.ajax( { url: myurl} )
+          .done( function(data, textStatus, jqXHR){
+            console.log( JSON.stringify(textStatus)
+                         + " || data.length: "  + JSON.stringify(data).length); 
+             $("#bkd-node-spinner").hide();
+             $("#bkd-search-table").show();
+             BKDnode.searchView( data.rdata,
+                                 data.rstats,
+                                 "#bkd-search", "#bkd-search-view", 
+                                 "#bkd-node-view",
+                                 BKDconf["node"], BKDnode.qmode) } );
+
+  },
+
+
+  bkdTablePager: function( anchor ){   // data == BKDnode
+
+     $( anchor ).empty();
+     $( anchor ).append( "<tr>" +
+                         "<td>Total Records: " + String(BKDnode.qtotal+1) + " | </td>" +
+                         "<td><input id='bkd-page-first' type='button' value='&lt;&lt;first' /></td>"+
+                         "<td><input id='bkd-page-prev' type='button' value='&lt;prev' /></td>" +
+                         "<td id='bkd-page-current'></td>" +
+                         "<td><input id='bkd-page-next' type='button' value='next&gt;' /></td>" +
+                         "<td><input id='bkd-page-last' type='button' value='last&gt;&gt;' /></td>"+
+                         "<td> | Page size: <select id='bkd-page-size'>"+
+                         "<option value='5'>5</option>"+
+                         "<option value='10'>10</option>"+
+                         "<option value='25'>25</option>"+
+                         "</select></td>"+
+                         "</tr>" );
+
+     $( "#bkd-page-size" ).val(BKDnode.srcMaxNode);
+
+     $('#bkd-page-size').on( 'change', function(event){     
+            BKDnode.srcMaxNode = $( "#bkd-page-size" ).val();
+            var fpos = (BKDnode.srcFirstNode+1)/BKDnode.srcMaxNode;
+            BKDnode.srcFirstNode = Math.floor( fpos ) * BKDnode.srcMaxNode;
+            BKDnode.searchPage();
+        });
+
+     
+     $('#bkd-page-first').on( 'click', function(event){                        
+                        BKDnode.srcFirstNode = 0;
+                        BKDnode.searchPage();
+                  });
+    
+     $('#bkd-page-prev').on( 'click', function(event){                       
+                         BKDnode.srcFirstNode -= BKDnode.srcMaxNode;
+                         if( BKDnode.srcFirstNode < 0){
+                            BKDnode.srcFirstNode = 0;                           
+                         }
+                         BKDnode.searchPage();                        
+                   });
+     
+     var cpg = Math.floor( (BKDnode.srcFirstNode+1)/BKDnode.srcMaxNode) +1;  // current page
+     var mpg = Math.floor( (BKDnode.qtotal+1)/BKDnode.srcMaxNode ) +1; // max page
+
+     var spgr = (cpg - 2) < 1 ? 1 : cpg - 2; // start pager
+     var epgr = (spgr + 5) < mpg ? (spgr + 5) : mpg;  // end pager
+     spgr = epgr - 5 < 1 ? 1 : epgr - 5;  
+
+     for(var p = spgr; p < epgr; p++ ){
+        if( p == cpg ){
+             $('#bkd-page-current').append( " <b>" + p + "</b> ");
+       } else {
+            $('#bkd-page-current').append( " <a href='' class='bkd-pager-"+p+" bkd-pager-current'> " + p + "</a> ");
+            $('#bkd-page-current .bkd-pager-'+p).on( 'click', p, function(event){
+               BKDnode.srcFirstNode = BKDnode.srcMaxNode*(event.data - 1);               
+               BKDnode.searchPage();
+               return false;
+            });
+            
+       }
+    }
+
+                  
+    $('#bkd-page-next').on( 'click', function(event){                                             
+                         if( BKDnode.srcFirstNode + BKDnode.srcMaxNode < BKDnode.qtotal){
+                             BKDnode.srcFirstNode += BKDnode.srcMaxNode;
+                         }
+                         BKDnode.searchPage();
+                   });
+
+    $('#bkd-page-last').on( 'click', function(event){
+                         BKDnode.srcFirstNode = BKDnode.qtotal - BKDnode.qtotal % BKDnode.srcMaxNode; 
+                         BKDnode.searchPage();
+                   });
+                   
+  },
+
+  searchView: function(data, stats, srcAnchor, srcViewAnchor, nodeViewAnchor, mode ){
   
     var tid="bkd-search-table";
-    //$(srcAnchor).hide();
+    var pid="bkd-search-pager";
+    
     $(srcViewAnchor).hide();
     $(nodeViewAnchor).hide();
+    
+    BKDnode.qtotal = stats.total;
 
     $(srcViewAnchor).empty();    
     $(srcViewAnchor).append( "<hr/>"
+                         + "<table id='" + pid + "'></table>"
                          + "<table id='" + tid
                          + "' border='0' cellspacing='0' cellpadding='0' class='bkd-search-table'>"
                          + "</table>");
+
+    BKDnode.bkdTablePager( '#' + pid );   
+
     $('#' + tid).append("<tr class='bkd-rep-fld bkd-search-table-header'>"+
                                   "<th align='center' width='5%'>ID</th>"+                                  
                                   "<th align='center' width='10%'>Short Name</th>"+
@@ -156,11 +269,15 @@ BKDnode = {
     for(var i=0; i<data.length; i++){
                var cdata = data[i];
                var rid = cdata.ac;
+
+               var modalDivID = cdata.ac + "-modal"; 
+               var modalAct = cdata.ac + "-act"; 
+
                var crow = "<td>" + cdata.ac + "</td>" +
                           "<td align='center'>" + cdata.label + "</td>" +
                           "<td>" + cdata.name + "</td>" +
                           "<td align='center'>" + cdata.taxon.sciName + "</td>" +
-                          "<td align='center'>" + cdata.upr + "</td>" + 
+                          "<td align='center' id='" +modalAct + "'><a href='https://www.uniprot.org/uniprot/"+cdata.upr + "' target='_bkd'>"+cdata.upr+"</a></td>" + 
                           "<td align='center'>" + cdata.cvType.name + "</td>" + 
                           "<td align='center'>" +
                           "<input type='button' id='"+rid+"_view' value='Details'/>"+
@@ -170,6 +287,10 @@ BKDnode = {
                           "</td>";
                           
                $('#' + tid).append("<tr> class='bkd-rep-fld'>"+crow+"</tr>");
+
+               //var modalDiv = "<div id='" + modalDivID + "' class='bkd-mode-anchor'></div>";
+               //$('#modals').append(modalDiv);
+                   //BKDmodal.init("#" + modalDivID, "#" + modalAct, 'https://beta.uniprot.org/uniprot/' + cdata.upr);
 
                $( "#" + rid +"_view").on( 'click', function(event){
                     var prefix= event.currentTarget.id.replace('_view','');
@@ -190,92 +311,92 @@ BKDnode = {
 
   nodeView: function(data, srcAnchor, srcViewAnchor, nodeViewAnchor, fmt, mode ){
     
-    $(nodeViewAnchor).empty();
-    $(nodeViewAnchor).append( "<div id='bkd-hv-field'></div>"
-                              +"<div id='bkd-nv-field'></div>" );
+      $(nodeViewAnchor).empty();
+      $(nodeViewAnchor).append( "<div id='bkd-hv-field'></div>"
+                                +"<div id='bkd-nv-field'></div>" );
     
-    // view type
-    //----------
+      // view type
+      //----------
 
-    var tvpath = fmt.type.vpath;
-    var vformat = data;
+      var tvpath = fmt.type.vpath;
+      var vformat = data;
  
-    for( var t = 0; t <tvpath.length; t++){
-      vformat = vformat[tvpath[t]]; 
-    }
-
-    console.log( "FORMAT: " + JSON.stringify(vformat) );
-
-    var format = fmt.type.view[vformat];
-
-    console.log( "NA: " + nodeViewAnchor );
-    console.log( "FL: " + JSON.stringify(format) );
-    
-    // node type & accession
-    //----------------------
-        
-    var rac = format["ac"];
-    var racval ="";
-    var racpath = rac["vpath"];
-    var cval = data;        
-                
-    for(var j=0; j<racpath.length; j++){
-      console.log("CVAL: " + racpath[j] + " : " + cval[ racpath[j]] );
-      cval = cval[ racpath[j] ];
-    }
-    
-    if( rac["id"] != null){           
-      $("#bkd-hv-field").append( "<input id='" + rac["id"] + "'" +
-                            "class='bkd-report' />");
-    
-      cel = $("#" + rac["id"] )
-      cel.val(cval);
-      cel.attr('type','hidden');
-       
-      $("#bkd-main-name").append(format.type.label + cval);
-
-    }
-
-    // fields (if present)
-    //--------------------
-    
-    if( format.field != null){
-       for( var f = 0; f<format.field.length; f++){
-         var cfield = format.field[f];
-         console.log("FIELD: " + cfield.name + ": " + cfield.type);
-
-         switch( cfield.type ){
-           case "text":
-             this.showText( "#bkd-hv-field", cfield, data );    
-             break;
-           
-           case "link":
-             this.showLink( "#bkd-hv-field", cfield, data );    
-             break;
-           
-           case "xref":
-             this.showXref( "#bkd-hv-field", cfield, data );    
-             break;
-           
-           case "taxon":
-             this.showTaxon( "#bkd-hv-field", cfield, data );    
-             break;
-
-           case "sequence":
-             this.showSequence( "#bkd-hv-field", cfield, data );    
-             break;
-           case "feature":             
-             this.showFeature( "#bkd-hv-field", cfield, data );    
-             break;
-           
-           default:
-             console.log("Unknown format: " + cfield.type);
-        }         
+      for( var t = 0; t <tvpath.length; t++){
+          vformat = vformat[tvpath[t]]; 
       }
-    }
 
-    // panels/sidebar
-    //---------------
+      //console.log( "FORMAT: " + JSON.stringify(vformat) );
+
+      var format = fmt.type.view[vformat];
+
+      //console.log( "NA: " + nodeViewAnchor );
+      //console.log( "FL: " + JSON.stringify(format) );
+    
+      // node type & accession
+      //----------------------
+        
+      var rac = format["ac"];
+      var racval ="";
+      var racpath = rac["vpath"];
+      var cval = data;        
+                
+      for(var j=0; j<racpath.length; j++){
+          //console.log("CVAL: " + racpath[j] + " : " + cval[ racpath[j]] );
+          cval = cval[ racpath[j] ];
+      }
+    
+      if( rac["id"] != null){           
+          $("#bkd-hv-field").append( "<input id='" + rac["id"] + "'" +
+                                     "class='bkd-report' />");
+          
+          cel = $("#" + rac["id"] )
+          cel.val(cval);
+          cel.attr('type','hidden');
+          
+          $("#bkd-main-name").append(format.type.label + cval);          
+      }
+
+      // fields (if present)
+      //--------------------
+      alert("node");
+      
+      if( format.field != null){
+          for( var f = 0; f<format.field.length; f++){
+              var cfield = format.field[f];
+              //console.log("FIELd: " + cfield.name + ": " + cfield.type);
+
+              switch( cfield.type ){
+              case "text":
+                  this.showTextx( "#bkd-hv-field", cfield, data );    
+                  break;
+           
+              case "link":
+                  this.showLink( "#bkd-hv-field", cfield, data );    
+                  break;
+           
+              case "xref":
+                  this.showXref( "#bkd-hv-field", cfield, data );    
+                  break;
+                  
+              case "taxon":
+                  this.showTaxon( "#bkd-hv-field", cfield, data );    
+                  break;
+                  
+              case "sequence":
+                  this.showSequence( "#bkd-hv-field", cfield, data );    
+                  break;
+              case "feature":             
+                  this.showFeature( "#bkd-hv-field", cfield, data );    
+                  break;
+                  
+              default:
+                  console.log("Unknown format: " + cfield.type);
+              }         
+          }
+      }
+      
+      // panels/sidebar
+      //---------------
 
     if( format.pane != null && format.pane.length > 0){  
 
@@ -338,7 +459,7 @@ BKDnode = {
           if( pformat != null ){
             for( var f = 0; f < pformat.length; f++){
               var cfield = pformat[f];
-              console.log("PFIELD: " + cfield.name + " :: " + cfield.type);
+              //console.log("PFIELD: " + cfield.name + " :: " + cfield.type);
               switch( cfield.type ){
                 case "text":
                   this.showText( "#bkd-nv-"+cid, cfield, data );    
@@ -382,13 +503,13 @@ BKDnode = {
     for( var i = 0; i < flist.length; i++){
  
           var fname = flist[i].name;
-          console.log("NAME: " + fname + " : list:" + flist[i].list +
-                      " value:" + flist[i].value);
+          //console.log("NAME: " + fname + " : list:" + flist[i].list +
+          //            " value:" + flist[i].value);
           
           if( flist[i].list ){   // config field is list            
             
             if( flist[i].vpath ){    // vpath present; list of values @ vpath
-              console.log(" VPATH: present");
+              //console.log(" VPATH: present");
               var vpath = flist[i].vpath;           
               var fvlist = null; 
               if(vpath.length >0){
@@ -438,7 +559,7 @@ BKDnode = {
           }else if( flist[i].value ){  // no vpath: list of complex values (ie feature)
 
               var fname = flist[i].name;
-              console.log(" feature: " + fname);
+              //console.log(" feature: " + fname);
               // list header
                 
               $("#bkd-hv-field").append("<div class='bkd-rep-fld'>\n"+
@@ -453,7 +574,7 @@ BKDnode = {
                 var cvpath = flist[i].value[k].vpath;
                 var cvedit = flist[i].value[k].edit;
                 var cvid = flist[i].value[k].id;
-                console.log(" feature: c val name " + cname);
+                //console.log(" feature: c val name " + cname);
 
                 var cval = null;   
 
@@ -482,7 +603,7 @@ BKDnode = {
                   
                       
                     if( flist[i].value[k].edit && mode == 'edit' ){ 
-                      console.log(" show editables...");
+                      //console.log(" show editables...");
                       //build add fields for editable lists
 
                       if( flist[i].value[k].type == "xref") {
@@ -490,7 +611,7 @@ BKDnode = {
                       } 
 
                       if( flist[i].value[k].type == "range" ){
-                        console.log("RANGES....");
+                        //console.log("RANGES....");
                         BKDrep.rangeEdit( flist[i].value[k], cvid, cval );
                       }                        
                       
@@ -524,7 +645,7 @@ BKDnode = {
                         
                 } else {  // simple value (eg feature parameters)
 
-                  console.log("  feature: simple value here...");          
+                  //console.log("  feature: simple value here...");          
                   if(cvedit && mode == 'edit'){  // set up edit field
 
                     if( flist[i].value[k].type =="cvterm" ){
@@ -591,13 +712,13 @@ BKDnode = {
              }
             
              if( fval !== null ){
-               console.log("fval: ok " + flist[i].type);
+               //console.log("fval: ok " + flist[i].type);
                if( flist[i].type ){
                  if(flist[i].type == 'taxon'){
                    var fval = BKDlink.taxid( fval );
                    $("#bkd-hv-field").append("<div class='bkd-rep-fld'>"+fname+ ":"+ fval +"</div>");                 
                  }else if( flist[i].type == 'hidden'){
-                   console.log("AC");
+                   //console.log("AC");
                    $("#bkd-hv-field").append( "<input type='hidden' class='bkd-rep-fld bkd-report' id='"+flist[i].id+"'/>");
                    $("#" + flist[i].id).val(fval);
                  }
@@ -648,12 +769,12 @@ BKDnode = {
             var xac = $("#"+event.currentTarget.id.replace('_add','_ac')).val();
             var xtac = $("#"+event.currentTarget.id.replace('_add','_type')).val();
 
-            console.log("XREFADD: " + xns + " : " + xac + " : " + xtac );
+            //console.log("XREFADD: " + xns + " : " + xac + " : " + xtac );
             var xtns ="";
             var xtnm ="";
             
             for(t=0; t< BKDconf["xref-type"].length;t++){
-              console.log(t+" : " +BKDconf["xref-type"][t]);
+              //console.log(t+" : " +BKDconf["xref-type"][t]);
               if(BKDconf["xref-type"][t].ac == xtac){
                  xtns = BKDconf["xref-type"][t]["ns"];
                  xtnm = BKDconf["xref-type"][t]["name"];
@@ -675,7 +796,7 @@ BKDnode = {
                }
             }
             
-            console.log( xns +" : " + xac + ":" + xtns + " : " + xtac);
+            //console.log( xns +" : " + xac + ":" + xtns + " : " + xtac);
             xmax=xmax+1;
 
             var cval = BKDlink.xref({ns:xns, ac: xac,
@@ -714,10 +835,10 @@ BKDnode = {
           var ctx ="";
           var cid= cel.id +"_" + x;
 
-          console.log("CVAL " + JSON.stringify(cval[x]));
+          //console.log("CVAL " + JSON.stringify(cval[x]));
 
           var xlnk = BKDlink.xref(cval[x]);  
-          console.log(xlnk);           
+          //console.log(xlnk);           
           $( "#" + cel.id ).append( "<div id='" + cid + "' class='bkd-rep-fld bkd-range'>" + xlnk +
                                     "\n<input type='button' id='" + cid + "_drop'/></div>\n</div>" );
           
@@ -767,281 +888,260 @@ BKDnode = {
           });
      },
 
-     showText: function( tgt, format, data ){
+    showText: function( tgt, format, data ){
 
-       var value = this.getVal2( data, format.vpath);   // values @ vpath
+        var value = this.getVal2( data, format.vpath);   // values @ vpath
 
-       if( value == null && format.miss == "%DROP%") return;       
-       if( value == null || value.length == 0 ) value = format.miss;
-       if( value == null || value.length == 0 ) value = "N/A";
+        if( value == null && format.miss == "%DROP%") return;       
+        if( value == null || value.length == 0 ) value = format.miss;
+        if( value == null || value.length == 0 ) value = "N/A";
         
-       if( format.condition == null){          
-          $( tgt ).append( "<div>"+format.name+ ": " + value + "</div>" );
-          return;
-       }
-
-       // assumes value is a list, condition is present
-
-       var fvlist =[];
-       for( var i =0; i < value.length; i ++){                     
-          console.log("  cval: ", value[i], " :::", JSON.stringify(value[i])) ;
-
-          for( var j = 0; j < format.condition.length; j++ ){     
-
-             console.log("\n----------\nCONDITION: "+format.name+"\n----------\n");
-
-             cond = format.condition[j];
-             console.log("cond equal: " + JSON.stringify(cond.equal));
-             console.log("cond type: " + typeof cond.equal);
-
-             var cval = this.getVal2( value[i], cond.test );  // value: tested attribute
-             console.log("cond tested val: " + JSON.stringify( cval ) );
-
-             if( typeof cond.equal  === 'string') {
-               console.log(" equal: string");
-               if( cond.equal != null && cond.equal == cval ){
-                 console.log(" showText: got match!!!");       
-                 var fval = this.getVal2( value[i], format.value );
-                 if( fval != null ){
-                    fvlist = fvlist.concat(fval);
-                 }    
-               }
-             }
-
-             if( typeof cond.equal  === 'object' ){
-                  console.log(" equal: list");
-                  console.log("data: " + JSON.stringify(data));
-                  var tval = this.getVal2( data, cond.equal);
-                  console.log("TVAL: " + JSON.stringify(tval));
-                  
-                  //var test = his.getVal( value[i], cond.test );
-                  console.log( "cond: list" );
-                  //if( format.condition.equal != null && format.condition.equal == cval ){
-                  //  console.log(" showText: got match!!!");       
-                  //  var fval = this.getVal( value[i], format.value );
-                  //  if( fval != null ){
-                  //     fvlist.push(fval);
-                  //  }    
-                  //}                                   
-             }
-         }
-       }
+        if( format.condition == null){          
+            $( tgt ).append( "<div>"+format.name+ ": " + value + "</div>" );
+            return;
+        }
+        
+        // assumes value is a list, condition is present
+        
+        var fvlist =[];
+        for( var i =0; i < value.length; i ++){                     
+            //console.log("  cval: ", value[i], " :::", JSON.stringify(value[i])) ;
+            
+            for( var j = 0; j < format.condition.length; j++ ){     
+                
+                //console.log("\n----------\nCONDITION: "+format.name+"\n----------\n");
+                
+                cond = format.condition[j];
+                //console.log("cond equal: " + JSON.stringify(cond.equal));
+                //console.log("cond type: " + typeof cond.equal);
+                
+                var cval = this.getVal2( value[i], cond.test );  // value: tested attribute
+                //console.log("cond tested val: " + JSON.stringify( cval ) );
+                
+                if( typeof cond.equal  === 'string') {
+                    //console.log(" equal: string");
+                    if( cond.equal != null && cond.equal == cval ){
+                        //console.log(" showText: got match!!!");       
+                        var fval = this.getVal2( value[i], format.value );
+                        if( fval != null ){
+                            fvlist = fvlist.concat(fval);
+                        }    
+                    }
+                }
+                
+                if( typeof cond.equal  === 'object' ){
+                    //console.log(" equal: list");
+                    //console.log("data: " + JSON.stringify(data));
+                    var tval = this.getVal2( data, cond.equal);
+                    //console.log("TVAL: " + JSON.stringify(tval));
+                    
+                    //var test = his.getVal( value[i], cond.test );
+                    //console.log( "cond: list" );
+                    //if( format.condition.equal != null && format.condition.equal == cval ){
+                    //  console.log(" showText: got match!!!");       
+                    //  var fval = this.getVal( value[i], format.value );
+                    //  if( fval != null ){
+                    //     fvlist.push(fval);
+                    //  }    
+                    //}                                   
+                }
+            }
+        }
        
-       console.log(" showText: fvlist: ", JSON.stringify(fvlist));
-       if( format.list ){
-         if( format.header ){
-           $( tgt ).append( "<div><div>" + format.name + " [<em>show/hide</em>]</div><div></div></div>" );
+        //console.log(" showText: fvlist: ", JSON.stringify(fvlist));
+        if( format.list ){
+            if( format.header ){
+                $( tgt ).append( "<div><div>" + format.name + " [<em>show/hide</em>]</div><div></div></div>" );
 
-           console.log("HIDE:" + format.hide);
+                //console.log("HIDE:" + format.hide);
 
-           if( format.hide ){
-              //console.log("HIDE: " + tgt);
-              //console.log("HIDE: " + tgt + " > *:last > *:last");
-              $( tgt + " > *:last > *:last" ).hide();
-           }
+                if( format.hide ){
+                    //console.log("HIDE: " + tgt);
+                    //console.log("HIDE: " + tgt + " > *:last > *:last");
+                    $( tgt + " > *:last > *:last" ).hide();
+                }
 
-           $( tgt + " >*:last >*:first").on('click',function(event){              
-             $(event.currentTarget).next().toggle();
-            });
+                $( tgt + " >*:last >*:first").on('click',function(event){              
+                    $(event.currentTarget).next().toggle();
+                });
 
-           tgt +=" > *:last > *:last";
+                tgt +=" > *:last > *:last";
 
 
-         }
+            }
 
-         for( var i =0; i <fvlist.length; i ++ ){             
-           if( header ){
-             $( tgt ).append( "<div>" + fvlist[i]+ "</div>" );
-           }else{
-             $( tgt ).append( "<div>" + format.name + ": " + fvlist[i] + "</div>" );  
-           }
-         }
+            for( var i =0; i <fvlist.length; i ++ ){             
+                if( header ){
+                    $( tgt ).append( "<div>" + fvlist[i]+ "</div>" );
+                }else{
+                    $( tgt ).append( "<div>" + format.name + ": " + fvlist[i] + "</div>" );  
+                }
+            }
         
-         return;
-       }
+            return;
+        }
 
-       if( fvlist.length == 0 ){
-         if( format.miss == "%DROP%" ) return;
-         if( format.miss != null ){
-           $( tgt ).append( "<div>"+format.name+ ": " + format.miss + "</div>" );              
-         }else{
-           $( tgt ).append( "<div>"+format.name+ ": N/A</div>" );
-         }
-         return;
-       }
+        if( fvlist.length == 0 ){
+            if( format.miss == "%DROP%" ) return;
+            if( format.miss != null ){
+                $( tgt ).append( "<div>"+format.name+ ": " + format.miss + "</div>" );              
+            }else{
+                $( tgt ).append( "<div>"+format.name+ ": N/A</div>" );
+            }
+            return;
+        }
 
-       var fval = fvlist[0];   
-       for( var i=1; i <fvlist.length; i++){
-          fval+= "; " + fvlist[i];
-       }
-       $( tgt ).append( "<div>"+format.name+ ": " + fval + "</div>" );
+        var fval = fvlist[0];   
+        for( var i=1; i <fvlist.length; i++){
+            fval+= "; " + fvlist[i];
+        }
+        $( tgt ).append( "<div>"+format.name+ ": " + fval + "</div>" );
 
      },
 
-     showLink: function( tgt, format, data ){           
-       var value = this.getVal( data, format.vpath);
-       if(value != null && value.length > 0){
-         var url = format.url.replace("%%VAL%%", value);
-         $( tgt ).append( "<div>\n"+ format.name+ ": " +
-                          "<a href='" + url + "'>" + value + "</a>\n"+
-                          "</div>\n");
-         return;                 
-       }
-       if( value == null && format.miss == "%DROP%") return;
-       
-       if( value == null || value.length == 0) value = format.miss;
-       if( value == null || value.length == 0) value = "N/A";
+    showLink: function( tgt, format, data ){
+        //console.log("showLink:", format);
+        /*
+        var value = this.getVal( data, format.vpath);
 
-       $( tgt ).append( "<div>"+format.name+ ": " + value + "</div>" );    
+        if(value != null && value.length > 0){
+            var url = format.url.replace("%%VAL%%", value);
+            $( tgt ).append( "<div>\n"+ format.name+ ": " +
+                             "<a href='" + url + "'>" + value + "</a>\n"+
+                             "</div>\n");
+            return;                 
+        }
+        if( value == null && format.miss == "%DROP%") return;
+        
+        if( value == null || value.length == 0) value = format.miss;
+        if( value == null || value.length == 0) value = "N/A";
+        
+        $( tgt ).append( "<div>"+format.name+ ": " + value + "</div>" );
+        
+        */
+
+       //  new version
+
+        var value = this.getVal2( data, format.vpath);   // values @ vpath
+
+        if( value == null && format.miss == "%DROP%") return;       
+        if( value == null || value.length == 0 ) value = format.miss;
+        if( value == null || value.length == 0 ) value = "N/A";
+        
+        if( format.condition == null){   // single value
+
+            var url = format.url.replace("%%VAL%%", value);
+            $( tgt ).append( "<div>\n"+ format.name+ ": " +
+                             "<a href='" + url + "'>" + value + "</a>\n"+
+                             "</div>\n");
+            return;                 
+        }
+        
+        // assumes value is a list, condition is present
+        
+        var fvlist =[];
+        for( var i =0; i < value.length; i ++){                     
+            //console.log("  cval: ", value[i], " :::", JSON.stringify(value[i])) ;
+            
+            for( var j = 0; j < format.condition.length; j++ ){     
+                
+                //console.log("\n----------\nCONDITION: "+format.name+"\n----------\n");
+                
+                cond = format.condition[j];
+                //console.log("cond equal: " + JSON.stringify(cond.equal));
+                //console.log("cond type: " + typeof cond.equal);
+                
+                var cval = this.getVal2( value[i], cond.test );  // value: tested attribute
+                //console.log("cond tested val: " + JSON.stringify( cval ) );
+                
+                if( typeof cond.equal  === 'string') {
+                    //console.log(" equal: string");
+                    if( cond.equal != null && cond.equal == cval ){
+                        //console.log(" showText: got match!!!");       
+                        var fval = this.getVal2( value[i], format.value );
+                        if( fval != null ){
+                            fvlist = fvlist.concat(fval);
+                        }    
+                    }
+                }
+                
+                if( typeof cond.equal  === 'object' ){
+                    //console.log(" equal: list");
+                    //console.log("data: " + JSON.stringify(data));
+                    var tval = this.getVal2( data, cond.equal);
+                    //console.log("TVAL: " + JSON.stringify(tval));
+                    
+                    //var test = his.getVal( value[i], cond.test );
+                    //console.log( "cond: list" );
+                    //if( format.condition.equal != null && format.condition.equal == cval ){
+                    //  console.log(" showText: got match!!!");       
+                    //  var fval = this.getVal( value[i], format.value );
+                    //  if( fval != null ){
+                    //     fvlist.push(fval);
+                    //  }    
+                    //}                                   
+                }
+            }
+        }
+
+        // fvlist  contains values
+
+        if( fvlist.length == 0 ){
+            if( format.miss == "%DROP%" ) return;
+            if( format.miss != null ){
+                $( tgt ).append( "<div>"+format.name+ ": " + format.miss + "</div>" );              
+            }else{
+                $( tgt ).append( "<div>"+format.name+ ": N/A</div>" );
+            }
+            return;
+        }
+        
+        var fval = fvlist[0];   
+        for( var i=1; i <fvlist.length; i++){
+            fval+= "; " + fvlist[i];
+        }
+        $( tgt ).append( "<div>"+format.name+ ": " + fval + "</div>" );
+        
      },
      
-     showTaxon: function( tgt, format, data ){
-       var value = this.getVal( data, format.vpath);
-       var sname = value.sciName;
+    showTaxon: function( tgt, format, data ){
+        var value = this.getVal( data, format.vpath);
+        var sname = value.sciName;
 
-       if(value.comName != null && value.comName.length >0)
+        if(value.comName != null && value.comName.length >0)
             sname += "("+value.comName+")";
 
-       var href = "<a href='" + format.url.replace("%%VAL%%", value.taxid) +"'>"+
-                 value.taxid+"</>";
-       sname += " ["+ href + "]";       
-       $( tgt ).append( "<div>"+format.name+ ": " + sname + "</div>" );
-     },
-
-     showSequence: function( tgt, format, data ){
-       
-       var seq = this.getVal( data, format.vpath);
-       console.log(seq);
-       $( tgt ).append( "<div><div id='seq-viewer'></div>" );
-
-
-       //var seqview = new Sequence( seq );
-       //seqview.render( '#seq-viewer',
-       //                { 'showLineNumbers': true,
-       //                  'wrapAminoAcids': true,
-       //                  'charsPerLine': 80,
-       //                  'toolbar': true,
-       //                  //'search': true,
-       //                  //'title' : "Your title",
-       //                  'sequenceMaxHeight': "300px",
-       //                  'badge': false
-       //                });
-
-       var lollipop = g3.Lollipop("seq-viewer");
-
-var mutation_data = [
-    {
-        "Hugo_Symbol": "PIK3CA",
-        "Variant_Classification": "Silent",
-        "HGVSp_Short": "p.F70F",
-        "Mutation_Class": "Inframe",
-        "Protein_Change":"F70F",
-        "AA_Position": 70
-    }, {
-        "Hugo_Symbol": "PIK3CB",
-        "Variant_Classification": "Missense_Mutation",
-        "HGVSp_Short": "p.E81F",
-        "Mutation_Class": "Missense",
-        "Protein_Change":"E81F",
-        "AA_Position": 81
-    }, {
-        "Hugo_Symbol": "PIK3CA",
-        "Variant_Classification": "Missense_Mutation",
-        "HGVSp_Short": "p.E81K",
-        "Protein_Change":"E81K",
-        "Mutation_Class": "Inframe",
-        "AA_Position": 81
-    }, {
-        "Hugo_Symbol": "PIK3CA",
-        "Variant_Classification": "Missense_Mutation",
-        "HGVSp_Short": "p.F83S",
-        "Protein_Change":"F83S",
-        "Mutation_Class": "Missense",
-        "AA_Position": 83
-    }, {
-        "Hugo_Symbol": "PIK3CA",
-        "Variant_Classification": "Missense_Mutation",
-        "HGVSp_Short": "p.R88Q",
-        "Protein_Change":"R88Q",
-        "Mutation_Class": "Missense",
-        "AA_Position": 88
-    }
-];
-
-var mutation_data_default_settings = {
-    x: "AA_Position",         // mutation position
-    y: "Protein_Change",      // amino-acid changes
-    factor: "Mutation_Class", // classify mutations by certain factor (optional)
-};
-
-var pfam_data = {  
-   "hgnc_symbol":"TP53",
-   "protein_name":"tumor protein p53",
-   "uniprot_id":"P04637",
-   "length":393,
-   "pfam":[  
-      {  
-         "pfam_ac":"PF08563",
-         "pfam_start":6,
-         "pfam_end":29,
-         "pfam_id":"P53_TAD"
-      },
-      {  
-         "pfam_ac":"PF00870",
-         "pfam_start":95,
-         "pfam_end":288,
-         "pfam_id":"P53"
-      },
-      {  
-         "pfam_ac":"PF07710",
-         "pfam_start":318,
-         "pfam_end":358,
-         "pfam_id":"P53_tetramer"
-      }
-   ]
-}
-
-
-var pfam_data_default_settings = {
-    domainType: "pfam",       // key to the domain annotation entries
-    length: "length",         // protein length
-    details: {
-        start: "pfam_start",  // protein domain start position
-        end: "pfam_end",      // protein domain end position
-        name: "pfam_id",      // protein domain name
+        var href = "<a href='" + format.url.replace("%%VAL%%", value.taxid) +"'>"+
+            value.taxid+"</>";
+        sname += " ["+ href + "]";       
+        $( tgt ).append( "<div>"+format.name+ ": " + sname + "</div>" );
     },
-};
 
-
-
-       // add mutation data
-       lollipop.data.snvData = mutation_data;
-       // mutation data format settings
-       lollipop.format.snvData = mutation_data_default_settings;
-
-       // Pfam domain data
-       lollipop.data.domainData = pfam_data;
-       // Pfam data format settings
-       lollipop.format.domainData = pfam_data_default_settings;
-
-       // set up more chart options ...
-
-
-       lollipop.options.chartType = "circle";
-
-
-
-
-       // draw lollipop
-       //lollipop.draw();
-
+    showSequence: function( tgt, format, data ){
+       
+        var seq = this.getVal( data, format.vpath);
+        //console.log( "SHOWSEQUENCE: START");
+        $( tgt ).append( "<div><div id='seq-viewer'></div>" );
+        
+        //var seqview = new Sequence( seq );
+        //seqview.render( '#seq-viewer',
+        //                { 'showLineNumbers': true,
+        //                  'wrapAminoAcids': true,
+        //                  'charsPerLine': 80,
+        //                  'toolbar': true,
+        //                  //'search': true,
+        //                  //'title' : "Your title",
+        //                  'sequenceMaxHeight': "300px",
+        //                  'badge': false
+        //                });
+        alert("SHOWSEQUENCE");
         console.log("SHOWSEQUENCE: DONE");
         
-     },
+    },
 
-     showXref: function( tgt, format, data ){
+    showXref: function( tgt, format, data ){
        var cval = this.getVal( data, format.vpath);
-       console.log("XREF: cval=" + cval);
+       //console.log("XREF: cval=" + cval);
        if( cval == null || cval == undefined || cval.length == 0){
           if( format.miss == "%DROP%") return;
        }
@@ -1057,7 +1157,7 @@ var pfam_data_default_settings = {
        if( format.list ){
          if( cval.length > 0){
            for( var i =0; i <cval.length; i ++){
-             console.log( "XREF:" +  JSON.stringify(cval[i]) );
+             //console.log( "XREF:" +  JSON.stringify(cval[i]) );
              var cxref = BKDlink.xref(cval[i]);             
 
              if( header ){
@@ -1079,7 +1179,7 @@ var pfam_data_default_settings = {
 
      showFeature: function( tgt, format, data ){
        var value = this.getVal( data, format.vpath);
-       console.log("DATA:"+JSON.stringify(data))
+       //console.log("DATA:"+JSON.stringify(data))
 
        $( tgt ).append( "<table border='1' width='100%'>" +
                         " <tr>"+
@@ -1135,9 +1235,9 @@ var pfam_data_default_settings = {
        var seq = data.sequence;
        
        for( var i = 0; i < value.length; i ++){ 
-          console.log("F: " + value[i].ranges[0].start + ":" +
-                              value[i].ranges[0].stop + ":" +
-                              value[i].ranges[0].sequence );
+          //console.log("F: " + value[i].ranges[0].start + ":" +
+          //                    value[i].ranges[0].stop + ":" +
+          //                    value[i].ranges[0].sequence );
 
           if( value[i].ranges[0].start ==  value[i].ranges[0].stop){
 
@@ -1148,14 +1248,44 @@ var pfam_data_default_settings = {
                               + value[i].ranges[0].start 
                               + value[i].ranges[0].sequence;
 
+             var cvlink = "N/A";
+             var pos37 = "";
+             var pos38 = "";
+             //console.log(i,"value",JSON.stringify(value[i]));
+             for( var j = 0; j < value[i].xrefs.length; j ++){
+               //console.log(value[i].xrefs[j].ns);          
+               if( "dbSNP" == value[i].xrefs[j].ns ){
+                  var cvlink = "https://www.ncbi.nlm.nih.gov/snp/"+value[i].xrefs[j].ac;
+                  cvlink = "<a href='"+cvlink+"'>"+value[i].xrefs[j].ac+"</a>";                 
+               }
+               if( "GRCh37" == value[i].xrefs[j].ns ){
+                  pos37 = value[i].xrefs[j].ac;                 
+               }
+               if( "GRCh37.p13" == value[i].xrefs[j].ns ){
+                  pos37 = value[i].xrefs[j].ac;                 
+               }
+               if( "GRCh38" == value[i].xrefs[j].ns ){
+                  pos38 = value[i].xrefs[j].ac;
+               }              
+               if( "GRCh38.p13" == value[i].xrefs[j].ns ){
+                  pos38 = value[i].xrefs[j].ac;
+               }              
+
+             }             
+
              var mdta = {"Hugo_Symbol": "PIK3CA",
                          "Mutation Type": "Missense",
                          "HGVSp_Short": short,
                          "PosAA": posaa,
+                         "Pos37": pos37,
+                         "Pos38": pos38,
                          "Mutation_Class": value[i].ranges[0].sequence,
-                         "AA_Position": parseInt(value[i].ranges[0].start)}
+                         "AA_Position": parseInt(value[i].ranges[0].start),
+                         "dbSNP":cvlink}
              fdata.push(mdta);
+             //console.log("mdta:", JSON.stringify( mdta ) );
           }
+          
        }
 
         var mutation_data_default_settings = {
@@ -1164,7 +1294,7 @@ var pfam_data_default_settings = {
           factor: "Mutation Type", // classify mutations by certain factor (optional)
         };
        
-       console.log( JSON.stringify (fdata ) );
+       //console.log( JSON.stringify (fdata ) );
 
        mutation_data = fdata;
        
@@ -1219,7 +1349,7 @@ var pfam_data_default_settings = {
                                          options: { anchor: "#flist-details",
                                                     cols:["Mutation Type",
                                                           "HGVSp_Short",
-                                                          "Mutation_Class"]}
+                                                          "Mutation_Class","dbSNP"]}
                                        };
 
       // add mutation data
@@ -1245,7 +1375,7 @@ var pfam_data_default_settings = {
       
       url = BKDnode.siteurl;
       id = BKDnode.data.ac;
-      console.log("PDB:" + url+"swissmodel/"+id+"-1_swm.pdb");
+      //console.log("PDB:" + url+"swissmodel/"+id+"-1_swm.pdb");
       ngl.loadFile(url+"swissmodel/"+id+"-1_swm.pdb").then( function(o){      
          BKDnode.nglsc = o;
          o.setSelection("all");       
@@ -1261,9 +1391,9 @@ var pfam_data_default_settings = {
 
       $("#topo-port").load( purl, function(){
                   
-         console.log( "TOPO: width= " + $( "#topo-port > svg").width() );
-         console.log( "TOPO: height=" +  $( "#topo-port > svg").height() );
-         console.log( "TOPO: bb=" +  $( "#topo-port > svg") );
+         //console.log( "TOPO: width= " + $( "#topo-port > svg").width() );
+         //console.log( "TOPO: height=" +  $( "#topo-port > svg").height() );
+         //console.log( "TOPO: bb=" +  $( "#topo-port > svg") );
 
          var svgw = $( "#topo-port > svg").width();
          var svgh = $( "#topo-port > svg").height();
@@ -1279,17 +1409,17 @@ var pfam_data_default_settings = {
       // genome
       //-------
 
-      console.log( JSON.stringify(data) );
+      //console.log( JSON.stringify(data) );
 
       gname=data["label"];
       for( a in data.alias){
-          console.log("A: "+ JSON.stringify(data.alias[a]) );
+          //console.log("A: "+ JSON.stringify(data.alias[a]) );
           if( data.alias[a]["cvType"]["name"] == "gene-name" ){
               gname=data.alias[a]["alias"]
           }
       }         
       
-      console.log("Gene Name: ", gname );
+      //console.log("Gene Name: ", gname );
 
       var igvDiv = document.getElementById("track-port");
       var options = {
@@ -1307,7 +1437,7 @@ var pfam_data_default_settings = {
 
         igv.createBrowser(igvDiv, options)
                 .then( function (browser) {
-                    console.log("Created IGV browser");
+                    //console.log("Created IGV browser");
                     BKDnode.igvbrowse = browser;
 
                     browser.loadROI([
@@ -1322,7 +1452,7 @@ var pfam_data_default_settings = {
 
      },
 
-     setSelScheme: function(pos, show ){
+     setNGLSelScheme: function(pos, show ){
 
        if(show=='on'){
          var colorScheme = NGL.ColormakerRegistry.addSelectionScheme([
@@ -1345,6 +1475,29 @@ var pfam_data_default_settings = {
        BKDnode.nglsc.autoView("all");
      },
 
+     setIGVSelScheme: function(pos37,pos38, show ){
+       //console.log("setIGVSelScheme",pos37,pos38, show)
+       if(show=='on'){
+         //console.log("setIGVSelScheme:ON");
+         BKDnode.igvbrowse.loadROI([{
+                            name: 'Feature xxx',
+                            url: BKDnode.siteurl+"roi?pos="+pos37,
+                            indexed: false,
+                            color: "rgba(68, 134, 247, 0.25)"
+                                    }]);
+
+
+       }
+       if(show=='off'){       
+            //console.log("setIGVSelScheme: OFF");
+            //BKDnode.igvbrowse.clearROIs();
+            BKDnode.igvbrowse.removeROI();
+            //console.log("setIGVSelScheme: OFF done...");
+       }       
+     },
+
+     
+
      getVal: function( data, path ){
        var cval = data;
        for(var j=0; j<path.length; j++){
@@ -1356,28 +1509,28 @@ var pfam_data_default_settings = {
     },
 
     getVal2b: function( data, path ){
-       console.log("\n\nCV2 called");
-       console.log("CV2: path=" + JSON.stringify(path));
+       //console.log("\n\nCV2 called");
+       //console.log("CV2: path=" + JSON.stringify(path));
        var cval = []; 
        if( Array.isArray(data) ){
           cval = data;
        } else {
           cval = [data];
        }
-       console.log("CV2: cval: " + JSON.stringify(cval));
+       //console.log("CV2: cval: " + JSON.stringify(cval));
        var rval = [];
        for( var k =0; k < cval.length; k ++ ){
-          console.log("CV2:  going over cval element # " + k ); 
-          console.log( "XXX " + path[0] + " ::: " + JSON.stringify(cval[k][path[0]]));
+          //console.log("CV2:  going over cval element # " + k ); 
+          //console.log( "XXX " + path[0] + " ::: " + JSON.stringify(cval[k][path[0]]));
           rval = rval.concat( cval[k][path[0]]);
-          console.log("rval.length=" + rval.length);
+          //console.log("rval.length=" + rval.length);
        }
        
        if( path.length == 1 ){ // end of path: return values
-          console.log("LAST PASS: " + JSON.stringify(rval)); 
+          //console.log("LAST PASS: " + JSON.stringify(rval)); 
           return rval;
        } else {
-          console.log("NEXT LEVEL: " + JSON.stringify(rval));
+          //console.log("NEXT LEVEL: " + JSON.stringify(rval));
           return this.getVal2( rval, path.slice(1) );
        }            
     },
@@ -1403,8 +1556,8 @@ var pfam_data_default_settings = {
 
      buildFDets: function( show, data, options ){
 
-       console.log("FD(options):" + JSON.stringify(options));
-       console.log("FD:" + JSON.stringify(data));
+       //console.log("FD(options):" + JSON.stringify(options));
+       //console.log("FD:" + JSON.stringify(data));
 
        if( show ){
          $(options.anchor).hide();
@@ -1416,23 +1569,33 @@ var pfam_data_default_settings = {
             head += "<th>"+options.cols[h]+"</th>";
          }
          $("#fdet-table").append("<tr>"+head+"</tr>");
-         console.log("data.values.length: " + data.values.length);
+         //console.log("data.values.length: " + data.values.length);
+         var pos37 ="";            
+         var pos38 ="";            
          for( var r = 0; r < data.values.length; r++){
-            console.log(r + " : " + JSON.stringify(data.values[r]) );
-
+            //console.log(r + " : " + JSON.stringify(data.values[r]) );
+            pos37 = data.values[r]["Pos37"];
+            pos38 = data.values[r]["Pos38"];
             var row =""; 
             for(var c =0; c < options.cols.length; c++ ){
               row += "<td>" + data.values[r][options.cols[c]] + "</td>";
             }
             $("#fdet-table").append( "<tr>"+row+"</tr>");
          }
+
          $(options.anchor ).show();
 
-         BKDnode.setSelScheme(data.position, 'on');
+         BKDnode.setNGLSelScheme(data.position, 'on');
 
-
+         
+         BKDnode.setIGVSelScheme(BKDnode.cpos37,BKDnode.cpos38, 'off');
+         BKDnode.setIGVSelScheme(pos37,pos38, 'on');
+         BKDnode.cpos37 = pos37;
+         BKDnode.cpos38 = pos38;
+        
        } else{
-         BKDnode.setSelScheme(data.position, 'off');
+         BKDnode.setNGLSelScheme(data.position, 'off');
+         BKDnode.setIGVSelScheme(pos37,pos38, 'off');
          // $(options.anchor).hide();
          $(" #fdet-table").remove();
        }
@@ -1440,11 +1603,11 @@ var pfam_data_default_settings = {
 
     flviewToggle:   function(event){
                         var nview = "#" + event.currentTarget.id.replace('-tab','');
-                        console.log("Toggle: "+ BKDnode.flview +"->" + nview);
+                        //console.log("Toggle: "+ BKDnode.flview +"->" + nview);
                         $( BKDnode.flview + "-port" ).hide();
                         BKDnode.flview = nview;
                         $( nview + "-port" ).show()
-                        console.log("Toggle: BKDnode.igvbrowse "+BKDnode.igvbrowse) ;
+                        //console.log("Toggle: BKDnode.igvbrowse "+BKDnode.igvbrowse) ;
                         if( BKDnode.igvbrowse !== null){
                            BKDnode.igvbrowse.visibilityChange();
                         }

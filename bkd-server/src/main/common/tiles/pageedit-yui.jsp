@@ -1,7 +1,9 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="t" %>
 <%@ taglib prefix="s" uri="/struts-tags" %>
-<script src="js/accordion-yui.js" type="text/javascript"></script>
-<script src="js/image-edit-yui.js" type="text/javascript"></script>
+<!--
+<scr ipt src="js/accordion-yui.js" type="text/javascript"></script>
+<scr ipt src="js/image-edit-yui.js" type="text/javascript"></script>
+-->
 <tr>
  <td colspan="2">
   <dl id="acc-top" class="accordion">

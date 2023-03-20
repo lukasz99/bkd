@@ -5,8 +5,8 @@
     <xrefList>
       <xref ns="upr" ac="O00180" type="describes" typeAc="DXF:0024" typeNs="dxf">
         <node>
-          <type ns="dxf" name="feature-report" ac="dxf:0000"/>
-          <label>O00180</label>           
+          <type ns="dxf" name="report-target" ac="dxf:0000"/>
+          <label>report-feature</label>           
           <featureList>
             <feature>
               <type ns="mi" name="mutation" ac="MI:0118"/>   <!-- mutation -->
@@ -22,6 +22,9 @@
                   </attrList>
                 <location>
               </locationList>
+              <xrefList>
+                <xref ns="upr" ac="O00180-1" type="describes" typeAc="dxf:0024" typeNs="dxf"
+              <xrefList>
             </feature>
           </featureList>
         </node>

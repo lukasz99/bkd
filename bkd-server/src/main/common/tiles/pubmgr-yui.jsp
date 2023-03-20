@@ -5,9 +5,9 @@
 
 <%-- LS
 <s:if test="id > 0">
- <script src="js/calendar-yui.js" type="text/javascript"></script>
- <script src="js/pubedit-yui.js" type="text/javascript"></script>
- <script src="js/attach-yui.js" type="text/javascript"></script>
+ <scr ipt src="js/calendar-yui.js" type="text/javascript"></script>
+ <scr ipt src="js/pubedit-yui.js" type="text/javascript"></script>
+ <scr ipt src="js/attach-yui.js" type="text/javascript"></script>
 
   <h1>Publication Editor</h1>
 

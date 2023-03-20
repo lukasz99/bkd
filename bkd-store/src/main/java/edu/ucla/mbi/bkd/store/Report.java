@@ -13,6 +13,9 @@ import edu.ucla.mbi.dxf20.*;
 import javax.xml.bind.JAXB;
 import javax.persistence.*;
 
+import edu.ucla.mbi.bkd.access.*;
+import edu.ucla.mbi.bkd.store.*;
+
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn (name="sclass", 
@@ -35,18 +38,102 @@ public abstract class Report{
          rpid bigint DEFAULT 0 NOT NULL,  -- public identifier
          fk_node bigint DEFAULT 0 NOT NULL,   -- foreign key (parent: node)
          fk_feature bigint DEFAULT 0 NOT NULL,   -- foreign key (parent: feature)
+         fk_edge bigint DEFAULT 0 NOT NULL,   -- foreign key (parent: edge/link)
          fk_source bigint DEFAULT 0 NOT NULL,  -- unspecified report source
          fk_cval bigint DEFAULT 0 NOT NULL,    -- cv value
          jval text DEFAULT ''::text NOT NULL,  -- json value
          comment text DEFAULT ''::text NOT NULL,
+         owner_id bigint DEFAULT 0 NOT NULL,   -- foreign key (record owner)
+
          t_cr timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone,
          t_mod timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone
        );
     **/
 
     private static String generator = "report";
-    
 
+    //--------------------------------------------------------------------------
+    // Access Control
+    //---------------
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "owner_id")
+    BkdUser owner = null;
+    
+    public BkdUser getOwner() {
+        return owner;
+    }
+
+    public void setOwner( BkdUser owner ) {
+        this.owner = owner;
+    }
+
+    //--------------------------------------------------------------------------
+
+    @ManyToMany( fetch = FetchType.EAGER, cascade = CascadeType.ALL )
+    @JoinTable( name = "report_ausr", 
+                joinColumns = { @JoinColumn(name = "usr_id") }, 
+                inverseJoinColumns = { @JoinColumn(name = "report_id") } )
+    Set<BkdUser> adminUsrSet;
+    
+    public Set<BkdUser> getAdminUsers() {
+        if ( adminUsrSet == null ) {
+            adminUsrSet = new TreeSet<BkdUser>();
+        }
+        return adminUsrSet;
+    }
+
+    public void setAdminUsers( Set<BkdUser> users ) {
+        this.adminUsrSet = users;
+    }
+
+    public Set<String> getAdminUserNames(){
+        
+        Set<String> aul = new HashSet<String>();
+
+        if( adminUsrSet != null ){
+            for( Iterator<BkdUser> iu = adminUsrSet.iterator();
+                 iu.hasNext(); ) {
+                aul.add( iu.next().getLogin() );
+            }
+        }
+        return aul;
+    }
+
+    //--------------------------------------------------------------------------
+
+    @ManyToMany( fetch = FetchType.EAGER, cascade = CascadeType.ALL )
+    @JoinTable( name = "report_agrp", 
+                joinColumns = { @JoinColumn(name = "grp_id") }, 
+                inverseJoinColumns = { @JoinColumn(name = "report_id") } )
+    private Set<BkdGroup> adminGroupSet;
+
+    public Set<BkdGroup> getAdminGroups() {
+        if ( adminGroupSet == null ) {
+            adminGroupSet = new TreeSet<BkdGroup>();
+        }
+        return adminGroupSet;
+    }
+
+    public void setAdminGroups( Set<BkdGroup> groups ) {
+        this.adminGroupSet = groups;
+    }
+
+    public Set<String> getAdminGroupNames(){
+
+        Set<String> agl = new HashSet<String>();
+
+        if( adminGroupSet != null ){
+            for( Iterator<BkdGroup> ig = adminGroupSet.iterator();
+                 ig.hasNext(); ) {
+                agl.add( ig.next().getName() );
+            }
+        }
+        return agl;
+    }
+
+    //--------------------------------------------------------------------------
+    
     @Column(name = "prefix")
     protected String prefix;
 

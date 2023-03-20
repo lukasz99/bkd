@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="edu.ucla.mbi.bkd.access">
+  
+ <class name="BkdRole" table="role" lazy="false">
+  <id name="id" column="id" >
+   <generator class="native">
+      <param name="sequence_name">role_id_seq</param> 
+   </generator>
+  </id>
+
+  <property name="name" column="name" />
+  <property name="comments" column="comments" />
+  <property name="grpEx" column="grp_unique" />
+
+ </class>
+<!--
+ <class name="edu.ucla.mbi.bkd.access.BkdGroup" table="grp" lazy="false">
+  <id name="id" column="id" >
+   <generator class="sequence">
+    <param name="sequence_name">grp_id_seq</param>
+   </generator>
+  </id>
+
+  <property name="label" column="label" />
+  <property name="name" column="name" />
+  <property name="comments" column="comments" />
+
+  <many-to-one name="adminUser" column="admin_uid" 
+               class="edu.ucla.mbi.bkd.access.BkdUser" />
+  <many-to-one name="contactUser" column="contact_uid"
+               class="edu.ucla.mbi.bkd.access.BkdUser" />
+ 
+  <set name="roles" table="grp_role" sort="natural" lazy="false">
+    <key column="grp_id"/>
+    <many-to-many column="role_id" class="edu.ucla.mbi.bkd.access.BkdRole"/>
+  </set>
+
+ </class>
+
+ <class name="edu.ucla.mbi.bkd.access.BkdUser" table="usr" lazy="false">
+  <id name="id" column="id" >
+   <generator class="sequence">
+    <param name="sequence_name">usr_id_seq</param>
+   </generator>
+  </id>
+  
+  <property name="firstName" column="fname" />
+  <property name="lastName" column="lname" />
+  <property name="affiliation" column="affiliation" />
+  <property name="email" column="email" />
+  <property name="login" column="login" />
+  <property name="password" column="pass" />
+  <property name="sha1pass" column="sha1pass" />
+  <property name="passCrypt" column="password" />
+  <property name="activationKey" column="act_key" />
+  <property name="activated" column="act_flag" />
+  <property name="enabled" column="enable_flag" />
+  <property name="prefs" column="prefs" />
+  <property name="loginTime" column="time_login" />
+
+  <set name="roles" table="usr_role" sort="natural" lazy="false">
+    <key column="usr_id"/>
+    <many-to-many column="role_id" class="edu.ucla.mbi.bkd.access.BkdRole"/>
+  </set>
+
+  <set name="groups" table="usr_grp" sort="natural" lazy="false">
+    <key column="usr_id"/>
+    <many-to-many column="grp_id" class="edu.ucla.mbi.bkd.access.BkdGroup"/>
+  </set>
+
+ </class>
+--> 
+ 
+</hibernate-mapping> 

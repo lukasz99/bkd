@@ -5,19 +5,17 @@
  <t:insertDefinition name="useredit"/>
 </s:if>
 <s:else>
-    
-<!--  Navigation  -->
- <div id="mgr-tabs" class="main-width">
- <ul class="yui-nav"> 
-       <li class="selected"><a href="#tab1"><em>Add User</em></a></li> 
-       <li><a href="#tab2"><em>Users</em></a></li> 
- </ul>   
- <div class="yui-content">
+<br/><br/><br/><br/><br/>    
+<!-- Navigation Tabs -->
+<div id="umgr" class="main-width">
+ <div id="umgr-tabs">
+  <ul> 
+   <li><a href="#umgr-tab-1">Add User</a></li> 
+   <li><a href="#umgr-tab-2">Users</a></li> 
+  </ul>   
      
-<!--  First Tab  -->
-
-<div id="tab1">
-
+  <!-- First Tab -->
+  <div id="umgr-tab-1">
    <s:form theme="simple" action="usermgr" cssClass="align-label"> 
    <fieldset>
    <legend><h2>Add User</h2></legend>
@@ -88,18 +86,20 @@
         <s:submit theme="simple" name="op.add" value="Add" />
        </li>
      </ul>
-     </s:form>
-     </fieldset>
-    </div>
+    </s:form>
+    </fieldset>
+   </div>
     
-<!--  Second Tab  -->
-
-    <div id="tab2">
-     <div id="dt-pag-nav"></div>
-     <div id="usermgr-table"></div>
-    </div>
-    
-    <script type="text/javascript">
+   <!-- Second Tab -->
+   <div id="umgr-tab-2">
+    <div id="umgr-pager"></div>
+    <table id="umgr-table" class="display">
+    </table>
+   </div>
+  
+  </div>
+</div> 
+  <script type="text/javascript">
  
         var columnDefinitions = [
             {key:"id", label:"Id",  sortable:true, resizeable:true},
@@ -122,11 +122,20 @@
                paginationRowsPerPage : "blockSize" 
             }
         }; 
-        var container = "usermgr-table";
+        //var container = "usermgr-table";
+        //YAHOO.imex.usermgr.init( columnDefinitions,
+        //                         dataSourceLink, datasourceSchema,
+        //                         container);
 
-        YAHOO.imex.usermgr.init(columnDefinitions, dataSourceLink, datasourceSchema, container);
-  
-    </script>
-   </div>
-  </div>
+        var umgr;
+
+        $( function(){
+          $('#umgr-tabs').tabs();
+          umgr = new BkdUserMgr( { pager:"#umgr-pager",
+                                   table:"#umgr-table" });
+          umgr.initialize( { columnDef: columnDefinitions,
+                             dataUrl: dataSourceLink,
+                             dataSchema: datasourceSchema} );
+        });         
+  </script>
 </s:else>

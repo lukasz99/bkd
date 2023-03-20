@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">                                                                           
+<struts>
+
+  <package name="usermgr" extends="json-default" namespace="">
+
+    <!-- =========================================================== Results -->
+
+    <result-types>
+      <result-type name="tiles" 
+                   class="org.apache.struts2.views.tiles.TilesResult"/>
+    </result-types>
+
+    <!-- ====================================================== Interceptors -->
+        
+    <interceptors>
+  
+      <interceptor name="menu" 
+                   class="edu.ucla.mbi.util.struts.interceptor.MenuInterceptor"/>
+      
+      <interceptor name="accession" 
+                   class="edu.ucla.mbi.util.struts.interceptor.AccessionInterceptor"/>
+      
+      <interceptor name="jsonTable" 
+                   class="edu.ucla.mbi.util.struts.interceptor.JsonTableInterceptor"/>
+      
+      
+      <interceptor name="acl" class="aclInterceptor"/>
+      
+      <interceptor-stack name="mgrStack">
+        <interceptor-ref name="exception"/>
+        <interceptor-ref name="alias"/>
+        <interceptor-ref name="servletConfig"/>
+        <interceptor-ref name="prepare"/>
+        <interceptor-ref name="i18n"/>
+        <interceptor-ref name="chain"/>
+        <interceptor-ref name="debugging"/>
+        <interceptor-ref name="profiling"/>
+        <interceptor-ref name="scopedModelDriven"/>
+        <interceptor-ref name="modelDriven"/>
+        <interceptor-ref name="fileUpload"/>
+        <interceptor-ref name="checkbox"/>
+        <interceptor-ref name="staticParams"/>
+        <interceptor-ref name="params">
+          <param name="excludeParams">dojo\..*</param>
+        </interceptor-ref>
+        <interceptor-ref name="conversionError"/>
+        
+        <interceptor-ref name="menu"/>
+        
+        <interceptor-ref name="acl"/> 
+
+        <interceptor-ref name="validation">
+          <param name="excludeMethods">input,back,cancel,browse</param>
+        </interceptor-ref>
+        <interceptor-ref name="workflow">
+          <param name="excludeMethods">input,back,cancel,browse</param>
+        </interceptor-ref>
+      </interceptor-stack>
+      
+    </interceptors>
+    
+    <!-- =========================================================== Actions -->
+
+    <action name="">
+      <result>/index.jsp</result>
+    </action>
+
+    <!-- group management -->   
+
+    <action name="groupmgr" class="groupMgrAction">
+
+      <interceptor-ref name="mgrStack"/>
+      <interceptor-ref name="timer"/>
+
+      <result name="success" type="tiles">groupmgr</result>     
+      <result name="acl_page" type="tiles">aclpageerror</result>
+      <result name="acl_oper" type="tiles">acloperror</result>
+      <result name="input" type="tiles">groupmgr</result>   
+      
+      <result name="json" type="json">
+        <param name="ignoreHierarchy">false</param>
+        <param name="noCache">true</param>
+        <param name="includeProperties">
+         ^groupList\[\d+\]\.id,
+         ^groupList\[\d+\]\.label,
+         ^groupList\[\d+\]\.name,
+         ^totalRecords,
+	     ^firstRecord,
+         ^blockSize
+        </param>
+     </result>
+          
+   </action>
+
+   <action name="groupedit" class="groupMgrAction">
+
+     <interceptor-ref name="mgrStack"/>
+     <interceptor-ref name="timer"/>
+
+     <result name="success" type="tiles">groupmgr</result>
+     <result name="acl_page" type="tiles">aclpageerror</result>
+     <result name="acl_oper" type="tiles">acloperror</result>
+     <result name="input" type="tiles">groupmgr</result>
+
+     <result name="json" type="json">
+        <param name="ignoreHierarchy">false</param>
+        <param name="noCache">true</param>
+        <param name="includeProperties">
+         ^group\.id,
+         ^group\.label,
+         ^group\.name,
+         ^group\.comments,
+         ^group\.roles\[\d+\]\.id,
+         ^group\.roles\[\d+\]\.name         
+        </param>
+     </result>
+  
+   </action>
+   
+   <!-- role management -->   
+
+   <action name="rolemgr" class="roleMgrAction">
+     <interceptor-ref name="mgrStack"/>
+     <interceptor-ref name="timer"/>
+
+     <result name="success" type="tiles">rolemgr</result>
+     <result name="acl_page" type="tiles">aclpageerror</result>
+     <result name="acl_oper" type="tiles">acloperror</result>
+     <result name="input" type="tiles">rolemgr</result>
+     
+     <result name="json" type="json">
+        <param name="ignoreHierarchy">false</param>
+        <param name="noCache">true</param>
+       <param name="includeProperties">
+         ^roleList\[\d+\]\.id,
+         ^roleList\[\d+\]\.label,
+         ^roleList\[\d+\]\.name,
+         ^totalRecords,
+	     ^firstRecord,
+         ^blockSize
+       </param>
+     </result>
+     
+   </action>
+
+   <action name="roleedit" class="roleMgrAction">
+     <interceptor-ref name="mgrStack"/>
+     <interceptor-ref name="timer"/>
+
+     <result name="success" type="tiles">rolemgr</result>  
+     <result name="acl_page" type="tiles">aclpageerror</result>
+     <result name="acl_oper" type="tiles">acloperror</result>
+     <result name="input" type="tiles">rolemgr</result>     
+   </action>
+
+   <!-- user management -->   
+
+   <action name="usermgr" class="userMgrAction">
+
+     <interceptor-ref name="mgrStack"/>
+     <interceptor-ref name="timer"/>
+     
+     <result name="success" type="tiles">usermgr</result>
+     <result name="acl_page" type="tiles">aclpageerror</result>  
+     <result name="acl_oper" type="tiles">acloperror</result>
+     <result name="input" type="tiles">usermgr</result>
+
+     <result name="json" type="json">
+        <param name="ignoreHierarchy">false</param>
+        <param name="noCache">true</param>
+        <param name="includeProperties">
+         ^userList\[\d+\]\.id,
+         ^userList\[\d+\]\.login,
+         ^userList\[\d+\]\.firstName,
+         ^userList\[\d+\]\.lastName,
+         ^userList\[\d+\]\.affiliation,
+         ^userList\[\d+\]\.email,
+         ^totalRecords,
+	     ^firstRecord,
+         ^blockSize
+       </param>
+     </result>
+
+     <!--
+        <result name="success" type="json">
+        <param name="ignoreHierarchy">false</param>
+        <param name="noCache">true</param>
+
+        <param name="includeProperties">
+          ^user.*,
+          ^id,
+          ^op.*,
+          
+       </param>
+
+     </result>
+     -->
+
+   </action>
+
+   <action name="useredit" class="userMgrAction">
+
+     <interceptor-ref name="mgrStack"/>
+     <interceptor-ref name="timer"/>
+      
+     <result name="success" type="tiles">usermgr</result>     
+     <result name="acl_page" type="tiles">aclpageerror</result>
+     <result name="acl_oper" type="tiles">acloperror</result>
+     <result name="input" type="tiles">usermgr</result>
+     <result name="json" type="json">
+       <param name="ignoreHierarchy">false</param>       
+       <param name="includeProperties">
+         ^id,
+         ^user\.login,
+         ^user\.firstName,
+         ^user\.lastName,
+         ^user\.affiliation,
+         ^user\.email,
+         ^user\.roles\[\d+\]\.id,
+         ^user\.roles\[\d+\]\.name,
+         ^user\.groups\[\d+\]\.id,
+         ^user\.groups\[\d+\]\.name,
+         ^user\.activated,
+         ^user\.enabled         
+        </param>
+        <param name="noCache">true</param>     
+     </result>
+     
+   </action>
+
+
+   <!-- user preferences management -->
+   <!--  note need to write/change tile references -->  
+
+   <action name="userprefmgr" class="uprefMgrAction">
+
+     <interceptor-ref name="mgrStack"/>
+     <interceptor-ref name="timer"/>
+
+     <result name="success" type="tiles">userprefmgr</result>
+     <result name="acl_page" type="tiles">aclpageerror</result>
+     <result name="acl_oper" type="tiles">acloperror</result>
+     <result name="input" type="tiles">userprefmgr</result>
+  
+     <result name="json" type="json">
+        <param name="includeProperties">
+          preferences
+        </param>
+        <param name="noCache">true</param>
+     </result>
+   </action>
+
+   <!-- watch list management -->
+   <!--  note need to write/change tile references -->  
+
+  <action name="watchmgr" class="watchMgrAction">
+
+     <interceptor-ref name="mgrStack"/>
+     <interceptor-ref name="timer"/>
+
+     <result name="success" type="tiles">watchmgr</result>
+     <result name="json" type="json">
+        <param name="includeProperties">
+          flags.*
+        </param>
+        <param name="noCache">true</param>
+     </result>
+     <result name="acl_page" type="tiles">aclpageerror</result>
+     <result name="acl_oper" type="tiles">acloperror</result>
+     <result name="input" type="tiles">watchmgr</result>
+   </action>
+
+
+   <!-- acess control management -->
+
+   <action name="aclmgr" class="aclMgrAction">
+     
+     <interceptor-ref name="mgrStack"/>
+     <interceptor-ref name="timer"/>
+     
+     <result name="success" type="tiles">aclmgr</result>
+     <result name="acl_page" type="tiles">aclpageerror</result>
+     <result name="acl_oper" type="tiles">acloperror</result>
+     <result name="input" type="tiles">aclmgr</result>
+   </action>
+
+ </package>
+</struts>

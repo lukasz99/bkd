@@ -1,0 +1,25 @@
+The text search supports the following operators:
+
+<ul>
+    <li>+ signifies AND operation </li>
+    <li>| signifies OR operation </li>
+    <li>- negates a single token </li>
+    <li>" wraps a number of tokens to signify a phrase for searching </li>
+    <li>* at the end of a term signifies a prefix query </li>
+    <li>( and ) signify precedence </li>
+</ul>
+To use one of these characters literally, escape it with a preceding backslash (\).
+<p>Note: Searches are NOT case-sensitive and check for words present within all fields of the protein/gene records. 
+
+<p>Sample queries:
+<ul>
+ <li><i>SCN1B</i>  - Find record annotated with <i>SCN1B</i> word. Note: Requires <b>exact word match</b>.</li>
+ <li><i>SCN1*</i>  - Find record annoted with words starting with <i>SCN1</i>. SCN1A, SCN1B, SCN11 will match. mSCN1B will not.</li>
+ <li><i>calcium  potassium </i>  - Find record annoted with both <i>calcium</i> and <i>potassium</i>. Same as <i>calcium + potassium </i>.</li> 
+ <li><i>calcium | potassium </i>  - Find record annoted with  <i>calcium</i> or <i>potassium</i>.</li>
+ <li><i>calcium  - potassium </i>  - Find record annoted with  <i>calcium</i> but not <i>potassium</i>.</li>
+</ul>
+
+
+
+

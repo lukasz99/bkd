@@ -8,11 +8,11 @@
   <constant name="struts.objectFactory" value="spring" />
   <constant name="struts.devMode" value="true" />
   <constant name="struts.action.excludePattern" 
-            value="/ws.*,/imex/.*,/map/.*,/services, /services/.*"/>
+            value="/ws.*,/imex/.*,/map/.*,/services,/services/.*,/roi,/roi.*"/>
 
   <!-- user/user preferences/watch mamagement -->
 
-  <!-- include file="usermgr.xml"/ -->
+  <include file="usermgr.xml" />
 
   <!-- index mamagement -->
 
@@ -104,18 +104,31 @@
     <!-- data access -->
     
     <action name="report" class="reportAction" >
+      <!--
       <interceptor-ref name="defaultStack"/>
       <interceptor-ref name="timer"/>
       <interceptor-ref name="menu"/>
-
+      -->
+      <interceptor-ref name="mgrStack"/>
+      
       <result name="success" type="tiles">report-view</result>
+      <result name="acl_page" type="tiles">aclpageerror</result>
+      <result name="acl_oper" type="tiles">acloperror</result>
       <result name="input" type="tiles">report-edit</result>
       <result name="json"  type="json">
         <param name="includeProperties">
-          menu.*, record.*
+          menu.*,
+          record.*
+          
         </param>
+ <!--       
+          record.report.ns, record.report.ac, record.report.cvtype,
+          record.report.jvalMap, record.report.owner.login,
+-->          
         <param name="excludeProperties">
-          record.report.jval,record.report.feature.jval
+          record.report.jvalMap,record.report.jval,
+          record.report.owner.(id|title|enabled|.*Time|.*Name|.*pass.*|prefs|role.*|group.*|a.*),
+          record.report.*([CU]Time|definition|admin.*)
         </param>
         
       </result>
@@ -161,10 +174,12 @@
       <interceptor-ref name="menu"/>
 
       <result name="success" type="tiles">report-view</result>
+      <result name="node-search-view" type="tiles">node-search-view</result>
+      <result name="report-search-view" type="tiles">report-search-view</result>
       <result name="input" type="tiles">report-edit</result>
       <result name="json"  type="json">
         <param name="includeProperties">
-          menu.*, record.*, data.*, rdata.*
+          menu.*, record.*, data.*, rdata.*, rstats.*, qmode, query
         </param>
         <param name="excludeProperties">
           record.report.jval,record.report.feature.jval,rdata.*.jval
@@ -199,6 +214,21 @@
           record.report.jval,record.report.feature.jval,rdata.*.jval
         </param>        
       </result>
+    </action>
+
+    <action name="roi" class="roiAction2" >
+      <interceptor-ref name="defaultStack"/>
+      <interceptor-ref name="timer"/>
+      <!--
+      <result name="json"  type="json">
+        <param name="includeProperties">
+          data.*
+        </param>
+        <param name="excludeProperties">
+          record.report.jval,record.report.feature.jval,rdata.*.jval
+        </param>        
+        </result>
+      -->
     </action>
 
      
@@ -252,7 +282,7 @@
     </action>
 -->
     <!-- news -->
-<!--
+
     <action name="news" class="newsAction">
      <interceptor-ref name="defaultStack"/>
      <interceptor-ref name="timer"/>
@@ -293,11 +323,11 @@
      </result>
      <result name="acl_error" type="tiles">aclerror</result>
      <result name="acl_page" type="tiles">aclerror</result>
-   </action>
--->
+    </action>
+    
 
   <!-- user management -->
-<!--    
+    
     <action name="user" class="userAction" >
      <interceptor-ref name="mgrStack"/>
      <interceptor-ref name="timer"/>
@@ -323,13 +353,11 @@
        </param>
        <param name="noCache">true</param>
      </result>
--->
+
      <!-- jq.*,menu.*,user.* -->
 
-<!--
     </action>
--->
-<!--
+
     <action name="register" class="userAction" >
      <interceptor-ref name="defaultStack"/>
      <interceptor-ref name="timer"/>
@@ -350,9 +378,9 @@
      <result name="uedit" type="tiles">uedit</result>
      <result name="home">index.jsp</result>
     </action>
--->
+
   <!-- contact -->
-<!--
+
    <action name="feedback" class="feedbackAction" >
      <interceptor-ref name="defaultStack"/>
      <interceptor-ref name="params">
@@ -365,7 +393,7 @@
     <result name="input" type="tiles">feedback</result>
     <result name="accepted" type="tiles">feedback-ack</result>
    </action>
--->
+
   <!-- stats -->
 <!--
    <action name="stats" class="statsAction" >

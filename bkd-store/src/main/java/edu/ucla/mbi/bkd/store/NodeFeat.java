@@ -17,23 +17,15 @@ import javax.persistence.*;
 @DiscriminatorValue("nfeature")
 public class NodeFeat extends Feature{
 
-    @ManyToOne
-    @JoinColumn(name="fk_node", nullable=false)
-    private Node node;
-
-    public void setNode(Node node){
-        this.node = node;
+    @Column(name="fk_node")
+    private long nodeid;
+    
+    public void setNodeId( long id){
+        this.nodeid = id;
     }
 
-    public Node getNode(){
-        return this.node;
+    public long getNodeId(){
+        return this.nodeid;
     }
-
-    public String toString(){
-        if( node != null) {
-            return  "Node:" + node.getAc() + "/" +  super.toString();
-        } else {
-            return  "Node:" + node + "/" +  super.toString();
-        }
-    }
+        
 }

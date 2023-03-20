@@ -17,7 +17,7 @@ import edu.ucla.mbi.bkd.store.*;
 
 import org.json.*;
 
-public class ReportAction extends PortalSupport{
+public class ReportAction extends ManagerSupport{
 
     // record access
     
@@ -48,7 +48,13 @@ public class ReportAction extends PortalSupport{
         log.debug( " MenuContext: " + super.getMenuContext() );
 
         log.info("NS/AC: " + this.getNs() + "/" + this.getAc());
-        log.info("Ret: " + this.getRet() + " Format: " + this.getFormat());
+        log.info("Qmode: " + getQmode() + " Query: " + this.getQuery() );
+        
+        log.info("Ret: " + this.getRet()
+                 + " Mode: " + this.getMode()
+                 + " Op: " + this.getOp()
+                 + " Rtype: " + this.getRtype()
+                 + " Format: " + this.getFormat());
         
         return dispatch();
     }
@@ -59,27 +65,53 @@ public class ReportAction extends PortalSupport{
     //-----------
 
     public String dispatch() throws Exception {
+
+        Logger log = LogManager.getLogger( ReportAction.class );
+        log.info("ReportAction: dispatch");
         
         if( getQuery() != null && getQuery().length() > 0 &&
             getQmode() != null && getQmode().length() > 0 ){
             
             return SUCCESS;
-        } else if( "update".equalsIgnoreCase( getOp() ) &&
-                   record != null ){ 
+                        
+        }
+
+        if( getOp() != null && getOp().containsKey( "update" ) ){
             
-            manager.addReport( (Report) record );
+            manager.addReport( (NodeFeatureReport) record );
             
-        } else if( "new".equalsIgnoreCase( getOp() ) ){
-            
+        }  else if( getOp() != null && getOp().containsKey( "create") ){
+
             if( this.getNs() != null && this.getNs().length() > 0 &&
                 this.getAc() != null && this.getAc().length() > 0 ){
-
-                if ( getRtype() == null ){
+                
+                if( getMode() != null
+                    && "edit".equalsIgnoreCase( getMode() ) ){
+                    log.info( " report: ret -> success(rtype)" );
                     return SUCCESS;
+                }
+                
+                String repType = getRtype();
+                record = manager.getNewFeatureReportMap( ns, ac, repType );
+                return JSON;
+            }
+
+        } if( getOp() != null && getOp().containsKey( "edit") ){
+            this.mode="edit";
+
+            if (  getRet() != null && getRet().equals( "data" ) ) {
+            
+                if( this.getNs() != null && this.getNs().length() > 0 &&
+                    this.getAc() != null && this.getAc().length() > 0 ){
+                    
+                    record = manager.getReportMap(ns,ac);            
                 } 
                 
-                String repType = getRtype();                
-                record = manager.getNewFeatureReport( ns, ac,  getRtype()  );
+                return JSON;
+                
+            } else {            
+                log.info( " report: ret -> success(op.edit)" );
+                return SUCCESS;
             }
             
         } else {
@@ -101,18 +133,26 @@ public class ReportAction extends PortalSupport{
                 }
             
             }
-        }       
-        if ( getRet() == null || getRet().equals( "view" ) ) {    
+        }
+        
+        if ( getRet() == null || getRet().equals( "view" ) ) {
+            log.info( " report: ret -> success(view)" );
             return SUCCESS;
         } else if ( getRet().equals( "edit" ) ) {
+             
+            log.info( " report: ret -> input" );
             return "input";
         } else if( getRet().equals( "data" ) ) {
+                    
+            log.info( " record: " + record );
+            log.info( " report: ret -> json(data)" );
             return JSON;
         }
+        log.info( " report: ret -> success(fallback)" );
         return SUCCESS;
-        }
+    }
 
-        //--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
     // arguments
     //----------
         
@@ -186,7 +226,7 @@ public class ReportAction extends PortalSupport{
         return this.qmode;
     }
 
-
+    /*
     String op="";
     
     public void setOp(String op){     
@@ -196,7 +236,8 @@ public class ReportAction extends PortalSupport{
     public String getOp(){
         return this.op;                                  
     }
-
+    */
+    
     String rtype = null;
     
     public void setRtype(String rtype){     
@@ -214,19 +255,21 @@ public class ReportAction extends PortalSupport{
         Logger log = LogManager.getLogger( ReportAction.class );
         
         try{
-
+            log.info( "setReportJson: incoming ->" + report );
+            
             CvTerm rtype = new CvTerm("dxf","dxf:0094","phenotype-report");
             PersonSource src = new PersonSource();
             src.setCvType(new CvTerm("dxf","dxf:0056","person"));
             src.setOrcid("0000-0003-4522-1969");
             //Report jrep = FeatureReport.fromJsonForm( report, rtype, src);
-            Report jrep = this.fromJsonForm( report, rtype, src);     
+            NodeFeatureReport jrep = this.fromJsonForm( report, rtype, src);     
             
             this.record = jrep;
 
-            log.info( "setReportJson:" + record.toString() );
+            log.info( "setReportJson: outgoing ->" + jrep.toString() );
 
         } catch(Exception ex){
+            ex.printStackTrace();
             log.info( "setReportJson:" + record );
 
         }
@@ -239,13 +282,13 @@ public class ReportAction extends PortalSupport{
         return this.repJson;                                  
     }
 
-    public Report fromJsonForm( String sform, CvTerm freportType,
+    public NodeFeatureReport fromJsonForm( String sform, CvTerm freportType,
                                 Source source ){
         
         Logger log = LogManager.getLogger( this.getClass() );
         log.info( "fromJsonForm sform=" + sform );
         
-        FeatureReport report = new FeatureReport();
+        NodeFeatureReport report = new NodeFeatureReport();
         
         report.setCvType( new CvTerm() );
         report.setSource( source );
@@ -272,7 +315,7 @@ public class ReportAction extends PortalSupport{
                 String key = k.next();
                 String val = jform.getString(key);
                 
-                log.info( "KEY: " + key + "  |||| VAL: " + val);
+                log.debug( "KEY(debug): " + key + " || VAL: " + val);
 
                 if( key.startsWith("report_value_") ){   // jvalue 
 
@@ -293,22 +336,29 @@ public class ReportAction extends PortalSupport{
                                 //System.out.println(cols[0] + ": ac: " + val);
                             }                            
 
-                            if( ! jval.has(cols[0]) ){
+                            if( (! "comments".equalsIgnoreCase( cols[0] ) )
+                                && ! jval.has( cols[0] ) ){
                                 jval.put(cols[0], new JSONObject());
                             }
-                            JSONObject jo = jval.getJSONObject( cols[0] );
-                            jo.put( attr, val );                                                            
-                            
+                            if( ! "comments".equalsIgnoreCase( cols[0] ) ){
+                                JSONObject jo = jval.getJSONObject( cols[0] );
+                                jo.put( attr, val );                                                            
+                            }
                         } else {
                             //System.out.println(vname + ": val: " + val);
                             // property value here
 
-                            if( ! jval.has( vname ) ){
-                                jval.put( vname , new JSONObject());
+                            if( "comments".equalsIgnoreCase(vname)){
+                                report.setComment(val);
+                            } else {
+                            
+                                if( ! jval.has( vname ) ){
+                                    jval.put( vname , new JSONObject());
+                                }
+                                JSONObject jo = jval.getJSONObject(vname);
+                                jo.put( "value", val );                                                        
                             }
-                            JSONObject jo = jval.getJSONObject(vname);
-                            jo.put( "value", val );                                                        
-                        }                        
+                        }
                         
                     } catch(Exception ex){
                         System.out.println(ex);                        
@@ -321,7 +371,7 @@ public class ReportAction extends PortalSupport{
                     String vname = key.replace("report_target_feature_","");
                     
                     
-                    log.info( " feature: name= " + vname );
+                    log.debug( " feature: name= " + vname );
 
                     if( "label".equalsIgnoreCase( vname ) ){
 
@@ -354,27 +404,27 @@ public class ReportAction extends PortalSupport{
 
                         // feature ranges
                         
-                        log.info(  " feature: ranges= " + vname );
+                        log.debug(  " feature: ranges= " + vname );
                         //ranges_0_start
                         vname = vname.replace( "ranges_", "" );
                         
                         if( vname.contains("_") ){
                             String [] cols = vname.split( "_", 2 );
                             
-                            log.info( "Ranges: " + cols[0] + " ::: " + cols[1]  + " val=" + val);
+                            log.debug( "Ranges: " + cols[0] + " ::: " + cols[1]  + " val=" + val);
 
                             if(! rangeMap.containsKey( cols[0] ) ){                                
                                 rangeMap.put( cols[0], new Range() );                                
                             }
 
                             if( "from".equalsIgnoreCase( cols[1] ) ){
-                                log.info(  "  start=" + val + " ::: " + Integer.parseInt( val ));
+                                log.debug(  "  start=" + val + " ::: " + Integer.parseInt( val ));
                                 rangeMap.get( cols[0] ).setStart( Integer.parseInt( val ) );                                
                             } else if( "to".equalsIgnoreCase( cols[1] ) ){
-                                log.info( "  stop=" + val + " ::: " + Integer.parseInt( val ));
+                                log.debug( "  stop=" + val + " ::: " + Integer.parseInt( val ));
                                 rangeMap.get( cols[0] ).setStop( Integer.parseInt(val) );                                
                             } else if( "sequence".equalsIgnoreCase( cols[1] ) ){
-                                log.info(  "  seq=" + val );
+                                log.debug(  "  seq=" + val );
                                 rangeMap.get( cols[0] ).setSequence( val );                                
                             }
                             
@@ -383,14 +433,14 @@ public class ReportAction extends PortalSupport{
 
                     if( vname.startsWith("xrefs_") ){
 
-                        log.info( " feature: xrefs= " + vname );
+                        log.debug( " feature: xrefs= " + vname );
 
                         vname = vname.replace("xrefs_","");
                         
                         if( vname.contains("_") ){
                             String [] cols = vname.split("_",2);
                             
-                            log.info( "Xrefs: " + cols[0] + " ::: " + cols[1] );
+                            log.debug( "Xrefs: " + cols[0] + " ::: " + cols[1] );
 
                             if(! xrefMap.containsKey( cols[0] ) ){
                                 xrefMap.put( cols[0], new FeatureXref() );
@@ -417,7 +467,7 @@ public class ReportAction extends PortalSupport{
                     
                     try{
                         String vname = key.replace("report_target_","");                         
-                        log.info( " name= " + vname );
+                        log.debug( " name= " + vname );
 
                         if( vname.contains("_") ){                         
                             String [] cols = vname.split("_",2);
@@ -427,12 +477,12 @@ public class ReportAction extends PortalSupport{
 
                         if("ns".equalsIgnoreCase( vname ) ){
                             // target namespace in val
-                            log.info( " target ns = " + val );
+                            log.debug( " target ns = " + val );
                             tgtNs = val;                                                        
                         }
                         if("ac".equalsIgnoreCase( vname ) ){
                             // target accession in val
-                            log.info( " target ac = " + val );
+                            log.debug( " target ac = " + val );
                             tgtAc = val;                                                        
                         }
                            
@@ -441,11 +491,11 @@ public class ReportAction extends PortalSupport{
                     }
                 } else if(  key.equalsIgnoreCase("ac") ){
                     rac = val;
-                    log.info( " report ac = " + val );                  
+                    log.debug( " report ac = " + val );                  
                 
                 } else if(  key.startsWith("report_type_") ){
                     
-                    log.info( " report type: key= " + key + "  val=" + val );                    
+                    log.debug( " report type: key= " + key + "  val=" + val );                    
                     String vname = key.replace("report_type_","");
                     if( "ns".equalsIgnoreCase( vname ) ){
                         report.getCvType().setNs( val );
@@ -466,13 +516,13 @@ public class ReportAction extends PortalSupport{
                 report.setNacc( lrid );
                 report.setPrefix( manager.getBkdConfig().getPrefix() );
                 
-                log.info("report id set to -> " + report.getAc());
+                log.debug("report id set to -> " + report.getAc());
 
             } catch( Exception ex ){
                 // shouldn't happen                
             }
             
-            log.info( "JVAL:  " + jval.toString() );
+            log.debug( "JVAL:  " + jval.toString() );
             report.setJval( jval.toString() );
 
             NodeFeat tgtFeat = new NodeFeat();
@@ -480,17 +530,18 @@ public class ReportAction extends PortalSupport{
             // report feature target
             //----------------------
                         
-            log.info( "feature target: ns=" + tgtNs + " ac=" + tgtAc ); 
+            log.debug( "feature target: ns=" + tgtNs + " ac=" + tgtAc ); 
 
             Node tgtNode;
 
             if( manager.getBkdConfig().getPrefix().equalsIgnoreCase( tgtNs ) ){ 
-                tgtNode = manager.getNode( tgtAc );
+                tgtNode = manager.getNode( tgtAc, Node.STUB );
             } else {
-                tgtNode = manager.getNode( tgtNs, tgtAc );
+                tgtNode = manager.getNode( tgtNs, tgtAc, Node.STUB);
             }
-            log.info( "tgt node:  " + tgtNode.toString() );
-            tgtFeat.setNode( tgtNode );
+            log.info( "tgt nodeId:  " + tgtNode.getPkey() );
+            report.setNodeId( tgtNode.getPkey() );
+            
             
             report.setFeature( tgtFeat );
 
@@ -513,10 +564,10 @@ public class ReportAction extends PortalSupport{
 
                 Range r = rangeMap.get(ikey.next());
                 report.getFeature().getRanges().add(r);
-                log.info( r );
+                log.debug( r );
             }
             
-            log.info( "XMAP:  " + xrefMap );
+            log.debug( "XMAP:  " + xrefMap );
 
             for( Iterator<String> ikey = xrefMap.keySet().iterator();
                  ikey.hasNext(); ){

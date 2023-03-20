@@ -12,7 +12,7 @@ import edu.ucla.mbi.dxf20.*;
 import javax.xml.bind.JAXB;
 import javax.persistence.*;
 
-@Entity
+@Entity(name="Range")
 @Table(name = "range")
 public class Range{
     
@@ -37,16 +37,17 @@ public class Range{
        );
     **/
 
-    @ManyToOne
+    
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="fk_feature", nullable=false)
     private Feature feature;
 
     public void setFeature(Feature feature){
-    this.feature = feature;
+        this.feature = feature;
     }
 
     public Feature getFeature(){
-    return this.feature;
+        return this.feature;
     }
     
     @ManyToOne
@@ -132,6 +133,44 @@ public class Range{
 
     public String toString(){
         return "start=" + String.valueOf(this.start) + " end=" + String.valueOf(stop) + "seq=" + sequence;
+    }
+
+    public Map<String, Object> toMap(){
+        Map<String, Object> map = new HashMap<String,Object>();
+        
+        if( this.start == this.stop ){
+            
+            map.put( "pos", this.start );
+
+        } else {
+
+            map.put( "start", this.start );
+            if( this.cvstart != null ){
+                if( this.cvstart.getAc() != null
+                    && this.cvstart.getAc().length() >0 ){
+                    map.put( "start-type-cv", this.cvstart.getAc() );               
+                }
+                if( ! "unspecified".equalsIgnoreCase( this.cvstart.getName() ) ){
+                    map.put( "start-type-name", this.cvstart.getName() );
+                }
+            }
+            
+            map.put( "stop", this.stop );
+            if( this.cvstop != null ){
+                if( this.cvstop.getAc() != null
+                    && this.cvstop.getAc().length() >0 ){
+                    map.put( "stop-type-cv", this.cvstop.getAc() );
+                }
+                if( ! "unspecified".equalsIgnoreCase( this.cvstop.getName() ) ){
+                    map.put( "stop-type-name", this.cvstop.getName() );
+                }
+            }      
+        }
+        
+        if(this.sequence != null && this.sequence.length() >0){
+            map.put( "sequence", this.sequence );
+        }        
+        return map;
     }
 }
 

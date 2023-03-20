@@ -143,6 +143,20 @@ public abstract class Xref{
         this.utime = timestamp;
     }
 
+    public Map<String, Object> toMap(){
+
+        Map<String, Object> map = new HashMap<String,Object>();
+
+
+        map.put("ns", this.ns );
+        map.put("ac", this.ac );
+        if( this.cvtype != null){
+            map.put("type-name", this.cvtype.getName() );
+            map.put("type-cv", this.cvtype.getAc() );
+        }
+        return map;
+    }
+    
     public String toString(){
         return "[NS:" + ns + " AC:" + ac +"]";
     }        

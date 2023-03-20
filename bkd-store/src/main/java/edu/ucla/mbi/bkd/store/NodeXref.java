@@ -17,7 +17,7 @@ import javax.persistence.*;
 @DiscriminatorValue("node")
 public class NodeXref extends Xref{
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="fk_node", nullable=false)
     private Node node;
 

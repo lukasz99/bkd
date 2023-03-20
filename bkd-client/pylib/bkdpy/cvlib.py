@@ -6,7 +6,8 @@ class CV():
         self.ontology = Ontology(url)
         self.byName = {}
         for t in self.ontology:
-            self.byName[self.ontology[t].name.lower()] = self.ontology[t]
+            if isinstance(self.ontology[t].name, str): 
+                self.byName[self.ontology[t].name.lower()] = self.ontology[t]
             
     def getByName( self, name ):
         if name.lower() in self.byName:

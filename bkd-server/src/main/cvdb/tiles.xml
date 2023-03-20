@@ -4,9 +4,13 @@
        "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
 
 <tiles-definitions>
-
+ <!--
  <definition name="yui-js" template="/tiles/yui-js.jsp" />
  <definition name="yui-css" template="/tiles/yui-css.jsp" />
+ -->
+
+ <definition name="common-js" template="/tiles/common-js.jsp" />
+ <definition name="common-css" template="/tiles/common-css.jsp" />
 
  <definition name="site-js" template="/tiles/site-js.jsp" />
  <definition name="site-css" template="/tiles/site-css.jsp" />
@@ -14,9 +18,9 @@
  <definition name="news-css" template="/tiles/news-css.jsp" />
 
  <definition name="htmlhead" template="/tiles/htmlhead.jsp">
-   <put-attribute name="yui-css" type="definition" value="yui-css"/>  
+   <put-attribute name="common-css" type="definition" value="common-css"/>  
+   <put-attribute name="common-js" type="definition" value="common-js"/>
    <put-attribute name="site-css" type="definition" value="site-css"/>  
-   <put-attribute name="yui-js" type="definition" value="yui-js"/>  
    <put-attribute name="site-js" type="definition" value="site-js"/>  
  </definition>
 
@@ -36,14 +40,16 @@
  <definition name="main" template="/tiles/main.jsp"/>
 
  <definition name="page" template="/tiles/page.jsp"/>
- <definition name="report-search" template="/tiles/report-search.jsp"/>
+
+ <definition name="bkd-search" template="/tiles/bkd-search.jsp"/>
+ 
+ <definition name="report-search-view" template="/tiles/report-search-view.jsp"/>
  <definition name="report-view" template="/tiles/report-view.jsp"/>
  <definition name="report-edit" template="/tiles/report-edit.jsp"/>
 
- <definition name="node-search" template="/tiles/node-search.jsp"/>
+ <definition name="node-search-view" template="/tiles/node-search-view.jsp"/>
  <definition name="node-view" template="/tiles/node-view.jsp"/>
 
- <definition name="edge-search" template="/tiles/edge-search.jsp"/>
  <definition name="edge-view" template="/tiles/edge-view.jsp"/>
  
 
@@ -59,18 +65,87 @@
  <definition name="newscontent" template="/tiles/newscontent.jsp"/>
 
  <definition name="news" template="/tiles/layout.jsp">
-  <put-attribute name="title" value="BKD: News" />
+  <put-attribute name="title" value="${bkd.pagetitle}: News" />
   <put-attribute name="body" value="/tiles/news.jsp"/>
   <put-attribute name="edit" value="/tiles/news-edit.jsp"/>
   <put-attribute name="footer" type="definition" value="footer-news-edit"/>
  </definition>
 
  <definition name="uedit" template="/tiles/layout.jsp">
-  <put-attribute name="title" value="BKD: Login" />
+  <put-attribute name="title" value="${bkd.pagetitle}: Login" />
   <put-attribute name="body" value="/tiles/uedit.jsp"/>
   <put-attribute name="footer" type="definition" value="footer"/>
  </definition>
 
  <definition name="menuedit-yui" template="/tiles/menuedit-yui.jsp" />
+
+
+ <!-- user registration & management -->
+ 
+ <definition name="register" template="/tiles/layout.jsp">
+  <put-attribute name="title" value="${bkd.pagetitle}: Register" />
+  <put-attribute name="body" value="/tiles/register.jsp"/>
+  <put-attribute name="footer" type="definition" value="footer"/>
+ </definition>
+
+ <definition name="activate" template="/tiles/layout.jsp">
+  <put-attribute name="title" value="${bkd.pagetitle}: Account Activate" />
+  <put-attribute name="body" value="/tiles/activate.jsp"/>
+  <put-attribute name="footer" type="definition" value="footer"/>
+ </definition>
+
+ <definition name="login" template="/tiles/layout.jsp">
+  <put-attribute name="title" value="${bkd.pagetitle}: Login" />
+  <put-attribute name="body" value="/tiles/login.jsp"/>
+  <put-attribute name="footer" type="definition" value="footer"/>
+ </definition>
+
+ <definition name="feedback" template="/tiles/layout.jsp">
+  <put-attribute name="title" value="${bkd.pagetitle}: Feedback" />
+  <put-attribute name="body" value="/tiles/feedback.jsp"/>
+  <put-attribute name="footer" type="definition" value="footer"/>
+ </definition>
+
+ <definition name="feedback-ack" template="/tiles/layout.jsp">
+  <put-attribute name="title" value="${icentral.pagetitleshort}: Feedback" />
+  <put-attribute name="body" value="/tiles/feedbackack.jsp"/>
+  <put-attribute name="footer" type="definition" value="footer"/>
+ </definition>
+
+
+ 
+ <definition name="usermgr" template="/tiles/layout.jsp">
+  <put-attribute name="title" value="${bkd.pagetitle}: User Manager" />
+  <put-attribute name="body" value="/tiles/usermgr.jsp"/>
+  <put-attribute name="footer" type="definition" value="footer"/>
+ </definition>
+ <definition name="useredit" template="/tiles/useredit.jsp"/>
+
+ <definition name="userprefmgr" template="/tiles/layout.jsp">
+  <put-attribute name="title" value="${bkd.pagetitle}: Preference Manager" />
+  <put-attribute name="body" value="/tiles/userprefmgr.jsp"/>
+  <put-attribute name="footer" type="definition" value="footer"/>
+ </definition>
+
+ 
+<!-- access control error pages -->
+
+ <definition name="aclpageerror" template="/tiles/layout.jsp">
+  <put-attribute name="title" value="${bkd.pagetitle}: ACL Violation" />
+  <put-attribute name="body" value="/tiles/aclpageerror.jsp"/>
+  <put-attribute name="footer" type="definition" value="footer"/>
+ </definition>
+
+ <definition name="acloperror" template="/tiles/layout.jsp">
+  <put-attribute name="title" value="${icentral.pagetitle}: ACL Violation" />
+  <put-attribute name="body" value="/tiles/acloperror.jsp"/>
+  <put-attribute name="footer" type="definition" value="footer"/>
+ </definition>
+
+ <definition name="acltgterror" template="/tiles/layout.jsp">
+  <put-attribute name="title" value="${icentral.pagetitle}: ACL Violation" />
+  <put-attribute name="body" value="/tiles/acltargeterror.jsp"/>
+  <put-attribute name="footer" type="definition" value="footer"/>
+ </definition>
 
 </tiles-definitions>

@@ -12,6 +12,33 @@
   <%-- <script src="js/modal-yui.js" type="text/javascript" language="JavaScript"></script>      --%>
   <%-- <script src="js/help-yui.js" type="text/javascript" language="JavaScript"></script>       --%>
   <%-- <script src="js/side-panel-yui.js" type="text/javascript" language="JavaScript"></script> --%>
+  <script src="jq/jquery-3.6.0.js" type="text/javascript" language="JavaScript"></script>
+  <script src="js/bkd-news-jq.js" type="text/javascript" language="JavaScript"></script>
+  <script src="js/bkd-node-search-jq.js" type="text/javascript" language="JavaScript"></script>
+  
+  <script type="text/javascript">
+    $( function(){
+        var hhght =  $("#header").height(); 
+        // $("#bkd-sidebar").css('padding-top',3);
+        $(".pagebody").css('margin-top',hhght);
+    
+        $("#bkd-head-search-go").on( 'click', function (event) {             
+              var qmode = $("#bkd-head-qmode").val();
+              var query = $("#bkd-head-squery").val();
+
+              console.log( "head search: " + qmode + ":" + query );
+              if( query !== undefined ){
+                 if(query.trim().length > 0 ){
+                    var myurl = "search?qmode=" + qmode
+                              + "&ret=view"  
+                              + "&query=" + query.trim();  
+                    window.location.href = myurl;
+                 }
+              }   
+        });
+    });
+  </script>  
+  
  </head>
  <body class="yui-skin-sam" onLoad="var nos = document.getElementById('noscript'); if ( nos !== null ) { nos.innerHTML='';}">
   <center>

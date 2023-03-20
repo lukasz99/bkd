@@ -39,6 +39,28 @@
   </bean>
   -->
 
+ <!-- trac content -->
+
+  <bean id="tracContext" init-method="initialize"
+          class="edu.ucla.mbi.bkd.TracContext">
+    <!--
+    <property name="journalDao" ref="journalDao"/>
+    <property name="pubDao" ref="pubDao"/>
+    <property name="icStatsDao" ref="icStatsDao"/>
+    <property name="adiDao" ref="adiDao"/>
+    <property name="workflowDao" ref="workflowDao"/>
+    <property name="sorelDao" ref="sorelDao"/>
+    <property name="eorelDao" ref="eorelDao"/>
+    <property name="ncbiClient" ref="${icentral.ncbi.client}" />
+    -->
+    <!--
+    <property name="daoContest" ref="bkdDaoContext"/>
+    
+    <property name="reportDao" ref="bkdReportDao"/>
+    <property name="eorelDao" ref="eorelDao"/>
+    -->
+  </bean>
+
   
   <bean id="pageContext" class="edu.ucla.mbi.util.context.JsonContext">
     <property name="config">
@@ -68,29 +90,46 @@
 <!-- user/feedback management -->
 
   <!-- usr context -->
-<!--
-  <bean id="userContext" init-method="initialize"
-          class="edu.ucla.mbi.util.context.UserContext">
 
-     <property name="config">
+  <bean id="userContext"  init-method="initialize"
+        class="edu.ucla.mbi.bkd.dao.BkdUserContext">
+
+    <property name="config">
       <map>
         <entry key="json-config" value="/etc/userconfig.json"/>
         <entry key="json-source">
           <bean class="edu.ucla.mbi.util.context.SpringFileResource">
             <property name="file" value="etc/userconfig.json"/>
           </bean>
-         </entry>
+        </entry>
       </map>
     </property>
+    
+    <property name="daoContext" ref="bkdDaoContext"/>
 
-    <property name="groupDao" ref="groupDao"/>
-    <property name="userDao" ref="userDao"/>
-    <property name="roleDao" ref="roleDao"/>
-
+    <property name="roleDao" ref="bkdRoleDao"/>
+    <property name="groupDao" ref="bkdGroupDao"/>
+    <property name="userDao" ref="bkdUserDao"/> 
+    
   </bean>
--->
+
+ <!-- user preferences -->
+
+  <bean id="uprefContext" class="edu.ucla.mbi.util.context.JsonContext">
+    <property name="config">
+      <map>
+        <entry key="json-config" value="/etc/userpref.json"/>
+        <entry key="json-source">
+          <bean class="edu.ucla.mbi.util.context.SpringFileResource">
+            <property name="file" value="etc/userpref.json"/>
+          </bean>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
  <!-- access control list/interceptor -->
-<!--
+ 
   <bean id="aclContext" class="edu.ucla.mbi.util.context.JsonContext">
     <property name="config">
       <map>
@@ -103,9 +142,11 @@
       </map>
     </property>
   </bean>
--->    
+
+
  <!-- operation logger/interceptor -->
-<!--
+
+ <!--
   <bean id="logContext" class="edu.ucla.mbi.util.context.JsonContext">
     <property name="config">
       <map>
@@ -118,5 +159,5 @@
       </map>
     </property>
   </bean>
--->
+ -->
 </beans>

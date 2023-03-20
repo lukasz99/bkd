@@ -59,14 +59,14 @@
  <definition name="newscontent" template="/tiles/newscontent.jsp"/>
 
  <definition name="news" template="/tiles/layout.jsp">
-  <put-attribute name="title" value="BKD: News" />
+  <put-attribute name="title" value="${bkd.pagetitleshort}: News" />
   <put-attribute name="body" value="/tiles/news.jsp"/>
   <put-attribute name="edit" value="/tiles/news-edit.jsp"/>
   <put-attribute name="footer" type="definition" value="footer-news-edit"/>
  </definition>
 
  <definition name="uedit" template="/tiles/layout.jsp">
-  <put-attribute name="title" value="BKD: Login" />
+  <put-attribute name="title" value="${bkd.pagetitleshort}: Login" />
   <put-attribute name="body" value="/tiles/uedit.jsp"/>
   <put-attribute name="footer" type="definition" value="footer"/>
  </definition>

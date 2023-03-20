@@ -30,16 +30,15 @@
         http://cxf.apache.org/jaxrs
            http://cxf.apache.org/schemas/jaxrs.xsd">
 
-
   <!-- <import resource="classpath:META-INF/cxf/cxf.xml" /> ??? -->
 
 
   <!-- <import resource="classpath:META-INF/cxf/cxf-extension-xml.xml" /> -->
 
-    <!--<import resource="classpath:META-INF/cxf/cxf-servlet.xml" /> ??? -->
-
+  <!--<import resource="classpath:META-INF/cxf/cxf-servlet.xml" /> ??? -->
+  
   <!-- ======================================================= CPNFIGURATION -->
-
+  
   <import resource="siteconfig.xml" />
   
   <bean id="applicationContextProvider"
@@ -49,9 +48,9 @@
     
   <!-- ===================================================== DATABASE ACCESS -->
 
-  <!-- bkdRecordManager, bkdQueryManager --> 
+  <!-- NOTE: includes all ...Managers: bkdRecordManager, bkdQueryManager --> 
   <import resource="spring/bkd-dao.xml" />
-
+  
   <!-- ======================================================== CXF SERVICES -->
 
   <import resource="spring/cxf-services.xml" />
@@ -61,4 +60,11 @@
   <import resource="spring/actions.xml" /> 
   <import resource="spring/bkd-aop.xml" /> 
 
+  <!-- ========================================================ACL VALIDATOR -->
+
+  <bean id="aclValidator" init-method="initialize"
+        class="edu.ucla.mbi.bkd.struts.BkdAclValidator">
+    <property name="aclContext" ref="aclContext"/>
+  </bean>
+  
 </beans>

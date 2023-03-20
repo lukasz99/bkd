@@ -19,11 +19,11 @@ logging.basicConfig(level=logging.WARN)     # needs logging configured
 sys.path.insert(0, "/home/lukasz/git/bkd/bkd-client/pylib" )
 import bkdpy as BKD
 
-bkd_dest = { "cvdb0-local":"http://10.1.7.100:9999/cvdbdev0/services/soap?wsdl",
-             "cvdb0-public":"https://dip.mbi.ucla.edu/cvdbdev0/services/soap?wsdl",
-             "cvdb2-local":"http://10.1.7.102:9999/cvdbdev2/services/soap?wsdl",
-             "cvdb2-public":"https://dip.mbi.ucla.edu/cvdbdev2/services/soap?wsdl",
-             "cvdb":"https://dip.mbi.ucla.edu/cvdb/services/soap?wsdl" }
+bkd_dest = { "cvdb0-local":"http://10.1.7.100:9999/cvdbdev0",
+             "cvdb0-public":"https://dip.mbi.ucla.edu/cvdbdev0",
+             "cvdb2-local":"http://10.1.7.102:9999/cvdbdev2",
+             "cvdb2-public":"https://dip.mbi.ucla.edu/cvdbdev2",
+             "cvdb":"https://dip.mbi.ucla.edu/cvdb/services" }
 
 parser = argparse.ArgumentParser( description='Report Tool' )
 
@@ -47,22 +47,59 @@ parser.add_argument('--file', '-f', dest="file", type=str,
                     required=False, default='',
                     help='Report File.')
 
+parser.add_argument('--user', dest="user", type=str,
+                    required=False, default='',
+                    help='User (when needed)')
+
+parser.add_argument('--pass', dest="password", type=str,
+                    required=False, default='',
+                    help='password (when needed)')
+
+
+parser.add_argument('--debug', '-D', dest="debug", type=str,
+                    required=False, default='False',
+                    choices=['True','False'],
+                    help='Debug flag.')
+
 #spyder hack: add '-i' option only if present (as added by spyder)
 
 if '-i' in sys.argv:
     parser.add_argument('-i',  dest="i", type=str,
                         required=False, default=None)
 
+    
+# SCRIPT STARTS HERE
+#-------------------
+
 args = parser.parse_args()
 
-du = BKD.DxfUtils( bkd_dest[args.sloc] )
+print("ARGS:", args)
 
-bc = BKD.BkdClient(user="bkd", password="444bkd444")
+debug = args.debug
+
+srvUrl = bkd_dest[args.sloc]
+
+srvUrl = srvUrl.replace( "%%USER%%", args.user)
+srvUrl = srvUrl.replace( "%%PASS%%", args.password)
+
+rzeep = BKD.ReportZeep( srvUrl )
+#du = BKD.DxfUtils( bkd_dest[args.sloc] )
 
 if args.mode == "get":
-    zres = bc.getnode( args.ns, args.ac, debug=False )
-else:
-    #zres = bc.setnode(znode, mode=args.mode, debug=False)
-    pass
+    zrep = rzeep.getnode( args.ns, args.ac, debug=False )
+    print(ET.tostring(zrep, pretty_print=True).decode() )
 
-print(ET.tostring(zres, pretty_print=True).decode() )
+else:
+    if args.mode != "set":
+        sys.exit()
+
+    with open( args.file,"r") as ifh:
+        jrep = json.load( ifh )
+        
+    if args.debug == 'True':
+        print( json.dumps( jrep,indent=3 ) )
+        
+    zrep =  rzeep.buildZreport( jrep = jrep, debug = args.debug )
+    zres = rzeep.setnode( zrep, mode=args.mode, debug = False )
+
+

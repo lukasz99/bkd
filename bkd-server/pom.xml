@@ -18,7 +18,7 @@
     
   <properties>
     <service.version>${project.version}</service.version> 
-    <service.copyright>Copyright 1999-2021, UCLA</service.copyright> 
+    <service.copyright>Copyright 1999-2022, UCLA</service.copyright> 
     <service.bld>$Rev$</service.bld> 
     <service.wsver>1.0</service.wsver>
 
@@ -28,9 +28,6 @@
     <service.dbip>10.1.7.101</service.dbip>
     <service.esindex.url>http://10.1.7.103:9200/cvdb-%%TYPE%%-index-000001</service.esindex.url>
     <service.esindex.active>true</service.esindex.active>
-
-
-    
     
     <!-- library dependenciens -->
 
@@ -39,9 +36,12 @@
     <spring.version>5.1.9.RELEASE</spring.version>
     <aspectj.version>1.9.4</aspectj.version>
     <cglib.version>3.3.0</cglib.version>
-    <cxf.version>3.4.3</cxf.version>
+    <cxf.version>3.5.0</cxf.version>
     <slf4j.version>1.7.28</slf4j.version>
+    <!--
+    <hibernate.version>6.1.6.Final</hibernate.version>
     <hibernate.version>5.4.4.Final</hibernate.version>
+    -->
     <c3p0.version>0.9.5.4</c3p0.version>
     <postgresql.version>42.2.6</postgresql.version>
     <json.version>20190722</json.version>
@@ -65,7 +65,17 @@
         <srv.ver>cvdb</srv.ver>
         <db.ver>cvdb</db.ver>
         <rec.prefix>CVDB</rec.prefix>
-        <service.dbip>10.1.8.203</service.dbip>
+
+        <bkd.sitename>CVUS DB</bkd.sitename>
+        <bkd.site.copyright.date>2023</bkd.site.copyright.date>
+        <bkd.pagetitle>CVUS DB</bkd.pagetitle>
+        <bkd.pagetitleshort>CVUS DB</bkd.pagetitleshort>
+        <bkd.contact>lukasz@mbi.ucla.edu</bkd.contact>
+        
+        <bkd.mailserver>smtp.mbi.ucla.edu</bkd.mailserver>
+        <bkd.notificationqueue>/var/lib/cvdb/queue</bkd.notificationqueue>
+        
+        <service.dbip>10.1.7.203</service.dbip>
         <service.esindex.url>http://10.1.8.202:9200/cvdb-%%STATE%%-%%TYPE%%-index-000000</service.esindex.url>
       </properties>
       <build>
@@ -83,6 +93,13 @@
         <srv.ver>dip</srv.ver>
         <db.ver>dip</db.ver>
         <rec.prefix>DIP</rec.prefix>
+
+        <bkd.sitename>DIP2(beta)</bkd.sitename>
+        <bkd.site.copyright.date>1999-2023</bkd.site.copyright.date>
+        
+        <bkd.pagetitle>DIP2(beta)</bkd.pagetitle>
+        <bkd.pagetitleshort>DIP2(beta)</bkd.pagetitleshort>
+        
         <service.dbip>10.1.8.213</service.dbip>
         <service.esindex.url>http://10.1.8.212:9200/dip-%%STATE%%-%%TYPE%%-index-000000</service.esindex.url>
       </properties>
@@ -101,7 +118,17 @@
         <srv.ver>dipdev0</srv.ver>
         <db.ver>dip</db.ver>
         <rec.prefix>DIP</rec.prefix>
-        <service.esindex.url>http://10.1.7.103:9200/dip-%%TYPE%%-index-000000</service.esindex.url>
+
+        <bkd.sitename>DIP(dev0)</bkd.sitename>
+        <bkd.site.copyright.date>1999-2023</bkd.site.copyright.date>
+        
+        <bkd.pagetitle>DIP(dev0)</bkd.pagetitle>
+        <bkd.pagetitleshort>DIP</bkd.pagetitleshort>
+        <bkd.contact>dip@mbi.ucla.edu</bkd.contact>
+        <bkd.mailserver>smtp.mbi.ucla.edu</bkd.mailserver>
+        <bkd.notificationqueue>/var/tmp/dipdev0/queue</bkd.notificationqueue>
+        
+        <service.esindex.url>http://10.1.7.103:9200/dip-%%STATE%%-%%TYPE%%-index-000000</service.esindex.url>        
       </properties>
       <build>
        <finalName>dipdev0</finalName>
@@ -118,7 +145,18 @@
        <srv.ver>dipdev2</srv.ver>
        <db.ver>dip</db.ver>
        <rec.prefix>DIP</rec.prefix>
-       <service.esindex.url>http://10.1.7.103:9200/dip-%%TYPE%%-index-000002</service.esindex.url>
+
+       <bkd.sitename>DIP(dev2)</bkd.sitename>
+       <bkd.site.copyright.date>1999-2023</bkd.site.copyright.date>
+       
+       <bkd.pagetitle>DIP(dev2)</bkd.pagetitle>
+       <bkd.pagetitleshort>DIP</bkd.pagetitleshort>
+       <bkd.contact>dip@mbi.ucla.edu</bkd.contact>
+       
+       <bkd.mailserver>smtp.mbi.ucla.edu</bkd.mailserver>
+       <bkd.notificationqueue>/var/tmp/dipdev2/queue</bkd.notificationqueue>
+       
+       <service.esindex.url>http://10.1.7.103:9200/dip-%%STATE%%-%%TYPE%%-index-000002</service.esindex.url>
      </properties>
      <build>
       <finalName>dipdev2</finalName>
@@ -135,10 +173,21 @@
        <srv.ver>dipdev3</srv.ver>
        <db.ver>dip</db.ver>
        <rec.prefix>DIP</rec.prefix>
-       <service.esindex.url>http://10.1.7.103:9200/dip-%%TYPE%%-index-000000</service.esindex.url>
+
+       <bkd.sitename>DIP(dev3)</bkd.sitename>
+       <bkd.site.copyright.date>1999-2023</bkd.site.copyright.date>
+       
+       <bkd.pagetitle>DIP(dev3)</bkd.pagetitle>
+       <bkd.pagetitleshort>DIP</bkd.pagetitleshort>
+       <bkd.contact>dip@mbi.ucla.edu</bkd.contact>
+       
+       <bkd.mailserver>smtp.mbi.ucla.edu</bkd.mailserver>
+       <bkd.notificationqueue>/var/tmp/dipdev3/queue</bkd.notificationqueue>
+       
+       <service.esindex.url>http://10.1.7.103:9200/dip-%%STATE%%-%%TYPE%%-index-000000</service.esindex.url>
      </properties>
      <build>
-      <finalName>dipdev2</finalName>
+      <finalName>dipdev3</finalName>
      </build>
     </profile>
     
@@ -150,9 +199,29 @@
      <properties>
        <site>cvdb</site>
        <srv.ver>cvdbdev0</srv.ver>
+       <!--
+       
        <db.ver>cvdb</db.ver>
        <rec.prefix>CVDB</rec.prefix>
-       <service.esindex.url>http://10.1.7.103:9200/cvdb-%%TYPE%%-index-000001</service.esindex.url>
+       <service.esindex.url>http://10.1.7.103:9200/cvdb-%%STATE%%-%%TYPE%%-index-000001</service.esindex.url>
+       -->
+       
+       <bkd.sitename>CVUS DB(dev0)</bkd.sitename>
+       <bkd.site.copyright.date>2023</bkd.site.copyright.date>
+       
+       <bkd.pagetitle>CVUS(dev0) Database</bkd.pagetitle>
+       <bkd.pagetitleshort>CVUS DB</bkd.pagetitleshort>
+       <bkd.contact>lukasz@mbi.ucla.edu</bkd.contact>
+       
+       <bkd.mailserver>smtp.mbi.ucla.edu</bkd.mailserver>
+       <bkd.notificationqueue>/var/tmp/cvdbdev0/queue</bkd.notificationqueue>
+       
+       <srv.ver>cvdbdev0</srv.ver>
+       <db.ver>cvdb</db.ver>
+       <rec.prefix>CVDB</rec.prefix>
+       <service.dbip>10.1.7.203</service.dbip>
+       <service.esindex.url>http://10.1.8.202:9200/cvdb-%%STATE%%-%%TYPE%%-index-000000</service.esindex.url>
+       
      </properties>
      <build>
       <finalName>cvdbdev0</finalName>
@@ -160,20 +229,102 @@
     </profile>
     
     <profile>     
-     <id>cvdbdev2</id>
-     <activation>
-      <activeByDefault>false</activeByDefault>
-     </activation>
-     <properties>
-       <site>cvdb</site>
-       <srv.ver>cvdbdev2</srv.ver>
+      <id>cvdbdev2</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <properties>
+        <site>cvdb</site>
+        <srv.ver>cvdbdev2</srv.ver>
+        <db.ver>cvdb</db.ver>
+        <rec.prefix>CVDB</rec.prefix>
+        
+        <bkd.sitename>CVUS(dev2) DB</bkd.sitename>
+        <bkd.site.copyright.date>2023</bkd.site.copyright.date>
+        <bkd.pagetitle>CVUS(dev2) Database</bkd.pagetitle>
+        <bkd.pagetitleshort>CVUS DB</bkd.pagetitleshort>
+        <bkd.contact>lukasz@mbi.ucla.edu</bkd.contact>
+        
+        <service.dbip>10.1.7.203</service.dbip>
+        <service.esindex.url>http://10.1.8.202:9200/cvdb-%%STATE%%-%%TYPE%%-index-000000</service.esindex.url>
+      </properties>
+      <build>
+        <finalName>cvdbdev2</finalName>
+      </build>     
+    </profile>
+    
+    <profile>
+      <id>apdbdev0</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <properties>
+        <site>apdb</site>
+        <srv.ver>apdbdev0</srv.ver>
+        <!--
+       
+       <db.ver>cvdb</db.ver>
+       <rec.prefix>APVD</rec.prefix>
+       <service.esindex.url>http://10.1.7.103:9200/apdb-%%TYPE%%-index-000001</service.esindex.url>
+        -->
+        <bkd.sitename>APDD(dev0)</bkd.sitename>
+        <bkd.site.copyright.date>2023</bkd.site.copyright.date>
+       
+        <bkd.pagetitle>Amyloid Protein Database (dev0)</bkd.pagetitle>
+        <bkd.pagetitleshort>APDB</bkd.pagetitleshort>
+        <bkd.contact>lukasz@mbi.ucla.edu</bkd.contact>
+
+        <bkd.mailserver>smtp.mbi.ucla.edu</bkd.mailserver>
+        <bkd.notificationqueue>/var/tmp/apdbdev0/queue</bkd.notificationqueue>
+        
+        <srv.ver>apdbdev0</srv.ver>
+        <db.ver>apdb</db.ver>
+        <rec.prefix>APDB</rec.prefix>
+        <service.dbip>10.1.7.203</service.dbip>
+        <service.esindex.url>http://10.1.8.202:9200/apdb-%%STATE%%-%%TYPE%%-index-000000</service.esindex.url>
+        
+      </properties>
+     
+      <build>
+        <finalName>apdbdev0</finalName>
+      </build>
+    </profile>
+    
+    <profile>
+      <id>apdbdev2</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <properties>
+        <site>apdb</site>
+        <srv.ver>apdbdev0</srv.ver>
+        <!--
+       
        <db.ver>cvdb</db.ver>
        <rec.prefix>CVDB</rec.prefix>
-       <service.esindex.url>http://10.1.7.103:9200/cvdb-%%TYPE%%-index-000002</service.esindex.url>
-     </properties>
+       <service.esindex.url>http://10.1.7.103:9200/apdb-%%TYPE%%-index-000001</service.esindex.url>
+        -->
+        <bkd.sitename>APDB(dev2)</bkd.sitename>
+        <bkd.site.copyright.date>2023</bkd.site.copyright.date>
+       
+        <bkd.pagetitle>Amyloid Protein Database (dev0)</bkd.pagetitle>
+        <bkd.pagetitleshort>APDB</bkd.pagetitleshort>
+        <bkd.contact>lukasz@mbi.ucla.edu</bkd.contact>
+
+        <bkd.mailserver>smtp.mbi.ucla.edu</bkd.mailserver>
+        <bkd.notificationqueue>/var/tmp/apdbdev2/queue</bkd.notificationqueue>
+        
+        <srv.ver>apdbdev2</srv.ver>
+        <db.ver>apdb</db.ver>
+        <rec.prefix>APDB</rec.prefix>
+        <service.dbip>10.1.7.203</service.dbip>
+        <service.esindex.url>http://10.1.8.202:9200/apdb-%%STATE%%-%%TYPE%%-index-000000</service.esindex.url>
+        
+      </properties>
+     
      <build>
-      <finalName>cvdbdev2</finalName>
-     </build>     
+      <finalName>apdbdev2</finalName>
+     </build>
     </profile>
     
   </profiles>
@@ -322,6 +473,27 @@
       <artifactId>cxf-rt-transports-http-jetty</artifactId>
       <version>${cxf.version}</version>
     </dependency>
+
+   <dependency>
+    <groupId>javax.mail</groupId>
+    <artifactId>javax.mail-api</artifactId>
+    <version>${email.version}</version>
+   </dependency>
+
+   <dependency>
+    <groupId>com.sun.mail</groupId>
+    <artifactId>javax.mail</artifactId>
+    <version>${email.version}</version>
+   </dependency>
+
+
+
+   <dependency>
+    <groupId>com.sun.xml.messaging.saaj</groupId>
+    <artifactId>saaj-impl</artifactId>
+    <version>1.5.1</version>
+   </dependency>  
+
     
   </dependencies>
 
@@ -340,7 +512,7 @@
           <target>11</target>
           <sourcepath>target/generated-sources</sourcepath>
         </configuration>
-      </plugin>                                                                                                                                                                                                                            
+      </plugin>
       
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -348,24 +520,16 @@
         <version>3.1.0</version>
         <configuration>
 
-          <webResources>
-             <resource>
+          <webResources>                       
+
+            <resource>
               <directory>${basedir}/src/main/common/tiles</directory>
               <targetPath>tiles</targetPath>
               <filtering>true</filtering>
               <includes>
                 <include>*.jsp</include>                   
               </includes>
-            </resource>
-
-            <resource>
-              <directory>${basedir}/src/main/${db.ver}/tiles</directory>
-              <targetPath>tiles</targetPath>
-              <filtering>true</filtering>
-              <includes>
-                <include>*.jsp</include>                   
-              </includes>
-            </resource>
+             </resource>
 
             <resource>
               <directory>${basedir}/src/main/common/js</directory>
@@ -373,6 +537,24 @@
               <filtering>true</filtering>
               <includes>
                 <include>*.js</include>                   
+              </includes>
+            </resource>
+            
+            <resource>
+              <directory>${basedir}/src/main/common/css</directory>
+              <targetPath>css</targetPath>
+              <filtering>true</filtering>
+              <includes>
+                <include>*.css</include>                   
+              </includes>
+            </resource>
+ 
+            <resource>
+              <directory>${basedir}/src/main/${db.ver}/tiles</directory>
+              <targetPath>tiles</targetPath>
+              <filtering>true</filtering>
+              <includes>
+                <include>*.jsp</include>                   
               </includes>
             </resource>
 
@@ -384,7 +566,15 @@
                 <include>*.js</include>                   
               </includes>
             </resource>
-
+            
+            <resource>
+              <directory>${basedir}/src/main/${db.ver}/css</directory>
+              <targetPath>css</targetPath>
+              <filtering>true</filtering>
+              <includes>
+                <include>*.css</include>                   
+              </includes>
+            </resource>
             
             <resource>
               <directory>${basedir}/src/main/${db.ver}/img</directory>
@@ -406,6 +596,15 @@
               </includes>
             </resource>
 
+            <resource>
+              <directory>${basedir}/src/main/${db.ver}/pages</directory>
+              <targetPath>pages</targetPath>
+              <filtering>true</filtering>
+              <includes>
+                <include>*.html</include>   
+                <include>*.txt</include>   
+              </includes>
+            </resource>
             
             <resource>
               <directory>${basedir}/src/main/${db.ver}</directory>
@@ -425,6 +624,7 @@
               <filtering>true</filtering>
               <includes>
                 <include>siteconfig.xml</include>
+                <include>usermgr.hbm.xml</include>
               </includes>
             </resource>
             
@@ -477,8 +677,8 @@
         <groupId>org.eclipse.jetty</groupId>
          <artifactId>jetty-maven-plugin</artifactId>
 <!--         <version>9.4.19.v20190610</version> -->     
-         <version>9.4.39.v20210325</version> 
-<!--          <version>11.0.2</version>  -->
+<!--         <version>9.4.39.v20210325</version> -->
+          <version>9.4.45.v20220203</version> 
 
          <configuration>
            <webApp>
@@ -493,6 +693,11 @@
            <systemProperty>
                <name>log4j2.configuration</name>
               <value>file:../etc/jetty/log4j2.xml</value>
+           </systemProperty>           
+
+           <systemProperty>
+               <name>org.apache.cxf.stax.maxChildElements</name>
+              <value>200000</value>
            </systemProperty>           
            
          </configuration>
