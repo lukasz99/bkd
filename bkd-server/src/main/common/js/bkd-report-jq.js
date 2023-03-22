@@ -794,15 +794,22 @@ BKDrep = {
                             $(tgtAnchor).append( "<input type='hidden' class='bkd-rep-fld bkd-report' id='"+flist[i].id+"'/>");
                             $("#" + flist[i].id).val(fval);
                         } if( flist[i].type == 'label'){
+                            
                             BKDrep.appendLabel( tgtAnchor, flist[i]["css-class"],
                                                 flist[i].name, fval, fvalShrt );
                         }
                         if( BKDcustom == undefined ) return;
                         if( BKDcustom.callback == undefined ) return;
                         if( BKDcustom.callback["report-tgt-view"] == undefined ) return;
-                        
-                        BKDcustom.callback["report-tgt-view"]("foo");
-                        
+
+                        if( flist[i]["custom-view"] != undefined ){
+                            var cbck = flist[i]["custom-view"];
+                            BKDcustom.callback[ cbck ]({ "anchor": tgtAnchor,
+                                                         "conf":flist[i],
+                                                         "val":fval,
+                                                         "report":data['report']
+                                                       });
+                        }
                     } else {  // string value                 
                         if( flist[i].edit && mode == 'edit' ){
                             $(tgtAnchor).append("<input type='text' size='32' maxlength='64' class='bkd-rep-fld'>"+fval+"</input>");   
