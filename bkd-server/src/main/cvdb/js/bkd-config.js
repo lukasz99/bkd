@@ -2,16 +2,16 @@ BKDconf = {
     "report": {     
         "feature":{
             "channel-report":{
-                "active": true,
-                "type":"channel-report",
-                "cvType":{"ac":"dxf:0096","definition":"","name":"channel-report","ns":"dxf"},
-                "label":"Channel report",
-                "ac":{
+                active: true,
+                type:"channel-report",
+                cvType:{"ac":"dxf:0096","definition":"","name":"channel-report","ns":"dxf"},
+                label:"Channel report",
+                ac:{
                     "id":"ac",
                     "vpath":['ac'],
                     "type":"hidden"
                 },
-                
+                presubmit: "report_presubmit", 
                 "header":[
                     { "name":"Experimental Protein Report",
                       "value":"Voltage-gated Channel Report",                      
@@ -44,13 +44,14 @@ BKDconf = {
                     { "name":"Gene",
                       "vpath":['target','gene']},
                     
-                    {"name":"Experimental Sequence ID",
-                     "value":"O6503-2",
-                     "type":"label",
+                    {name:"Experimental Sequence ID",
+                     value:"O6503-2",
+                     type:"label",
+                     id: "report_target_feature_seqid", 
                      "css-class": "bkd-rep-head-3",
-                     "edit": true,
-                     "custom-edit": "report-tgt-edit",
-                     "custom-view": "report-tgt-view"                     
+                     edit: true,                     
+                     custom_edit: "report_tgt_edit",
+                     custom_view: "report_tgt_view"                     
                     },
                     
                     {"name":"Taxon",
@@ -59,8 +60,8 @@ BKDconf = {
                     
                     {"name":"Cross-references",
                      "css-class": "bkd-rep-head-3",
-                     "vpath":['target','xrefs'],
-                     "type":"xref",
+                     vpath:['target','xrefs'],
+                     type:"xref",                     
                      "id":"report_target_feature_node_xrefs",
                      "list":true,
                      "collapse":true
@@ -98,7 +99,8 @@ BKDconf = {
                          },
                          {"name":"Cross-references",
                           "css-class": "bkd-rep-head-3",
-                          "id":'report_target_feature_xrefs', 
+                          "id":'report_target_feature_xrefs',
+                          xref_type_exclude: "describes",
                           "vpath":['target','feature','xref'],
                           "type":"xref",
                           "xref-ns":[{"ns":"psi-mi",label:"-- database --"},

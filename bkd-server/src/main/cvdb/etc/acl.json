@@ -119,7 +119,7 @@
                 ogrp:["MATCH","IMEX_ADMIN"]
             },
             "update": {
-                order:["allow"],
+                order:["ANY"],
                 allow:{
                     user:["lukasz97"],
                     role:["curator"],
@@ -129,7 +129,7 @@
                 ogrp:["MATCH","IMEX_ADMIN"]
             },
             "edit": {
-                order:["allow"],
+                order:["ANY"],
                 allow:{
                     user:["lukasz97"],
                     role:["curator"],

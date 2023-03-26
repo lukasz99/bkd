@@ -25,6 +25,8 @@ BKDrep = {
         this.headerAnchor=headerAnchor;
         this.tgtAnchor=tgtAnchor;
         this.valAnchor=valAnchor;
+
+        console.log("BKDrep.view: MODE=<" + mode + ">");
         
         if(data == null ){
             BKDrep.search( data, this.srcAnchor );
@@ -467,12 +469,12 @@ BKDrep = {
             $( tgtAnchor ).show();
         }
         
+        console.log("tgtView: MODE=" + mode );
         console.log("DATA:",data);
         console.log(" CVTYPE:", data.report.type); 
         var flist = BKDconf["report"]["feature"][data.report.type.name].target;
         console.log(" FLIST:", flist);
-        console.log(" custom:", BKDcustom);
-        
+               
         // report accession - not needed ? 
         //-----------------
         
@@ -554,12 +556,17 @@ BKDrep = {
                             
                             var cval = fvlist[v];                   
                             if(flist[i].type == "xref"){
+                                console.log("xref flist:", flist[i]);
+                                console.log("xref cval:", cval);
+
+                                if( flist[i].xref_type_exclude == undefined
+                                    || flist[i].xref_type_exclude != cval.tname ){ 
                                 
-                                var cel = BKDlink.xrefType(cval);  
+                                    var cel = BKDlink.xrefType(cval);  
                                 
-                                $( "#" + flist[i].id + "_body" )
-                                    .append(" <div class='bkd-rep-fld'> "+cel+"</div>\n");
-                                
+                                    $( "#" + flist[i].id + "_body" )
+                                        .append(" <div class='bkd-rep-fld'> "+cel+"</div>\n");
+                                }
                             } else {
                                 $( "#" + flist[i].id + "_body" )
                                     .append(" <div class='bkd-rep-fld'> "+cval.ns +": "+cval.ac+"</div>\n");
@@ -627,8 +634,13 @@ BKDrep = {
                                     console.log(" show editables...");
                                     //build add fields for editable lists
                                     
-                                    if( flist[i].value[k].type == "xref") {                      
+                                    if( flist[i].value[k].type == "xref") {
+
+                                        console.log("xref flist(2):", flist[i]);
+                                        console.log("xref cval:", cval);
+                                            
                                         BKDrep.xrefEdit( flist[i].value[k], cvid, cval );
+                                        
                                     } 
                                     
                                     if( flist[i].value[k].type == "range" ){
@@ -658,7 +670,15 @@ BKDrep = {
                                         if(flist[i].value[k].type){
                                             
                                             if( flist[i].value[k].type == "xref" ){
-                                                BKDrep.xrefHidden( flist[i].value[k], clist, m );
+
+                                                console.log("xref flist(3):", flist[i]);
+                                                console.log("xref cval:", cval);
+                                        
+                                                if( flist[i].value[k].xref_type_exclude == undefined
+                                                    || flist[i].value[k].xref_type_exclude != cval.tname ){ 
+                                                    
+                                                    BKDrep.xrefHidden( flist[i].value[k], clist, m );
+                                                }
                                             }
                                             
                                             if(flist[i].value[k].type == "range"){
@@ -784,42 +804,67 @@ BKDrep = {
                 var fvalShrt = BKDrep.path2val( data['report'], flist[i]["vpath-short"] );
                 
                 if( fval !== undefined && fval !== null ){
-                    console.log("fval: ok " + flist[i].type);
-                    if( flist[i].type ){
-                        if(flist[i].type == 'taxon'){
-                            var fval = BKDlink.taxid( fval );
-                            $(tgtAnchor).append("<div class='" + cclass + "'>"+fname+ ":"+ fval +"</div>");
-                        } else if( flist[i].type == 'hidden'){
-                            console.log("AC");
-                            $(tgtAnchor).append( "<input type='hidden' class='bkd-rep-fld bkd-report' id='"+flist[i].id+"'/>");
-                            $("#" + flist[i].id).val(fval);
-                        } if( flist[i].type == 'label'){
-                            
-                            BKDrep.appendLabel( tgtAnchor, flist[i]["css-class"],
-                                                flist[i].name, fval, fvalShrt );
-                        }
-                        if( BKDcustom == undefined ) return;
-                        if( BKDcustom.callback == undefined ) return;
-                        if( BKDcustom.callback["report-tgt-view"] == undefined ) return;
 
-                        if( flist[i]["custom-view"] != undefined ){
-                            var cbck = flist[i]["custom-view"];
-                            BKDcustom.callback[ cbck ]({ "anchor": tgtAnchor,
-                                                         "conf":flist[i],
-                                                         "val":fval,
-                                                         "report":data['report']
-                                                       });
-                        }
-                    } else {  // string value                 
-                        if( flist[i].edit && mode == 'edit' ){
-                            $(tgtAnchor).append("<input type='text' size='32' maxlength='64' class='bkd-rep-fld'>"+fval+"</input>");   
-                        } else {
+                    if( flist[i].edit && mode == "edit"
+                        && flist[i].custom_edit != undefined ){
+                        
+                        console.log("fval: ok, custom edit handler " + flist[i].custom_edit, " mode=", mode);
+                        var cbck = flist[i].custom_edit;
+                        if( BKDcustom == undefined || 
+                            BKDcustom.handler == undefined ) return;
+                        
+                        if( BKDcustom.handler[cbck] == undefined ) return;
 
-                            var field = fval;
-                            if( fvalShrt != null ){
-                                field = field + " ("+fvalShrt +")";
+                        BKDcustom.handler[ cbck ]({ "anchor": tgtAnchor,
+                                                    "conf":flist[i],
+                                                    "val":fval,
+                                                    "report":data['report']
+                                                  });
+                        
+                    } else if( mode != "edit" && flist[i].custom_view != undefined ){
+                        
+                        console.log("fval: ok, custom  handler " + flist[i].custom_view );
+                        var cbck = flist[i].custom_view;
+                        if( BKDcustom == undefined || 
+                            BKDcustom.handler == undefined ) return;
+                        
+                        if( BKDcustom.handler[cbck] == undefined ) return;
+
+                        var cbck = flist[i].custom_view;
+                        BKDcustom.handler[ cbck ]({ "anchor": tgtAnchor,
+                                                    "conf":flist[i],
+                                                    "val":fval,
+                                                    "report":data['report']
+                                                  });
+                        //return;
+                    } else {
+
+                        console.log("fval: ok, std handler " + flist[i].type);
+                        if( flist[i].type ){
+                            if(flist[i].type == 'taxon'){
+                                var fval = BKDlink.taxid( fval );
+                                $(tgtAnchor).append("<div class='" + cclass + "'>"+fname+ ":"+ fval +"</div>");
+                            } else if( flist[i].type == 'hidden'){
+                                console.log("AC");
+                                $(tgtAnchor).append( "<input type='hidden' class='bkd-rep-fld bkd-report' id='"
+                                                     + flist[i].id+"'/>");
+                                $("#" + flist[i].id).val(fval);
+                            } if( flist[i].type == 'label'){  
+                                BKDrep.appendLabel( tgtAnchor, flist[i]["css-class"],
+                                                    flist[i].name, fval, fvalShrt );
+                            }                        
+                        } else {  // string value                 
+                            if( flist[i].edit && mode == 'edit' ){
+                                $(tgtAnchor).append("<input type='text' size='32' maxlength='64' class='bkd-rep-fld'>"
+                                                    + fval + "</input>");   
+                            } else {
+                                
+                                var field = fval;
+                                if( fvalShrt != null ){
+                                    field = field + " ("+fvalShrt +")";
+                                }
+                                $(tgtAnchor).append("<div class='" + cclass +"'>"+fname+ ": "+field +"</div>");
                             }
-                            $(tgtAnchor).append("<div class='" + cclass +"'>"+fname+ ": "+field +"</div>");
                         }
                     }
                 }
@@ -870,7 +915,9 @@ BKDrep = {
         }
     },
     
-    valEdit: function( data, valAnchor ){
+    valEdit: function( data, valAnchor, args ){
+
+        var repconf = BKDconf.report.feature[data.report.type.name];
         
         if( data == null ){   
             $( valAnchor).hide();
@@ -964,6 +1011,7 @@ BKDrep = {
             .append("<div><input type='button' id='" + "report_submit" + "'/></div>\n");
         $( "#"+"report_submit").attr('value', 'Submit Report');
         $( "#" + "report_submit" ).on( 'click', function( event ){
+
             
             BKDrep.postData = { "report_type": repTp } ; 
             
@@ -978,9 +1026,16 @@ BKDrep = {
                     console.log( "ERR:" + el.id + " : " + el );
                 }
             });
-
-            console.log("reportJson", JSON.stringify(BKDrep.postData) );
-
+            
+            if( repconf.presubmit != undefined ){
+                console.log("repconf.presubmit", repconf.presubmit);
+                BKDcustom.handler[repconf.presubmit]({data: BKDrep.postData, conf: repconf });
+                
+               
+            }
+             
+            console.log("report posted", BKDrep.postData );
+           
             var acall = { type: "POST",
                           url: "report",
                           data: {"reportJson": JSON.stringify(BKDrep.postData),
@@ -990,7 +1045,7 @@ BKDrep = {
                           encode: true,
                           complete: function(jqXHR,status){
                              alert( "submission: done !!!" );
-                             window.location.href = 'report?qmode=report&query='+BKDrep.postData.report_target_ac;
+                             //window.location.href = 'report?qmode=report&query='+BKDrep.postData.report_target_ac;
                           }
                         };
             
@@ -1255,13 +1310,20 @@ BKDrep = {
     
     xrefView: function( cel, cvid, cval ){
 
+        //console.log("xref flist(3):", flist[i]);
+        //console.log("xref cval:", cval);
+        
+        //if( flist[i].value[k].xref_type_exclude == undefined
+        //    || flist[i].value[k].xref_type_exclude != cval.tname ){ 
+                    
         for( var x = 0; x < cval.length; x++){ 
           
             var ctx ="";
             var cid= cel.id +"_" + x;
 
             console.log("CVAL " + JSON.stringify(cval[x]));
-          
+            console.log("CEL:", cel);
+            
             var xlnk = BKDlink.xref(cval[x]);  
             console.log("XLNK:" + xlnk + "CVT:" + JSON.stringify( cval[x].cvType ) );           
             console.log("CVTLST:");
@@ -1281,30 +1343,34 @@ BKDrep = {
                 }
             }
 
-            $( "#" + cel.id ).append( "<div id='" + cid + "' class='bkd-rep-fld bkd-range'>" + xtlbl + xlnk +
-                                      "\n</div>" );
+            if( cel.xref_type_exclude == undefined
+                || cel.xref_type_exclude != cval[x]["type-name"] ){
             
-            $("#"+ cid).append("<input type='hidden' id='" + cid + "_ns' class='bkd-report' />" );
-            $("#" + cid + "_ns").val(cval[x].ns);
+                $( "#" + cel.id ).append( "<div id='" + cid + "' class='bkd-rep-fld bkd-range'>" + xtlbl + xlnk +
+                                          "\n</div>" );
             
-            $("#"+ cid).append("<input type='hidden' id='" + cid + "_ac' class='bkd-report' />" );
-            $("#" + cid + "_ac").val(cval[x].ac);
+                $("#"+ cid).append("<input type='hidden' id='" + cid + "_ns' class='bkd-report' />" );
+                $("#" + cid + "_ns").val(cval[x].ns);
             
-            $("#"+ cid).append( "<input type='hidden' id='" + cid + "_tns' class='bkd-report' />");
-
-            if( cval[x].cvType != undefined ){
-                $("#" + cid + "_tns" ).val( cval[x].cvType.ns );
-            }
+                $("#"+ cid).append("<input type='hidden' id='" + cid + "_ac' class='bkd-report' />" );
+                $("#" + cid + "_ac").val(cval[x].ac);
             
-            $("#"+ cid).append( "<input type='hidden' id='" + cid + "_tac' class='bkd-report' />");
-            if( cval[x].cvType != undefined ){
-                $("#" + cid + "_tac" ).val( cval[x].cvType.ac );
-            }
+                $("#"+ cid).append( "<input type='hidden' id='" + cid + "_tns' class='bkd-report' />");
+                
+                if( cval[x].cvType != undefined ){
+                    $("#" + cid + "_tns" ).val( cval[x].cvType.ns );
+                }
             
-            $("#"+ cid).append( "<input type='hidden' id='" + cid + "_tname' class='bkd-report' />");
-
-            if( cval[x].cvType != undefined ){
-                $("#" + cid + "_tname" ).val( cval[x].cvType.name );
+                $("#"+ cid).append( "<input type='hidden' id='" + cid + "_tac' class='bkd-report' />");
+                if( cval[x].cvType != undefined ){
+                    $("#" + cid + "_tac" ).val( cval[x].cvType.ac );
+                }
+            
+                $("#"+ cid).append( "<input type='hidden' id='" + cid + "_tname' class='bkd-report' />");
+                
+                if( cval[x].cvType != undefined ){
+                    $("#" + cid + "_tname" ).val( cval[x].cvType.name );
+                }
             }
         }   
         
@@ -1327,87 +1393,87 @@ BKDrep = {
          }
          xtsel = xtsel + "</select>";
 
-         var divAdd = " <div class='bkd-rep-fld'>" + 
-                      xtsel + " " + xnsel + 
-                      "  <input type='text' id='" + cel.id+"_ac'/> " + 
-                       
-                      "  <input type='button' id='" + cel.id+"_add'/>"+
-                      " </div>";
-
-         $( "#" + cel.id ).append( divAdd );
-         $( "#" + cel.id + "_add" ).attr('value', 'Add Xref');
-         $( "#" + cel.id + "_add" ).on( 'click', function (event) {
-
+        var divAdd = " <div class='bkd-rep-fld'>" + 
+            xtsel + " " + xnsel + 
+            "  <input type='text' id='" + cel.id+"_ac'/> " + 
+            
+            "  <input type='button' id='" + cel.id+"_add'/>"+
+            " </div>";
+        
+        $( "#" + cel.id ).append( divAdd );
+        $( "#" + cel.id + "_add" ).attr('value', 'Add Xref');
+        $( "#" + cel.id + "_add" ).on( 'click', function (event) {
+            
             var prefix= event.currentTarget.id.replace('_add','_');
             
             var xns = $("#"+event.currentTarget.id.replace('_add','_ns')).val();
             var xac = $("#"+event.currentTarget.id.replace('_add','_ac')).val();
             var xtac = $("#"+event.currentTarget.id.replace('_add','_type')).val();
-
+            
             console.log("XREFADD: " + xns + " : " + xac + " : " + xtac );
             var xtns ="";
             var xtnm ="";
             var xtlbl =""; 
             for(t=0; t< cel["xref-type"].length;t++){
-              console.log(t+" : " +cel["xref-type"][t]);
-              if(cel["xref-type"][t].ac == xtac){
-                 xtns = cel["xref-type"][t]["ns"];
-                 xtnm = cel["xref-type"][t]["name"];
-                 xtlbl = cel["xref-type"][t]["label"];
-              }
+                console.log(t+" : " +cel["xref-type"][t]);
+                if(cel["xref-type"][t].ac == xtac){
+                    xtns = cel["xref-type"][t]["ns"];
+                    xtnm = cel["xref-type"][t]["name"];
+                    xtlbl = cel["xref-type"][t]["label"];
+                }
             }
-
+            
             BKDrep.fxlist = [];
-
+            
             $(".bkd-xref").each( function( index, elem){
-                 BKDrep.fxlist.push( elem.id );                                 
+                BKDrep.fxlist.push( elem.id );                                 
             });
-
+            
             var xmax = 0;
-
+            
             for(var x=0; x < BKDrep.fxlist.length; x++ ){                              
-               var icur = Number( BKDrep.fxlist[x].replace( prefix, '' ) ); 
-               if(  icur > xmax ){
-                 xmax = icur;
-               }
+                var icur = Number( BKDrep.fxlist[x].replace( prefix, '' ) ); 
+                if(  icur > xmax ){
+                    xmax = icur;
+                }
             }
             
             console.log( xns +" : " + xac + ":" + xtns + " : " + xtac);
             xmax=xmax+1;
-
+            
             var cval = BKDlink.xref({ns:xns, ac: xac,
                                      cvType:{ ns:xtns, ac:xtac, name:xtnm } } );
-
+            
             var cid = prefix + xmax;
             
             var chid ="<input type='hidden' id='"+cid+"_ns'/>\n"+
-                      "<input type='hidden' id='"+cid+"_ac'/>\n"+
-                      "<input type='hidden' id='"+cid+"_tns'/>\n"+
-                      "<input type='hidden' id='"+cid+"_tac'/>\n"+
-                      "<input type='hidden' id='"+cid+"_tname'/>\n";
-
+                "<input type='hidden' id='"+cid+"_ac'/>\n"+
+                "<input type='hidden' id='"+cid+"_tns'/>\n"+
+                "<input type='hidden' id='"+cid+"_tac'/>\n"+
+                "<input type='hidden' id='"+cid+"_tname'/>\n";
+            
             $( "#" + event.currentTarget.id.replace('_add','') )
                 .append( " <div class='bkd-rep-fld bkd-xref' id='"+cid+"'>" +
                          xtlbl + ": " + cval + chid +
                          "  <input type='button' id='"+cid+"_drop'/>"+
                          " </div>\n");
-
+            
             $('#'+cid+"_ns").val(xns).addClass("bkd-report");
             $('#'+cid+"_ac").val(xac).addClass("bkd-report");
             $('#'+cid+"_tns").val(xtns).addClass("bkd-report");                                 
             $('#'+cid+"_tac").val(xtac).addClass("bkd-report");                                 
             $('#'+cid+"_tname").val(xtnm).addClass("bkd-report");                                 
-
+            
             $("#"+cid+"_drop").attr( 'value', 'Drop Xref' );
             $("#"+cid+"_drop").on( 'click', function (event) {                                 
                 var idDrop = event.currentTarget.id.replace("_drop","");
                 $("#" + idDrop ).remove();
-              }); 
-         });
-
+            }); 
+        });
+        
         // add already existing
         for( var x = 0; x < cval.length; x++){ 
-          
+            
             var ctx ="";
             var cid= cel.id +"_" + x;
             
@@ -1422,7 +1488,7 @@ BKDrep = {
             if( cval[x].cvType !== undefined ){
                 xtac = cval[x].cvType.ac;
             } 
-                
+            
             var xtlbl ="";
             for(t=0; t< cel["xref-type"].length;t++){
                 console.log(t+" : " + cel["xref-type"][t]);
@@ -1433,50 +1499,55 @@ BKDrep = {
                 }
             }
 
-            $( "#" + cel.id ).append( "<div id='" + cid + "' class='bkd-rep-fld bkd-range'>" + xtlbl + xlnk +
-                                      "\n<input type='button' id='" + cid + "_drop'/></div>\n</div>" );
-          
-            $("#"+ cid).append("<input type='hidden' id='" + cid + "_ns' class='bkd-report' />" );
-            $("#" + cid + "_ns").val(cval[x].ns);
-          
-            $("#"+ cid).append("<input type='hidden' id='" + cid + "_ac' class='bkd-report' />" );
-            $("#" + cid + "_ac").val(cval[x].ac);
-          
-            $("#"+ cid).append( "<input type='hidden' id='" + cid + "_tns' class='bkd-report' />");
-            if( cval[x].cvType !== undefined ){
-                $("#" + cid + "_tns" ).val( cval[x].cvType.ns );
-            }
-            
-            $("#"+ cid).append( "<input type='hidden' id='" + cid + "_tac' class='bkd-report' />");
-            if( cval[x].cvType !== undefined ){
-                $("#" + cid + "_tac" ).val( cval[x].cvType.ac );
-            } else {
-                $("#" + cid + "_tac" ).val( cval[x]["type-cv"] );
-            }
+            if( cel.xref_type_exclude == undefined
+                || cel.xref_type_exclude != cval[x]["type-name"] ){
 
-            $("#"+ cid).append( "<input type='hidden' id='" + cid + "_tname' class='bkd-report' />"); 
-            if( cval[x].cvType !== undefined ){
-                $("#" + cid + "_tname" ).val( cval[x].cvType.name );
-            } else {
-                $("#" + cid + "_tname" ).val( cval[x]["type-name"] );
-            }
+                
+                $( "#" + cel.id ).append( "<div id='" + cid + "' class='bkd-rep-fld bkd-range'>" + xtlbl + xlnk +
+                                          "\n<input type='button' id='" + cid + "_drop'/></div>\n</div>" );
+                
+                $("#"+ cid).append("<input type='hidden' id='" + cid + "_ns' class='bkd-report' />" );
+                $("#" + cid + "_ns").val(cval[x].ns);
+                
+                $("#"+ cid).append("<input type='hidden' id='" + cid + "_ac' class='bkd-report' />" );
+                $("#" + cid + "_ac").val(cval[x].ac);
+                
+                $("#"+ cid).append( "<input type='hidden' id='" + cid + "_tns' class='bkd-report' />");
+                if( cval[x].cvType !== undefined ){
+                    $("#" + cid + "_tns" ).val( cval[x].cvType.ns );
+                }
+                
+                $("#"+ cid).append( "<input type='hidden' id='" + cid + "_tac' class='bkd-report' />");
+                if( cval[x].cvType !== undefined ){
+                    $("#" + cid + "_tac" ).val( cval[x].cvType.ac );
+                } else {
+                    $("#" + cid + "_tac" ).val( cval[x]["type-cv"] );
+                }
+                
+                $("#"+ cid).append( "<input type='hidden' id='" + cid + "_tname' class='bkd-report' />"); 
+                if( cval[x].cvType !== undefined ){
+                    $("#" + cid + "_tname" ).val( cval[x].cvType.name );
+                } else {
+                    $("#" + cid + "_tname" ).val( cval[x]["type-name"] );
+                }
             
-            $("#"+cid+"_drop").attr('value', 'Drop Xref');
-            $("#"+cid+"_drop").on( 'click', function (event) {
-                var idDrop = event.currentTarget.id.replace("_drop","");
-                $("#" + idDrop ).remove();
-            });
-        }   
-      },
+                $("#"+cid+"_drop").attr('value', 'Drop Xref');
+                $("#"+cid+"_drop").on( 'click', function (event) {
+                    var idDrop = event.currentTarget.id.replace("_drop","");
+                    $("#" + idDrop ).remove();
+                });
+            }
+        }
+    },
       
-      xrefHidden:  function( cel, cvid, clist, m ){
+    xrefHidden:  function( cel, cvid, clist, m ){
         
         //BKDrep.xrefHidden( flist[i].value[k], cvid, clist, m );
         
         var cval = BKDlink.xrefType( clist[m] );
         var cid = cvid + "_" + m;
         $( tgtAnchor + " > div:last-child > div:last-child")
-          .append(" <div class='bkd-rep-fld  bkd-xref' id='"+cid+"'>" + cval +" <input type='button' id='"+cid+"_drop'/></div>\n");
+            .append(" <div class='bkd-rep-fld  bkd-xref' id='"+cid+"'>" + cval +" <input type='button' id='"+cid+"_drop'/></div>\n");
         $("#"+ cid).append("<input type='hidden' id='"+cid+"_ns' class='bkd-report' />");
         $("#" + cid + "_ns").val(clist[m].ns);
         $("#"+ cid).append("<input type='hidden' id='"+cid+"_ac' class='bkd-report' />");
@@ -1489,8 +1560,8 @@ BKDrep = {
         $("#"+cid+"_drop").on( 'click', function (event) {
             var idDrop = event.currentTarget.id.replace("_drop","");
             $("#" + idDrop ).remove();
-          });
-      },
+        });
+    },
 
     path2val: function( data, path ){
                 
