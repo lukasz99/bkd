@@ -15,7 +15,10 @@ BKDrep = {
     qmode: null,
 
     init: function( data, srcAnchor, headerAnchor, tgtAnchor, valAnchor, mode){
-        $( "#bkd-report" ).hide();
+        $( "#bkd-report-header" ).hide();
+        $( "#bkd-report-target" ).hide();
+        $( "#bkd-report-value" ).hide();
+
         BKDrep.view( data, srcAnchor, headerAnchor, tgtAnchor, valAnchor, mode);
     },
     

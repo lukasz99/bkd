@@ -16,7 +16,7 @@ BKDconf = {
                     { "name":"Experimental Protein Report",
                       "value":"Voltage-gated Channel Report",                      
                       "type":"label",
-                      "css-class": "bkd-rep-head-0",
+                      "css-class": "bkd-rep-head-1",
                       "edit":false
                     },
                     { "name":"Report ID",
@@ -206,7 +206,7 @@ BKDconf = {
                     { "name":"Experimental Protein Report",
                       "value":"Membrane Tansporter Report",                      
                       "type":"label",
-                      "css-class": "bkd-rep-head-0",
+                      "css-class": "bkd-rep-head-1",
                       "edit":false
                     },
                     { "name":"Report ID",

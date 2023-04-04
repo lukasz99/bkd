@@ -19,25 +19,13 @@
    <script type="text/javascript">
          
      $( function(){
-
-       $("#bkd-head-search-go").on( 'click', function (event) {           
-           //BKDnodeSearch.doHeadSearch();
-           var qmode = $("#bkd-head-qmode").val();
-           var query = $("#bkd-head-squery").val();
-
-           console.log("head search:" +  qmode + ":" + query );
-           if( query !== undefined ){
-              if(query.trim().length > 0 ){
-                 var myurl = "search?qmode=" + qmode
-                           + "&ret=view"  
-                           + "&query=" + query.trim();  
-                 window.location.href = myurl;
-              }
-           }     
-         });
        
        $("#bkd-modal-div").hide();
-
+       $("#bkd-report-header").hide();
+       $("#bkd-report-target").hide();
+       $("#bkd-report-value").hide();
+       
+     
        hhght =  $("#header").height(); 
        sbwdth = $("#bkd-sidebar").width();
      
@@ -59,8 +47,6 @@
      
        var mode = "<s:property value='mode'/>"; // set to edit if editor mode
 
-       //alert( qmode + ":" + query + ":" + mode  );
-
         $("#bkd-search-go").on( 'click',
            function (event) {                           
               var query = $("#bkd-squery").val();
@@ -73,6 +59,21 @@
                  }
               }
            });
+
+       $("#bkd-head-search-go").on( 'click', function (event) {           
+           //BKDnodeSearch.doHeadSearch();
+           var qmode = "report";
+           var query = $("#bkd-head-squery").val();
+
+           console.log("head search:" +  qmode + ":" + query );
+           if( query !== undefined ){
+              if(query.trim().length > 0 ){
+                 var myurl = "report?qmode=" + qmode 
+                           + "&query=" + query.trim();  
+                 window.location.href = myurl;
+              }
+           }     
+         });
 
        if( query.length > 0 && qmode.length >0 ){
              
