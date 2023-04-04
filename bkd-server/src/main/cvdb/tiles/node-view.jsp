@@ -50,8 +50,7 @@
      console.log("node-view: inline");         
      $( function(){
        console.log("node-view: on load");    
-       $("#bkd-head-search-go").on( 'click', function (event) {           
-           //BKDnodeSearch.doHeadSearch();
+       $("#bkd-head-search-go").on( 'click', function (event) {            
            var qmode = $("#bkd-head-qmode").val();
            var query = $("#bkd-head-squery").val();
 
@@ -60,7 +59,7 @@
               if(query.trim().length > 0 ){
                  var myurl = "search?qmode=" + qmode
                            + "&ret=view"  
-                           + "&query=" + query.trim();  
+                           + "&query=" + query.trim();
                  window.location.href = myurl;
               }
            }     

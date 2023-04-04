@@ -7,16 +7,9 @@
   <meta charset="utf-8">
   <title>Report</title>
 
-  <t:insertDefinition name="htmlhead"/>  
-
-   <script src="js/bkd-config.js" type="text/javascript" language="JavaScript"></script>
-   <script src="js/bkd-links.js" type="text/javascript" language="JavaScript"></script>
-   <!--script src="js/sequence-viewer.bundle.js" type="text/javascript" language="JavaScript"></script-->
-   
-   <script src="js/bkd-report-jq.js" type="text/javascript" language="JavaScript"></script>
-   <script src="js/bkd-site.js" type="text/javascript" language="JavaScript"></script>
-
-   <script type="text/javascript">
+<t:insertDefinition name="htmlhead"/>  
+  <script src="js/bkd-report-jq.js" type="text/javascript" language="JavaScript"></script>
+  <script type="text/javascript">
          
      $( function(){
        
@@ -60,26 +53,25 @@
               }
            });
 
-       $("#bkd-head-search-go").on( 'click', function (event) {           
-           //BKDnodeSearch.doHeadSearch();
-           var qmode = "report";
+       $("#bkd-head-search-go").on( 'click', function (event) {
+           var qmode = "ode";
            var query = $("#bkd-head-squery").val();
 
            console.log("head search:" +  qmode + ":" + query );
            if( query !== undefined ){
               if(query.trim().length > 0 ){
-                 var myurl = "report?qmode=" + qmode 
-                           + "&query=" + query.trim();  
+                      var myurl = "search?qmode=" + qmode
+                           + "&ret=view"  
+                           + "&query=" + query.trim();
                  window.location.href = myurl;
               }
            }     
          });
 
        if( query.length > 0 && qmode.length >0 ){
-             
+                          
           $( "#bkd-sidebar" ).hide(); 
-          BKDrep.view( {qmode:qmode, query:query},
-                        //"#bkd-report-search",
+          BKDrep.view( {qmode:qmode, query:query},                       
                         "#bkd-search-form",
                         "#bkd-report-header",
                         "#bkd-report-target",
@@ -89,14 +81,10 @@
 
           myurl ="report?ns="+ns+"&ac="+ac+"&ret=data&format=json";
 
-          //if( op.includes("create") ){
-          //  myurl += "&op.create=create&rtype=";
-          //}
-
           if( op.length> 0){
              myurl += "&op." + op + "=" + op;
-             //if( op == "new" ) myurl += "&mode=edit";
           }
+
           if( rt.length> 0) myurl += "&rtype=" + rt;
 
           // data.record

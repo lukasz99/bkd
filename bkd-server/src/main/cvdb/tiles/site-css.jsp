@@ -1,10 +1,10 @@
-<link rel="stylesheet" href="css/portal.css" type="text/css">
 
+<!-- site-css.jsp:BEG -->
+
+<link rel="stylesheet" href="css/bkd.css" type="text/css">
 <link rel="stylesheet" href="css/news.css" type="text/css">
 
-<link rel="stylesheet" href="css/main.css" type="text/css">
 <link rel="stylesheet" href="css/site-tab.css" type="text/css">
-
 <!--<link rel="stylesheet" href="css/site-struts.css" type="text/css"> -->
 
 <link rel="stylesheet" href="css/pubmgr.css" type="text/css">
@@ -18,10 +18,6 @@
 
 <link rel="stylesheet" href="css/stats.css" type="text/css">
 
-<link rel="stylesheet" href="css/accordion.css" type="text/css">
-<link rel="stylesheet" href="css/edit.css" type="text/css">
-<link rel="stylesheet" href="css/tmgr-yui.css" type="text/css">
-
-<!--link rel="stylesheet" href="css/imexview.css" type="text/css" -->
-<link rel="stylesheet" href="css/bkd.css" type="text/css">
-
+<!-- <link rel="stylesheet" href="css/tmgr-yui.css" type="text/css"> -->
+<!-- <link rel="stylesheet" href="css/anythingzoomer.min.css" type="text/css"> -->
+<!-- site-css.jsp:END -->

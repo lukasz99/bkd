@@ -7,15 +7,8 @@
   <meta charset="utf-8">
   <title>CVDB: Node Search</title>
 
-  <t:insertDefinition name="htmlhead"/>  
-   <script src="jq/jquery-3.6.0.js" type="text/javascript" language="JavaScript"></script>
-   <script src="js/bkd-config.js" type="text/javascript" language="JavaScript"></script>
-   <script src="js/bkd-links.js" type="text/javascript" language="JavaScript"></script>
-
-   <script src="js/bkd-node-search-jq.js" type="text/javascript" language="JavaScript"></script>
-   <script src="js/bkd-modal.js" type="text/javascript" language="JavaScript"></script>
-   <script src="js/bkd-site.js" type="text/javascript" language="JavaScript"></script>
-   
+<t:insertDefinition name="htmlhead"/>  
+   <script src="js/bkd-node-search-jq.js" type="text/javascript" language="JavaScript"></script>   
    <script type="text/javascript">
      console.log("node-search-view: inline");         
      $( function(){
