@@ -39,6 +39,7 @@ BKDrep = {
 
            BKDrep.search( data, this.srcAnchor );
            $( tgtAnchor ).hide();           
+           $( headerAnchor ).hide();           
            //BKDrep.valEdit(data, this.valAnchor);
            $( valAnchor ).hide();
         } else {            
@@ -230,38 +231,43 @@ BKDrep = {
         for(var i=0; i<data.length; i++){
             var cdata = data[i];
 
-            console.log("CDATA:"+ JSON.stringify(cdata));
+            console.log("CDATA:", cdata);
 
-            if( cdata.target !== undefined){
+            if( cdata.target !== undefined){  // report
 
-            var rid_view = cdata.ac +'_view';
-            var rid_edit = cdata.ac +'_edit';
-            var crow = "<td align='center'>" + cdata.ac + "</td>" +
-                "<td align='center'>" + cdata.target.label + "</td>" + 
-                "<td>" + cdata.target.name + "</td>" +
+                var rid_view = cdata.ac +'_view';
+                var rid_edit = cdata.ac +'_edit';
+                var crow = "<td align='center'>" + cdata.ac + "</td>" +
+                    "<td align='center'>" + cdata.target.label + "</td>" + 
+                    "<td>" + cdata.target.name + "</td>" +
+                    
+                    "<td align='center'>" + cdata.target.feature["type-name"] + "</td>" +
+                    "<td align='center'>" + cdata.target.feature.label + "</td>" +
+                    
+                    "<td align='center'>" + cdata.label + "</td>" +
+                    
+                    "<td align='center'><input type='button' id='"+rid_view+"' value='View Report'/></td>" +
+                    "<td align='center'><input type='button' id='"+rid_edit+"' value='Edit Report'/></td>";
                 
-                "<td align='center'>" + cdata.target.feature["type-name"] + "</td>" +
-                "<td align='center'>" + cdata.target.feature.label + "</td>" +
+                $('#' + tid).append("<tr> class='bkd-rep-fld'>"+crow+"</tr>");
                 
-                "<td align='center'>" + cdata.label + "</td>" +
+                $( "#" + rid_view ).on( 'click', function(event){
+                    var prefix= event.currentTarget.id.replace('_view','');
+                    var elink="report?ns=cvdb&ac="+prefix;
+                    location.href = elink;
+                });
+                $( "#" + rid_edit ).on( 'click', function(event){
+                    var prefix= event.currentTarget.id.replace('_edit','');
+                    var elink="report?ns=cvdb&ac="+prefix+"&op.edit=edit";
+                    location.href = elink;
+                    return false;
+                });
+            } else {  // node
                 
-                "<td align='center'><input type='button' id='"+rid_view+"' value='View Report'/></td>" +
-                "<td align='center'><input type='button' id='"+rid_edit+"' value='Edit Report'/></td>";
-            
-            $('#' + tid).append("<tr> class='bkd-rep-fld'>"+crow+"</tr>");
-            
-            $( "#" + rid_view ).on( 'click', function(event){
-                var prefix= event.currentTarget.id.replace('_view','');
-                var elink="report?ns=cvdb&ac="+prefix;
-                location.href = elink;
-            });
-            $( "#" + rid_edit ).on( 'click', function(event){
-                var prefix= event.currentTarget.id.replace('_edit','');
-                var elink="report?ns=cvdb&ac="+prefix+"&op.edit=edit";
-                location.href = elink;
-                return false;
-            });
-            }    
+
+
+
+            }
         }
 
         // footer
@@ -295,14 +301,20 @@ BKDrep = {
         console.log("DATA: "+ data);
         var tgts = [];
         for(var i =0; i< data.length; i++){
-            if(data[i].target !== undefined){
+            if(data[i].target !== undefined){  // report
                 console.log(data[i].target.ac);
                 if( tgts.includes( data[i].target.ac) ) continue;
                 tgts.push(data[i].target.ac);                
                 $("#" + "bkd_report_new_target")
                     .append( $('<option>',{ val:data[i].target.ac,
                                             text:data[i].target.label}));
-            } 
+            } else {  // node
+                if( tgts.includes( data[i].ac) ) continue;
+                tgts.push(data[i].ac);                
+                $("#" + "bkd_report_new_target")
+                    .append( $('<option>',{ val:data[i].ac,
+                                            text:data[i].label}));
+            }
         }
 
         console.log("tgts: "+ tgts);

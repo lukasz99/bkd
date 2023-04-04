@@ -7,6 +7,8 @@ import java.io.StringWriter;
 
 import java.util.*;
 
+import org.json.*;
+
 import edu.ucla.mbi.dxf20.*;
 
 import javax.xml.bind.JAXB;
@@ -81,6 +83,9 @@ public class Node implements Comparable<Node>{
     //@JoinColumn(name = "fk_node")    
     private Set<NodeFeat> featsxxx;
     */
+
+    @Column(name = "jval")
+    String jval = "";
     
     @Column(name = "comment")
     String comment ="";
@@ -358,6 +363,40 @@ public class Node implements Comparable<Node>{
         */
         return map;
     }
+    
+    public void setJval( String jval ){
+        this.jval = jval;
+    }
+
+    public String getJval(){
+        return jval;
+    }
+    
+    public Map<String,Map<String,String>> getJvalMap(){
+        Map<String, Map<String,String>> jmap = null;
+        
+        try{
+            
+            JSONObject jom = new JSONObject( this.jval );
+            jmap = new HashMap<String, Map<String,String>>();
+            
+            for( Iterator<String> i = jom.keys(); i.hasNext();){ 
+                String key = i.next();
+                JSONObject cjo = (JSONObject) jom.get(key);                    
+                Map<String,String> cval = new HashMap<String, String>();
+                for( Iterator<String> ci = cjo.keys(); ci.hasNext();){
+                    String ckey = ci.next();
+                    String ccval = cjo.getString(ckey); 
+                    cval.put( ckey, ccval );
+                }
+                jmap.put(key,cval);
+            }
+            return jmap;
+        }catch( JSONException jx ){
+            // should not happen
+        }
+        return new HashMap<String, Map<String,String>>();
+    }    
     
 }
 

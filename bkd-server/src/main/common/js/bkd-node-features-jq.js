@@ -555,21 +555,32 @@ BKDnodeFeatures = {
         
         // genome viewer panel
         //--------------------
-
-        BKDnodeFeatures.genomepane( '#track-port', data );
-
+        try{
+            BKDnodeFeatures.genomepane( '#track-port', data );
+        }catch( err ){
+            console.log(err);
+        }
+        
         // homology panel(s)
         //------------------
-
-        BKDnodeFeatures.homologpane1( '#homo-port-panther', data );
-
-        BKDnodeFeatures.homologpane2( '#homo-port-ucsc', data );
+        try{
+            BKDnodeFeatures.homologpane1( '#homo-port-panther', data );
+        } catch( err){
+            console.log(err);
+        }
+        try{
+            BKDnodeFeatures.homologpane2( '#homo-port-ucsc', data );
+        } catch( err){
+            console.log(err);
+        }
         
         // topology panel
         //---------------
-        
-        BKDnodeFeatures.topopane( '#topo-port', data );
-                        
+        try{
+            BKDnodeFeatures.topopane( '#topo-port', data );
+        } catch( err){
+            console.log(err);
+        }
         // swissmodel panel
         //-----------------
         
@@ -1401,7 +1412,7 @@ BKDnodeFeatures = {
                                      }
                         };
 
-        var msa = D3MSA1.initialize( '#'+msaid, "msa/" + BKDnodeFeatures.data.ac + ".fasta",
+        var msa = D3MSA1.initialize( '#'+msaid, "msa-ucscgb/" + BKDnodeFeatures.data.ac + ".fasta",
                                      msaConfig);
         
     },  
@@ -1439,7 +1450,7 @@ BKDnodeFeatures = {
                                      }
                         };
 
-        var msa = D3MSA2.initialize( '#'+msaid, "msa2/" + BKDnodeFeatures.data.ac + ".fasta",
+        var msa = D3MSA2.initialize( '#'+msaid, "msa-panther/" + BKDnodeFeatures.data.ac + ".fasta",
                                      msaConfig);
         
     },

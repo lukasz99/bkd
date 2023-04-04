@@ -1,5 +1,5 @@
 
-<!-- site-css.jsp: BEG -->
+<!-- common-css.jsp: BEG -->
 <link rel="stylesheet" href="jq/ui/1.13.2-overcast/jquery-ui.css">
 <link rel="stylesheet" href="ctbl/datatables.css">
 
@@ -20,5 +20,5 @@
 <link rel="stylesheet" href="css/edit.css" type="text/css">
 <!--<link rel="stylesheet" href="css/bkd.css" type="text/css"> -->
 <!--<link rel="stylesheet" href="css/anythingzoomer.min.css" type="text/css"> -->
-<!-- site-css.jsp: END -->
+<!-- common-css.jsp: END -->
 

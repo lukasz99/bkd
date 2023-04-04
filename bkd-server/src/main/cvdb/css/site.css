@@ -440,3 +440,7 @@ div.msa_tooltip {
   text-align: center;
   font-weight: normal;
 }
+
+td .page-static {
+    font-size: 1.25em;
+}

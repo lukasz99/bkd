@@ -26,7 +26,7 @@
     <postgresql.version>42.2.5</postgresql.version>
     <c3p0.version>0.9.5.3</c3p0.version>
     <elasticsearch.version>6.0.1</elasticsearch.version>
-    <jaxws-rt.version>2.3.0</jaxws-rt.version>
+    <!-- <jaxws-rt.version>2.3.0</jaxws-rt.version> -->
     <commons-logging.version>1.2</commons-logging.version>
     <log4j.version>2.9.1</log4j.version>
     <junit.version>4.12</junit.version>
