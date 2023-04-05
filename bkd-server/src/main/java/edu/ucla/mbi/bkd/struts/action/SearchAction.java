@@ -98,17 +98,22 @@ public class SearchAction extends PortalSupport{
         
 
         log.info( "SearchAction.java: rdlist: " + rdlist );
+        log.info( "SearchAction.java: ret: " + getRet() + " qmode: " + this.getQmode() );
         
-        if ( getRet() == null || getRet().equals( "data" ) ) {              
+        if ( getRet() == null || getRet().equals( "data" ) ) {
+            log.info( "SearchAction.java: return: " + JSON );
             return JSON;
          } else if( getRet().equals( "view" ) ) {
             if( "node".equalsIgnoreCase( this.getQmode() ) ){
+                log.info( "SearchAction.java: return: " + NSVIEW );
                 return NSVIEW;
             }
             if( "report".equalsIgnoreCase( this.getQmode() ) ){
+                log.info( "SearchAction.java: return: " + RSVIEW );
                 return RSVIEW;
             }            
         }
+        log.info( "SearchAction.java: return: " + SUCCESS );
         return SUCCESS;
     }
 

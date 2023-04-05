@@ -138,19 +138,6 @@
         <finalName>cvdbdev2</finalName>
       </build>     
     </profile>
-
-
-
-
-
-
-
-
-
-
-
-
-
     
     <profile>
       <id>dip2beta</id>
@@ -621,8 +608,7 @@
               <filtering>true</filtering>
               <includes>
                 <include>sun-jaxws.xml</include>   
-                <include>jetty-web.xml</include>
-                <include>tiles.xml</include>
+                <include>jetty-web.xml</include>                
                 <include>siteconfig.xml</include>
               </includes>
             </resource>
@@ -633,11 +619,11 @@
               <filtering>true</filtering>
               <includes>
                 <include>siteconfig.xml</include>
+                <include>tiles.xml</include>
                 <include>usermgr.hbm.xml</include>
               </includes>
             </resource>
-            
-            
+                        
             <resource>
               <directory>${basedir}/../bkd-api/src/wsdl</directory>
               <targetPath>WEB-INF/wsdl</targetPath>
