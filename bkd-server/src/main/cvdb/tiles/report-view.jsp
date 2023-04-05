@@ -41,7 +41,8 @@
        var mode = "<s:property value='mode'/>"; // set to edit if editor mode
 
         $("#bkd-search-go").on( 'click',
-           function (event) {                           
+           function (event) {
+              event.preventDefault();
               var query = $("#bkd-squery").val();
               console.log( "body search: " + query );
               if( query !== undefined ){
@@ -49,12 +50,14 @@
                     var myurl = "report?qmode=report"  
                               + "&query=" + query.trim();                   
                     window.location.href = myurl;
+                    //console.log(myurl);
                  }
-              }
+               }
+              
            });
 
        $("#bkd-head-search-go").on( 'click', function (event) {
-           var qmode = "ode";
+           var qmode = "node";
            var query = $("#bkd-head-squery").val();
 
            console.log("head search:" +  qmode + ":" + query );
@@ -142,7 +145,8 @@
 <s:if test="ac == null || ac.length == 0">
     <tr>
      <td colspan="3">
-        <t:insertDefinition name="bkd-search"/>
+       <!-- insertDefinition name="report-search"  -->
+       <t:insertTemplate template="/tiles/report-search.jsp" flush="true"/>
      </td>
     </tr>
 </s:if>

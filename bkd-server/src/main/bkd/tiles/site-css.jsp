@@ -5,6 +5,7 @@
 <link rel="stylesheet" href="css/news.css" type="text/css">
 
 <link rel="stylesheet" href="css/main.css" type="text/css">
+<link rel="stylesheet" href="css/site.css" type="text/css">
 <link rel="stylesheet" href="css/site-tab.css" type="text/css">
 
 <!--<link rel="stylesheet" href="css/site-struts.css" type="text/css"> -->

@@ -34,7 +34,7 @@
 
     <email.version>1.6.2</email.version>
     
-    <jaxws-api.version>2.3.1</jaxws-api.version>
+<!--     <jaxws-api.version>2.3.1</jaxws-api.version> -->
     
     <!-- <jaxws-rt.version>2.3.0</jaxws-rt.version> -->
     <jaxws-rt.version>2.3.6</jaxws-rt.version>
@@ -58,7 +58,8 @@
     <aspectj.version>1.9.5</aspectj.version>
 
     <cglib.version>3.3.0</cglib.version>
-    <cxf.version>3.4.3</cxf.version>
+<!--     <cxf.version>3.4.3</cxf.version> -->
+     <cxf.version>3.4.10</cxf.version>
 
     <c3p0.version>0.9.5.4</c3p0.version>
     <postgresql.version>42.2.6</postgresql.version>

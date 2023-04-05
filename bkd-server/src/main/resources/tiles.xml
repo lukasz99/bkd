@@ -5,8 +5,8 @@
 
 <tiles-definitions>
 
- <definition name="yui-js" template="/tiles/yui-js.jsp" />
- <definition name="yui-css" template="/tiles/yui-css.jsp" />
+ <definition name="common-js" template="/tiles/common-js.jsp" />
+ <definition name="common-css" template="/tiles/common-css.jsp" />
 
  <definition name="site-js" template="/tiles/site-js.jsp" />
  <definition name="site-css" template="/tiles/site-css.jsp" />
@@ -14,9 +14,9 @@
  <definition name="news-css" template="/tiles/news-css.jsp" />
 
  <definition name="htmlhead" template="/tiles/htmlhead.jsp">
-   <put-attribute name="yui-css" type="definition" value="yui-css"/>  
+   <put-attribute name="common-css" type="definition" value="common-css"/>  
    <put-attribute name="site-css" type="definition" value="site-css"/>  
-   <put-attribute name="yui-js" type="definition" value="yui-js"/>  
+   <put-attribute name="common-js" type="definition" value="common-js"/>  
    <put-attribute name="site-js" type="definition" value="site-js"/>  
  </definition>
 
@@ -36,6 +36,7 @@
  <definition name="main" template="/tiles/main.jsp"/>
 
  <definition name="page" template="/tiles/page.jsp"/>
+
  <definition name="report-search" template="/tiles/report-search.jsp"/>
  <definition name="report-view" template="/tiles/report-view.jsp"/>
  <definition name="report-edit" template="/tiles/report-edit.jsp"/>

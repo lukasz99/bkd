@@ -7,10 +7,7 @@
   <meta charset="utf-8">
   <title>CVDB: Node</title>
 
-  <t:insertDefinition name="htmlhead"/>  
-   <script src="jq/jquery-3.6.0.js" type="text/javascript" language="JavaScript"></script>
-   <script src="js/bkd-config.js" type="text/javascript" language="JavaScript"></script>
-   <script src="js/bkd-links.js" type="text/javascript" language="JavaScript"></script>
+<t:insertDefinition name="htmlhead"/>  
 <!-- <script src="js/d3.min.js" type="text/javascript" language="JavaScript"></script>  -->
 <!-- <script src="https://d3js.org/d3.v4.min.js" type="text/javascript" language="JavaScript"></script> -->
    
@@ -43,18 +40,29 @@
    <script src="js/bkd-node-search-jq.js" type="text/javascript" language="JavaScript"></script>
    <script src="js/bkd-node-view-jq.js" type="text/javascript" language="JavaScript"></script>
    <script src="js/bkd-node-features-jq.js" type="text/javascript" language="JavaScript"></script>
-   <script src="js/bkd-modal.js" type="text/javascript" language="JavaScript"></script>
-   <script src="js/bkd-site.js" type="text/javascript" language="JavaScript"></script>
    
    <script type="text/javascript">
      console.log("node-view: inline");         
      $( function(){
-       console.log("node-view: on load");    
+       console.log("node-view: on load");
+
+       $("#bkd-search-go").on( 'click',
+          function (event) {                           
+              var query = $("#bkd-squery").val();
+              console.log( "body search: " + query );
+              if( query !== undefined ){
+                 if(query.trim().length > 0 ){
+                    var myurl = "node?qmode=node"  
+                             + "&query=" + query.trim();                   
+                    window.location.href = myurl;
+                 }
+              }
+           });
+     
        $("#bkd-head-search-go").on( 'click', function (event) {            
-           var qmode = $("#bkd-head-qmode").val();
+           var qmode = "node";
            var query = $("#bkd-head-squery").val();
 
-           console.log("head search:" +  qmode + ":" + query );
            if( query !== undefined ){
               if(query.trim().length > 0 ){
                  var myurl = "search?qmode=" + qmode
@@ -64,7 +72,10 @@
               }
            }     
          });
-       
+     
+
+       //alert("!!!");
+     
        $("#bkd-modal-div").hide();
      
         hhght =  $("#header").height(); 
@@ -83,6 +94,10 @@
         var ac   = "<s:property value='ac'/>";
         var mode = "<s:property value='mode'/>"; // set to edit if editor mode
 
+         
+     
+
+     
         if( ns.length > 0 && ac.length >0 ){     // show node
 
             BKDnodeView.init( ns, ac,
@@ -94,16 +109,16 @@
             $( "#bkd-node-view" ).hide(); 
             $( "#bkd-sidebar" ).hide(); 
             
-            $("#bkd-search-go").on( 'click', function (event) {
-               console.log("search clicked");
-               BKDnodeSearch.doSearch();
-            });
+            //$("#bkd-search-go").on( 'click', function (event) {
+            //   console.log("search clicked");
+            //   BKDnodeSearch.doSearch();
+            //});
             // show node search
-            $("#bkd-search-form").show();
+            //$("#bkd-search-form").show();
         }
              
         BKDmodal.init("#bkd-modal-div","#bkd-modal-help","page?id=help-simple-query&ret=body");
-            
+        console.log("node-view: inline: DONE");    
       });
   </script>
   <style>
@@ -142,7 +157,8 @@
 <s:if test="ac == null || ac.length == 0">
     <tr>
      <td colspan="3">
-      <t:insertDefinition name="bkd-search"/>
+       <!--  insertDefinition name="node-search"  -->
+       <t:insertTemplate template="/tiles/node-search.jsp" flush="true"/>
      </td>
     </tr>
 </s:if>    

@@ -29,7 +29,7 @@
                             "link":"node",
                             "disabled":"false",
                             "menu":[{"label":"Protein/Gene",
-                                     "link":"node",
+                                     "link":"search?qmode=node&ret=view",
                                      "disabled":"false",
                                      "menu":[]
                                     },
@@ -39,7 +39,7 @@
                                      "menu":[]
                                     },
                                     {"label":"Report",
-                                     "link":"report",
+                                     "link":"report?qmode=report",
                                      "disabled":"false",
                                      "menu":[]
                                     }]

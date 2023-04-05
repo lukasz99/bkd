@@ -932,15 +932,16 @@ BKDrep = {
     
     valEdit: function( data, valAnchor, args ){
 
-        var repconf = BKDconf.report.feature[data.report.type.name];
-        
+        var repconf = null;
         if( data == null ){   
             $( valAnchor).hide();
         } else {
+            repconf = BKDconf.report.feature[data.report.type.name];    
             $( valAnchor ).empty();
             $( valAnchor ).show();            
         }
         
+       
         $(valAnchor).append("<form id='rep-val' name='report'" +
                             " action='report.action' method='post'>"); 
         

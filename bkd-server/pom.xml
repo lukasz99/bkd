@@ -55,6 +55,7 @@
   </properties>
 
   <profiles>
+    
     <profile>
       <id>cvdb</id>
       <activation>
@@ -83,6 +84,74 @@
       </build>
     </profile>
 
+    <profile>
+     <id>cvdbdev0</id>
+     <activation>
+      <activeByDefault>false</activeByDefault>
+     </activation>
+     <properties>
+       <site>cvdb</site>
+       <srv.ver>cvdbdev0</srv.ver>
+       <db.ver>cvdb</db.ver>
+       
+       <bkd.sitename>CVUS DB(dev0)</bkd.sitename>
+       <bkd.site.copyright.date>2023</bkd.site.copyright.date>
+       
+       <bkd.pagetitle>CVUS(dev0) Database</bkd.pagetitle>
+       <bkd.pagetitleshort>CVUS DB</bkd.pagetitleshort>
+       <bkd.contact>lukasz@mbi.ucla.edu</bkd.contact>
+       
+       <bkd.mailserver>smtp.mbi.ucla.edu</bkd.mailserver>
+       <bkd.notificationqueue>/var/tmp/cvdbdev0/queue</bkd.notificationqueue>
+       
+       <rec.prefix>CVDB</rec.prefix>
+       <service.dbip>10.1.7.203</service.dbip>
+       <service.esindex.url>http://10.1.8.202:9200/cvdb-%%STATE%%-%%TYPE%%-index-000000</service.esindex.url>
+       
+     </properties>
+     <build>
+      <finalName>cvdbdev0</finalName>
+     </build>
+    </profile>
+    
+    <profile>     
+      <id>cvdbdev2</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <properties>
+        <site>cvdb</site>
+        <srv.ver>cvdbdev2</srv.ver>
+        <db.ver>cvdb</db.ver>
+        <rec.prefix>CVDB</rec.prefix>
+        
+        <bkd.sitename>CVUS(dev2) DB</bkd.sitename>
+        <bkd.site.copyright.date>2023</bkd.site.copyright.date>
+        <bkd.pagetitle>CVUS(dev2) Database</bkd.pagetitle>
+        <bkd.pagetitleshort>CVUS DB</bkd.pagetitleshort>
+        <bkd.contact>lukasz@mbi.ucla.edu</bkd.contact>
+        
+        <service.dbip>10.1.7.203</service.dbip>
+        <service.esindex.url>http://10.1.8.202:9200/cvdb-%%STATE%%-%%TYPE%%-index-000000</service.esindex.url>
+      </properties>
+      <build>
+        <finalName>cvdbdev2</finalName>
+      </build>     
+    </profile>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
     <profile>
       <id>dip2beta</id>
       <activation>
@@ -191,67 +260,6 @@
      </build>
     </profile>
     
-    <profile>
-     <id>cvdbdev0</id>
-     <activation>
-      <activeByDefault>false</activeByDefault>
-     </activation>
-     <properties>
-       <site>cvdb</site>
-       <srv.ver>cvdbdev0</srv.ver>
-       <!--
-       
-       <db.ver>cvdb</db.ver>
-       <rec.prefix>CVDB</rec.prefix>
-       <service.esindex.url>http://10.1.7.103:9200/cvdb-%%STATE%%-%%TYPE%%-index-000001</service.esindex.url>
-       -->
-       
-       <bkd.sitename>CVUS DB(dev0)</bkd.sitename>
-       <bkd.site.copyright.date>2023</bkd.site.copyright.date>
-       
-       <bkd.pagetitle>CVUS(dev0) Database</bkd.pagetitle>
-       <bkd.pagetitleshort>CVUS DB</bkd.pagetitleshort>
-       <bkd.contact>lukasz@mbi.ucla.edu</bkd.contact>
-       
-       <bkd.mailserver>smtp.mbi.ucla.edu</bkd.mailserver>
-       <bkd.notificationqueue>/var/tmp/cvdbdev0/queue</bkd.notificationqueue>
-       
-       <srv.ver>cvdbdev0</srv.ver>
-       <db.ver>cvdb</db.ver>
-       <rec.prefix>CVDB</rec.prefix>
-       <service.dbip>10.1.7.203</service.dbip>
-       <service.esindex.url>http://10.1.8.202:9200/cvdb-%%STATE%%-%%TYPE%%-index-000000</service.esindex.url>
-       
-     </properties>
-     <build>
-      <finalName>cvdbdev0</finalName>
-     </build>
-    </profile>
-    
-    <profile>     
-      <id>cvdbdev2</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <properties>
-        <site>cvdb</site>
-        <srv.ver>cvdbdev2</srv.ver>
-        <db.ver>cvdb</db.ver>
-        <rec.prefix>CVDB</rec.prefix>
-        
-        <bkd.sitename>CVUS(dev2) DB</bkd.sitename>
-        <bkd.site.copyright.date>2023</bkd.site.copyright.date>
-        <bkd.pagetitle>CVUS(dev2) Database</bkd.pagetitle>
-        <bkd.pagetitleshort>CVUS DB</bkd.pagetitleshort>
-        <bkd.contact>lukasz@mbi.ucla.edu</bkd.contact>
-        
-        <service.dbip>10.1.7.203</service.dbip>
-        <service.esindex.url>http://10.1.8.202:9200/cvdb-%%STATE%%-%%TYPE%%-index-000000</service.esindex.url>
-      </properties>
-      <build>
-        <finalName>cvdbdev2</finalName>
-      </build>     
-    </profile>
     
     <profile>
       <id>apdbdev0</id>
@@ -261,9 +269,8 @@
       <properties>
         <site>apdb</site>
         <srv.ver>apdbdev0</srv.ver>
+        <db.ver>cvdb</db.ver>
         <!--
-       
-       <db.ver>cvdb</db.ver>
        <rec.prefix>APVD</rec.prefix>
        <service.esindex.url>http://10.1.7.103:9200/apdb-%%TYPE%%-index-000001</service.esindex.url>
         -->
@@ -298,6 +305,7 @@
       <properties>
         <site>apdb</site>
         <srv.ver>apdbdev0</srv.ver>
+        <db.ver>apdb</db.ver>
         <!--
        
        <db.ver>cvdb</db.ver>
@@ -491,7 +499,8 @@
    <dependency>
     <groupId>com.sun.xml.messaging.saaj</groupId>
     <artifactId>saaj-impl</artifactId>
-    <version>1.5.3</version>
+     <version>1.5.3</version> 
+<!--     <version>3.0.0</version>  -->
    </dependency>  
 
     
