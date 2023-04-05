@@ -12,7 +12,9 @@
      console.log("node-search-view: inline");         
      $( function(){
         console.log("on loaded page...");
-        
+
+        //var uid = "<s:property value="#session['USER_ID']" />";
+     
         $("#bkd-modal-div").hide();
      
         hhght =  $("#header").height(); 

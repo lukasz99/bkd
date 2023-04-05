@@ -28,7 +28,9 @@
        $("#bkd-sidebar").css('padding-top', 3 );
        $("#bkd-main").css('margin-top',hhght );
        $("#bkd-main").css('margin-left',sbwdth+10 );
-        
+               
+       var uid = "<s:property value="#session['USER_ID']" />";
+     
        var ns   = "<s:property value='ns'/>";
        var ac   = "<s:property value='ac'/>";
        var op   = "<s:property value='op'/>";
@@ -74,7 +76,7 @@
        if( query.length > 0 && qmode.length >0 ){
                           
           $( "#bkd-sidebar" ).hide(); 
-          BKDrep.view( {qmode:qmode, query:query},                       
+          BKDrep.view( {qmode:qmode, query:query, uid:uid},                       
                         "#bkd-search-form",
                         "#bkd-report-header",
                         "#bkd-report-target",
@@ -98,14 +100,15 @@
                        var  dta;
                        if(  "report" in data.record ){
                            dta = data.record;
+                           dta.uid=uid;
                        } else { 
-                           dta = { "report": data.record };
+                           dta = { "report": data.record, uid:uid };
                        }
                        BKDrep.view( dta,         
                                     "#bkd-report-search",
                                     "#bkd-report-header",
                                     "#bkd-report-target",
-                                    "#bkd-report-value" , mode) } );
+                                    "#bkd-report-value" , mode ) });
                   
         } else {                               // show empty form
            $( "#bkd-sidebar" ).hide(); 

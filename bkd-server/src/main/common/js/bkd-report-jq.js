@@ -30,17 +30,20 @@ BKDrep = {
         this.valAnchor=valAnchor;
 
         console.log("BKDrep.view: MODE=<" + mode + ">");
+        console.log("BKDrep.view: uid=<" + data.uid + ">");
         
         if(data == null ){
-            BKDrep.search( data, this.srcAnchor );
+            BKDrep.search( {data:data, uid:""},
+                           this.srcAnchor );
             $( tgtAnchor ).hide();
             BKDrep.valEdit(data, this.valAnchor);
         } else if( data.qmode !== undefined && data.query !== undefined ){
 
            this.qmode = data.qmode;
            this.query = data.query;
-
-           BKDrep.search( data, this.srcAnchor );
+            
+            BKDrep.search( data,
+                           this.srcAnchor );
            $( tgtAnchor ).hide();           
            $( headerAnchor ).hide();           
            //BKDrep.valEdit(data, this.valAnchor);
@@ -59,6 +62,9 @@ BKDrep = {
     search: function( data, tgtAnchor ){        
         console.log("search-> data", data)
         console.log("anchor->", tgtAnchor);
+
+        var uid = data.uid;
+        
         if( data  !==  undefined && data != null ){
            if( "node" == data.qmode ){
              $("input[name='smode'][value='node']").prop('checked', true);
@@ -87,9 +93,11 @@ BKDrep = {
                     console.log("ajax.search: data->", data);
                     
                     if( data.rdata != null && data.rdata.length > 0){
-                        BKDrep.searchView( data.rdata, BKDrep.srcAnchor, "edit" );                       
+                        BKDrep.searchView( {data:data.rdata, uid:uid },
+                                           BKDrep.srcAnchor, "edit" );                       
                     }else if(data.record !== null){
-                        BKDrep.searchView( data.rdata, BKDrep.srcAnchor, "edit" );
+                        BKDrep.searchView( {data:data.rdata, uid:uid},
+                                           BKDrep.srcAnchor, "edit" );
                         BKDrep.tgtView( data.record, BKDrep.tgtAnchor, "edit" );
                         BKDrep.valEdit( data.record, BKDrep.valAnchor );
                     } else {
@@ -113,9 +121,12 @@ BKDrep = {
                             encode: true,}).done(function (data) {                               
                                 console.log( "node data:",data);
                                 if( data.rdata != null && data.rdata.length > 0){
-                                    BKDrep.searchView( data.rdata, BKDrep.srcAnchor, "edit" );
+                                    BKDrep.searchView( {data:data.rdata,uid:uid},
+                                                       BKDrep.srcAnchor, "edit" );
                                 }else if(data.record !== null){
-                                    BKDrep.searchView( data.rdata, BKDrep.srcAnchor, "edit" );
+                                    
+                                    BKDrep.searchView( {data:data.rdata, uid:uid},
+                                                       BKDrep.srcAnchor, "edit" );
                                     BKDrep.tgtView( data.record, BKDrep.tgtAnchor, "edit" );
                                     BKDrep.valEdit( data.record, BKDrep.valAnchor );
                                 }
@@ -169,9 +180,11 @@ BKDrep = {
                 encode: true,}).done(function (data) {
                     
                     if( data.rdata != null && data.rdata.length > 0){
-                        BKDrep.searchView( data.rdata, BKDrep.srcAnchor, "edit" );                       
+                        BKDrep.searchView( {data:data.rdata, uid:uid},
+                                           BKDrep.srcAnchor, "edit" );                       
                     }else if(data.record !== null){
-                        BKDrep.searchView( data.rdata, BKDrep.srcAnchor, "edit" );
+                        BKDrep.searchView( {data:data.rdata, uid:uid},
+                                           BKDrep.srcAnchor, "edit" );
                         BKDrep.tgtView( data.record, BKDrep.tgtAnchor, "edit" );
                         BKDrep.valEdit( data.record, BKDrep.valAnchor );
                     }
@@ -182,10 +195,14 @@ BKDrep = {
       } 
     },
     
-    searchView: function(data, srcAnchor, mode ){
+    searchView: function(dta, srcAnchor, mode ){
 
         // XXXXXXXXXXXXXXx
 
+        var data = dta.data;
+        var uid = dta.uid;
+        
+        
         $( "#" + "bkdQueryMode" ).on( 'click', function(event){
             console.log( "Query: " + $("#bkdQuery").val() );
             console.log( "Mode: " + $("#report_smodenode").val() );
@@ -216,6 +233,11 @@ BKDrep = {
                              + "' cellspacing='0' cellpadding='0' class='bkd-search-table'></table></div>");
         // header
 
+        var cspn = 1;
+        if( uid != undefined && uid.length >0 && parseInt(uid) > 0 ){
+            cspn = 2;
+        }
+        
         $('#' + tid).append("<tr class='bkd-rep-fld bkd-search-table-header'>"+
         
                             "<th width='5%' align='center'>Report&nbsp;ID</th>"+
@@ -226,7 +248,7 @@ BKDrep = {
                             "<th width='15%'>Feature Name</th>"+
                             
                             "<th width='10%' align='center'>Report Type</th>"+
-                            "<th width='5%' colspan='2'>&nbsp;</th>"+
+                            "<th width='5%' colspan='"+cspn+"'>&nbsp;</th>"+
                             "</tr>");
 
         // rows: search results
@@ -249,9 +271,10 @@ BKDrep = {
                     
                     "<td align='center'>" + cdata.label + "</td>" +
                     
-                    "<td align='center'><input type='button' id='"+rid_view+"' value='View Report'/></td>" +
-                    "<td align='center'><input type='button' id='"+rid_edit+"' value='Edit Report'/></td>";
-                
+                    "<td align='center'><input type='button' id='"+rid_view+"' value='View Report'/></td>";
+                if( cspn > 1 ){
+                    crow += "<td align='center'><input type='button' id='"+rid_edit+"' value='Edit Report'/></td>";
+                }
                 $('#' + tid).append("<tr> class='bkd-rep-fld'>"+crow+"</tr>");
                 
                 $( "#" + rid_view ).on( 'click', function(event){
@@ -275,29 +298,30 @@ BKDrep = {
 
         // footer
         //-------
+        if( cspn > 1 ){ 
+            $('#' + tid).append("<tr class='bkd-rep-fld bkd-search-table-footer'>" +
+                                " <td colspan='1'>&nbsp;</td>\n" +
+                                " <td colspan='1' align='center'>\n"+
+                                "  <select id='bkd_report_new_target'>\n"+
+                                "  </select>\n"+  
+                                " </td>\n" +
+                                " <td colspan='3'>&nbsp;</td>\n" +
+                                " <td colspan='1' align='center'>\n"+
+                                "  <select id='bkd_report_new_type'>\n"+
+                                "  </select>\n"+  
+                                " </td>\n" +
+                                " <td colspan='1'>&nbsp;</td>" +                            
+                                " <td><input type='button' id='bkd_report_new' value='New Report'/></td>\n"+
+                                "</tr>\n");
         
-        $('#' + tid).append("<tr class='bkd-rep-fld bkd-search-table-footer'>" +
-                            " <td colspan='1'>&nbsp;</td>\n" +
-                            " <td colspan='1' align='center'>\n"+
-                            "  <select id='bkd_report_new_target'>\n"+
-                            "  </select>\n"+  
-                            " </td>\n" +
-                            " <td colspan='3'>&nbsp;</td>\n" +
-                            " <td colspan='1' align='center'>\n"+
-                             "  <select id='bkd_report_new_type'>\n"+
-                            "  </select>\n"+  
-                            " </td>\n" +
-                            " <td colspan='1'>&nbsp;</td>\n" +
-                            " <td><input type='button' id='bkd_report_new' value='New Report'/></td>\n"+
-                            "</tr>\n");
-        
-        var reports = BKDconf.report.feature;                    
-        for(var r in reports ){
-            console.log(r);
-            if( reports[r].active ){
-              $("#" + "bkd_report_new_type")
-                  .append( $('<option>',{ val:reports[r].cvType.ac,
-                                          text:reports[r].label}));
+            var reports = BKDconf.report.feature;                    
+            for(var r in reports ){
+                console.log(r);
+                if( reports[r].active ){
+                    $("#" + "bkd_report_new_type")
+                        .append( $('<option>',{ val:reports[r].cvType.ac,
+                                                text:reports[r].label}));
+                }
             }
         }
         

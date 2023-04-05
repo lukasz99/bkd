@@ -610,6 +610,7 @@
                 <include>sun-jaxws.xml</include>   
                 <include>jetty-web.xml</include>                
                 <include>siteconfig.xml</include>
+                <include>tiles.xml</include>
               </includes>
             </resource>
             
