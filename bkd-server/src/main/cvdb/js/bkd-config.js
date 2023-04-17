@@ -13,7 +13,7 @@ BKDconf = {
                 },
                 presubmit: "report_presubmit", 
                 "header":[
-                    { "name":"Experimental Protein Report",
+                    { "name":"CVUS Experimental Protein Report",
                       "value":"Voltage-gated Channel Report",                      
                       "type":"label",
                       "css-class": "bkd-rep-head-1",
@@ -45,7 +45,7 @@ BKDconf = {
                       "vpath":['target','gene']},
                     
                     {name:"Experimental Sequence ID",
-                     value:"O6503-2",
+                     value:"",
                      type:"label",
                      id: "report_target_feature_seqid", 
                      "css-class": "bkd-rep-head-3",
@@ -203,7 +203,7 @@ BKDconf = {
                     "type":"hidden"},
                 presubmit: "report_presubmit",
                 "header":[
-                    { "name":"Experimental Protein Report",
+                    { "name":"CVUS Experimental Protein Report",
                       "value":"Membrane Tansporter Report",                      
                       "type":"label",
                       "css-class": "bkd-rep-head-1",
@@ -394,6 +394,21 @@ BKDconf = {
                     "id":"ac",
                     "vpath":['ac'],
                     "type":"hidden"},
+                presubmit: "report_presubmit", 
+                "header":[
+                    { "name":"CVUS Report",
+                      "value":"Clinical Report",                      
+                      "type":"label",
+                      "css-class": "bkd-rep-head-1",
+                      "edit":false
+                    },
+                    { "name":"Report ID",
+                      "vpath":['ac'],
+                      "type":"label",
+                      "css-class": "bkd-rep-head-3",
+                      "edit":false
+                    }
+                ],              
                 "target":[
                     {"name":"ns",
                      "vpath":['target','ns'],
@@ -407,7 +422,7 @@ BKDconf = {
                      "css-class": "bkd-rep-head-1",
                      "vpath":['target','name']},
                     {"name":"Gene",
-                     "vpath":['feature','node','gene']},
+                     "vpath":['target','gene']},
                     {"name":"Taxon",
                      "vpath":['target','taxon'],
                      "type":"taxon" },
@@ -426,12 +441,12 @@ BKDconf = {
                      "value":[
                          {"name":"Name",
                           'id':'report_target_feature_label',
-                          "vpath":['targert','feature','label'],
+                          "vpath":['target','feature','label'],
                           "edit": true
                          },
                          {"name":"Type",
                           "id":"report_target_feature_cvtype",
-                          "vpath":['target','feature','type'],
+                          "vpath":['target','feature'],
                           "type": 'cvterm',
                           
                           "cvt-list":[{ns:"psi-mi", ac:"MI:0000", name:"",
@@ -453,6 +468,17 @@ BKDconf = {
                           "vpath":['target','feature','grch38'],
                           "edit":true                      
                          },
+
+                         //{name:"Protein Sequence ID",
+                         // value:"",
+                         // type:"label",
+                         // id: "report_target_feature_seqid", 
+                         // "css-class": "bkd-rep-head-3",
+                         // edit: true,                     
+                         // custom_edit: "report_tgt_edit",
+                         // custom_view: "report_tgt_view"                     
+                         //},
+                                             
                          {"name":"Position/Range",
                           "id":'report_target_feature_ranges',
                           "list": true,
