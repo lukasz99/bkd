@@ -190,16 +190,8 @@ def getRST(rec, upr):
                                     for p in rs['property']:
                                         if p['type'] == 'nucleotide sequence ID':
                                             trc = p['value']
-                                            
-    trStart = 0
-    trStop = 0
-    
-    if trc != None:        
-        rs = BKD.RefSeq().getrecord( trc )
-        trStart = rs.getFeatureLstByKey("CDS")[0]["_location"].split("..")[0]
-        trStop = rs.getFeatureLstByKey("CDS")[0]["_location"].split("..")[1]
-        print( "@@@", trc, trStart,trStop)
-    return ( rsc, trc, trStart, trStop )
+                                                                                                                    
+    return ( rsc, trc )
 
 
 def acc2path( dir, acc ):
@@ -748,7 +740,6 @@ def clinvar( rec, upr, debug='False'):
     
     return cflist
 
-#-------------------------------------------------------------------------------
 # SCRIPT STARTS HERE
 #-------------------
 
@@ -764,6 +755,7 @@ srvUrl = srvUrl.replace( "%%USER%%", args.user)
 srvUrl = srvUrl.replace( "%%PASS%%", args.password)
 
 uzeep = BKD.UniZeep( srvUrl )
+
 
 
 if args.mode == "get":
@@ -820,7 +812,7 @@ elif args.mode == "set":
                             maxac=ac
             if debug == 'True':
                 print( "Accession Max: " + str(maxac) )
-
+            
             if maxac > 0 and args.setac:
                 # set acc
                 if uzeep.setidgen( maxac, "node") > 0:
@@ -864,18 +856,16 @@ elif args.mode == "set":
                         else:
                             print( "ERROR: no uniprot file", upr )
                             if len(cols) > 5:
-                                logh.write( "\t".join( ("", upr, rfs,
-                                                        taxid, odip,
-                                                        oupr, "\n") ) )
+                                logh.write( "\t".join( ("", upr, rfs, taxid, odip, oupr, "\n") ) )
                             else:
                                 logh.write( "\t".join( ("", upr, "\n") ) )
                             logh.flush()
                             os.fsync(logh)
                             continue
-
+        
                         print("UniprotKB record: " + ufile)        
                         
-                        rec = pymex.uprot.Record().parseXml( ufile ) 
+                        rec = pymex.uprot.Record().parseXml( ufile ) # parse uniprot record
                         
                         #print(json.dumps(rec.root, indent=3))
                         #print()
@@ -887,7 +877,9 @@ elif args.mode == "set":
                                 for i in ilist:
                                     if debug == 'True':
                                         print(i)
-                                    #print(rec.comment["alternative products"][0].keys())                    
+                                    #print(rec.comment["alternative products"][0].keys())
+                            
+                        #x
                         
                         print( "UniprotKB:", rec.accession['primary'] )
 
@@ -899,10 +891,7 @@ elif args.mode == "set":
                            
                         # find canonical sequence/upr/rfs
                         #--------------------------------
-                        canonical = { 'upr': None, 'RefSeq': None,
-                                      'tRefSeq': None, 'trStart': None, 'trStop': None,
-                                      'seq': None}
-                        
+                        canonical = {'upr': None, 'RefSeq': None, 'tRefSeq': None, 'seq': None}
                         # { 'type':'reference', 'upr': None, 'RefSeq': None, 'seq': None},
                         # { 'type':'canonical', 'upr': "AAA", 'RefSeq': "BBB", 'seq': "aaa"},
                         # { 'type':'mane', 'upr': None, 'RefSeq': None, 'seq': None} ] 
@@ -943,7 +932,7 @@ elif args.mode == "set":
                                     canonical['seq'] = ""
                         #print(canonical)
                         #sys.exit()
-
+                        
                         # canonical refseq
                         #-----------------
                         
@@ -996,29 +985,13 @@ elif args.mode == "set":
 
                                                     
                             canonical['RefSeq'] = rsc
-                            canonical['tRefSeq'] = trc
-                            
-                            if trc != None:
-                                trStart = 0
-                                trStop = 0
-                                rs = BKD.RefSeq().getrecord( canonical['tRefSeq'] )
-                                trStart = rs.getFeatureLstByKey("CDS")[0]["_location"].split("..")[0]
-                                trStop = rs.getFeatureLstByKey("CDS")[0]["_location"].split("..")[1]
-                                print( "@@@", canonical['tRefSeq'], trStart, trStop )                                    
-                                canonical['trStart'] = trStart
-                                canonical['trStop'] = trStop
-                            else:
-                                canonical['trStart'] = None                   
-                                canonical['trStop'] = None                   
+                            canonical['tRefSeq'] = trc                   
                           
                         if canonical['upr'] is not None or canonical['RefSeq'] is not None:
-                             
                             seqvar.append({ 'type':'canonical',
                                             'upr': canonical['upr'],
                                             'RefSeq': canonical['RefSeq'],
                                             'tRefSeq': canonical['tRefSeq'],
-                                            'trStart': canonical['trStart'],
-                                            'trStop': canonical['trStop'],
                                             'seq': canonical['seq'] } )
                         if debug == 'True':                                                                                                                        
                             print( 'Canonical UniprotKB(rec):', rec.accession['canonical'] )
@@ -1029,9 +1002,7 @@ elif args.mode == "set":
                         #----------
 
                         maneSeqId = None
-                        mane = { 'upr': None, 'RefSeq': None,
-                                 'tRefSeq': None , 'trStart': None, 'trStop': None,
-                                 'seq': None }
+                        mane = {'upr': None, 'RefSeq': None, 'tRefSeq': None, 'seq': None}
 
                         msl = []
                         if 'MANE-Select' in rec.root['uniprot']['entry'][0]['_xref']:
@@ -1073,26 +1044,10 @@ elif args.mode == "set":
                             print('MSL:  sequence',  mane['seq'] )   
 
                         if maneSeqId is not None:
-                            
-                            if mane['tRefSeq'] != None:
-                                trStart = 0
-                                trStop = 0
-                                rs = BKD.RefSeq().getrecord( mane['tRefSeq'] )
-                                trStart = rs.getFeatureLstByKey("CDS")[0]["_location"].split("..")[0]
-                                trStop = rs.getFeatureLstByKey("CDS")[0]["_location"].split("..")[1]
-                                print( "@@@",mane['tRefSeq'],trStart,trStop )
-                                mane['trStart'] = trStart
-                                mane['trStop'] = trStop
-                            else:                                                         
-                                mane['trStart'] = None                   
-                                mane['trStop'] = None                   
-                            
                             seqvar.append({ 'type':'mane',
                                             'upr': mane['upr'],
                                             'RefSeq': mane['RefSeq'],
                                             'tRefSeq': mane['tRefSeq'],
-                                            'trStart': mane['trStart'],
-                                            'trStop': mane['trStop'], 
                                             'seq': mane['seq'] } )
 
                         #print(mane)
@@ -1124,12 +1079,10 @@ elif args.mode == "set":
                                             print("WARNING: can not retrive ->",  sform['upr'])
                                             msaskip = True
                                     if debug == 'True':
-                                        print( "\nSFORM:",sform['upr'] )     
-                                    ( sform['RefSeq'], sform['tRefSeq'], sform['trStart'], sform['trStop'] ) = getRST( rec, sform['upr'] )
-                                    print("@@@", sform)
-                                        
+                                        print( "\nSFORM:",sform['upr'] )    
+                                    ( sform['RefSeq'], sform['tRefSeq'] ) = getRST( rec, sform['upr'] )
+                                    
                                     seqvar.append(sform)
-                                    print("alt(sqv)", seqvar)
                                     #print(rec.comment["alternative products"][0].keys())
 
                         if not msaskip:

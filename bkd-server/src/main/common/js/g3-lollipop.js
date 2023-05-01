@@ -967,9 +967,10 @@ function Lollipop(target, chartType, width) {
     const ChartTypes = { "circle": 0, "pie": 1 };
     const ChartTypeDefault = "circle";
     const WidthDefault = 800;
-    const LollipopTrackHeightDefault = 220, DomainTractHeightDefault = 30;
+    const LollipopTrackHeightDefault = 240, DomainTractHeightDefault = 30;
 
-    const SequenceTractHeightDefault = 20;
+    const SequenceAxisHeightDefault = 16; 
+    const SequenceTractHeightDefault = 40; 
     
     const SnvDataDefaultFormat = {
         x: "AA_Position",
@@ -1146,6 +1147,9 @@ function Lollipop(target, chartType, width) {
         height: SequenceTractHeightDefault,
         margin: { top: 0, bottom: 0 },
         background: lollipopOpt.background,
+        backgroundDY: SequenceAxisHeightDefault,
+        clipDY: SequenceAxisHeightDefault,
+        maxzoom: 16,
         sequenceClassName: {
             group: "sequence_group",
             text: "sequence_text",
@@ -1155,7 +1159,7 @@ function Lollipop(target, chartType, width) {
         },
         text: {
             font: "bold 16px Arial",
-            offset: 16,
+            offset: 32,
             space: 10,
             color: "#424242",
             palette: { "A":"LimeGreen", "C":"orange", "D":"red",   "E":"red",
@@ -1165,6 +1169,12 @@ function Lollipop(target, chartType, width) {
                        "T":"grey",  "V":"LimeGreen",  "W":"LimeGreen", "Y":"grey",
                        "-":"white", "~": "white",  ".":"white"
                      },
+        },
+        axis: {
+            font: "normal 10px Arial",
+            offset: 16,           
+            space: 10,
+            color: "#424242",
         }
     };
 
@@ -1177,7 +1187,7 @@ function Lollipop(target, chartType, width) {
     /* private variables */
     // chart settings
     var svg;
-    var _viz, _mainViz, _domainViz, _sequenceViz,
+    var _viz, _mainViz, _domainViz, _sequenceViz, 
         _lollipops, _popLines, _pops,
         _popYUpper, _popYLower, // lollipop viz components
         _domainRect, _domainText,
@@ -1185,19 +1195,20 @@ function Lollipop(target, chartType, width) {
         _yUpperValueArray = [], _yValueMax,
         _xRange, _xScale, _xAxis, _xTicks, _domXAxis,
         _yRange, _yScale, _yAxis, _yValues, _domYAxis,
+        _prevXS0, _prevXS1,
         _popTooltip = null,
         _chartInit = false,
         _byFactor = false,
         _initStates = {}, _currentStates = {},
         _lollipopLegend;
 
-     var _sequence, _seqAAs;
+    var _sequence, _seqAAs, _seqAxis = {}, _seqLbl, _seqLblLst;
 
 
     var _domainBrush, _xScaleOrig, _domainZoom, _legendHeight;
     var _domainH, _domainW, _mainH, _mainW, _svgH, _svgW;
 
-    var _seqH, _seqW;
+    var _seqH, _seqW, _seqDX, _seqDY;
 
     var _appendValueToDomain = function (tickValues, value) {
         if (value === undefined || tickValues.length <= 1 || tickValues[tickValues.length - 1] >= value)
@@ -1225,7 +1236,7 @@ function Lollipop(target, chartType, width) {
     var _getDomainEnd = function (d) {
         return _xScale(d[domainDataFormat.details.end]);
     };
-
+    
     var _updateX = function () {
         _xScale.domain(_xRange);
 
@@ -1234,47 +1245,75 @@ function Lollipop(target, chartType, width) {
 
             // update domains
             _domainRect
-                .attr("x", function (d) { return _getDomainStart(d); })
-                .attr("width", function (d) { return _getDomainRectWidth(d); });
+                .attr( "x",
+                       function (d) { return _getDomainStart(d); })
+                .attr( "width",
+                       function (d) { return _getDomainRectWidth(d); });
 
             _domainText
-                .attr("x", function (d) { return (_getDomainStart(d) + _getDomainEnd(d)) / 2; });
+                .attr( "x",
+                       function (d) { return ( _getDomainStart(d)
+                                               + _getDomainEnd(d)) / 2; });
         }
-
+        
         // update lines of lollipops
         _popLines//.transition().duration(_options.transitionTime)
             .attr("x1", function (d) { return _getPopX(d); })
             .attr("x2", function (d) { return _getPopX(d); });
-
-        // update pop arcs
-        _pops//.transition().duration(_options.transitionTime)
-            .attr("transform", function (d) {
-                return "translate(" + _getPopX(d) + "," + _getPopY(d) + ")";
-            });
-
-       // update sequence pos
-       
-       _seqAAs.attr("x", function (d) {
-          return _getPosAA(d);
-       });
-
-        //console.log( sequenceOpt.defsId + "::" + _xScale(1) + " : " + _xScale(0) );
         
-       if( _xScale(1) - _xScale(0) > sequenceOpt.text.space){
-           //d3.selectAll(".sequence_text").style("visibility", "visible");
-           d3.selectAll("#" + sequenceOpt.defsId ).style("visibility", "visible");
-       } else {
-           //d3.selectAll(".sequence_text").style("visibility", "hidden");
-           d3.selectAll("#" + sequenceOpt.defsId ).style("visibility", "hidden");
-       }
+        // update pop arcs
+        _pops //.transition().duration(_options.transitionTime)
+            .attr( "transform",
+                   function (d) {
+                       return "translate("+_getPopX(d)+","+_getPopY(d)+")";
+                   });
+
+        // update sequence pos
+        
+        _seqAAs.attr( "x", function (d) {
+            return _getPosAA(d);
+        });
+
+        // update seq axis position
+
+        _seqAxis.ticks
+            .attr( "x1", function (d) { return _xScale(d); })
+            .attr( "x2", function (d) { return _xScale(d); });
+
+        _seqAxis.labels
+            .attr( "x", function (d) { return _xScale(d); });
+
+        _seqAxis.tticks
+            .attr( "x1", function (d) { return _xScale(d); })
+            .attr( "x2", function (d) { return _xScale(d); });
+
+        _seqAxis.tlabels
+            .attr( "x", function (d) { return _xScale(d); });
+        
+        if( _xScale(1) - _xScale(0) > sequenceOpt.text.space){            
+            d3.selectAll( "#" + sequenceOpt.defsId )
+                .style("visibility", "visible");
+        } else {
+            d3.selectAll("#" + sequenceOpt.defsId )
+                .style("visibility", "hidden");
+        }
     };
 
     var _domainBrushMove = function (event) {
-        
+
         if (event.sourceEvent && event.sourceEvent.type === "zoom") return;
-        
+
         let _selection = event.selection || _xScaleOrig.range();
         _xRange = _selection.map(_xScaleOrig.invert);
+
+        if( Math.abs(_xRange[0] -_xRange[1]) < _seqW / sequenceOpt.maxzoom ){
+            _domainViz
+                .select(".domain-x-brush")
+                .call(_domainBrush.move, [_prevXS0, _prevXS1]);
+            return;    
+        }
+        _prevXS0 = _selection[0];
+        _prevXS1 = _selection[1];
 
         if (domainOpt.zoom) {
             _mainViz.select(".main-viz-zoom").call(_domainZoom.transform,
@@ -1307,11 +1346,80 @@ function Lollipop(target, chartType, width) {
             //.attr("fill", sequenceOpt.text.color)
             .attr("text-anchor", "middle")
             .attr("x",function (d) { return _getPosAA(d); })
-            .attr("y", function (d) { return sequenceOpt.margin.top + sequenceOpt.text.offset; })
+            .attr("y", function (d) { return sequenceOpt.margin.top
+                                      + sequenceOpt.text.offset; })
             .text(function (d) { return d.aa; });
-        //console.log("AAA:" + JSON.stringify(_seqAAs));   
+
+        _seqAxis.lblPos = [];
+        _seqAxis.tlblPos = [];
+        
+        console.log("lolli1: ",seqData.length);
+
+        for( var i = 100; i< seqData.length; i+=100 ){
+            _seqAxis.lblPos.push(i);
+        }
+
+        for( var i = 10; i< seqData.length; i+=10 ){
+            if( i % 100 > 0 ){ _seqAxis.tlblPos.push(i); }
+        }
+        console.log("lolli1: ", _seqAxis.lblPos);
+        console.log("lolli1: ", _seqAxis.tlblPos);
+        
+        _seqAxis.ticks = _sequence.append("g")
+            .attr("clip-path", "url(#" + lollipopOpt.defsId + ")")            
+            .selectAll(lollipopOpt.lollipopClassName.line)
+            .data(_seqAxis.lblPos ).enter()
+            .append("line")
+            .attr("x1", function (d) { console.log( "lolli1:", d, _xScale(d) );
+                                       return _xScale(d); } )
+            .attr("x2", function (d) { return _xScale(d); })
+            .attr("y1", function (d) { return sequenceOpt.margin.top + 12; } )
+            .attr("y2", function (d) { return sequenceOpt.margin.top + 16 } )
+            .attr("class", lollipopOpt.lollipopClassName.line)
+            .attr("stroke", lollipopOpt.lollipopLine.stroke)
+            .attr("stroke-width", lollipopOpt.lollipopLine["stroke-width"]);
+
+        _seqAxis.labels = _sequence.append("g")
+            .attr("clip-path", "url(#" + lollipopOpt.defsId+ ")")
+            .selectAll(sequenceOpt.sequenceClassName.group)
+            .data( _seqAxis.lblPos ).enter()
+            .append("text")             
+            .style("font", sequenceOpt.axis.font)
+            .attr("fill", sequenceOpt.axis.color)
+            .attr("text-anchor", "middle")
+            .attr("x",function (d) { return _xScale(d); })
+            .attr("y", function (d) { return sequenceOpt.margin.top + 10; })
+            .text(function (d) { return d.toString(); });
+
+        _seqAxis.tticks = _sequence.append("g")
+            .attr("clip-path", "url(#" + sequenceOpt.defsId + ")")
+            .selectAll(lollipopOpt.lollipopClassName.line)
+            .data(_seqAxis.tlblPos ).enter()
+            .append("line")
+            .attr("x1", function (d) { console.log( "lolli1:", d, _xScale(d) );
+                                       return _xScale(d); } )
+            .attr("x2", function (d) { return _xScale(d); } )
+            .attr("y1", function (d) { return sequenceOpt.margin.top + 12; } )
+            .attr("y2", function (d) { return sequenceOpt.margin.top + 16 } )
+            .attr("class", lollipopOpt.lollipopClassName.line )
+            .attr("stroke", lollipopOpt.lollipopLine.stroke )
+            .attr("stroke-width", lollipopOpt.lollipopLine["stroke-width"] );
+
+        _seqAxis.tlabels = _sequence.append("g")
+            .attr("clip-path", "url(#" + sequenceOpt.defsId+ ")")
+            .selectAll(sequenceOpt.sequenceClassName.group)
+            .data( _seqAxis.tlblPos ).enter()
+            .append("text")             
+            .style("font", sequenceOpt.axis.font)
+            .attr("fill", sequenceOpt.axis.color)
+            .attr("text-anchor", "middle")
+            .attr("x",function (d) { return _xScale(d); })
+            .attr("y", function (d) { return sequenceOpt.margin.top
+                                      + 10; })
+            .text(function (d) { return d.toString(); });
+        
     };
-   
+
     var _drawDomain = function () {
         // domain protein bar
         let _barH = _domainH - domainOpt.bar.margin.top - domainOpt.bar.margin.bottom;
@@ -1879,7 +1987,7 @@ function Lollipop(target, chartType, width) {
 
     var _mainVizZoomed = function ( event ) {
         if (event.sourceEvent && event.sourceEvent.type === "brush") return;
-        /*
+        /*  
         let _t = event.transform;
         _xRange = _t.rescaleX(_xScaleOrig).domain();
      
@@ -1900,11 +2008,7 @@ function Lollipop(target, chartType, width) {
         }
         _svgW = width;
 
-
         _mainH = lollipopOpt.height - options.margin.top - options.margin.bottom;
-
-
-
         _mainW = _svgW - options.margin.left - options.margin.right;
         
         _domainH = domainOpt.height - domainOpt.margin.top - domainOpt.margin.bottom;
@@ -1912,6 +2016,8 @@ function Lollipop(target, chartType, width) {
 
         _seqW = _mainW;
         _seqH = sequenceOpt.height - sequenceOpt.margin.top - sequenceOpt.margin.bottom;
+        _seqDX = 0;
+        _seqDY = sequenceOpt.axis.offset; 
     };
 
     var _prepareData = function () {
@@ -2018,7 +2124,18 @@ function Lollipop(target, chartType, width) {
         _xScale = d3.scaleLinear().domain(_xRange).range([0, _domainW]);
         _xScaleOrig = d3.scaleLinear().domain(_xRange).range([0, _domainW]);
         _xTicks = _appendValueToDomain(_xScale.ticks(), domainData[domainDataFormat.length], "");
-        _xAxis = d3.axisBottom(_xScale).tickValues(_xTicks)
+
+        var ttt= [];
+
+        console.log("_xTicks",_xTicks);
+
+        for(var i = 0; i < seqData.length-50; i+=100){
+            ttt.push(i);
+        }
+        ttt[0]=1;
+        ttt.push(seqData.length);
+        
+        _xAxis = d3.axisBottom(_xScale).tickValues(ttt)  // _xTicks
             .tickFormat(function (_) { return this.parentNode.nextSibling ? _ : _ + ""; });
     };
 
@@ -2116,7 +2233,7 @@ function Lollipop(target, chartType, width) {
             .attr("alignment-base", "middle")
             .attr("dy", lollipopOpt.axisLabel.dy)
             .text(lollipopOpt.ylab.text);
-
+/* *************** * */
         // add x axis
         if( options.seq ){
             _domXAxis = _mainViz.append("g")
@@ -2131,26 +2248,30 @@ function Lollipop(target, chartType, width) {
                 .attr("transform", "translate(0, " + (_mainH + domainOpt.height) + ")")
                 .call(_xReAxis);
        }
+/* */
     };
 
-    var _addBackground = function (g, bgColor, height, width) {
+    var _addBackground = function (g, bgColor, width, height, dx, dy) {
         var bgLayer = g.append("g").attr("id", "background-layer");
         bgLayer.append("rect")
-            .attr("x", 0).attr("y", 0)
+            .attr("x", dx)
+            .attr("y", dy)
             .attr("width", width).attr("height", height)
             .attr("fill", bgColor);
     };
 
     var _initMainViz = function () {
-        _addBackground(_mainViz, lollipopOpt.background, _mainH, _mainW);
+        _addBackground(_mainViz, lollipopOpt.background, _mainW, _mainH, 0, 0);
     };
 
     var _initDomainViz = function () {
-        _addBackground(_domainViz, domainOpt.background, _domainH, _domainW);
+        _addBackground(_domainViz, domainOpt.background, _domainW, _domainH, 0, 0);
     };
 
     var _initSequenceViz = function () {        
-        _addBackground(_sequenceViz, sequenceOpt.background, _seqH, _seqW);
+        _addBackground( _sequenceViz, sequenceOpt.background,
+                        _seqW, _seqH - sequenceOpt.backgroundDY,
+                        _seqDX, sequenceOpt.backgroundDY );
     };
 
     var _initTooltip = function () {
@@ -2249,8 +2370,10 @@ function Lollipop(target, chartType, width) {
         _sequenceViz.append("clipPath")
             .attr( "id", sequenceOpt.defsId )
             .append("rect")
+            .attr("x", 0)
+            //.attr("y", sequenceOpt.clipDY)
             .attr("width", _seqW)
-            .attr("height", _seqH);
+            .attr("height", _seqH); // - sequenceOpt.clipDY);
     };
 
     // =====================

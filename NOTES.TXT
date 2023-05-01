@@ -1,0 +1,3 @@
+refseq template
+
+https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=NM_019353.2&retmode=native&rettype=xml

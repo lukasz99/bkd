@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.StringWriter;
 
 import java.util.*;
+import org.json.*;
 
 import edu.ucla.mbi.dxf20.*;
 
@@ -40,6 +41,7 @@ public abstract class Xref{
        ns character varying(8) DEFAULT ''::character varying NOT NULL,
        ac character varying(32) DEFAULT ''::character varying NOT NULL,
        url character varying(128) DEFAULT ''::character varying NOT NULL,
+       jval text DEFAULT ''::text NOT NULL,  -- json value
        comment text DEFAULT ''::text NOT NULL,
        t_cr timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone,
        t_mod timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone,
@@ -107,6 +109,22 @@ public abstract class Xref{
         return url;
     }
 
+
+    //--------------------------------------------------------------------------
+
+    @Column(name = "jval")
+    String jval = "";
+           
+    public void setJval( String jval ){
+        this.jval = jval;
+    }
+
+    public String getJval(){
+        return jval;
+    }
+
+    //--------------------------------------------------------------------------
+    
     public void setSource( Source source ){
         this.source = source;
     }
@@ -154,6 +172,24 @@ public abstract class Xref{
             map.put("type-name", this.cvtype.getName() );
             map.put("type-cv", this.cvtype.getAc() );
         }
+
+        if( this.jval != null && this.jval.length() > 0 ){
+
+            try{
+                JSONObject jval = new JSONObject( this.jval );
+                for( Iterator<String> keys = jval.keys(); keys.hasNext(); ){ 
+                    String jvName = keys.next();
+                    
+                    JSONObject  jvObject = jval.getJSONObject( jvName );
+                    
+                    map.put( jvName, jvObject.getString( "value" ) );
+                            }
+            } catch( JSONException jx ){
+                Logger log = LogManager.getLogger( this.getClass() );
+                log.info( "JSONException: ", this.jval );
+            }
+        }
+        
         return map;
     }
     

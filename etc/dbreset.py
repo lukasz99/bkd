@@ -11,11 +11,11 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 # defaults
 
 dbhost = "10.1.7.203"
-dbname = "cvdb_flip"
+dbname = "cvdb_flop"
 dbuser = "bkd"
 dbpass = "444bkd444"
 
-sqlfile = "bkd-v06.sql"
+sqlfile = "etc/bkd-v07.sql"
 
 mypath = os.path.dirname( os.path.realpath(__file__) )
 sqlfile = os.path.join( mypath, sqlfile )
@@ -93,7 +93,7 @@ except Exception as e:
     print(e)
     sys.exit()
 
-with open("etc/bkd-v06.sql","r") as fh:
+with open( sqlfile, "r" ) as fh:
     q = ""
     
     for ln in fh:

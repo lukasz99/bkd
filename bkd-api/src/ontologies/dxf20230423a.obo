@@ -1,0 +1,801 @@
+format-version: 1.2
+date: 19:03:2010 11:58
+saved-by: lukasz
+auto-generated-by: OBO-Edit 1.101
+default-namespace: dxf
+ontology: DXF
+owl-axioms: Prefix(owl:=<http://www.w3.org/2002/07/owl#>)\nPrefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)\nPrefix(xml:=<http://www.w3.org/XML/1998/namespace>)\nPrefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)\nPrefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)\n\n\nOntology(\nDeclaration(AnnotationProperty(<http://www.geneontology.org/formats/oboInOwl#id>))\n\n\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#id> <http://purl.obolibrary.org/obo/DXF.owl#dxf_0157> \"dxf:0157\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#id> <http://purl.obolibrary.org/obo/DXF.owl#dxf_0158> \"dxf:0158\"^^xsd:string)\n)
+
+[Term]
+id: dxf:0000
+name: data exchange format
+def: "terms used within DXF file" [dxf:1]
+
+[Term]
+id: dxf:0001
+name: linked-protein
+def: "linked-protein" [dxf:1]
+is_a: dxf:0003 ! protein
+is_a: dxf:0010 ! linked-node
+
+[Term]
+id: dxf:0002
+name: node type
+def: "type of the node object" [dxf:1]
+is_a: dxf:0000 ! data exchange format
+
+[Term]
+id: dxf:0003
+name: protein
+def: "protein" [dxf:1]
+is_a: dxf:0002 ! node type
+
+[Term]
+id: dxf:0004
+name: link
+def: "link" [dxf:1]
+is_a: dxf:0002 ! node type
+
+[Term]
+id: dxf:0005
+name: reference type
+def: "reference type" [dxf:1]
+is_a: dxf:0000 ! data exchange format
+
+[Term]
+id: dxf:0006
+name: instance-of
+def: "instance-of" [dxf:1]
+is_a: dxf:0018 ! related-to
+
+[Term]
+id: dxf:0007
+name: produced-by
+def: "produced-by" [dxf:1]
+is_a: dxf:0005 ! reference type
+
+[Term]
+id: dxf:0008
+name: supported-by
+def: "supported-by" [dxf:1]
+is_a: dxf:0005 ! reference type
+
+[Term]
+id: dxf:0009
+name: identical-to
+def: "identical-to" [dxf:1]
+is_a: dxf:0018 ! related-to
+
+[Term]
+id: dxf:0010
+name: linked-node
+def: "linked-node" [dxf:1]
+is_a: dxf:0002 ! node type
+
+[Term]
+id: dxf:0011
+name: attribute
+def: "attribute" [dxf:1]
+is_a: dxf:0000 ! data exchange format
+
+[Term]
+id: dxf:0012
+name: quality-status
+def: "quality status" [dxf:1]
+synonym: "quality status" RELATED []
+is_a: dxf:0011 ! attribute
+
+[Term]
+id: dxf:0013
+name: supports
+def: "supports" [XX:1]
+is_a: dxf:0005 ! reference type
+
+[Term]
+id: dxf:0014
+name: described-by
+def: "described by" [XX:1]
+is_a: dxf:0005 ! reference type
+
+[Term]
+id: dxf:0015
+name: evidence
+def: "evidence" [dxf:1]
+is_a: dxf:0002 ! node type
+
+[Term]
+id: dxf:0016
+name: data-source
+def: "data-source" [dfx:1]
+is_a: dxf:0002 ! node type
+
+[Term]
+id: dxf:0017
+name: organism
+def: "organism" [dfx:1]
+is_a: dxf:0002 ! node type
+
+[Term]
+id: dxf:0018
+name: related-to
+def: "generic cross-reference" [XX:1]
+is_a: dxf:0005 ! reference type
+
+[Term]
+id: dxf:0019
+name: queried-as
+def: "Points to a reference used to query the annotated object." [dxf:000]
+synonym: "<new synonym>" RELATED []
+is_a: dxf:0005 ! reference type
+
+[Term]
+id: dxf:0020
+name: entails
+def: "Entails (sufficient to infer)" [XX:1]
+is_a: dxf:0005 ! reference type
+
+[Term]
+id: dxf:0021
+name: entailed-by
+def: "Entailed by the referenced evidence" [XX:1]
+is_a: dxf:0005 ! reference type
+
+[Term]
+id: dxf:0022
+name: encoded-by
+def: "Encoded by the referenced entity." [XX:1]
+is_a: dxf:0005 ! reference type
+
+[Term]
+id: dxf:0023
+name: encodes
+def: "Encodes referenced product. " [XX:1]
+is_a: dxf:0005 ! reference type
+
+[Term]
+id: dxf:0024
+name: describes
+def: "Describes referenced entity." [XX:1]
+is_a: dxf:0005 ! reference type
+
+[Term]
+id: dxf:0025
+name: gene
+def: "A gene." [XX:1]
+is_a: dxf:0002 ! node type
+
+[Term]
+id: dxf:0026
+name: search-report
+def: "Search report" [XX:1]
+is_a: dxf:0002 ! node type
+
+[Term]
+id: dxf:0027
+name: search-result
+def: "Search result." [XX:1]
+is_a: dxf:0002 ! node type
+
+[Term]
+id: dxf:0028
+name: molecule
+def: "Molecule." [XX:1]
+is_a: dxf:0002 ! node type
+
+[Term]
+id: dxf:0029
+name: composite-node
+def: "A node composed of multiple parts." [XX:1]
+is_a: dxf:0002 ! node type
+
+[Term]
+id: dxf:0030
+name: cv-term
+def: "Controlled vocabulary term." [XX:1]
+is_a: dxf:0002 ! node type
+
+[Term]
+id: dxf:0031
+name: synonym
+def: "CV term synonym." [XX:1]
+is_a: dxf:0060 ! name
+
+[Term]
+id: dxf:0032
+name: definition
+def: "Cv term definition." [XX:1]
+is_a: dxf:0011 ! attribute
+
+[Term]
+id: dxf:0033
+name: is-obsolete
+def: "Cv term status." [XX:1]
+is_a: dxf:0011 ! attribute
+
+[Term]
+id: dxf:0034
+name: is-a
+def: "Subsumption relationship." [XX:1]
+is_a: dxf:0005 ! reference type
+
+[Term]
+id: dxf:0035
+name: part-of
+def: "Part of relationship." [XX:1]
+is_a: dxf:0005 ! reference type
+
+[Term]
+id: dxf:0036
+name: replaces
+is_a: dxf:0018 ! related-to
+
+[Term]
+id: dxf:0037
+name: replaced-by
+is_a: dxf:0018 ! related-to
+
+[Term]
+id: dxf:0038
+name: derives
+def: "The reference represents one of many entities derived from the parent." [XX:1]
+is_a: dxf:0018 ! related-to
+
+[Term]
+id: dxf:0039
+name: derived-from
+def: "The reference corresponds to a parent entity the current one." [dxf:1]
+is_a: dxf:0018 ! related-to
+
+[Term]
+id: dxf:0040
+name: published-by
+def: "published-by" [XX:1]
+is_a: dxf:0005 ! reference type
+
+[Term]
+id: dxf:0041
+name: published
+def: "published" [XX:1]
+is_a: dxf:0005 ! reference type
+
+[Term]
+id: dxf:0042
+name: date
+def: "date" [XX:1]
+is_a: dxf:0011 ! attribute
+
+[Term]
+id: dxf:0043
+name: publication-date
+def: "Publication date." [XX:1]
+is_a: dxf:0042 ! date
+
+[Term]
+id: dxf:0044
+name: data-source-report
+def: "Report on a part/entire data source." [XX:1]
+is_a: dxf:0002 ! node type
+created_by: lukasz
+creation_date: 2010-01-13T01:47:54Z
+
+[Term]
+id: dxf:0045
+name: evidence-node
+def: "evidence-node." [XX:1]
+is_a: dxf:0002 ! node type
+created_by: lukasz
+creation_date: 2010-01-14T04:10:18Z
+
+[Term]
+id: dxf:0046
+name: inference
+def: "Inference." [XX:1]
+is_a: dxf:0002 ! node type
+
+[Term]
+id: dxf:0047
+name: inference-node
+def: "Inference node." [XX:1]
+is_a: dxf:0002 ! node type
+
+[Term]
+id: dxf:0048
+name: experiment-node
+def: "experiment-node." [XX:1]
+is_a: dxf:0002 ! node type
+created_by: lukasz
+creation_date: 2019-09-12T04:10:18Z
+
+[Term]
+id: dxf:0049
+name: experiment
+def: "Experiment description" [dxf:1]
+is_a: dxf:0002 ! node type
+
+[Term]
+id: dxf:0050
+name: result
+def: "Result" [dxf:1]
+is_a: dxf:0002 ! node type
+
+[Term]
+id: dxf:0051
+name: method
+def: "Method" [dxf:1]
+is_a: dxf:0002 ! node type
+
+[Term]
+id: dxf:0052
+name: evidence-method
+def: "Method used to derive conclusions from the evidence." [dxf:1]
+is_a: dxf:0002 ! node type
+
+[Term]
+id: dxf:0053
+name: rna
+def: "rna" [dxf:1]
+is_a: dxf:0002 ! node type
+
+[Term]
+id: dxf:0055
+name: publication
+def: "Published resource" [dxf:1]
+is_a: dxf:0016 ! data-source
+
+[Term]
+id: dxf:0056
+name: person
+def: "Person" [dxf:1]
+is_a: dxf:0016 ! data-source
+
+[Term]
+id: dxf:0057
+name: database-record
+def: "Online record" [dxf:1]
+is_a: dxf:0016 ! data-source
+
+[Term]
+id: dxf:0058
+name: mrna
+is_a: dxf:0053 ! rna
+
+[Term]
+id: dxf:0059
+name: trna
+is_a: dxf:0053 ! rna
+
+[Term]
+id: dxf:0060
+name: name
+is_a: dxf:0011 ! attribute
+
+[Term]
+id: dxf:0061
+name: title
+is_a: dxf:0011 ! attribute
+
+[Term]
+id: dxf:0062
+name: abstract
+is_a: dxf:0011 ! attribute
+
+[Term]
+id: dxf:0063
+name: volume
+is_a: dxf:0011 ! attribute
+
+[Term]
+id: dxf:0064
+name: issue
+is_a: dxf:0011 ! attribute
+
+[Term]
+id: dxf:0065
+name: year
+is_a: dxf:0011 ! attribute
+
+[Term]
+id: dxf:0066
+name: journal-title
+is_a: dxf:0061 ! title
+
+[Term]
+id: dxf_0071
+name: sequence
+is_a: dxf:0011 ! attribute
+
+[Term]
+id: dxf_0072
+name: variant-of
+def: "Points to a variant of the cross-referenced entity" [XX:1]
+is_a: dxf:0039 ! derived-from
+
+[Term]
+id: dxf_0073
+name: phenotype
+is_a: dxf_0074 ! property
+
+[Term]
+id: dxf_0074
+name: property
+is_a: dxf:0002 ! node type
+
+[Term]
+id: dxf_0075
+name: feature
+is_a: dxf_0074 ! property
+
+[Term]
+id: dxf_0076
+name: phenotype-of
+def: "described by" [XX:1]
+is_a: dxf:0005 ! reference type
+
+[Term]
+id: dxf_0077
+name: has-phenotype
+def: "described by" [XX:1]
+is_a: dxf:0005 ! reference type
+
+[Term]
+id: dxf_0079
+name: translated-to
+def: "described by" [XX:1]
+is_a: dxf:0005 ! reference type
+
+[Term]
+id: dxf_0080
+name: translated-from
+def: "described by" [XX:1]
+is_a: dxf:0005 ! reference type
+
+[Term]
+id: dxf_0081
+name: has-structure
+def: "described by" [XX:1]
+is_a: dxf_0077 ! has-phenotype
+
+[Term]
+id: dxf_0082
+name: has-links
+def: "described by" [XX:1]
+is_a: dxf_0077 ! has-phenotype
+
+[Term]
+id: dxf_0084
+name: has-instance
+is_a: dxf:0018 ! related-to
+
+[Term]
+id: dxf_0086
+name: keyword
+is_a: dxf:0011 ! attribute
+
+[Term]
+id: dxf_0087
+name: comment
+is_a: dxf:0011 ! attribute
+
+[Term]
+id: dxf_0088
+name: organization
+def: "Online record" [dxf:1]
+is_a: dxf:0016 ! data-source
+
+[Term]
+id: dxf_0089
+name: description
+is_a: dxf:0011 ! attribute
+
+[Term]
+id: dxf_0090
+name: report
+is_a: dxf:0002 ! node type
+
+[Term]
+id: dxf_0093
+name: clinical-report
+is_a: dxf_0090 ! report
+
+[Term]
+id: dxf_0094
+name: phenotype-report
+is_a: dxf_0090 ! report
+
+[Term]
+id: dxf_0096
+name: channel-report
+is_a: dxf_0090 ! report
+
+[Term]
+id: dxf_0097
+name: transporter-report
+is_a: dxf_0090 ! report
+
+[Term]
+id: dxf_0098
+name: protein-report
+is_a: dxf_0090 ! report
+
+[Term]
+id: dxf_0099
+name: gene-report
+is_a: dxf_0090 ! report
+
+[Term]
+id: dxf_0100
+name: alias
+is_a: dxf:0000 ! data exchange format
+
+[Term]
+id: dxf_0101
+name: protein-name
+is_a: dxf:0060 ! name
+
+[Term]
+id: dxf_0102
+name: gene-name
+is_a: dxf:0060 ! name
+
+[Term]
+id: dxf_0103
+name: gene-synonym
+is_a: dxf:0031 ! synonym
+is_a: dxf_0102 ! gene-name
+
+[Term]
+id: dxf_0104
+name: function
+is_a: dxf:0011 ! attribute
+
+[Term]
+id: dxf_0106
+name: subcellular-location
+is_a: dxf:0011 ! attribute
+
+[Term]
+id: dxf_0107
+name: tissue-specificity
+is_a: dxf:0011 ! attribute
+
+[Term]
+id: dxf_0108
+name: function108
+is_a: dxf:0011 ! attribute
+
+[Term]
+id: dxf_0109
+name: activity-regulation
+is_a: dxf:0011 ! attribute
+
+[Term]
+id: dxf_0110
+name: interaction-report
+is_a: dxf_0090 ! report
+
+[Term]
+id: dxf_0111
+name: interaction-experiment-report
+is_a: dxf_0110 ! interaction-report
+
+[Term]
+id: dxf_0112
+name: interaction-inference-report
+is_a: dxf_0110 ! interaction-report
+
+[Term]
+id: dxf_0113
+name: located-at
+def: "described by" [XX:1]
+is_a: dxf:0005 ! reference type
+
+[Term]
+id: dxf_0120
+name: status
+is_a: dxf:0011 ! attribute
+
+[Term]
+id: dxf_0121
+name: clinical-significance
+is_a: dxf:0011 ! attribute
+
+[Term]
+id: dxf_0122
+name: risc factor
+is_a: dxf_0121 ! clinical-significance
+
+[Term]
+id: dxf_0123
+name: uncertain
+is_a: dxf_0121 ! clinical-significance
+
+[Term]
+id: dxf_0124
+name: conflicting evidence
+is_a: dxf_0121 ! clinical-significance
+
+[Term]
+id: dxf_0125
+name: likely pathogenic
+is_a: dxf_0121 ! clinical-significance
+
+[Term]
+id: dxf_0126
+name: pathogenic
+is_a: dxf_0121 ! clinical-significance
+
+[Term]
+id: dxf_0127
+name: likely benign
+is_a: dxf_0121 ! clinical-significance
+
+[Term]
+id: dxf_0128
+name: benign
+is_a: dxf_0121 ! clinical-significance
+
+[Term]
+id: dxf_0129
+name: drug response
+is_a: dxf_0121 ! clinical-significance
+
+[Term]
+id: dxf_0130
+name: unspecified
+is_a: dxf_0121 ! clinical-significance
+
+[Term]
+id: dxf_0131
+name: strand
+is_a: dxf:0011 ! attribute
+
+[Term]
+id: dxf_0132
+name: canonical-instance-of
+is_a: dxf:0006 ! instance-of
+
+[Term]
+id: dxf_0133
+name: has-canonical-instance
+is_a: dxf_0084 ! has-instance
+
+[Term]
+id: dxf_0134
+name: canonical-sequence
+is_a: dxf_0071 ! sequence
+
+[Term]
+id: dxf_0135
+name: mane-sequence
+is_a: dxf_0138 ! alternate-sequence
+
+[Term]
+id: dxf_0136
+name: has-mane-instance
+is_a: dxf_0084 ! has-instance
+
+[Term]
+id: dxf_0137
+name: mane-instance-of
+is_a: dxf:0006 ! instance-of
+
+[Term]
+id: dxf_0138
+name: alternate-sequence
+is_a: dxf_0071 ! sequence
+
+[Term]
+id: dxf_0139
+name: likely risc factor
+is_a: dxf_0121 ! clinical-significance
+
+[Term]
+id: dxf_0140
+name: feature
+def: "A node composed of multiple parts." [XX:1]
+is_a: dxf:0002 ! node type
+
+[Term]
+id: dxf_0141
+name: sequence-feature
+def: "A node composed of multiple parts." [XX:1]
+is_a: dxf_0140 ! feature
+
+[Term]
+id: dxf_0142
+name: topology-feature
+def: "A node composed of multiple parts." [XX:1]
+is_a: dxf_0140 ! feature
+
+[Term]
+id: dxf_0143
+name: repeat
+def: "A node composed of multiple parts." [XX:1]
+is_a: dxf_0141 ! sequence-feature
+
+[Term]
+id: dxf_0144
+name: composition-bias
+def: "A node composed of multiple parts." [XX:1]
+is_a: dxf_0141 ! sequence-feature
+
+[Term]
+id: dxf_0145
+name: structure-feature
+def: "A node composed of multiple parts." [XX:1]
+is_a: dxf_0140 ! feature
+
+[Term]
+id: dxf_0146
+name: disordered
+def: "A node composed of multiple parts." [XX:1]
+is_a: dxf_0145 ! structure-feature
+
+[Term]
+id: dxf_0147
+name: cytoplasmic
+def: "A node composed of multiple parts." [XX:1]
+is_a: dxf_0142 ! topology-feature
+
+[Term]
+id: dxf_0148
+name: extracellular
+def: "A node composed of multiple parts." [XX:1]
+is_a: dxf_0142 ! topology-feature
+
+[Term]
+id: dxf_0149
+name: membrane
+def: "A node composed of multiple parts." [XX:1]
+is_a: dxf_0142 ! topology-feature
+
+[Term]
+id: dxf_0150
+name: loop
+def: "A node composed of multiple parts." [XX:1]
+is_a: dxf_0145 ! structure-feature
+
+[Term]
+id: dxf_0151
+name: alpha-helix
+def: "A node composed of multiple parts." [XX:1]
+is_a: dxf_0145 ! structure-feature
+
+[Term]
+id: dxf_0152
+name: beta-strand
+def: "A node composed of multiple parts." [XX:1]
+is_a: dxf_0145 ! structure-feature
+
+[Term]
+id: dxf_0153
+name: domain
+def: "A node composed of multiple parts." [XX:1]
+is_a: dxf_0141 ! sequence-feature
+
+[Term]
+id: dxf_0154
+name: motif
+def: "A node composed of multiple parts." [XX:1]
+is_a: dxf_0141 ! sequence-feature
+
+[Term]
+id: dxf_0155
+name: var-dts
+is_a: dxf:0011 ! attribute
+
+[Term]
+id: dxf_0156
+name: var-seq
+is_a: dxf:0011 ! attribute
+
+[Term]
+id: dxf_0157
+name: translation-start
+is_a: dxf:0011 ! attribute
+
+[Term]
+id: dxf_0158
+name: translation-stop
+is_a: dxf:0011 ! attribute
+

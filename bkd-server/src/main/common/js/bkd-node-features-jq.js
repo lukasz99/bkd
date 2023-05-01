@@ -22,13 +22,13 @@ BKDnodeFeatures = {
               { "id":"flist-select-5","name":"select-5",
                 "label":"Pathogenic", "value":"pathogenic",
                 "color":"red" } ],
-    fcolor:   { "pathogenic":"red",
-                "likely pathogenic":"pink",
-                "uncertain":"#beaed4",
-                "conflicting evidence":"#cc79de",
-                "unspecified":"#c0c0c0",
-                "likely benign":"cyan",
-                "benign":"blue"                              
+    fcolor:   { "pathogenic":"#ff0000",
+                "likely pathogenic":"#EDB2B4",
+                "uncertain":"#c0c0c0",
+                "conflicting evidence":"#DBE120",
+                "unspecified":"#ffffff",
+                "likely benign":"#00a0d0",
+                "benign":"#8080ff"                              
               },
     nodeAnchor: null,
     srcAnchor: null,
@@ -299,7 +299,7 @@ BKDnodeFeatures = {
                      var flurl = parent.myurl.replace("FULL","FEATL");
                      var fdurl = parent.myurl.replace("detail=FULL","fpos=");
 
-                     var nloli =
+                     var nloli =    // ##############
                          new BkdLollipop( { anchor: "flist-lollipop-1",
                                             id: "lpanel-1",
                                             dset:{ default:"clinvar",
@@ -524,6 +524,8 @@ BKDnodeFeatures = {
         for( var ci in BKDnodeFeatures.iseq ){
             vseq[ BKDnodeFeatures.iseq[ci].upr ] = BKDnodeFeatures.iseq[ci].seq;
         }
+
+        // ?????
         
         var loli1 = new BkdLollipop( { anchor: "flist-lollipop-1",
                                        id: "lpanel-1",
@@ -547,10 +549,23 @@ BKDnodeFeatures = {
                                        detailtable: this.config.lollipanel.detailtable,
                                        detailcbl: [ BKDnodeFeatures.detailCallback ]
                                      } );
+
+
+
+        var sqsel = $('#iseq').val(); 
+        var cseq ='';
+        
+        for(var i = 0; i < BKDnodeFeatures.iseq.length; i ++ ){
+            if( sqsel == BKDnodeFeatures.iseq[i].upr ){
+                cseq = BKDnodeFeatures.iseq[i].seq;
+            }
+        }
+
+        console.log("loli1 init:", sqsel, cseq.length);        
         
         loli1.initialize ( { vsel: $('#iseq').val(),
                              vseq: vseq ,
-                             sequence: BKDnodeFeatures.data.sequence });
+                             sequence: cseq });
         this.lollipanels['loli1'] = loli1;
         
         // genome viewer panel

@@ -13,4 +13,5 @@ from .linkzeep import *
 from .mutzeep import *
 from .refsnp import *
 from .clinvar import *
+from .refseq import *
 from .gnomad import *

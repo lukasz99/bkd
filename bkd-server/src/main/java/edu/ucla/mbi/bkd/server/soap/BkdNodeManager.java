@@ -1,5 +1,5 @@
 package edu.ucla.mbi.bkd.server.soap;
-
+ 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
  
@@ -436,8 +436,44 @@ public class BkdNodeManager {
                                                  xt.getType() );
 
                         // persist if needed ? 
+                        
+                        axref.setCvType(cvt);
 
-                        axref.setCvType(cvt);                                                   
+                        // atribute xreferences
+                        
+                        
+                        JSONObject axjval = new JSONObject();  // xref jvals
+
+                        
+                        if( xt.getAttrList() != null ){
+                        
+                            List<AttrType> axtlist = xt.getAttrList().getAttr();
+
+                            for( AttrType xatt: axtlist ){
+                                
+                                // JSON xref att value
+                                //--------------------
+
+                                JSONObject jxatt = this.buildJAtt( xatt );
+                                
+                                // handle xref's atrributes
+                                //-------------------------
+                                
+                                if( jxatt != null ){
+                                    try{                                        
+                                        axjval.put( xatt.getName(), jxatt );
+                                    } catch(JSONException jx){
+                                        // shouldn't happen
+                                    }
+                                }  
+                            }
+                            
+                            if( axjval.length() > 0 ){                                
+                                axref.setJval( axjval.toString() );
+                            }
+                        }
+                        // add axref to current node attribute
+                        
                         nat.getXrefs().add( axref );                        
                     }
                 }
@@ -960,7 +996,7 @@ public class BkdNodeManager {
 
                     // special case: "describes"
                     // "var-dts":{"ac":"dxf:0155","ns":"dxf","value":"bkdts"} 
-                    
+
                     // JSON feature value
                     //-------------------
                     
@@ -1249,7 +1285,47 @@ public class BkdNodeManager {
                         xt.setTypeNs(ax.getCvType().getNs());
                         xt.setTypeAc(ax.getCvType().getAc());
                         xt.setType(ax.getCvType().getName());
-                                                    
+                        
+
+                        if(ax.getJval() != null && ax.getJval().length() > 0 ){
+                            
+                            // parse Jval
+                            try {
+                            
+                                JSONObject jval = new JSONObject(  ax.getJval() );
+
+                                Iterator<String> keys  = jval.keys();  
+                                while( keys.hasNext() ){
+                                    String jvName = keys.next();
+                                    JSONObject jo = jval.getJSONObject( jvName );
+                                    
+                                    String jvNs = jo.getString( "ns" );
+                                    String jvAc = jo.getString( "ac" );
+                                    String jvValue = jo.getString( "value" );
+
+                                    AttrType jvAttr = dxfFactory.createAttrType();
+                                    jvAttr.setName( jvName );
+                                    jvAttr.setNs( jvNs );
+                                    jvAttr.setAc( jvAc );
+                                    
+                                    AttrType.Value jvAV = dxfFactory.createAttrTypeValue();
+                                    jvAV.setValue( jvValue );
+                                    jvAttr.setValue( jvAV );
+                                    
+                                    if(xt.getAttrList() == null){
+                                        xt.setAttrList(dxfFactory.createXrefTypeAttrList() );
+                                    }
+                                    
+                                    xt.getAttrList().getAttr().add(jvAttr);                                    
+                                }
+                                
+                            } catch( JSONException jx ){
+                                Logger log = LogManager.getLogger( BkdNodeManager.class );
+                                log.info( "JSONException: ", ax.getJval() );                                
+                            }
+
+                        }
+                        
                         da.getXrefList().getXref().add(xt);
                     }
 

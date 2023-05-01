@@ -98,7 +98,8 @@ CREATE TABLE node (
 
     label character varying(32) DEFAULT ''::character varying NOT NULL,         
     name text DEFAULT ''::text NOT NULL,
-    sequence text DEFAULT ''::text NOT NULL,    
+    sequence text DEFAULT ''::text NOT NULL,
+    jval text DEFAULT ''::text NOT NULL,
     comment text DEFAULT ''::text,
     status character varying(16) DEFAULT ''::character varying NOT NULL,
     version character varying(16) DEFAULT ''::character varying,	
@@ -251,6 +252,7 @@ CREATE TABLE xref (
     ns character varying(32) DEFAULT ''::character varying NOT NULL,
     ac character varying(32) DEFAULT ''::character varying NOT NULL,
     url character varying(128) DEFAULT ''::character varying NOT NULL,
+    jval text DEFAULT ''::text NOT NULL,
     t_cr timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone,
     t_mod timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone,
     comment text DEFAULT ''::text NOT NULL
@@ -266,6 +268,7 @@ CREATE INDEX xref_01d ON xref USING btree (fk_attr,ns,ac);
 CREATE INDEX xref_02  ON xref USING btree (sclass,fk_cvtype);
 CREATE INDEX xref_03  ON xref USING btree (ac,fk_cvtype);
 CREATE INDEX xref_04  ON xref USING btree (fk_cvtype);
+
 CREATE INDEX xref_05  ON xref USING btree (fk_source);
 
 CREATE TABLE source (   
@@ -349,11 +352,15 @@ CREATE TABLE feature (
     name text DEFAULT ''::text NOT NULL,
     fk_source bigint DEFAULT 0 NOT NULL,
     jval text DEFAULT ''::text NOT NULL,
+    dataset character varying(32) DEFAULT ''::character varying,
     comment text DEFAULT ''::text NOT NULL,
     status character varying(16) DEFAULT ''::character varying NOT NULL,
+    posidx integer DEFAULT 0 NOT NULL,
+    seqidx character varying(2) DEFAULT ''::character varying NOT NULL,
     t_cr timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone,
     t_mod timestamp with time zone DEFAULT ('now'::text)::timestamp without time zone
 );
+
 
 CREATE SEQUENCE feat_pkey_seq START WITH 1 INCREMENT BY 1
     NO MINVALUE NO MAXVALUE CACHE 1;
@@ -362,7 +369,10 @@ CREATE INDEX feat_01 ON feature USING btree (sclass, pkey);
 CREATE INDEX feat_02 ON feature USING btree (fk_node);
 CREATE INDEX feat_03 ON feature USING btree (fk_type,fk_node);
 CREATE INDEX feat_04 ON feature USING btree (fk_source);
+CREATE INDEX feat_4a ON feature USING btree (dataset, pkey);
 CREATE INDEX feat_06 ON feature USING btree (status);
+CREATE INDEX feat_06a ON feature USING btree (posidx, dataset);
+CREATE INDEX feat_06b ON feature USING btree (seqidx, dataset);
 CREATE INDEX feat_07 ON feature USING btree (t_cr);
 CREATE INDEX feat_08 ON feature USING btree (t_mod);
 

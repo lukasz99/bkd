@@ -552,18 +552,58 @@ class UniZeep(BKD.BkdZeep):
                                                name="alternate-sequence",
                                                ns="dxf", ac="dxf:0138",
                                                attrList = xsd.SkipValue,
-                                               xrefList = {"xref":[]})
-                
+                                               xrefList = {"xref":[]} )
+                        
                     if zattr is not None:    
-                        for k in  ['upr','RefSeq','tRefSeq']:
+                        for k in  ['upr', 'RefSeq', 'tRefSeq']:
                             if k in csv and csv[k] is not None:
-                                if k == 'tRefSeq':
-                                    csxupr = zdxf.xrefType( type = "translated-from",
-                                                            typeNs = "dxf",
-                                                            typeAc = "dxf:0080",
-                                                            node = xsd.SkipValue,
-                                                            ns = 'RefSeq',
-                                                            ac = csv[k])
+                                if k == 'tRefSeq':                            
+
+                                    trStartAttr = None
+                                    trStopAttr = None
+                                    
+                                    if 'trStart' in csv and csv['trStart'] != None :
+                                        
+                                        trStartAttr = zdxf.attrType( value = csv['trStart'],
+                                                                     name="translation-start",
+                                                                     ns="dxf", ac="dxf:0157",
+                                                                     attrList = xsd.SkipValue,
+                                                                     xrefList = xsd.SkipValue )
+                                                                                
+                                    if 'trStop' in csv and csv['trStop'] != None :
+
+                                        trStopAttr = zdxf.attrType( value = csv['trStop'],
+                                                                    name="translation-stop",
+                                                                    ns="dxf", ac="dxf:0158",
+                                                                    attrList = xsd.SkipValue,
+                                                                    xrefList = xsd.SkipValue )
+                                        
+                                    if trStartAttr != None or trStopAttr != None:
+                                        
+                                        csxupr = zdxf.xrefType( type = "translated-from",
+                                                                typeNs = "dxf",
+                                                                typeAc = "dxf:0080",
+                                                                node = xsd.SkipValue,
+                                                                attrList = {"attr":[]},
+                                                                ns = 'RefSeq',
+                                                                ac = csv[k])
+                                                                                
+                                        if trStartAttr != None:
+                                            csxupr.attrList['attr'].append( trStartAttr )
+                                            
+                                        if trStopAttr != None:
+                                            csxupr.attrList['attr'].append( trStopAttr ) 
+
+                                    else:
+                                        csxupr = zdxf.xrefType( type = "translated-from",
+                                                                typeNs = "dxf",
+                                                                typeAc = "dxf:0080",
+                                                                node = xsd.SkipValue,
+                                                                ns = 'RefSeq',
+                                                                ac = csv[k])
+                                        
+                                    #sys.exit()
+                                    
                                 else:
                                     csxupr = zdxf.xrefType( type = "identical-to",
                                                             typeNs = "dxf",
