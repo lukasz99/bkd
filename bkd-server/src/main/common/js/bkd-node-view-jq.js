@@ -847,7 +847,7 @@ BKDnodeView = {
                 var anchor = "#seq-viewer-1";
                 var msaConfig = {
                     "width": 1620,
-                    "height":350,            
+                    "height":350,
                     "taxname": {'9606': 'Human' }
                 }
 

@@ -22,13 +22,13 @@ BKDnodeFeatures = {
               { "id":"flist-select-5","name":"select-5",
                 "label":"Pathogenic", "value":"pathogenic",
                 "color":"red" } ],
-    fcolor:   { "pathogenic":"#ff0000",
-                "likely pathogenic":"#EDB2B4",
-                "uncertain":"#c0c0c0",
-                "conflicting evidence":"#DBE120",
+    fcolor:   { "pathogenic":"#d04030",
+                "likely pathogenic":"#e08080",
+                "uncertain":"#b0b0b0",
+                "conflicting evidence":"#d2b4de",
                 "unspecified":"#ffffff",
-                "likely benign":"#00a0d0",
-                "benign":"#8080ff"                              
+                "likely benign":"#30a0e0",
+                "benign":"#2161b0"                              
               },
     nodeAnchor: null,
     srcAnchor: null,
@@ -137,12 +137,12 @@ BKDnodeFeatures = {
         $( tgt ).append(
             "<table border='1' width='100%'>" +
                 " <tr>"+
-                "  <td id='flist' width='1024' colspan='1' rowspan='1' valign='top' align='center'>"+
+                "  <td id='flist' width='900' colspan='1' rowspan='1' valign='top' align='center'>"+
                 "   <div id='flist-source' class='bkd-select-panel'></div>"+ 
                 "   <div id='flist-lollipop-1' class='bkd-select-panel'></div>"+ 
                 "  </td>"+                                            
                 "  <td valign='top' align='center'>"+
-                "   <table style='border-spacing: 0px;' width='100%'>"+
+                "   <table id='flist-tabs' style='border-spacing: 0px;' width='100%'>"+
                 "    <tr>"+
                 "     <td id='track-tab' class='bkd-feat-tab-on track-tab'>Genome&nbsp;Viewer</td>"+
                 "     <td id='homo-tab-panther' class='bkd-feat-tab-off homo-tab' title='Source: UCSC Genome Browser' >Homology&nbsp;(G)</td>"+
@@ -158,7 +158,7 @@ BKDnodeFeatures = {
                 "  </td>"+
                 " </tr>"+
                 "</table>" );
-
+/*
         $( '#flist-view' ).append(
             "<div id='track-port' style='width:600px; height:625px;'></div>");
         $( '#track-port').hide();
@@ -188,7 +188,21 @@ BKDnodeFeatures = {
             "<div id='str-port' style='width:600px; height:625px;'></div>");
         //$( '#str-port').hide();
         $( '#str-tab').on('click',BKDnodeFeatures.flviewToggle);
-        
+*/
+        tconf = this.config.tabs;
+            
+        for( var i = 0; i< tconf.tablist.length; i++ ){
+        tid = tconf.tablist[i]["tab-id"];
+            vid = tconf.tablist[i]["view-id"];
+
+            console.log( "TAB:", tconf['view-anchor'], tid, vid );            
+            $( tconf['view-anchor'] ).append( 
+                "<div id='" + vid + "' class='" + tconf['view-class'] + "'></div>" )
+            $( '#' + vid ).hide();           
+            $( '#' + tid ).on( 'click', BKDnodeFeatures.flviewToggle );
+
+        }
+      
         // features: sequence to map
         //--------------------------
 
@@ -319,6 +333,7 @@ BKDnodeFeatures = {
                                             format: format,
                                             fcolor: parent.fcolor,
                                             vclass: parent.vclass,
+                                            uprotname: '',
                                             detailtable: parent.config.lollipanel.detailtable,
                                             detailcbl: [ BKDnodeFeatures.detailCallback ]
                                           } );
@@ -339,10 +354,6 @@ BKDnodeFeatures = {
                      //loli1.initialize ( { vsel: $('#iseq').val(),
                      //        vseq: vseq ,
                      //        sequence: BKDnodeFeatures.data.sequence });
-
-
-
-
                      
                  });
 
@@ -1244,10 +1255,8 @@ BKDnodeFeatures = {
        BKDnodeFeatures.setNGLSelScheme( BKDnodeFeatures.strComp,
                                         BKDnodeFeatures.fstate, 
                                         ftslist );
-
-       BKDnodeFeatures.setIGVSelScheme(pos37map,pos38map,show);
        
-       
+       BKDnodeFeatures.setIGVSelScheme(pos37map,pos38map,show);              
    },
 
 
@@ -1345,8 +1354,13 @@ BKDnodeFeatures = {
         var rseq = $('#flist-source #iseq').val(); 
         
         BKDnodeView.mymsa.setSelectList( Object.keys(smap), rseq );
-        BKDnodeView.mymsa.setNavView( BKDnodeView.mymsa._view.navWidth/2,
-                                      BKDnodeView.mymsa._view.navWidth);        
+
+        // NOTE: test alternates
+        //BKDnodeView.mymsa.setNavView( BKDnodeView.mymsa._view.navWidth/2,
+        //                              BKDnodeView.mymsa._view.navWidth);
+        
+        BKDnodeView.mymsa.setSelectView();
+        
     },
     
     // tab panel toggle
@@ -1396,6 +1410,107 @@ BKDnodeFeatures = {
     },
 
     homologpane1: function( anchor, data ){
+        //msaid = anchor.replace("#","") + "-msa";
+        msaid = "seq-viewer-2a";
+        msaurl = "msa-ucscgb/" + BKDnodeFeatures.data.ac + ".fasta";
+
+        var msaConfig = {
+            "width": 650,
+            "height":625,
+            "header":{
+                "label":[1],
+                "popup":[]
+            },
+            
+            "taxname": {'9606': 'Human',
+                        '9598': 'Chimpanzee',
+                        '9595': 'Gorilla',
+                        '9601': 'Orangutan',
+                        '9544': 'Rhesus',
+                        '10090': 'Mouse',
+                        '10116': 'Rat',
+                        '10141': 'Guinea pig',
+                        '9986': 'Rabbit',
+                        '9615': 'Dog',
+                        '9031': 'Chicken',
+                        '8364': 'Xenopus',
+                        '7955': 'Zebrafish',
+                        '9557':'Baboon',
+                        '10029':'Hamster',
+                        '9986':'Rabbit',
+                        '9823':'Pig',
+                        '9913':'Cow',
+                        '9685':'Cat',
+                        '9796':'Horse',
+                        '9940':'Sheep',
+                        '13616':'Opossum',
+                        '9258':'Platypus'
+                       }
+        };
+
+        BKDnodeView.mymsa2a = new BkdMSA( msaConfig );
+        
+        d3.select( anchor )
+            .html( '<div id="' + msaid +'" class="bkd-msa" style="background-color: black;">'
+                   +'</div>' );
+        
+        BKDnodeView.mymsa2a.initialize( { "anchor": '#' + msaid,
+                                        "url": msaurl });
+       
+    },
+                
+    homologpane2: function( anchor, data ){
+        //msaid = anchor.replace("#","") + "-msa";
+        msaid = "seq-viewer-2b";
+        msaurl = "msa-panther/" + BKDnodeFeatures.data.ac + ".fasta";
+
+        var msaConfig = {
+            "width": 650,
+            "height":625,
+            "header":{
+                "label":[1],
+                "popup":[]
+            },
+            
+            "taxname": {'9606': 'Human',
+                        '9598': 'Chimpanzee',
+                        '9595': 'Gorilla',
+                        '9601': 'Orangutan',
+                        '9544': 'Rhesus',
+                        '10090': 'Mouse',
+                        '10116': 'Rat',
+                        '10141': 'Guinea pig',
+                        '9986': 'Rabbit',
+                        '9615': 'Dog',
+                        '9031': 'Chicken',
+                        '8364': 'Xenopus',
+                        '7955': 'Zebrafish',
+                        '9557':'Baboon',
+                        '10029':'Hamster',
+                        '9986':'Rabbit',
+                        '9823':'Pig',
+                        '9913':'Cow',
+                        '9685':'Cat',
+                        '9796':'Horse',
+                        '9940':'Sheep',
+                        '13616':'Opossum',
+                        '9258':'Platypus'
+                       }
+        };
+
+        BKDnodeView.mymsa2b = new BkdMSA( msaConfig );
+        
+        d3.select( anchor )
+            .html( '<div id="' + msaid +'" class="bkd-msa" style="background-color: black;">'
+                   +'</div>' );
+        
+        BKDnodeView.mymsa2b.initialize( { "anchor": '#' + msaid,
+                                          "url": msaurl });
+    },
+        
+
+
+    homologpane1old: function( anchor, data ){
         msaid = anchor.replace("#","") + "-msa";
         d3.select( anchor )
             .html( '<div id="' + msaid +'" class="bkd-msa" style="background-color: black;">'
@@ -1432,7 +1547,7 @@ BKDnodeFeatures = {
         
     },  
 
-    homologpane2: function( anchor, data ){
+    homologpane2old: function( anchor, data ){
         msaid = anchor.replace("#","") + "-msa";
         console.log("hpane2: " + msaid );
         d3.select( anchor )
@@ -1470,6 +1585,8 @@ BKDnodeFeatures = {
         
     },
 
+
+    
     xref2inametag: function( xref ){
         var upr = "";
         var rsp = "";

@@ -770,7 +770,7 @@ BKDconf = {
                           equal:"mutation"
                       }],
                       config:{
-                          lollipanel:{
+                          "lollipanel":{
                               anchor: "#flist-lollipop",
                               detailtable:{
                                   anchor: "#flist-details",
@@ -813,6 +813,31 @@ BKDconf = {
                                         url: "report" }
                                   ]
                               }
+                          },
+                          "tabs":{
+                              "tab-anchor": "#flist-tabs",
+                              "tab-class":"tab-view",
+                              "view-anchor":"#flist-view",
+                              "view-class":"bkd-feat-tab-port",
+                              "tablist": [
+                                  { "tab-id":"track-tab",
+                                    "view-id":"track-port"},
+                                  
+                                  { "tab-id":"homo-tab-panther",
+                                    "view-id":"homo-port-panther"},
+                                  
+                                  { "tab-id":"homo-tab-ucsc",
+                                    "view-id":"homo-port-ucsc"},
+                                  
+                                  { "tab-id":"topo-tab",
+                                    "view-id":"topo-port"},
+                                  
+                                  { "tab-id":"swm-tab",
+                                    "view-id":"swm-port"},
+                                  
+                                  { "tab-id":"str-tab",
+                                    "view-id":"str-port"}
+                              ]
                           }
                       },
                       header:true,

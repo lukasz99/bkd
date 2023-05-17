@@ -1,5 +1,5 @@
 console.log("bkd-d3msa: common");
- 
+  
 class BkdMSA {
     
     constructor( config ){
@@ -21,14 +21,31 @@ class BkdMSA {
                          "K":"blue",  "L":"green",  "M":"green", "N":"grey",
                          "P":"green", "Q":"grey",   "R":"blue",  "S":"grey",
                          "T":"grey",  "V":"green",  "W":"green", "Y":"grey",
-                         "-":"white", "~": "white",  ".":"white" },            
+                         "-":"white", "~": "white",  ".":"white" },
+            
+            _palette2: { "A":"green", "C":"orange", "D":"white", "E":"white",
+                         "F":"green", "G":"green",  "H":"white", "I":"green",
+                         "K":"white", "L":"green",  "M":"green", "N":"grey",
+                         "P":"green", "Q":"grey",   "R":"white",  "S":"grey",
+                         "T":"grey",  "V":"green",  "W":"green", "Y":"grey",
+                         "-":"white", "~": "white", ".":"white" },
+            msaDY: 20,
+            msaBoxY: 16,
+            msaBoxYOff: -12,
+            
+            msaFont: "bold 14px Arial",
+            headFont: "normal 12px Arial",
+
+            dtracBoxY: 16,
+            dtracBoxYOff: -12            
         };
 
         if( config !== undefined ){
             for( var ckey of  Object.keys(config) ){
                 this._conf[ckey] = config[ckey];            
             };
-        }        
+        }
+        /*
         this._data = {dtrac:[{name:"InterPro",
                               link: "https://www.ebi.ac.uk/interpro/protein/UniProt/P60010/",
                               dpos:[{beg:10,end:15,name:"DOM1", link:null, color:"#FF8080"},
@@ -40,6 +57,10 @@ class BkdMSA {
                                     {beg:250,end:780, link:null, color:"#0080FF"} ]
                              }
                             ]};
+        */
+
+        this._data = {dtrac:[]};
+        
         this._view = { target: null,
                        anchor: null,
                        select: {},
@@ -118,11 +139,11 @@ class BkdMSA {
     
         // load remote msa fasta       
         
-        $.ajax( { url: this._data.url,
-                  beforeSend: function( xhr ) {
-                      xhr.overrideMimeType( "text/plain; charset=x-user-defined" );
-                  }
-                } ).done( callback( this ) );
+        $.ajax({ url: this._data.url,
+                 beforeSend: function( xhr ) {
+                     xhr.overrideMimeType("text/plain; charset=x-user-defined");
+                 }
+               }).done( callback( this ) );
 
     }
 
@@ -131,7 +152,7 @@ class BkdMSA {
         // calculate positions/sizes
 
         this._view.svgWidth = this._conf.width;
-        this._view.navWidth = this._conf.width-50-100;
+        this._view.navWidth = this._conf.width-50-172;  // XXXXX
         
         this._view.svgHeight = this._conf.height - 0;
 
@@ -140,9 +161,11 @@ class BkdMSA {
         if( !this._view.target ){
             
             target = this._conf.viewId + "_" + this.iid;            
-            d3.select( this._view.anchor ).append( "div" ).attr( "id", target );            
+            d3.select( this._view.anchor )
+                .append( "div" )
+                .attr( "id", target );            
         }
-
+        
         var svg = d3.select( "#" + target ).append("svg");
         svg.attr( "width", this._view.svgWidth )
             .attr( "height", this._view.svgHeight )
@@ -152,7 +175,7 @@ class BkdMSA {
         svg.classed( this._conf.className, true)        
             .attr("id", target + "_svg"  )
             .style("background-color", this._conf.background||"transparent");
-        
+
         this._view.target = target;
         this._view.svg = svg;
         
@@ -162,71 +185,104 @@ class BkdMSA {
 
         // map sequences to MSA position
         //  msaSeq  - msa sequences (with gaps) as strings 
+
+        var C = this._conf;
+        var V = this._view;
+        var D = this._data;
         
-        this._data.msaMap = [];
-        this._data.seqRng = [];
-        this._data.msaRMap = [];  // seq -> msa pos (one for each seqence) 
-        
-        
-        for( var i=0; i <  this._data.msaSeq.length; i++ ){
-            this._data.msaRMap.push( {} );
-            this._data.msaMap.push( [] );
-            this._data.seqRng.push( {"min":-1,"max":-1} );
+        D.msaMap = [];
+        D.seqRng = [];
+        D.msaRMap = [];  // seq -> msa pos (one for each seqence) 
+
+        D.rngSeg = [];
+                        
+        for( var i=0; i <  D.msaSeq.length; i++ ){
+            D.msaRMap.push( {} );
+            D.msaMap.push( [] );
+
+            var cbe = { beg:[], end:[] };
+            D.rngSeg.push( cbe );
+
+            for( var j=0; j < D.msaSeq[i].length; j ++ ){
+                var seq = D.msaSeq[i];
+                if( seq[j] != '-' ){
+                    if( j == 0){
+                        cbe.beg.push( j );
+                        continue;
+                    }
+                    if( seq[j-1] == '-'){
+                        cbe.beg.push( j );
+                        continue;
+                    }
+                    if( j == seq.length-1 ){
+                        cbe.end.push(j);
+                        continue;
+                    }
+                    if( seq[j+1] == '-'){
+                        cbe.end.push(j);
+                        continue;
+                    }
+                    continue;
+                }
+            }
+               
+            D.seqRng.push( {"min":-1,"max":-1} );
+            
             var cp = 0;
-            for( var j=0; j < this._data.msaSeq[i].length; j ++ ){
-                if( "ACDEFGHIKLMNPQRSTVWY".includes( this._data.msaSeq[i][j] ) ){
+            for( var j=0; j < D.msaSeq[i].length; j ++ ){
+                if( "ACDEFGHIKLMNPQRSTVWY".includes(D.msaSeq[i][j])){
                     cp +=1;
                     this._data.msaRMap[i][cp] = j;
-                    
-                    if(this._data.seqRng[this._data.seqRng.length-1]["min"]<0){
-                        this._data.seqRng[this._data.seqRng.length-1]["min"]=j;
+
+                    if(D.seqRng[D.seqRng.length-1]["min"]<0){
+                        D.seqRng[D.seqRng.length-1]["min"]=j;
                     }
-                    this._data.seqRng[this._data.seqRng.length-1]["max"]=j;
+                    D.seqRng[D.seqRng.length-1]["max"]=j;
                 }
                 
                 if( cp >0 ){
-                    this._data.msaMap[i].push( cp );
+                    D.msaMap[i].push( cp );
                 } else {
-                    this._data.msaMap[i].push( "" );
+                    D.msaMap[i].push( "" );
                 }
             }
         }
 
         // offsets
         
-        this._view.offsetY = 10;
-        if( this._conf.navig ) this._view.offsetY += 30;
-        if( this._conf.slogo ) this._view.offsetY += 50;
-        this._view.offsetDtrY = this._view.offsetY
-            + 14*(this._data.msaHead.length + 0.25);
+        V.offsetY = 10;
+        if( C.navig ) V.offsetY += 30;
+        if( C.slogo ) V.offsetY += 50;
+        V.offsetDtrY = V.offsetY
+            + C.msaDY*(this._data.msaHead.length + 0.25);
 
         // brushLimit         
         // assumes msa already loaded
 
         this._data.msaRange = [0, this._data.msaSeq[0].length];
 
-        this._view.msaScale = d3.scaleLinear()  //  1 -> 1
+        V.msaScale = d3.scaleLinear()  //  1 -> 1
             .domain( this._data.msaRange )
             .range([0, this._data.msaSeq[0].length-1]);
         
-        this._view.navScale = d3.scaleLinear()  //  100 ->  pixelWidth
+        V.navScale = d3.scaleLinear()  //  100 ->  pixelWidth
             .domain([0, 100])
-            .range([0, this._view.navWidth]);
+            .range([0, V.navWidth]);
         
-        this._view.nav2msaScale = d3.scaleLinear()  // 100 -> maxAA
+        V.nav2msaScale = d3.scaleLinear()  // 100 -> maxAA
             .domain([0, 100])
             .range( this._data.msaRange );        
         
-        if( this._conf.navig ){
+        if( C.navig ){
             this._navGUI();
         }
         
-        for( var t in this._conf.tlist ){
-            if( this._conf.tlist[t] == 'slogo' ){
+        for( var t in C.tlist ){
+            if( C.tlist[t] == 'slogo' ){
                 this.slogoView();
-            } else if( this._conf.tlist[t] == 'msa' ){
+            } else if( C.tlist[t] == 'msa' ){
                 this.renderMSA();
-            } else if (this._conf.tlist[t] == 'dtrac' ){
+            } else if (C.tlist[t] == 'dtrac' ){
                 if( 'dtrac' in this.data){
                     this.renderDtrac();
                 }
@@ -249,8 +305,10 @@ class BkdMSA {
                 V.navBrushG.call( V.viewport.move,
                                   [V.brushLeft, V.brushRight]);
                 
-                msa._view.displaystart = msa._view.brushLeft / msa._view.navWidth*100;
-                msa._view.displayend = msa._view.brushRight / msa._view.navWidth*100;
+                msa._view.displaystart
+                    = msa._view.brushLeft / msa._view.navWidth*100;
+                msa._view.displayend
+                    = msa._view.brushRight / msa._view.navWidth*100;
                 
                 msa.updatePolygon();
                 msa.updateMSA();              
@@ -261,7 +319,8 @@ class BkdMSA {
         }
         
         var _left = this.navButton(this._view.svg,
-                                   this._view.target + "_left", 5, 13, "<")
+                                   this._view.target + "_left",
+                                   5, 13, 20, 20, "<", "16px")
             .on( "click", _leftCB(this) );
         
             //.on( "click", (event) => {                
@@ -283,8 +342,10 @@ class BkdMSA {
                 V.navBrushG.call( V.viewport.move,
                                   [V.brushLeft, V.brushRight]);
                 
-                msa._view.displaystart = msa._view.brushLeft / msa._view.navWidth*100;
-                msa._view.displayend = msa._view.brushRight / msa._view.navWidth*100;
+                msa._view.displaystart
+                    = msa._view.brushLeft / msa._view.navWidth*100;
+                msa._view.displayend
+                    = msa._view.brushRight / msa._view.navWidth*100;
                 
                 msa.updatePolygon();
                 msa.updateMSA();              
@@ -295,7 +356,8 @@ class BkdMSA {
         }
 
         var _plus = this.navButton(this._view.svg,
-                                   this._view.target + "_plus", 27, 13, "+")
+                                   this._view.target + "_plus",
+                                   27, 13, 20, 20, "+", "16px")
             .on( "click", _plusCB(this) );
         
             //.on( "click", (event) => {
@@ -318,8 +380,10 @@ class BkdMSA {
                 V.navBrushG.call( V.viewport.move,
                                   [V.brushLeft, V.brushRight]);
                 
-                msa._view.displaystart = msa._view.brushLeft / msa._view.navWidth*100;
-                msa._view.displayend = msa._view.brushRight / msa._view.navWidth*100;
+                msa._view.displaystart
+                    = msa._view.brushLeft / msa._view.navWidth*100;
+                msa._view.displayend
+                    = msa._view.brushRight / msa._view.navWidth*100;
                 
                 msa.updatePolygon();
                 msa.updateMSA();              
@@ -330,7 +394,8 @@ class BkdMSA {
         }
         
         var _minus = this.navButton(this._view.svg,
-                                    this._view.target + "_minus", 50, 13, "-", -1 )
+                                    this._view.target + "_minus",
+                                    50, 13, 20, 20, "-", "16px", -1 )
             .on( "click", _minusCB(this) );
         
             //.on( "click", (event) => {
@@ -350,8 +415,10 @@ class BkdMSA {
                 V.navBrushG.call( V.viewport.move,
                                   [V.brushLeft, V.brushRight]);
 
-                msa._view.displaystart = msa._view.brushLeft / msa._view.navWidth*100;
-                msa._view.displayend = msa._view.brushRight / msa._view.navWidth*100;
+                msa._view.displaystart
+                    = msa._view.brushLeft / msa._view.navWidth*100;
+                msa._view.displayend
+                    = msa._view.brushRight / msa._view.navWidth*100;
 
                 msa.updatePolygon();
                 msa.updateMSA();              
@@ -362,9 +429,52 @@ class BkdMSA {
         }
         
         var _right = this.navButton(this._view.svg,
-                                    this._view.target + "_right", 73, 13, ">")
+                                    this._view.target + "_right",
+                                    73, 13, 20, 20, ">", "16px")
             .on( "click", _rightCB( this ) );
+         
+        var _selectedCB = function( msa ){
+            return function( event ){
+                var D = msa._data;
+                var V = msa._view;
+                
+                console.log("selectedCB!!!");
+                console.log( V.select);
+                var sel = Object.keys( V.select);
+                var minSel = D.msaSeq[0].length;
+                var maxSel = 0;
+                for( var k= 0; k < sel.length; k++ ){
+                    var spos = parseInt(sel[k].split(":")[0]);
+                    if( spos < minSel) minSel = spos;
+                    if( spos > maxSel) maxSel = spos;                    
+                }
+
+                var cntr = (maxSel+minSel)/2*V.navWidth/D.msaSeq[0].length;
+                var dlta = (maxSel-minSel+50)/2*V.navWidth/D.msaSeq[0].length;
+                msa.setNavBrush( cntr-dlta, cntr+dlta);
+                
+                V.navBrushG.call( V.viewport.move,
+                                  [V.brushLeft, V.brushRight])                
+                
+                V.displaystart = V.brushLeft / V.navWidth*100;
+                V.displayend = V.brushRight / V.navWidth*100;
+                
+                console.log(V.displaystart, V.displayend);
+                
+                msa.updatePolygon();
+                msa.updateMSA();              
+                msa.updateSelect();                
+                msa.getViewportParams();
+                msa.updateRange();
+                console.log("fullCB: done");
+            }            
+        }
         
+        var _selected =  this.navButton(this._view.svg,
+                                      this._view.target + "_selected",
+                                        98, 13, 64, 20,"Selected", "14px")
+            .on( "click", _selectedCB( this ) );
+
         var _fullCB = function( msa ){
             return function( event ){
                 console.log("fullCB!!!");
@@ -375,8 +485,10 @@ class BkdMSA {
                 V.navBrushG.call( V.viewport.move,
                                   [V.brushLeft, V.brushRight])                
                 
-                msa._view.displaystart = msa._view.brushLeft / msa._view.navWidth*100;
-                msa._view.displayend = msa._view.brushRight / msa._view.navWidth*100;
+                msa._view.displaystart
+                    = msa._view.brushLeft / msa._view.navWidth*100;
+                msa._view.displayend
+                    = msa._view.brushRight / msa._view.navWidth*100;
 
                 msa.updatePolygon();
                 msa.updateMSA();              
@@ -388,7 +500,7 @@ class BkdMSA {
         
         var _full =  this.navButton(this._view.svg,
                                     this._view.target + "_full",
-                                    this._view.svgWidth-40, 13, "Full")
+                                    this._view.svgWidth-40, 13, 32, 20, "Full", "14px")
             .on( "click", _fullCB( this ) );
         
             //.on( "click", (event) => {
@@ -397,13 +509,13 @@ class BkdMSA {
             //                           [D3MSA3.brushLeft, D3MSA3.brushRight])
         //});
         
-        _full.select("rect").attr("width",32);
-        _full.select("text").style("font-size","14px")
-            .attr("x",15).attr("y",15);        
+        //_full.select("rect").attr("width",32);
+        //_full.select("text").style("font-size","14px")
+        //    .attr("x",15).attr("y",15);        
         
         var _navG = this._view.svg.append("g")
             .attr( "id", this._view.target + "_nav" )
-            .attr( "transform", "translate(100, 10)" );
+            .attr( "transform", "translate(172, 10)" );
         
         var _msaAxis = d3.axisBottom( this._view.navScale );
         _msaAxis.ticks( 10 ).tickFormat('');
@@ -414,7 +526,7 @@ class BkdMSA {
 
         this._view.brushLeft = 0;
         this._view.displaystart = this._view.navScale.invert( 0 );
-        
+
         this._view.brushRight = this._view._brl;       
         this._view.displayend = this._view.navScale.invert( this._view._brl );
         
@@ -422,8 +534,10 @@ class BkdMSA {
             return function( event ){
                 msa.setNavBrush( event.selection[0], event.selection[1]);
                 
-                msa._view.displaystart = msa._view.brushLeft / msa._view.navWidth*100;
-                msa._view.displayend = msa._view.brushRight / msa._view.navWidth*100;
+                msa._view.displaystart
+                    = msa._view.brushLeft / msa._view.navWidth*100;
+                msa._view.displayend
+                    = msa._view.brushRight / msa._view.navWidth*100;
 
                 msa.updatePolygon();
                 msa.updateMSA();
@@ -442,7 +556,8 @@ class BkdMSA {
             .attr( "class", "brush")
             .call( this._view.viewport);
         
-        this._view.navBrushG.call( this._view.viewport.move, [ 0, this._view._brl ] );
+        this._view.navBrushG.call( this._view.viewport.move,
+                                   [ 0, this._view._brl ] );
         
         this._view.polygon = _navG.append("polygon")
             .attr('class', 'zoom-polygon')
@@ -468,30 +583,36 @@ class BkdMSA {
         }
         
         for( var i = 0; i < this._data.msaSeq.length; i++){
-            this._view.msaMin.push(1);
-            this._view.msaMax.push(this._data.msaMap[i][this._data.msaSeq[i].length-1]);
+            this._view.msaMin
+                .push(1);
+            this._view.msaMax
+                .push(this._data.msaMap[i][this._data.msaSeq[i].length-1]);
         }
         
-        
-        var _seqMSA = this._view.svg.append("g").attr( "id", this._view.target + "_seq" )
+        var _seqMSA = this._view.svg.append("g")
+            .attr( "id", this._view.target + "_seq" )
             .attr("transform", "translate(0, " + ( this._view.offsetY) + ")");        
+
         _seqMSA.append("clipPath")
             .attr("id", this._view.target + "_seq_clip")
             .append("rect")
             .attr("x", 0)
             .attr("y", -6)
             .attr("width", this._view.navWidth) // TODO
-            .attr("height", 14*(this._data.msaHead.length+1));
+            .attr("height", this._conf.msaDY*(this._data.msaHead.length+1));
         
-        var _seqMSA_head = _seqMSA.append("g").attr( "id", this._view.target + "_seq_head" );
+        var _seqMSA_head = _seqMSA.append("g")
+            .attr( "id", this._view.target + "_seq_head" );
         
-        var _seqMSA_port = _seqMSA.append("g").attr( "id", this._view.target + "_seq_port" )
+        var _seqMSA_port = _seqMSA.append("g")
+            .attr( "id", this._view.target + "_seq_port" )
             .attr("clip-path", "url(#"+ this._view.target + "_seq_clip)" )
-            .attr("transform", "translate(100, 0)");
+            .attr("transform", "translate( 172, 0)");
         
-        var _seqMSA_view
-            = _seqMSA_port.append("g").attr( "id", this._view.target + "_seq_view" );
-                this.renderHeadMSA();
+        var _seqMSA_view = _seqMSA_port.append("g")
+            .attr( "id", this._view.target + "_seq_view" );
+        
+        this.renderHeadMSA();
         
         if( this._view.aaStep >= this._conf.aaMinStep ){
             //this.updateAA();
@@ -508,12 +629,15 @@ class BkdMSA {
 
     renderHeadMSA(){
 
+        var C = this._conf;
         var V = this._view;
         var D = this._data;
         V.msaPos = [];     // one per aa
         V.msaPosOld = [];  
         V.rectPos = [];
         V.rectPosOld = [];
+
+        var dy = 20; 
         
         for( var j = 0; j < D.msaSeq[0].length; j++ ){   // j - seq pos
             var pos = 0.5 * V.aaStep + j * V.aaStep - V.aaOffset;
@@ -532,31 +656,50 @@ class BkdMSA {
             var _seqG = d3.select("g[id='" + V.target + "_seq_head']")
                 .append("g")
                 .attr( "id", sid + i.toString() )
-                .attr("transform", "translate(5, " + (i+1)*14 + ")");
+                .attr("transform", "translate(5, " + (i+1)*C.msaDY + ")");
 
             var _seqHG = _seqG
                 .append("g")
                 .attr( "id", V.target + "_seq_head_" + i.toString() );
-            
-            var label = D.msaHead[i][0];
-            var popup = D.msaHead[i][1]
-                + " (" + D.msaHead[i][2] +")";
-            
-            if( label != 'canonical' && label != 'mane' ){
-                if( D.msaHead[i][0].length > 3){
-                    label = D.msaHead[i][3];
-                    //popup = D.msaHead[i][0];
 
-                    popup = D.msaHead[i][1]
-                        + " (" + D.msaHead[i][2] +")";                    
-                } else {
-                    label = D.msaHead[i][0];
-                    //popup = D.msaHead[i][2]
+            var label = D.msaHead[i][1];
+            var popup = "";
 
-                    popup = D.msaHead[i][1]
-                        + " (" + D.msaHead[i][2] +")";
+            if( C.header == undefined ){  
+            
+                if( D.msaHead[i][0] != label ){
+                    label += "(" + D.msaHead[i][0] + ")";
                 }
+
+                if( D.msaHead[i].length > 2 ){ 
+                    for( var l = 2; l < D.msaHead[i].length; l ++ ){
+                        popup += D.msaHead[i][l] + "/";
+                    }
+                }
+                
+                if( popup.length > 2 ){
+                    popup = popup.substring(0,popup.length-1);
+                } else {
+                    popup = "";
+                }
+            } else {
+                label = D.msaHead[i][ C.header.label[0] ];
+                if( C.header.label.length > 1 ){
+                    for( var l= 1; l < C.header.label.length; l++ ){
+                        label += "/" + D.msaHead[i][ C.header.label[l] ];
+                    }
+                }
+                if( C.header.popup.length > 0 ){
+                    popup = D.msaHead[i][ C.header.popup[0] ];
+                    if( C.header.popup.length > 1 ){
+                        for( var l= 1; l < C.header.label.length; l++ ){
+                            label += "/" + C.header.label[l];
+                        }
+                        label =+ ")";
+                    }
+                }                
             }
+
             
             var _seqHGAT = _seqHG.append("text")    // HGA for link
                 .style( "font", "normal 12px Arial")               
@@ -578,10 +721,11 @@ class BkdMSA {
             } else {
                 _seqHGAT.style( "font", "bold 12px Arial")
             }
-            
-            var _seqSG = d3.select("g[id='"+ V.target + "_seq_view']").append("g")
+
+            var _seqSG = d3.select("g[id='"+ V.target + "_seq_view']")
+                .append("g")
                 .attr( "id", ssid + i.toString() )
-                .attr( "transform", "translate( 0, "+ (i+1)*14 + ")" );
+                .attr( "transform", "translate( 0, "+ (i+1)*C.msaDY + ")" );
 
             d3.select( "#" + ssid + i.toString() )
                 .append("g")
@@ -596,9 +740,9 @@ class BkdMSA {
             d3.select( "#" + shid + i.toString() )
                 .append("text")
                 .attr( "class", "msa-min")
-                .attr( "x", 93)
+                .attr( "x", 165)
                 .attr( "y", 0 )
-                .style( "font", "bold 12px Arial")
+                .style( "font", C.headFont)
                 .style( "fill", "grey")
                 .attr( "text-anchor", "end")
                 .text( V.msaMin[i] );
@@ -606,9 +750,9 @@ class BkdMSA {
             d3.select( "#" + shid + i.toString() )
                 .append("text")
                 .attr( "class", "msa-max")
-                .attr( "x", 105 + V.navWidth)
+                .attr( "x", 177 + V.navWidth)
                 .attr( "y", 0 )
-                .style( "font", "bold 12px Arial")
+                .style( "font", C.headFont)
                 .style( "fill", "grey")
                 .attr( "text-anchor", "start")
                 .text( V.msaMax[i] );       
@@ -620,15 +764,18 @@ class BkdMSA {
         this._view.msaPosOld = this._view.msaPos;
         this._view.rectPosOld = this._view.rectPos;
         this._view.aaStepOld = this._view.aaStep;
-                
-        this._view.msaMin = new Array(this._data.msaHead.length);   // one per sequence
+
+        // one per sequence
+        this._view.msaMin = new Array(this._data.msaHead.length);  
         this._view.msaMax = new Array(this._data.msaHead.length);  
 
-        this._view.msaPos = new Array(this._data.msaSeq[0].length);     // one per aa
+        // one per aa
+        this._view.msaPos = new Array(this._data.msaSeq[0].length);     
         this._view.rectPos = new Array(this._data.msaSeq[0].length);
 
         var jmin= parseInt(this._view.aaOffset/this._view.aaStep + 1/2);
         var jmax= parseInt((this._view.navWidth+this._view.aaOffset)/this._view.aaStep - 1/2);
+
         if( jmin < 0 ) jmin = 0;
         if( jmax >= this._data.msaSeq[0].length ) jmax = this._data.msaMap[i].length-1;
 
@@ -652,7 +799,7 @@ class BkdMSA {
             this._view.msaPos[j] = -100;
             this._view.rectPos[j] = -100;
         }
-        
+
         for( var j = jmin; j <=jmax; j++ ){   // j - sequence position
             var pos = 0.5 * this._view.aaStep + j * this._view.aaStep - this._view.aaOffset;
             this._view.msaPos[j] = pos;
@@ -677,6 +824,7 @@ class BkdMSA {
 
     renderAA(){
 
+        var C = this._conf;
         var V = this._view;
         var D = this._data;
         V.msaVon = [];
@@ -698,11 +846,11 @@ class BkdMSA {
                         .append( "rect" )               
                         .attr( "i", i )
                         .attr( "x", V.rectPosOld[i] )
-                        .attr( "y", -10 )
+                        .attr( "y", C.msaBoxYOff )
                         .attr( "width", V.aaStepOld )
-                        .attr( "height", 10 )
+                        .attr( "height", C.msaBoxY )
                         .attr( "class", "msa-rect")
-                        .style( "fill", this._conf._palette1[ aa ] )
+                        .style( "fill", C._palette1[ aa ] )
                         .attr( "fill-opacity", V.aaStep > 16 ? 0.5 : 1 )                        
                         .append("title").text(aa + (D.msaMap[j][i]));
                     
@@ -711,8 +859,8 @@ class BkdMSA {
                     d3.select( "#" + V.target + "_seq_seq_" + j.toString() +"aa")
                         .append( "text" )
                         .attr( "class", "msa-aa" )
-                        .style( "font", "bold 12px Arial")  
-                        .style( "fill", this._conf._palette1[ aa ] )
+                        .style( "font", C.msaFont)  
+                        .style( "fill", C._palette2[ aa ] )
                         .attr( "text-anchor", "middle") 
                         .attr( "x", V.msaPosOld[i] )
                         .attr( "y", 0 )
@@ -755,8 +903,11 @@ class BkdMSA {
     
     updateAA(){
         
+        var C = this._conf;
         var V = this._view;
         var D = this._data;
+
+        console.log( "updateAA" );
         
         //V.msaNewFrame = {"min":jmin,
         //                     "max":jmax,
@@ -766,10 +917,18 @@ class BkdMSA {
         //                     "rectPos": frRectPos
         //                    };
 
+        for( var i = 0; i < D.msaHead.length; i++ ){        
+            d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"bk ")  // box
+                .attr( "style", "visibility: visible;" );
+            d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"aa ") // letter 
+                .attr( "style", "visibility: visible;" ); 
+        }
+        
         var msaVonCurrent = [];
 
         var oonmin = -1;
         var oonmax = -1;
+
         
         for( var i = 0; i < V.rectPos.length; i++ ){
             msaVonCurrent.push( V.rectPos[i] < -V.aaStep  ||
@@ -798,9 +957,9 @@ class BkdMSA {
                 
                 // over positions
                 
-                cur = (j >= V.msaNewFrame.min &&
-                       j <= V.msaNewFrame.max) ? true : false;
-                old = (j >= oonmin && j <= oonmax) ? true : false;
+                var cur = (j >= V.msaNewFrame.min &&
+                           j <= V.msaNewFrame.max) ? true : false;
+                var old = (j >= oonmin && j <= oonmax) ? true : false;
                 
                 if( cur != old ){ 
                     if( cur ){ // add AA/box
@@ -814,19 +973,19 @@ class BkdMSA {
                                 .attr( "i", j )
                                 .attr( "x", V.rectPosOld[j] )
                             //.attr( "x", D3MSA3.msaNewFrame.rectPos[j] )
-                                .attr( "y", -10 )
+                                .attr( "y", C.msaBoxYOff )
                                 .attr( "width", V.aaStepOld )
-                                .attr( "height", 10 )
+                                .attr( "height", C.msaBoxY )
                                 .attr( "class", "msa-rect")
-                                .style( "fill", this._conf._palette1[ aa ] )
+                                .style( "fill", C._palette1[ aa ] )
                                 .attr( "fill-opacity", V.aaStep > 16 ? 0.5:1 )
                                 .append("title").text(aa+(D.msaMap[i][j+joff]));
                             
                             d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"aa") // letter 
                                 .append( "text" )
                                 .attr( "class", "msa-aa" )
-                                .style( "font", "bold 12px Arial")  
-                                .style( "fill", this._conf._palette1[ aa ] )
+                                .style( "font", C.msaFont)  
+                                .style( "fill", C._palette2[ aa ] )
                                 .attr( "text-anchor", "middle") 
                                 .attr( "x", V.msaPosOld[j] )
                                 .attr( "y", 0 )
@@ -887,96 +1046,120 @@ class BkdMSA {
         }        
     }
 
-    removeAA(){
-    }
-    
-    renderRange(){
+    hideAA(){
+        console.log( "hideAA" );
         
+        var C = this._conf;
         var V = this._view;
         var D = this._data;
+        
+        for( var i = 0; i < D.msaHead.length; i++ ){
+            // over sequences
+            
+            d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"bk")  // box
+                .attr( "style", "visibility: hidden;" );
+            d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"aa") // letter 
+                .attr( "style", "visibility: hidden;" ); 
+        }
+    }
+        
+    renderRange(){
+        
+        var C = this._conf;
+        var V = this._view;
+        var D = this._data;
+
+        var range = D.rngSeg;
+        
+        //console.log("d3msa: range", range);
         
         d3.selectAll( ".bkd-msa-range" ).remove();
         
         var opq = Math.min( 1, 1 - V.aaStep**1.5
-                            / (this._conf.aaMaxStep - V.aaStep*0.99)**2);
-
-        for( var i = 0; i <D.msaHead.length; i++ ){
-            
-            var pos =  D.seqRng[i]["min"] * V.aaStep - V.aaOffset;            
-            var r = d3.select( "#" + V.target +"_seq_seq_" + i.toString() +"rn")
-                .append( "rect" )
-                .attr( "class", "bkd-msa-range")
-                .style( "fill", "#D3D3D3" )
-                .attr( "x", pos )
-                .attr( "y", -10 )
-                .attr( "width", (D.seqRng[i]["max"]
-                                 + V.aaStep
-                                 - D.seqRng[i]["min"])*V.aaStep)
-                .attr( "height", 10 );
-
+                            / (C.aaMaxStep - V.aaStep*0.99)**2);
+        
+        for( var i = 0; i <range.length; i++ ){
+            for( var j = 0; j <range[i].beg.length; j++ ){
+                var bPos =  range[i].beg[j] * V.aaStep - V.aaOffset;
+                var ePos =  range[i].end[j] * V.aaStep - V.aaOffset;
+                
+                var r = d3.select( "#" + V.target +"_seq_seq_" + i.toString() +"rn")
+                    .append( "rect" )
+                    .attr( "class", "bkd-msa-range")
+                    .style( "fill", "#D3D3D3" )
+                    .attr( "x", bPos )
+                    .attr( "y", C.msaBoxYOff )
+                    .attr( "width", ePos - bPos + V.aaStep)
+                    .attr( "height", C.msaBoxY );            
+            }
             if( opq > 0 ){
                 d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"rn")
                     .attr( "fill-opacity", opq )
                     .style("visibility", "visible");
             } else {
-                d3.select( "#" + V.target + "_seq_seq_" + i.toString() + "rn  .bkd-msa-range")
+                d3.select( "#" + V.target + "_seq_seq_" + i.toString() + "rn") //  .bkd-msa-range")
                     .attr( "fill-opacity", 0)
                     .style("visibility", "hidden");
             }
-        }         
+        }
     }
-
+    
     updateRange(){
 
         var V = this._view;
         var D = this._data;
+        var C = this._conf;
+
+        var range = D.rngSeg;
         
         var opq = Math.min( 1, 1 - V.aaStep**1.5
-                            / (this._conf.aaMaxStep - V.aaStep*0.99)**2);
-        
-        for( var i = 0; i <D.msaHead.length; i++ ){
+                            / (C.aaMaxStep - V.aaStep*0.99)**2);
 
-            var pos = D.seqRng[i]["min"] * V.aaStep - V.aaOffset;
-
-            d3.select( "#" + V.target + "_seq_seq_" + i.toString() + "rn  .bkd-msa-range")
-                .attr( "x", pos )
-                .attr( "y", -10 )
-                .attr( "width",(D.seqRng[i]["max"]
-                                + V.aaStep
-                                - D.seqRng[i]["min"]) * V.aaStep);
-
+        for( var i = 0; i <range.length; i++ ){
+            for( var j = 0; j <range[i].beg.length; j++ ){
+                var bPos =  range[i].beg[j] * V.aaStep - V.aaOffset;
+                var ePos =  range[i].end[j] * V.aaStep - V.aaOffset;
+                
+                d3.select( "#" + V.target + "_seq_seq_" + i.toString() + "rn")
+                    .attr( "x", bPos )                   
+                    .attr( "width", ePos - bPos + V.aaStep );
+            }
+            console.log(i, opq);
             if( opq > 0 ){
-                d3.select( "#" + V.target + "_seq_seq_" + i.toString() + "rn  .bkd-msa-range")
+                d3.select( "#" + V.target + "_seq_seq_" + i.toString() + "rn")
                     .attr( "fill-opacity", opq)
                     .style("visibility", "visible");                
             } else {
-                d3.select( "#" + V.target + "_seq_seq_" + i.toString() + "rn  .bkd-msa-range")
+                d3.select( "#" + V.target + "_seq_seq_" + i.toString() + "rn")
                     .attr( "fill-opacity", 0)
                     .style("visibility", "hidden");
             }                
-        }         
+        }
     }
     
     renderDtrac(){
+
+        var C = this._conf;
+        var V = this._view;
         
-        var _dtrMSA = this._view.svg.append("g").attr( "id", this._view.target + "_dtr" )
-            .attr("transform", "translate(0, " + ( this._view.offsetDtrY) + ")");        
+        var _dtrMSA = this._view.svg.append("g").attr( "id", V.target + "_dtr" )
+            .attr("transform", "translate(0, " + ( V.offsetDtrY) + ")");        
         _dtrMSA.append( "clipPath" )
-            .attr("id", this._view.target + "_dtr_clip")
+            .attr("id", V.target + "_dtr_clip")
             .append("rect")
             .attr("x", 0)
             .attr("y", -6)
-            .attr("width", this._view.navWidth) // TODO
-            .attr("height", 14*(this._data.dtrac.length+1));
+            .attr("width", V.navWidth) // TODO
+            .attr("height", C.msaDY*(this._data.dtrac.length+1));
         
-        var _dtrMSA_head = _dtrMSA.append("g").attr( "id", this._view.target + "_dtr_head" );
+        var _dtrMSA_head = _dtrMSA.append("g").attr( "id", V.target + "_dtr_head" );
         
-        var _dtrMSA_port = _dtrMSA.append("g").attr( "id", this._view.target + "_dtr_port" )
-            .attr("clip-path", "url(#"+ this._view.target + "_dtr_clip)" )
+        var _dtrMSA_port = _dtrMSA.append("g").attr( "id", V.target + "_dtr_port" )
+            .attr("clip-path", "url(#"+ V.target + "_dtr_clip)" )
             .attr("transform", "translate(100, 0)");
         
         var _dtrMSA_view
-            = _dtrMSA_port.append("g").attr( "id", this._view.target + "_dtr_view" );
+            = _dtrMSA_port.append("g").attr( "id", V.target + "_dtr_view" );
         
         this.renderDtracHead();
         this.renderDtracDoms();
@@ -984,13 +1167,12 @@ class BkdMSA {
     
     renderDtracHead(){ 
         
+        var C = this._conf;
         var V = this._view;
         var D = this._data;
 
-        for( var t of D.dtrac ){
-            console.log(t);
+        for( var t of D.dtrac ){           
             var name = t.name;
-            
         }
         
         var sid = V.target + "_dtr_";
@@ -1001,7 +1183,7 @@ class BkdMSA {
             var _seqG = d3.select("g[id='" + V.target + "_dtr_head']")
                 .append("g")
                 .attr( "id", sid + i.toString() )
-                .attr("transform", "translate(95, " + (i+1)*14 + ")");
+                .attr("transform", "translate(95, " + (i+1)*C.msaDY + ")");
 
             var _seqHG = _seqG
                 .append("g")
@@ -1029,7 +1211,7 @@ class BkdMSA {
             
             var _seqSG = d3.select("g[id='"+ V.target + "_dtr_view']").append("g")
                 .attr( "id", ssid + i.toString() )
-                .attr( "transform", "translate( 0, "+ (i+1)*14 + ")" );
+                .attr( "transform", "translate( 0, "+ (i+1)*C.msaDY + ")" );
 
             d3.select("#"+ ssid + i.toString() )
                 .append("g")
@@ -1040,6 +1222,7 @@ class BkdMSA {
     
     renderDtracDoms(){
 
+        var C = this._conf;
         var V = this._view;
         var D = this._data;
 
@@ -1065,9 +1248,9 @@ class BkdMSA {
                     .attr( "class", "dtr-range")
                     .style( "fill", dcol )
                     .attr( "x", pbeg )
-                    .attr( "y", -10 )
+                    .attr( "y", C.dtracBoxYOff)
                     .attr( "width", ( (pend - pbeg) + V.aaStep ) )
-                    .attr( "height", 10 );
+                    .attr( "height", C.dtracBoxY );
 
                 if( dpos[d].name != undefined){
                     if( dpos[d].name.length >0 ){
@@ -1080,15 +1263,16 @@ class BkdMSA {
 
     updateDtracDoms(){
 
-        console.log("DtracDoms: UPDATE");
+        //console.log("DtracDoms: UPDATE");
         
+        var C = this._conf;
         var V = this._view;
         var D = this._data;
 
         if( D.dtrac == undefined) return;
         
         for( var t=0; t < D.dtrac.length; t++ ){
-            console.log(t);
+            //console.log(t);
 
             var ctrac = D.dtrac[t]; 
             var name = ctrac.name;
@@ -1099,7 +1283,7 @@ class BkdMSA {
                 var pbeg = (dpos[d].beg - 1) * V.aaStep - V.aaOffset;
                 var pend = (dpos[d].end - 1) * V.aaStep - V.aaOffset;
                 
-                console.log("#" + V.target +"_dtr_dom_" + t.toString(), pbeg,pend);
+                //console.log("#" + V.target +"_dtr_dom_" + t.toString(), pbeg,pend);
 
                 d3.select( "#" + V.target + "_dtr_dom_" + t.toString() +" " +
                            "rect[d='"+(d)+"']" )
@@ -1187,7 +1371,7 @@ class BkdMSA {
         }
     }
 
-    setSelectList( slist, rseq  ){
+    setSelectList( slist, rseq ){
 
         var sindex = 0;
 
@@ -1239,9 +1423,13 @@ class BkdMSA {
     }
     
     addSelect( pos, color, name, sindex ){
-                
-        var mp = this._data.msaRMap[sindex][pos];
-        var x = mp * this._view.aaStep - this._view.aaOffset;
+
+        var C = this._conf;
+        var D = this._data;
+        var V = this._view;
+        
+        var mp = D.msaRMap[sindex][pos];
+        var x = mp * V.aaStep - V.aaOffset;
                 
         var rect =  d3.select( "#" + this._view.target + "_seq_view_select" )
             .append( "rect" )
@@ -1249,15 +1437,51 @@ class BkdMSA {
             .style( "fill-opacity", 0.25)
             .style( "stroke", color )
             .attr( "x", x )
-            .attr( "y", -2 )
-            .attr( "width", this._view.aaStep )
-            .attr( "height", 14*(this._data.msaSeq.length + 0.5) )
+            .attr( "y", 0 )
+            .attr( "width", V.aaStep )
+            .attr( "height", C.msaDY*(D.msaSeq.length + 0.5) )
             .attr( "class", "msa-select");
         
             rect.append("title").text( name );       
         return rect;
     }
+    
+    setSelectView(){
 
+        var D = this._data;
+        var V = this._view;
+                
+        console.log("setSelectView");
+        console.log( V.select);
+        var sel = Object.keys( V.select);
+        var minSel = D.msaSeq[0].length;
+        var maxSel = 0;
+        for( var k= 0; k < sel.length; k++ ){
+            var spos = parseInt(sel[k].split(":")[0]);
+            if( spos < minSel) minSel = spos;
+            if( spos > maxSel) maxSel = spos;                    
+        }
+
+        var cntr = (maxSel+minSel)/2*V.navWidth/D.msaSeq[0].length;
+        var dlta = (maxSel-minSel+50)/2*V.navWidth/D.msaSeq[0].length;
+        this.setNavBrush( cntr-dlta, cntr+dlta);
+                
+        V.navBrushG.call( V.viewport.move,
+                          [V.brushLeft, V.brushRight])                
+                
+        V.displaystart = V.brushLeft / V.navWidth*100;
+        V.displayend = V.brushRight / V.navWidth*100;
+        
+        console.log(V.displaystart, V.displayend);
+        
+        this.updatePolygon();
+        this.updateMSA();              
+        this.updateSelect();                
+        this.getViewportParams();
+        this.updateRange();
+        console.log( "setSelectView: done" );
+    }
+    
     setNavView( center, width ){
         console.log("setNavView: call")
         this.setNavBrush( center-width/2, center+width/2 );
@@ -1279,7 +1503,7 @@ class BkdMSA {
     }
     
     setNavBrush( left, right ){
-        console.log( "setNavBrush:", left, right );
+        //console.log( "setNavBrush:", left, right );
         var brushLeft = left;
         var brushRight = right;
         var reset = false;
@@ -1363,7 +1587,7 @@ class BkdMSA {
                 this._view.aasOn = true;
             }
         } else {
-            this.removeAA();
+            this.hideAA();
             this._view.aasOn = false;
         }
         
@@ -1378,28 +1602,29 @@ class BkdMSA {
             }
         } else {
             d3.selectAll( ".msa-range" ).remove();
+            this.updateRange();
             this._view.rngOn = false;
         }
         
     }
 
-    navButton( parent, id, x, y, char, choffset ){
+    navButton( parent, id, x, y, dx, dy, char, csize, choffset ){
         
         if( choffset == undefined) choffset = 0;          
         
         var _button = parent.append("g").attr( "id", id )
             .attr( "transform", "translate(" + (x) +"," + (y) + ")" );
         _button.append("rect")
-            .attr("width",20)
-            .attr("height",20)
+            .attr("width",dx)
+            .attr("height",dy)
             .style( "stroke", "black")
             .style( "stroke-width", "0.5px")
             .attr("fill","#ccc");
         _button.append("text")
-            .style( "font-size", "16px")
+            .style( "font-size", csize )
             .style( "font-family", "Arial")
             .attr( "text-anchor", "middle")
-            .attr("x", 10).attr("y", 16+choffset)
+            .attr("x", dx/2 ).attr("y", 16 + choffset)
             .attr("fill","#000").text(char);
         return _button;
     }

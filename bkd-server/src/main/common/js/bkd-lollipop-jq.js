@@ -261,11 +261,6 @@ class BkdLollipop{
             }
         }
 
-        console.log("BkdLollipop.prepareData() -> scan features: DONE");
-        console.log("BkdLollipop.prepareData() -> positions:", Object.keys(fbypos).length );
-
-        console.log("fbypos:", fbypos);
-        
         // fbypos - features from selected datasets for current seq varaint
                 
         this.data.plist = [];
@@ -292,16 +287,14 @@ class BkdLollipop{
                 cfeat['significance'] = [];
 
                 for( var cent in fbypos[ cpos][cvs] ){                                   
-                    cfeat['significance'].push(fbypos[cpos][cvs][cent]["csig-name"]);
+                    cfeat['significance']
+                        .push( fbypos[cpos][cvs][cent]["csig-name"] );
                     continue;  // NOTE: just single val !!! fix me !!!
                 }
                 cfeat['significance'] = [ cfeat['significance'][0] ];
                 this.data.plist.push( cfeat );                
             }
-        }
-
-        console.log("plist:",  this.data.plist);
-        
+        }        
     }
 
     buildPanel(){
@@ -315,10 +308,10 @@ class BkdLollipop{
         };
                         
         var pfam_data = {  
-            "hgnc_symbol":"TP53",
-            "protein_name":"tumor protein p53",
+            "hgnc_symbol":"",
+            "protein_name":"",
             "uniprot_id":"P04637",
-            "length":this.data.sequence.length+1,
+            "length":this.data.sequence.length,
             "pfam":[  
                 {  
                     "pfam_ac":"PF08563",
@@ -328,7 +321,7 @@ class BkdLollipop{
                 }
             ]
         }; 
-        
+
         var pfam_data_default_settings = {
             domainType: "pfam",       // key to the domain annotation entries
             length: "length",         // protein length
@@ -346,7 +339,6 @@ class BkdLollipop{
         $( "#" + this.conf.details.replace("#","") +" *" ).remove();
 
         var lollipop = g3.Lollipop( this.conf.lpanel.replace("#","") );
-
         
         this.lollipop = lollipop;
         
@@ -359,7 +351,7 @@ class BkdLollipop{
         lollipop.options.titleAlignment = "middle";
         lollipop.options.titleDy = "0.3em";
         lollipop.options.legendTitle = "Clinical Significance";
-        lollipop.options.chartWidth = 1024;
+        lollipop.options.chartWidth = 950;
         //lollipop.options.chartHeight = 200;
         lollipop.options.chartType = "pie";
         lollipop.options.tooltip = false;
@@ -474,7 +466,7 @@ class BkdLollipop{
                                              lpanel,
                                              lddx ) } // position & features
                      ); 
-                
+
             } else {
                 log.console("dedlock ?");
                 lpanel.buildFDTable( options, lpanel, lddx );
@@ -484,7 +476,6 @@ class BkdLollipop{
 
     readFDets( data, options, pos, idxl, lpanel, lddx ) {
         
-       
         // process incoming details
         //-------------------------
         
@@ -495,19 +486,13 @@ class BkdLollipop{
         // build detail table
         //-------------------
         
-        this.buildFDTable( options, lpanel, lddx);
-       
+        this.buildFDTable( options, lpanel, lddx);       
     }
 
     procFDet( data, options, pos, idxl ){
 
-        console.log( "procFDet: (ajax) data->", data );
-
         var lpanel = options.lpanel;   
         var plist = lpanel.data.plist;
-        
-        //console.log( "procFDet: lpanel.data->", lpanel.data );
-        //console.log( "procFDet: lpanel.state->", lpanel.state );
         
         var features = data.node.node.feature;
 
@@ -672,7 +657,7 @@ class BkdLollipop{
                 }
             }
         }
-        
+
         var html = "";
         
         if( Object.keys(rows).length > 0 ){
@@ -707,10 +692,6 @@ class BkdLollipop{
                     console.log("row", r, rr, rows[r][rr]);
 
                     for(var c=0; c < dtconf.column.length; c++ ){
-
-                        //console.log( "dtconf", dtconf.column[c]);
-                        //console.log( "dtconf.value", dtconf.column[c].value);
-                        //console.log( "rows[r][rr]", rows[r][rr], "\n" );
                         
                         var vlst = rows[r][rr][dtconf.column[c].value];                      
                         var cclass = dtconf.column[c]['data_class'];
@@ -788,8 +769,7 @@ class BkdLollipop{
                                     ccol = this.conf.fcolor[k];
                                     console.log("ccol->", ccol); 
                                 }
-                            }
-                            
+                            }                            
                         }
                         
                         pdict[ this.data.plist[i].pos] = {
@@ -893,4 +873,3 @@ class BkdLollipop{
 }
 
 console.log("bkd-lollipop-jq: loaded"); 
- 

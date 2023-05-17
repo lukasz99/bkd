@@ -408,7 +408,12 @@ div.msa_tooltip {
     background: #eee;
 }
 
-
+.bkd-feat-tab-port {
+    width: 650px;
+    height: 625px;
+    background: #eeffee;
+}
+    
 .news-table {
     width: 100%;
     border: 1px;
