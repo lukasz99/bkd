@@ -313,7 +313,7 @@ BKDnodeFeatures = {
                      var flurl = parent.myurl.replace("FULL","FEATL");
                      var fdurl = parent.myurl.replace("detail=FULL","fpos=");
 
-                     var nloli =    // ##############
+                     var nloli =
                          new BkdLollipop( { anchor: "flist-lollipop-1",
                                             id: "lpanel-1",
                                             dset:{ default:"clinvar",
@@ -1326,8 +1326,7 @@ BKDnodeFeatures = {
         // isoform sequence MSA
         //---------------------
         
-        BKDnodeView.mymsa.dropAllSelect(); 
-
+        
         var smap = {};
         var ftslist = slist;
         var fstate = state;
@@ -1352,15 +1351,28 @@ BKDnodeFeatures = {
         console.log("smap.keys ->", Object.keys(smap) );
 
         var rseq = $('#flist-source #iseq').val(); 
+
+        console.log("BKDnodeView.mymsa callback");
         
+        BKDnodeView.mymsa.dropAllSelect(); 
         BKDnodeView.mymsa.setSelectList( Object.keys(smap), rseq );
+        BKDnodeView.mymsa.setSelectView();
 
         // NOTE: test alternates
         //BKDnodeView.mymsa.setNavView( BKDnodeView.mymsa._view.navWidth/2,
         //                              BKDnodeView.mymsa._view.navWidth);
+
+        console.log("BKDnodeView.mymsa2a callback");
         
-        BKDnodeView.mymsa.setSelectView();
-        
+        BKDnodeView.mymsa2a.dropAllSelect();
+        BKDnodeView.mymsa2a.setSelectList( Object.keys(smap), rseq );
+        BKDnodeView.mymsa2a.setSelectView();
+
+        console.log("BKDnodeView.mymsa2b callback");
+
+        BKDnodeView.mymsa2b.dropAllSelect();
+        BKDnodeView.mymsa2b.setSelectList( Object.keys(smap), rseq );
+        BKDnodeView.mymsa2b.setSelectView();
     },
     
     // tab panel toggle
