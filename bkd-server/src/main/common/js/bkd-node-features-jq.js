@@ -7,6 +7,8 @@ BKDnodeFeatures = {
     cvurl: "https://www.ncbi.nlm.nih.gov/clinvar/variation/",
     gnurl: "https://gnomad.broadinstitute.org/variant/",
     cgurl: "https://reg.clinicalgenome.org/redmine/projects/registry/genboree_registry/by_canonicalid?canonicalid=",
+    ucscPosUrl: "https://genome.ucsc.edu/cgi-bin/hgTracks?db=%BID%&position=%CID%%3A%SID%-%EID%",
+    ucscSrcUrl: "https://genome.ucsc.edu/cgi-bin/hgSearch?db=%BID%&search=%SRC%",
     vclass: [ { "id":"flist-select-1","name":"select-1",
                 "label":"Benign", "value":"benign",
                 "color":"blue" },
@@ -839,8 +841,6 @@ BKDnodeFeatures = {
         $('#build38flag').click(function(){           
             BKDnodeFeatures.igvinit("hg38");
         });
-
-        $( anchor ).append( "<div id='bkd-genome-viewer' class='bkd-genome-viewer' ></div>");
         
         this.gname = data["label"];
         for( a in data.alias){
@@ -849,7 +849,18 @@ BKDnodeFeatures = {
                 this.gname = data.alias[a]["alias"]
             }
         }         
+
         
+        var gburl = BKDnodeFeatures.ucscSrcUrl.replace('%BID%','hg19');  // build          
+        gburl = gburl.replace('%CID%','');  // chromosome
+        gburl = gburl.replace('%SID%','');  // start
+        gburl = gburl.replace('%EID%','');  // stop
+        gburl = gburl.replace('%SRC%',this.gname);    // gene name
+        
+        $( '#bkd-genome-build' ).append("&nbsp;&nbsp;|| &nbsp;&nbsp; UCSC Genome Browser: <a href='" + gburl + "' target='_bkd'>Go</a>");
+        
+        $( anchor ).append( "<div id='bkd-genome-viewer' class='bkd-genome-viewer' ></div>");
+                
         //console.log( "Gene Name: ", this.gname );
 
         this.igvinit("hg19");

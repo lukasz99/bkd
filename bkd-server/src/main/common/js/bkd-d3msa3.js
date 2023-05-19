@@ -45,19 +45,6 @@ class BkdMSA {
                 this._conf[ckey] = config[ckey];            
             };
         }
-        /*
-        this._data = {dtrac:[{name:"InterPro",
-                              link: "https://www.ebi.ac.uk/interpro/protein/UniProt/P60010/",
-                              dpos:[{beg:10,end:15,name:"DOM1", link:null, color:"#FF8080"},
-                                    {beg:67,end:500,name:"DOM2", link: null,color:"#80FF00"}]
-                             },
-                             {name:"Pfam",
-                              link: "https://www.ebi.ac.uk/interpro/protein/UniProt/P60010/entry/pfam/",
-                              dpos:[{beg:3,end:12,name:"DOM21", link:null,color:"#00FF80"},
-                                    {beg:250,end:780, link:null, color:"#0080FF"} ]
-                             }
-                            ]};
-        */
 
         this._data = {dtrac:[]};
         
@@ -323,13 +310,6 @@ class BkdMSA {
                                    5, 13, 20, 20, "<", "16px")
             .on( "click", _leftCB(this) );
         
-            //.on( "click", (event) => {                
-            //    D3MSA3.setNavBrush( 2*D3MSA3.brushLeft-D3MSA3.brushRight,
-            //                       D3MSA3.brushLeft);                
-            //    D3MSA3.navBrushG.call( D3MSA3.viewport.move,
-            //                          [D3MSA3.brushLeft, D3MSA3.brushRight]);
-            //});
-
         var _plusCB = function( msa ){
             return function( event ){
                 console.log("plusCB!!!");
@@ -360,14 +340,6 @@ class BkdMSA {
                                    27, 13, 20, 20, "+", "16px")
             .on( "click", _plusCB(this) );
         
-            //.on( "click", (event) => {
-            //    var center = (D3MSA3.brushLeft + D3MSA3.brushRight)/2;
-            //    var delta = 0.75 * (D3MSA3.brushRight - D3MSA3.brushLeft)/2;
-            //    D3MSA3.setNavBrush( center-delta, center+delta);                
-            //    D3MSA3.navBrushG.call( D3MSA3.viewport.move,
-            //                          [D3MSA3.brushLeft, D3MSA3.brushRight]);
-            //});
-
         var _minusCB = function( msa ){
             return function( event ){
                 console.log("minusCB!!!");
@@ -397,14 +369,6 @@ class BkdMSA {
                                     this._view.target + "_minus",
                                     50, 13, 20, 20, "-", "16px", -1 )
             .on( "click", _minusCB(this) );
-        
-            //.on( "click", (event) => {
-            //    var center = (D3MSA3.brushLeft + D3MSA3.brushRight)/2;
-            //    var delta = 1.5 * (D3MSA3.brushRight - D3MSA3.brushLeft)/2;
-            //    D3MSA3.setNavBrush( center-delta, center+delta);                
-            //    D3MSA3.navBrushG.call( D3MSA3.viewport.move,
-            //                          [D3MSA3.brushLeft, D3MSA3.brushRight]);
-            //});
 
         var _rightCB = function( msa ){
             return function( event ){
@@ -433,50 +397,10 @@ class BkdMSA {
                                     73, 13, 20, 20, ">", "16px")
             .on( "click", _rightCB( this ) );
          
-        var _selectedCB = function( msa ){   //###########3
+        var _selectedCB = function( msa ){ 
             return function( event ){
 
-                /*
-                
-                var D = msa._data;
-                var V = msa._view;
-                
-                console.log("selectedCB!!!");
-                console.log( V.select);
-                var sel = Object.keys( V.select );
-
-                if( sel.length > 0 ){
-                    var minSel = D.msaSeq[0].length;
-                    var maxSel = 0;
-                    for( var k= 0; k < sel.length; k++ ){
-                        var spos = parseInt(sel[k].split(":")[0]);
-                        if( spos < minSel) minSel = spos;
-                        if( spos > maxSel) maxSel = spos;                    
-                    }
-                    var cntr = (maxSel+minSel)/2*V.navWidth/D.msaSeq[0].length;
-                    var dlta = (maxSel-minSel+50)/2*V.navWidth/D.msaSeq[0].length;
-                    console.log( minSel, maxSel, cntr, dlta)
-                    msa.setNavBrush( cntr-dlta, cntr+dlta);
-                } else {
-                    msa.setNavBrush( 0, V.navWidth);         
-                }
-                
-                V.navBrushG.call( V.viewport.move,
-                                  [V.brushLeft, V.brushRight])                
-                
-                V.displaystart = V.brushLeft / V.navWidth*100;
-                V.displayend = V.brushRight / V.navWidth*100;
-                
-                console.log(V.displaystart, V.displayend);
-                
-                msa.updatePolygon();
-                msa.updateMSA();              
-                msa.updateSelect();                
-                msa.getViewportParams();
-                msa.updateRange();
-                */
                 msa.setSelectView();
-
                 console.log("fullCB: done");
             }            
         }
@@ -514,16 +438,6 @@ class BkdMSA {
                                     this._view.target + "_full",
                                     this._view.svgWidth-40, 13, 32, 20, "Full", "14px")
             .on( "click", _fullCB( this ) );
-        
-            //.on( "click", (event) => {
-            //    D3MSA3.setNavBrush( 0, D3MSA3._msaW);                
-            //    D3MSA3.navBrushG.call( D3MSA3.viewport.move,
-            //                           [D3MSA3.brushLeft, D3MSA3.brushRight])
-        //});
-        
-        //_full.select("rect").attr("width",32);
-        //_full.select("text").style("font-size","14px")
-        //    .attr("x",15).attr("y",15);        
         
         var _navG = this._view.svg.append("g")
             .attr( "id", this._view.target + "_nav" )
@@ -1126,7 +1040,7 @@ class BkdMSA {
         
         var opq = Math.min( 1, 1 - V.aaStep**1.5
                             / (C.aaMaxStep - V.aaStep*0.99)**2);
-
+        console.log("range opq:", opq);
         for( var i = 0; i <range.length; i++ ){
             for( var j = 0; j <range[i].beg.length; j++ ){
                 var bPos =  range[i].beg[j] * V.aaStep - V.aaOffset;
@@ -1136,7 +1050,7 @@ class BkdMSA {
                     .attr( "x", bPos )                   
                     .attr( "width", ePos - bPos + V.aaStep );
             }
-            console.log(i, opq);
+            
             if( opq > 0 ){
                 d3.select( "#" + V.target + "_seq_seq_" + i.toString() + "rn")
                     .attr( "fill-opacity", opq)
@@ -1274,9 +1188,6 @@ class BkdMSA {
     }
 
     updateDtracDoms(){
-
-        //console.log("DtracDoms: UPDATE");
-        
         var C = this._conf;
         var V = this._view;
         var D = this._data;
@@ -1284,8 +1195,6 @@ class BkdMSA {
         if( D.dtrac == undefined) return;
         
         for( var t=0; t < D.dtrac.length; t++ ){
-            //console.log(t);
-
             var ctrac = D.dtrac[t]; 
             var name = ctrac.name;
             var dpos = ctrac.dpos;
@@ -1295,8 +1204,6 @@ class BkdMSA {
                 var pbeg = (dpos[d].beg - 1) * V.aaStep - V.aaOffset;
                 var pend = (dpos[d].end - 1) * V.aaStep - V.aaOffset;
                 
-                //console.log("#" + V.target +"_dtr_dom_" + t.toString(), pbeg,pend);
-
                 d3.select( "#" + V.target + "_dtr_dom_" + t.toString() +" " +
                            "rect[d='"+(d)+"']" )
                     .attr( "x", pbeg )
@@ -1305,8 +1212,83 @@ class BkdMSA {
         }
     }
     
-    getViewportParams(){
+    getViewportParams2(){ 
+        var V = this._view;
+        var D = this._data;
+        var C = this._conf;
 
+        var msaW = V.navWidth;
+
+        var brLeft = V.brushLeft;   // not modified, msaW units
+        var brRight = V.brushRight; 
+
+        var brCntr = (brLeft+brRight)/2;   
+        var brWdth = brRight-brLeft;
+
+        var aaMax = msaW/D.msaSeq[0].length;
+        var aaMin = C.aaMaxStep;
+
+        var brMax = msaW;
+        var brMin = C.brushLimit;
+
+        var aaa = ( aaMin - aaMax ) / ( brMin - brMax );
+        var bbb = aaMin - aaa * brMin;
+
+        V.aaStep =  bbb + aaa * brWdth;
+
+        var windowCenter = brCntr ;
+        V.aaOffset =  (windowCenter) * V.aaStep - msaW/2;
+
+        V.alpha= aaa;
+        V.beta= bbb;
+
+        console.log(brMin,brMax,aaMin,aaMax,aaa,bbb,V.aaStep,V.aaOffset);
+        console.log("SSSS",brCntr, brCntr/V.aaStep);
+        
+/*
+        
+        var windowWidth = ( V.displayend - V.displaystart)
+            / 100 * (this._data.msaRange[1]);   // [AA]
+        
+        var windowCenter = 0.005 * ( V.displayend + V.displaystart )
+            * (this._data.msaRange[1]) ;        
+        
+        V.aaStep   =  ( msaW ) / windowWidth;  // [pixel/aa]
+        V.aaOffset =  (windowCenter) * V.aaStep - msaW/2;
+
+        V.windowWidth = windowWidth;
+        V.windowCenter = windowCenter;
+
+        if( V.displayend - V.displaystart < 50 ){        
+            V.alpha=(this._data.msaRange[1]/2- msaW/this._conf.aaMaxStep)
+                / 100 / (1 - view._brl/ msaW - 0.5);
+            
+            V.beta = this._data.msaRange[1]/2 - 50 * V.alpha;
+
+           V.ww = .alpha * ( V.displayend - V.displaystart)
+                + V.beta;
+
+            V.aaStep =  msaW /V.ww ;
+            V.aaOffset =  (windowCenter) * V.aaStep - msaW/2;
+        }
+*/
+        V.msaOpa = 0.5;
+        if( V.aaStep <= 16 ){
+            V.msaOpa = 0.5 + 0.5* (16-V.aaStep)/16;
+        }
+
+        if( V.displaystart < 100 - V.displayend ) {
+            V.aaOffset = + V.aaStep * V.displaystart/100
+                *this._data.msaRange[1];
+        } else {
+            V.aaOffset = - msaW + V.aaStep * V.displayend/100
+                *this._data.msaRange[1];            
+        }
+        
+    }
+
+
+    getViewportParams(){
         var view = this._view;
         var msaW = view.navWidth;
         
@@ -1349,22 +1331,19 @@ class BkdMSA {
         }
         
     }
+
     
     dropAllSelect(){
         console.log("dropAllSelect:", "#" + this._view.target + "_seq_view_select");
         d3.select( "#" + this._view.target + "_seq_view_select").remove();
-        //d3.select("#seqMSA_select").remove();
         d3.select( "#" + this._view.target + "_seq_view" )
-        //d3.select("#seqMSA_view")
             .append( "g" )
             .attr("id", this._view.target + "_seq_view_select");
         this._view.select = {};
     }
 
     setSelectMap( smap, rseq ){
-        //console.log(smap);
         for( var pc of this._view.select ){ // go over existing elements
-            //console.log("sel:",pc);
             if( pc in Object.keys(smap) ){ // no selection change, remove from smap                
                 smap.delete( pc );                 
             } else { // drop selection
@@ -1373,10 +1352,7 @@ class BkdMSA {
             }
         }
         
-        //console.log(smap);
         for( var pc of Object.keys(smap) ){
-            //console.log("smap:",pc);
-            //console.log(pc, smap[pc]);
             var pcl = pc.split(":");
             this._view.select[pc] =
                 this.addSelect( Number(pcl[0]), pcl[1], smap[pc].name, rseq);            
@@ -1459,14 +1435,13 @@ class BkdMSA {
     }
     
     setSelectView(){
-
         var D = this._data;
         var V = this._view;
                 
         console.log("setSelectView");
         console.log( V.select);
         
-        var sel = Object.keys( V.select);
+        var sel = Object.keys( V.select );
 
         if( sel.length > 0 ){
         
@@ -1477,20 +1452,30 @@ class BkdMSA {
                 if( spos < minSel) minSel = spos;
                 if( spos > maxSel) maxSel = spos;                    
             }
-
+ 
+            var aaCntr = (maxSel+minSel)/2/D.msaSeq[0].length;
+            var aaWdth = (maxSel-minSel+25)/D.msaSeq[0].length;
+            
             var cntr = (maxSel+minSel)/2*V.navWidth/D.msaSeq[0].length;
             var dlta = (maxSel-minSel+50)/2*V.navWidth/D.msaSeq[0].length;
+
+            console.log("SSS(+):",minSel, maxSel, aaCntr,aaWdth,cntr,dlta, V.brushLeft,V.brushRight);
             this.setNavBrush( cntr-dlta/2, cntr+dlta/2);
+            console.log("SSS(+):",minSel, maxSel, aaCntr,aaWdth,cntr,dlta, V.brushLeft,V.brushRight);
+            
         } else {
+            console.log("SSS(-):",V.brushLeft,V.brushRight);
             this.setNavBrush( 0, V.navWidth);
+            console.log("SSS(-):",V.brushLeft,V.brushRight);
         }
+        
         V.navBrushG.call( V.viewport.move,
                           [V.brushLeft, V.brushRight])                
                 
         V.displaystart = V.brushLeft / V.navWidth*100;
         V.displayend = V.brushRight / V.navWidth*100;
         
-        console.log(V.displaystart, V.displayend);
+        console.log("dips start/stop",V.displaystart, V.displayend);
         
         this.updatePolygon();
         this.updateMSA();              
@@ -1521,7 +1506,9 @@ class BkdMSA {
     }
     
     setNavBrush( left, right ){
-        //console.log( "setNavBrush:", left, right );
+
+        var center = ( left + right )/2;
+        
         var brushLeft = left;
         var brushRight = right;
         var reset = false;
@@ -1546,8 +1533,72 @@ class BkdMSA {
             right = brushRight;
             reset = true;
         }
+
+        //
         
-        if( right - left <  this._view._brl ){           
+        if( right - left <  this._view._brl ){
+            
+            var brushCenter = center; // 0.5 * (left + right);
+            
+            brushLeft = brushCenter - this._view._brl/2;
+            brushRight = brushCenter + this._view._brl/2;
+            
+            if( brushLeft < 1 ){
+                brushLeft  = 0;
+                brushRight = this._view._brl;  // /D3MSA3._brRatio;
+            }
+            
+            if( brushRight >  this._view.navWidth ){ 
+                brushLeft = this._view.navWidth - this._view._brl - 1; // /D3MSA3._brRatio - 1;
+                brushRight = this._view.navWidth ;                      
+            }
+            reset = true;                       
+        }
+
+
+        
+        if(reset){
+            this._view.navBrushG.call( this._view.viewport.move,
+                                       [brushLeft, brushRight] );                
+            
+        }
+        this._view.brushLeft = brushLeft;
+        this._view.brushRight = brushRight;     
+    }
+
+    setNavBrush2( left, right ){
+        var brushLeft = left;
+        var brushRight = right;
+        var reset = false;
+
+        if( brushLeft < 0 ){
+            brushLeft  = 0;
+            left = brushLeft;
+            reset = true;
+        }
+
+        if( brushRight >  this._view.navWidth ){
+            brushRight = this._view.navWidth;
+            right = brushRight;
+            reset = true;
+        }
+
+        if( brushLeft > brushRight ){
+            var tmp = brushLeft;
+            brushLeft = brushRight;
+            left = brushRight;
+            brushRight = tmp;
+            right = brushRight;
+            reset = true;
+        }
+
+        //
+        
+        if( right - left <  this._view._brl ){
+
+            
+            
+            
             var brushCenter = 0.5 * (left + right);
             brushLeft = brushCenter - this._view._brl/2;
             brushRight = brushCenter + this._view._brl/2;
@@ -1563,6 +1614,8 @@ class BkdMSA {
             }
             reset = true;                       
         }
+
+
         
         if(reset){
             this._view.navBrushG.call( this._view.viewport.move,
@@ -1578,8 +1631,6 @@ class BkdMSA {
     }
 
     updatePolygon(){
-        //var max = D3MSA3._msaW;
-
         var max = this._view.nawWidth;
         
         if (this._view.polygon)
@@ -1622,8 +1673,7 @@ class BkdMSA {
             d3.selectAll( ".msa-range" ).remove();
             this.updateRange();
             this._view.rngOn = false;
-        }
-        
+        }        
     }
 
     navButton( parent, id, x, y, dx, dy, char, csize, choffset ){
