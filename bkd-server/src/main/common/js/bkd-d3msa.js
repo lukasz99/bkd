@@ -928,7 +928,7 @@ D3MSA = {
         }
     },
 
-    dropAllSelect: function(){
+    dropAllSelect: function(){        
         d3.select("#seqMSA_select").remove();
         d3.select("#seqMSA_view")
             .append( "g" )
