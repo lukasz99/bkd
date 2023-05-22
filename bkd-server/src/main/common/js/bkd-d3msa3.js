@@ -1428,7 +1428,7 @@ class BkdMSA {
             }
             console.log("minSel=",minSel,"maxSel=",maxSel);
             var aaCntr = (maxSel+minSel)/2/D.msaSeq[0].length;   // fractional AA port center ( say 1000aa out of 1900)
-            var aaWdth = (maxSel-minSel)/D.msaSeq[0].length;     // fractional AA port width  (say  60aa visible out of 1900) 
+            var aaWdth = (10+ maxSel-minSel)/D.msaSeq[0].length;     // fractional AA port width  (say  60aa visible out of 1900) 
             
             //var cntr = aaCntr*V.navWidth;  // port center: pixels  
             //var dlta = aaWdth*V.navWidth;  // port width: pixels
