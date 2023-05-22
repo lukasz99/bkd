@@ -139,7 +139,7 @@ class BkdMSA {
         // calculate positions/sizes
 
         this._view.svgWidth = this._conf.width;
-        this._view.navWidth = this._conf.width-50-172;  // XXXXX
+        this._view.navWidth = this._conf.width-50-172;
         
         this._view.svgHeight = this._conf.height - 0;
 
@@ -458,18 +458,23 @@ class BkdMSA {
         
         var _brushCB = function(msa){
             return function( event ){
+                console.log("_brushCB called:", event.selection);
                 msa.setNavBrush( event.selection[0], event.selection[1]);
                 
                 msa._view.displaystart
                     = msa._view.brushLeft / msa._view.navWidth*100;
+
                 msa._view.displayend
                     = msa._view.brushRight / msa._view.navWidth*100;
 
+                
+                console.log("brush disp(for poly):", msa._view.displaystart, msa._view.displayend);
                 msa.updatePolygon();
-                msa.updateMSA();
+                msa.updateMSA();  // calls msa.getViewportParams();
                 msa.updateDtracDoms();
                 msa.updateSelect();                
-                msa.getViewportParams();
+                // msa.getViewportParams();
+                //msa.updateRange();
             }
         }
         
@@ -703,7 +708,8 @@ class BkdMSA {
         var jmax= parseInt((this._view.navWidth+this._view.aaOffset)/this._view.aaStep - 1/2);
 
         if( jmin < 0 ) jmin = 0;
-        if( jmax >= this._data.msaSeq[0].length ) jmax = this._data.msaMap[i].length-1;
+        //if( jmax >= this._data.msaSeq[0].length ) jmax = this._data.msaMap[i].length-1;
+        if( jmax >= this._data.msaSeq[0].length ) jmax = this._data.msaSeq[0].length-1;
 
         var frMsaPos = new Array( jmax-jmin+1 );
         var frRectPos = new Array( jmax-jmin+1 );
@@ -1212,10 +1218,12 @@ class BkdMSA {
         }
     }
     
-    getViewportParams2(){ 
+    getViewportParams(){ 
         var V = this._view;
         var D = this._data;
         var C = this._conf;
+
+        var msaMap = D.msaMap[0];  
 
         var msaW = V.navWidth;
 
@@ -1229,109 +1237,38 @@ class BkdMSA {
         var aaMin = C.aaMaxStep;
 
         var brMax = msaW;
-        var brMin = C.brushLimit;
+        //var brMin = C.brushLimit;
+        var brMin = V._brl;
 
-        var aaa = ( aaMin - aaMax ) / ( brMin - brMax );
-        var bbb = aaMin - aaa * brMin;
+        var fr_cover_max = 1;                                          // max coverage (fract)
+        var fr_cover_min = V.navWidth/C.aaMaxStep/D.msaSeq[0].length;  // min coverage (fract)
 
-        V.aaStep =  bbb + aaa * brWdth;
+        var fr_aaa = (fr_cover_max -fr_cover_min)/(V.navWidth-C.brushLimit);
+        var fr_bbb = fr_cover_max - fr_aaa * V.navWidth;
 
-        var windowCenter = brCntr ;
-        V.aaOffset =  (windowCenter) * V.aaStep - msaW/2;
-
-        V.alpha= aaa;
-        V.beta= bbb;
-
-        console.log(brMin,brMax,aaMin,aaMax,aaa,bbb,V.aaStep,V.aaOffset);
-        console.log("SSSS",brCntr, brCntr/V.aaStep);
+        V.fr_alpha= fr_aaa;
+        V.fr_beta = fr_bbb;
         
-/*
+        V.fr_cover = fr_bbb + fr_aaa * brWdth;
+        V.aaStep = V.navWidth/V.fr_cover/D.msaSeq[0].length;
         
-        var windowWidth = ( V.displayend - V.displaystart)
-            / 100 * (this._data.msaRange[1]);   // [AA]
+        console.log( "V.fr_alpha",V.fr_alpha,"V.fr_beta",V.fr_beta,"brwdth=", brWdth,"V.fr_cover=",V.fr_cover );
+
+        console.log("br_center[fr]:", (V.displaystart + V.displayend)/2);
+        console.log("br_center[aa]:", (V.displaystart + V.displayend)/200*D.msaSeq[0].length);
+
+        var aa_ctr=  (V.displaystart + V.displayend)/2*D.msaSeq[0].length/100;
+
+        V.aaOffset =  V.aaStep * aa_ctr - msaW/2;
+
+        console.log( "V.fr_alpha=",V.fr_alpha," V.fr_beta=",V.fr_beta, "brWdth=",brWdth,"aaStep=",V.aaStep);
+        console.log( "V.aaOffset=",aa_ctr, V.aaStep*aa_ctr, V.aaOffset, V.aaStep*aa_ctr-V.aaOffset );
         
-        var windowCenter = 0.005 * ( V.displayend + V.displaystart )
-            * (this._data.msaRange[1]) ;        
-        
-        V.aaStep   =  ( msaW ) / windowWidth;  // [pixel/aa]
-        V.aaOffset =  (windowCenter) * V.aaStep - msaW/2;
-
-        V.windowWidth = windowWidth;
-        V.windowCenter = windowCenter;
-
-        if( V.displayend - V.displaystart < 50 ){        
-            V.alpha=(this._data.msaRange[1]/2- msaW/this._conf.aaMaxStep)
-                / 100 / (1 - view._brl/ msaW - 0.5);
-            
-            V.beta = this._data.msaRange[1]/2 - 50 * V.alpha;
-
-           V.ww = .alpha * ( V.displayend - V.displaystart)
-                + V.beta;
-
-            V.aaStep =  msaW /V.ww ;
-            V.aaOffset =  (windowCenter) * V.aaStep - msaW/2;
-        }
-*/
         V.msaOpa = 0.5;
         if( V.aaStep <= 16 ){
             V.msaOpa = 0.5 + 0.5* (16-V.aaStep)/16;
-        }
-
-        if( V.displaystart < 100 - V.displayend ) {
-            V.aaOffset = + V.aaStep * V.displaystart/100
-                *this._data.msaRange[1];
-        } else {
-            V.aaOffset = - msaW + V.aaStep * V.displayend/100
-                *this._data.msaRange[1];            
-        }
-        
+        }        
     }
-
-
-    getViewportParams(){
-        var view = this._view;
-        var msaW = view.navWidth;
-        
-        var windowWidth = ( view.displayend - view.displaystart)
-            / 100 * (this._data.msaRange[1]);   // [AA]
-        
-        var windowCenter = 0.005 * ( view.displayend + view.displaystart )
-            * (this._data.msaRange[1]) ;        
-        
-        view.aaStep   =  ( msaW ) / windowWidth;  // [pixel/aa]
-        view.aaOffset =  (windowCenter) * view.aaStep - msaW/2;
-
-        view.windowWidth = windowWidth;
-        view.windowCenter = windowCenter;
-
-        if( view.displayend - view.displaystart < 50 ){        
-            view.alpha=(this._data.msaRange[1]/2- msaW/this._conf.aaMaxStep)
-                / 100 / (1 - view._brl/ msaW - 0.5);
-            
-            view.beta = this._data.msaRange[1]/2 - 50 * view.alpha;
-
-            view.ww = view.alpha * ( view.displayend - view.displaystart)
-                + view.beta;
-
-            view.aaStep =  msaW /view.ww ;
-            view.aaOffset =  (windowCenter) * view.aaStep - msaW/2;
-        }
-
-        view.msaOpa = 0.5;
-        if( view.aaStep <= 16 ){
-            view.msaOpa = 0.5 + 0.5* (16-view.aaStep)/16;
-        }
-
-        if( view.displaystart < 100 - view.displayend ) {
-            view.aaOffset = + view.aaStep * view.displaystart/100
-                *this._data.msaRange[1];
-        } else {
-            view.aaOffset = - msaW + view.aaStep * view.displayend/100
-                *this._data.msaRange[1];            
-        }
-        
-    }
-
     
     dropAllSelect(){
         console.log("dropAllSelect:", "#" + this._view.target + "_seq_view_select");
@@ -1433,11 +1370,46 @@ class BkdMSA {
             rect.append("title").text( name );       
         return rect;
     }
+
+
+    getMsaPos(s,pos){
+        var msaMap = this._data.msaMap[s];  // msaMap[msa]=seq
+        var lb = 0;
+        var ub = msaMap.length-1;
+        var ls = msaMap[0];
+        var us = msaMap[msaMap.length-1];
+        var tp = 0;
+        var ts = 0;
+        console.log("start:",lb,ls,":",tp,ts,":",ub,us);
+        var n = 12;
+        while( us  - ls > 2 && n > 0 ){
+            n -= 1;
+            tp = Math.floor((lb+ub)/2);
+            ts = msaMap[tp];
+            
+            if( ts < pos){
+                lb = tp
+                ls = ts;
+            } 
+            if(ts > pos){
+                ub = tp;
+                us = ts;
+            }
+            if( us == ls ){
+                console.log("==",lb,ls,":",tp,ts,":",ub,us,"::",tp);
+                return tp;
+            }
+        }
+        console.log("--",lb,ls,":",tp,ts,":",ub,us,"::",Math.floor((ub+lb)/2) );
+        return Math.floor((ub+lb)/2);
+    }
     
     setSelectView(){
         var D = this._data;
         var V = this._view;
-                
+
+        console.log(D.msaMap[0]);
+        
         console.log("setSelectView");
         console.log( V.select);
         
@@ -1449,20 +1421,71 @@ class BkdMSA {
             var maxSel = 0;
             for( var k= 0; k < sel.length; k++ ){
                 var spos = parseInt(sel[k].split(":")[0]);
-                if( spos < minSel) minSel = spos;
-                if( spos > maxSel) maxSel = spos;                    
+                var mpos = this.getMsaPos(0,spos);
+                console.log("S->M:", spos,mpos);
+                if( mpos < minSel) minSel = mpos;
+                if( mpos > maxSel) maxSel = mpos;                    
             }
- 
-            var aaCntr = (maxSel+minSel)/2/D.msaSeq[0].length;
-            var aaWdth = (maxSel-minSel+25)/D.msaSeq[0].length;
+            console.log("minSel=",minSel,"maxSel=",maxSel);
+            var aaCntr = (maxSel+minSel)/2/D.msaSeq[0].length;   // fractional AA port center ( say 1000aa out of 1900)
+            var aaWdth = (maxSel-minSel)/D.msaSeq[0].length;     // fractional AA port width  (say  60aa visible out of 1900) 
             
-            var cntr = (maxSel+minSel)/2*V.navWidth/D.msaSeq[0].length;
-            var dlta = (maxSel-minSel+50)/2*V.navWidth/D.msaSeq[0].length;
+            //var cntr = aaCntr*V.navWidth;  // port center: pixels  
+            //var dlta = aaWdth*V.navWidth;  // port width: pixels
 
-            console.log("SSS(+):",minSel, maxSel, aaCntr,aaWdth,cntr,dlta, V.brushLeft,V.brushRight);
-            this.setNavBrush( cntr-dlta/2, cntr+dlta/2);
-            console.log("SSS(+):",minSel, maxSel, aaCntr,aaWdth,cntr,dlta, V.brushLeft,V.brushRight);
+            // ----- XXXXXXXXX
+
+            var port_pixel_width = V.navWidth;
+                        
+            var aa_pixel_width = V.navWidth/Math.max(1,Math.abs(maxSel-minSel) );
+            aaWdth = port_pixel_width/aa_pixel_width/D.msaSeq[0].length;            
             
+            if( aa_pixel_width > this._conf.aaMaxStep ){ //if too wide
+                aa_pixel_width = this._conf.aaMaxStep;
+                aaWdth = port_pixel_width/aa_pixel_width/D.msaSeq[0].length; // corrected fractional AA port width 
+            }
+
+            console.log("port_pixel_width=",port_pixel_width,"aa_pixel_width=",aa_pixel_width,"aaWdth=",aaWdth);
+            
+            var port_pixel_center = aaCntr*D.msaSeq[0].length*aa_pixel_width;  
+
+            var port_left_aa = aaCntr - aaWdth/2;    // fractional AA pos of left port
+            var port_right_aa = aaCntr + aaWdth/2;   // fractional AA pos of right port
+
+            console.log("port[fr]", port_left_aa, '<->', port_right_aa,
+                        aaCntr);
+            console.log("port[px]", port_left_aa*V.navWidth,"<->",port_right_aa*V.navWidth,
+                        aaCntr*V.navWidth);
+            console.log("port[aa]", port_left_aa*D.msaSeq[0].length,"<->",port_right_aa*D.msaSeq[0].length,
+                        aaCntr*D.msaSeq[0].length);
+            
+            // get brush position for port edges
+            //----------------------------------
+            
+            var br_pixel_width = (aaWdth-V.fr_beta)/V.fr_alpha;
+             
+            var br_left_pixel  = aaCntr*port_pixel_width - br_pixel_width/2; 
+            var br_right_pixel = aaCntr*port_pixel_width + br_pixel_width/2;
+
+            console.log("brush[px]", aa_pixel_width, br_pixel_width, ":", br_left_pixel,"<->",br_right_pixel);
+            
+            //------ XXXXXXXXXXXX
+            
+            console.log("SSS(+):",minSel, maxSel, ":",
+                        aaCntr,aaWdth,this._view._brl,":",V.brushLeft,V.brushRight);
+
+            //if( (maxSel-minSel) < V.navWidth/this._view._brl ){ 
+            if( (maxSel-minSel) < V.navWidth/this._conf.aaMaxStep ){  // AAs too wide
+
+                aaWdth = V.navWidth/this._conf.aaMaxStep;                                 
+                console.log("SSS(adjust aaWdth): aa=", aaWdth);
+            }
+            
+            console.log("SSS(+):",minSel, maxSel, aaCntr,aaWdth, V.brushLeft,V.brushRight);            
+            this.setNavBrush( br_left_pixel,br_right_pixel);                        
+            console.log("SSS(+):",minSel, maxSel, aaCntr,aaWdth, V.brushLeft,V.brushRight);
+
+                      
         } else {
             console.log("SSS(-):",V.brushLeft,V.brushRight);
             this.setNavBrush( 0, V.navWidth);
@@ -1471,17 +1494,8 @@ class BkdMSA {
         
         V.navBrushG.call( V.viewport.move,
                           [V.brushLeft, V.brushRight])                
-                
-        V.displaystart = V.brushLeft / V.navWidth*100;
-        V.displayend = V.brushRight / V.navWidth*100;
         
-        console.log("dips start/stop",V.displaystart, V.displayend);
-        
-        this.updatePolygon();
-        this.updateMSA();              
-        this.updateSelect();                
-        this.getViewportParams();
-        this.updateRange();
+        console.log("dips start/stop",V.displaystart, V.displayend);        
         console.log( "setSelectView: done" );
     }
     
@@ -1505,7 +1519,7 @@ class BkdMSA {
 
     }
     
-    setNavBrush( left, right ){
+    setNavBrush2( left, right ){
 
         var center = ( left + right )/2;
         
@@ -1566,7 +1580,7 @@ class BkdMSA {
         this._view.brushRight = brushRight;     
     }
 
-    setNavBrush2( left, right ){
+    setNavBrush( left, right ){
         var brushLeft = left;
         var brushRight = right;
         var reset = false;
@@ -1592,13 +1606,10 @@ class BkdMSA {
             reset = true;
         }
 
-        //
+        // 
         
         if( right - left <  this._view._brl ){
-
-            
-            
-            
+            console.log("@@@", left, right, right - left,  this._view._brl);
             var brushCenter = 0.5 * (left + right);
             brushLeft = brushCenter - this._view._brl/2;
             brushRight = brushCenter + this._view._brl/2;
@@ -1612,15 +1623,12 @@ class BkdMSA {
                 brushLeft = this._view.navWidth - this._view._brl - 1; // /D3MSA3._brRatio - 1;
                 brushRight = this._view.navWidth ;                      
             }
+            console.log("@@@", brushLeft,brushRight);
             reset = true;                       
-        }
-
-
-        
+        }        
         if(reset){
             this._view.navBrushG.call( this._view.viewport.move,
-                                       [brushLeft, brushRight] );                
-            
+                                       [brushLeft, brushRight] );                   
         }
         this._view.brushLeft = brushLeft;
         this._view.brushRight = brushRight;     
