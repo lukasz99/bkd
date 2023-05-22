@@ -1283,11 +1283,13 @@ BKDnodeFeatures = {
                                           slist
                                         );
 
+        /*
         BKDnodeFeatures.setHomolSelScheme( BKDnodeFeatures.strComp,
                                            //BKDnodeFeatures.fstate,
                                            state,
                                            slist );
-       
+        */
+        
         BKDnodeFeatures.setNGLSelScheme( BKDnodeFeatures.swmComp,
                                          //BKDnodeFeatures.fstate,
                                          state,

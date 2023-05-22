@@ -401,7 +401,7 @@ class BkdMSA {
             return function( event ){
 
                 msa.setSelectView();
-                console.log("fullCB: done");
+                console.log("selectedCB: done");
             }            
         }
         
@@ -474,7 +474,7 @@ class BkdMSA {
                 msa.updateDtracDoms();
                 msa.updateSelect();                
                 // msa.getViewportParams();
-                //msa.updateRange();
+                msa.updateRange();
             }
         }
         
@@ -1426,37 +1426,31 @@ class BkdMSA {
                 if( mpos < minSel) minSel = mpos;
                 if( mpos > maxSel) maxSel = mpos;                    
             }
-            console.log("minSel=",minSel,"maxSel=",maxSel);
-            var aaCntr = (maxSel+minSel)/2/D.msaSeq[0].length;   // fractional AA port center ( say 1000aa out of 1900)
-            var aaWdth = (10+ maxSel-minSel)/D.msaSeq[0].length;     // fractional AA port width  (say  60aa visible out of 1900) 
+            console.debug("minSel=",minSel,"maxSel=",maxSel);
+            var aaCntr = (maxSel+minSel)/2/D.msaSeq[0].length;   // fractional AA port center 
             
-            //var cntr = aaCntr*V.navWidth;  // port center: pixels  
-            //var dlta = aaWdth*V.navWidth;  // port width: pixels
-
-            // ----- XXXXXXXXX
-
             var port_pixel_width = V.navWidth;
                         
-            var aa_pixel_width = V.navWidth/Math.max(1,Math.abs(maxSel-minSel) );
-            aaWdth = port_pixel_width/aa_pixel_width/D.msaSeq[0].length;            
+            var aa_pixel_width = V.navWidth/Math.max( 1, 1.05 *Math.abs(10 +maxSel-minSel) );
+            var aaWdth = port_pixel_width/aa_pixel_width/D.msaSeq[0].length;            
             
             if( aa_pixel_width > this._conf.aaMaxStep ){ //if too wide
                 aa_pixel_width = this._conf.aaMaxStep;
                 aaWdth = port_pixel_width/aa_pixel_width/D.msaSeq[0].length; // corrected fractional AA port width 
             }
 
-            console.log("port_pixel_width=",port_pixel_width,"aa_pixel_width=",aa_pixel_width,"aaWdth=",aaWdth);
+            console.debug("port_pixel_width=",port_pixel_width,"aa_pixel_width=",aa_pixel_width,"aaWdth=",aaWdth);
             
             var port_pixel_center = aaCntr*D.msaSeq[0].length*aa_pixel_width;  
 
             var port_left_aa = aaCntr - aaWdth/2;    // fractional AA pos of left port
             var port_right_aa = aaCntr + aaWdth/2;   // fractional AA pos of right port
 
-            console.log("port[fr]", port_left_aa, '<->', port_right_aa,
+            console.debug("port[fr]", port_left_aa, '<->', port_right_aa,
                         aaCntr);
-            console.log("port[px]", port_left_aa*V.navWidth,"<->",port_right_aa*V.navWidth,
+            console.debug("port[px]", port_left_aa*V.navWidth,"<->",port_right_aa*V.navWidth,
                         aaCntr*V.navWidth);
-            console.log("port[aa]", port_left_aa*D.msaSeq[0].length,"<->",port_right_aa*D.msaSeq[0].length,
+            console.debug("port[aa]", port_left_aa*D.msaSeq[0].length,"<->",port_right_aa*D.msaSeq[0].length,
                         aaCntr*D.msaSeq[0].length);
             
             // get brush position for port edges
@@ -1467,36 +1461,32 @@ class BkdMSA {
             var br_left_pixel  = aaCntr*port_pixel_width - br_pixel_width/2; 
             var br_right_pixel = aaCntr*port_pixel_width + br_pixel_width/2;
 
-            console.log("brush[px]", aa_pixel_width, br_pixel_width, ":", br_left_pixel,"<->",br_right_pixel);
-            
-            //------ XXXXXXXXXXXX
-            
-            console.log("SSS(+):",minSel, maxSel, ":",
-                        aaCntr,aaWdth,this._view._brl,":",V.brushLeft,V.brushRight);
+            console.debug( "brush[px]", aa_pixel_width, br_pixel_width, ":", br_left_pixel,"<->",br_right_pixel);           
+            console.debug( "SSS(+):",minSel, maxSel, ":",
+                           aaCntr,aaWdth,this._view._brl,":",V.brushLeft,V.brushRight);
 
-            //if( (maxSel-minSel) < V.navWidth/this._view._brl ){ 
             if( (maxSel-minSel) < V.navWidth/this._conf.aaMaxStep ){  // AAs too wide
-
                 aaWdth = V.navWidth/this._conf.aaMaxStep;                                 
-                console.log("SSS(adjust aaWdth): aa=", aaWdth);
+                console.debug("SSS(adjust aaWdth): aa=", aaWdth);
             }
             
-            console.log("SSS(+):",minSel, maxSel, aaCntr,aaWdth, V.brushLeft,V.brushRight);            
+            console.debug("SSS(+):",minSel, maxSel, aaCntr,aaWdth, V.brushLeft,V.brushRight);            
             this.setNavBrush( br_left_pixel,br_right_pixel);                        
-            console.log("SSS(+):",minSel, maxSel, aaCntr,aaWdth, V.brushLeft,V.brushRight);
-
-                      
+            console.debug("SSS(+):",minSel, maxSel, aaCntr,aaWdth, V.brushLeft,V.brushRight);
+            
         } else {
-            console.log("SSS(-):",V.brushLeft,V.brushRight);
+            console.debug("SSS(-):",V.brushLeft,V.brushRight);
             this.setNavBrush( 0, V.navWidth);
-            console.log("SSS(-):",V.brushLeft,V.brushRight);
+            console.debug("SSS(-):",V.brushLeft,V.brushRight);
         }
         
         V.navBrushG.call( V.viewport.move,
                           [V.brushLeft, V.brushRight])                
+
         
-        console.log("dips start/stop",V.displaystart, V.displayend);        
-        console.log( "setSelectView: done" );
+        
+        console.debug("dips start/stop",V.displaystart, V.displayend);        
+        console.debug( "setSelectView: done" );
     }
     
     setNavView( center, width ){
@@ -1518,7 +1508,7 @@ class BkdMSA {
     slogoView(){
 
     }
-    
+    /*
     setNavBrush2( left, right ){
 
         var center = ( left + right )/2;
@@ -1579,7 +1569,8 @@ class BkdMSA {
         this._view.brushLeft = brushLeft;
         this._view.brushRight = brushRight;     
     }
-
+    */
+    
     setNavBrush( left, right ){
         var brushLeft = left;
         var brushRight = right;
