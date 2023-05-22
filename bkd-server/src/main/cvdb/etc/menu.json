@@ -26,7 +26,7 @@
                                     }]
                            },
                            {"label":"Search",
-                            "link":"node",
+                            "link":"search?qmode=node&ret=view",
                             "disabled":"false",
                             "menu":[{"label":"Protein/Gene",
                                      "link":"search?qmode=node&ret=view",

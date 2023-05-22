@@ -499,3 +499,24 @@ CREATE TABLE usr_grp (
 CREATE INDEX usr_grp_pkey1 ON usr_grp USING btree (grp_id);
 CREATE INDEX usr_grp_pkey2 ON usr_grp USING btree (usr_id, grp_id);
 CREATE INDEX usr_grp_pkey3 ON usr_grp USING btree (grp_id, usr_id);
+
+
+CREATE TABLE sorel (
+    id serial NOT NULL,
+    subject_id integer not null default 0,
+    user_id integer not null default 0
+);
+
+CREATE INDEX sorel_1 on sorel (subject_id);
+CREATE INDEX sorel_2 on sorel (user_id);
+
+
+CREATE TABLE eorel (
+    id serial NOT NULL,
+    event character varying(32) not null default '',
+    user_id integer not null default 0
+);
+
+CREATE INDEX eorel_1 on eorel (event);
+CREATE INDEX eorel_2 on eorel (user_id);
+
