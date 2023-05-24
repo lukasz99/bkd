@@ -1480,6 +1480,7 @@ class BkdMSA {
     }
     
     setSelectView(){
+        var C = this._conf;
         var D = this._data;
         var V = this._view;
 
@@ -1502,11 +1503,14 @@ class BkdMSA {
                 if( mpos > maxSel) maxSel = mpos;                    
             }
             console.debug("minSel=",minSel,"maxSel=",maxSel);
-            var aaCntr = (maxSel+minSel)/2/D.msaSeq[0].length;   // fractional AA port center 
+
+            // fractional AA port center (+1/2AA) 
+
+            var aaCntr = (maxSel+minSel + 1)/2/D.msaSeq[0].length;   
             
             var port_pixel_width = V.navWidth;
                         
-            var aa_pixel_width = V.navWidth/Math.max( 1, 1.05 *Math.abs(10 +maxSel-minSel) );
+            var aa_pixel_width = V.navWidth/Math.max( 1, 1.05 *Math.abs(10 + maxSel-minSel) );
             var aaWdth = port_pixel_width/aa_pixel_width/D.msaSeq[0].length;            
             
             if( aa_pixel_width > this._conf.aaMaxStep ){ //if too wide
@@ -1533,9 +1537,19 @@ class BkdMSA {
             
             var br_pixel_width = (aaWdth-V.fr_beta)/V.fr_alpha;
              
-            var br_left_pixel  = aaCntr*port_pixel_width - br_pixel_width/2; 
-            var br_right_pixel = aaCntr*port_pixel_width + br_pixel_width/2;
+            //var br_left_pixel  = aaCntr*port_pixel_width - br_pixel_width/2; 
+            //var br_right_pixel = aaCntr*port_pixel_width + br_pixel_width/2;
 
+
+            var brCntr_alpha = 1/( V.navWidth - C.brushLimit );
+            var brCntr_beta = -0.5 * C.brushLimit * brCntr_alpha; 
+
+
+            var br_left_pixel  = ( port_left_aa - brCntr_beta )/brCntr_alpha; 
+            var br_right_pixel  = ( port_right_aa - brCntr_beta )/brCntr_alpha; 
+
+
+            
             console.debug( "brush[px]", aa_pixel_width, br_pixel_width, ":", br_left_pixel,"<->",br_right_pixel);           
             console.debug( "SSS(+):",minSel, maxSel, ":",
                            aaCntr,aaWdth,this._view._brl,":",V.brushLeft,V.brushRight);
