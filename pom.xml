@@ -36,10 +36,13 @@
     
 <!--     <jaxws-api.version>2.3.1</jaxws-api.version> -->
     
-    <!-- <jaxws-rt.version>2.3.0</jaxws-rt.version> -->
-    <jaxws-rt.version>2.3.6</jaxws-rt.version>
+<!--     <jaxws-rt.version>2.3.0</jaxws-rt.version> -->
+
+  <jaxws-rt.version>2.3.5</jaxws-rt.version> 
+
+
     
-    <javax.jws-api.version>1.1</javax.jws-api.version>
+<!--    <javax.jws-api.version>1.1</javax.jws-api.version> -->
 
     <!-- START: from dip-utils pom.xml -->
     

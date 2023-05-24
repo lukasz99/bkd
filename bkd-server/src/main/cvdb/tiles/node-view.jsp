@@ -30,12 +30,7 @@
    <script src="js/ngl.js"></script> 
    <script src="js/igv.js" type="text/javascript" charset="utf-8"></script>
    
-<!--<script src="js/pviz-bundle.min.js" type="text/javascript" language="JavaScript"></script>  -->
-
-<!--   <script src="js/bkd-d3msa.js"></script> -->
-   <script src="js/bkd-d3msa1.js"></script>
-   <script src="js/bkd-d3msa2.js"></script>
-   <script src="js/bkd-d3msa3.js"></script>
+   <script src="js/bkd-d3msa.js"></script>  
 
    <script src="js/bkd-node-search-jq.js" type="text/javascript" language="JavaScript"></script>
    <script src="js/bkd-node-view-jq.js" type="text/javascript" language="JavaScript"></script>
