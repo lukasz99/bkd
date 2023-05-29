@@ -154,12 +154,13 @@ for (id,upr) in uprList:
                 ufile = trpath
             else:
                 print( "ERROR: no uniprot file", upr )
-                if len(cols) > 5:
-                    logh.write( "\t".join( ("", upr, rfs, taxid, odip, oupr, "\n") ) )
+                if 1== 1:  # len(cols) > 5:
+                    #logh.write( "\t".join( ("", upr, rfs, "\n") ) ) # taxid, odip, oupr, "\n") ) )
+                    pass
                 else:
-                    logh.write( "\t".join( ("", upr, "\n") ) )
-                    logh.flush()
-                    os.fsync(logh)
+                    #logh.write( "\t".join( ("", upr, "\n") ) )
+                    #logh.flush()
+                    #os.fsync(logh)
                     continue
 
             print("UniprotKB record: " + ufile)        

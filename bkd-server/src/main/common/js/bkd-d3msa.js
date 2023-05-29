@@ -996,7 +996,8 @@ class BkdMSA {
                                 .append("title").text(aa + (D.msaMap[i][j]));
                         }                        
                         
-                    } else { // drop AA/box                    
+                    } else { // drop AA/box
+                        
                         d3.selectAll( "#" + V.target + "_seq_view text[i='"+j+"']").remove();
                         d3.selectAll( "#" + V.target + "_seq_view rect[i='"+j+"']").remove();                    
                     }
@@ -1071,27 +1072,26 @@ class BkdMSA {
         var D = this._data;
 
         var range = D.rngSeg;
-        
-        //console.log("d3msa: range", range);
-        
-        d3.selectAll( ".bkd-msa-range" ).remove();
-        
+
         var opq = Math.min( 1, 1 - V.aaStep**1.5
                             / (C.aaMaxStep - V.aaStep*0.99)**2);
         
         for( var i = 0; i <range.length; i++ ){
+            var s = "#" + V.target +"_seq_seq_" + i.toString() +"rn";
+            d3.selectAll( s + " .bkd-msa-range" ).remove();
+            
             for( var j = 0; j <range[i].beg.length; j++ ){
                 var bPos =  range[i].beg[j] * V.aaStep - V.aaOffset;
                 var ePos =  range[i].end[j] * V.aaStep - V.aaOffset;
                 
-                var r = d3.select( "#" + V.target +"_seq_seq_" + i.toString() +"rn")
+                var r = d3.select( s )
                     .append( "rect" )
                     .attr( "class", "bkd-msa-range")
                     .style( "fill", "#D3D3D3" )
                     .attr( "x", bPos )
                     .attr( "y", C.msaBoxYOff )
                     .attr( "width", ePos - bPos + V.aaStep)
-                    .attr( "height", C.msaBoxY );            
+                    .attr( "height", C.msaBoxY );
             }
             if( opq > 0 ){
                 d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"rn")
@@ -1102,7 +1102,7 @@ class BkdMSA {
                     .attr( "fill-opacity", 0)
                     .style("visibility", "hidden");
             }
-        }
+        }        
     }
     
     updateRange(){
@@ -1115,7 +1115,7 @@ class BkdMSA {
         
         var opq = Math.min( 1, 1 - V.aaStep**1.5
                             / (C.aaMaxStep - V.aaStep*0.99)**2);
-        console.log("range opq:", opq);
+
         for( var i = 0; i <range.length; i++ ){
             for( var j = 0; j <range[i].beg.length; j++ ){
                 var bPos =  range[i].beg[j] * V.aaStep - V.aaOffset;
@@ -1371,21 +1371,42 @@ class BkdMSA {
         }
     }
 
-    setSelectList( slist, rseq ){
+    setSelectList( slist, rseq, rcol, cseq, ccol ){
+        // slist = [pos:color,pos:color,...]
+        // rseq = sequence name
+        // rcol = name column (in msaHeader)
 
+        // cseq = canonocal sequence name
+        // ccol = canonical name column (in msaHeader)
+        
+        console.debug("setSelectList:",slist, rseq, rcol,  );
         var sindex = 0;
+        var cindex = 0;
 
         if( this._data.msaHead  == undefined) return;
+
+        console.debug("setSelectList: msaHead", this._data.msaHead);
+
+        if( cseq !== undefined && ccol !== undefined ){
+            for( var i =0; i < this._data.msaHead.length; i++){
+                if(this._data.msaHead[i][ccol] == cseq){
+                    cindex = i;
+                    break;
+                }
+            }
+        }
         
         for( var i =0; i < this._data.msaHead.length; i++){
-            if( this._data.msaHead[i][1] == rseq ){
+            if( this._data.msaHead[i][rcol] == rseq ){
                 sindex = i;
                 break;
             }
         }
-        this._view.sindex = sindex;
         
-        var smap = this._data.msaMap[ sindex ];
+        this._view.sindex = sindex;
+        console.debug("setSelectList:",sindex, this._data.msaHead[sindex][rcol]);
+        
+        var smap = this._data.msaMap[ sindex ]; //         
         
         for( var pc in this._view.select ){ // go over existing elements
             if( pc in slist ){ // no selection change, remove from slist
@@ -1400,12 +1421,30 @@ class BkdMSA {
                 delete this._view.select[pc];  // drop from map   
             }
         }
+
+        var clist = [];
         
         for( var i = 0 ; i < slist.length; i++){
             var pcl = slist[i].split(":");
             this._view.select[ slist[i] ]
-                = this.addSelect( Number(pcl[0]), pcl[1], pcl[0], sindex );            
-        }        
+                = this.addSelect( Number(pcl[0]), pcl[1], pcl[0], sindex );
+
+            if( cseq !== undefined && ccol != undefined ){
+            
+                var msapos =  this._data.msaRMap[sindex][Number(pcl[0])];
+                var canpos = this._data.msaMap[0][msapos];
+
+                console.debug("msapos",msapos,"canpos",canpos);
+                clist.push(canpos+":"+pcl[1]);
+            }
+        }
+
+        console.debug("this.updateRange called");
+        this.renderRange();
+        console.debug("this.updateRange done");
+        
+        return clist;
+        
     }
     
     updateSelect(){
@@ -1447,8 +1486,8 @@ class BkdMSA {
     }
 
 
-    getMsaPos(s,pos){
-        var msaMap = this._data.msaMap[s];  // msaMap[msa]=seq
+    getMsaPos(sindex,pos){
+        var msaMap = this._data.msaMap[sindex];  // msaMap[msa]=seq
         var lb = 0;
         var ub = msaMap.length-1;
         var ls = msaMap[0];
@@ -1483,12 +1522,12 @@ class BkdMSA {
         var C = this._conf;
         var D = this._data;
         var V = this._view;
-
-        console.log(D.msaMap[0]);
         
         console.log("setSelectView");
         console.log( V.select);
-        
+
+        console.log("setSelectView:msaMap[V.sindex]->",D.msaMap[V.sindex]);
+
         var sel = Object.keys( V.select );
 
         if( sel.length > 0 ){
@@ -1568,11 +1607,13 @@ class BkdMSA {
             this.setNavBrush( 0, V.navWidth);
             console.debug("SSS(-):",V.brushLeft,V.brushRight);
         }
+
+        //alert("**");
         
         V.navBrushG.call( V.viewport.move,
                           [V.brushLeft, V.brushRight])                
 
-        
+        //alert("***");
         
         console.debug("dips start/stop",V.displaystart, V.displayend);        
         console.debug( "setSelectView: done" );

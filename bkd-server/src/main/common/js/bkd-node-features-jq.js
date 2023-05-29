@@ -1063,13 +1063,13 @@ BKDnodeFeatures = {
         //console.log(smap);
         //console.log(Object.keys(smap));
         
-        D3MSA1.setSelectList( Object.keys(smap) );
-        D3MSA2.setSelectList( Object.keys(smap) );
+        //D3MSA1.setSelectList( Object.keys(smap) );
+        //D3MSA2.setSelectList( Object.keys(smap) );
 
         //D3MSA.setSelectMap( smap );
         
-        D3MSA1.setNavView(D3MSA1._msaW/2,D3MSA1._msaW);
-        D3MSA2.setNavView(D3MSA2._msaW/2,D3MSA2._msaW);
+        //D3MSA1.setNavView(D3MSA1._msaW/2,D3MSA1._msaW);
+        //D3MSA2.setNavView(D3MSA2._msaW/2,D3MSA2._msaW);
     },
     
     // selection action: structure viewer(s)
@@ -1365,12 +1365,22 @@ BKDnodeFeatures = {
 
         var rseq = $('#flist-source #iseq').val(); 
 
-        console.log("BKDnodeView.mymsa callback");
+        console.log("\n\nBKDnodeView.mymsa callback");
         
         BKDnodeView.mymsa.dropAllSelect(); 
-        BKDnodeView.mymsa.setSelectList( Object.keys(smap), rseq );
-        BKDnodeView.mymsa.setSelectView();
 
+        // Note: remaps smap positions to equivalent in 'canonical'
+        
+        var canLst = BKDnodeView.mymsa
+            .setSelectList( Object.keys(smap),
+                            rseq, 1,
+                            'canonical', 0 );
+        
+        //console.log("canLst:",canLst);
+        BKDnodeView.mymsa.setSelectView();  // set view window
+        
+        console.log("BKDnodeView.mymsa callback:DONE\n\n\n");
+                
         // NOTE: test alternates
         //BKDnodeView.mymsa.setNavView( BKDnodeView.mymsa._view.navWidth/2,
         //                              BKDnodeView.mymsa._view.navWidth);
@@ -1378,13 +1388,15 @@ BKDnodeFeatures = {
         console.log("BKDnodeView.mymsa2a callback");
         
         BKDnodeView.mymsa2a.dropAllSelect();
-        BKDnodeView.mymsa2a.setSelectList( Object.keys(smap), rseq );
+        //BKDnodeView.mymsa2a.setSelectList( Object.keys(smap), rseq, 1);
+        BKDnodeView.mymsa2a.setSelectList( canLst, 'Homo sapiens', 1);
         BKDnodeView.mymsa2a.setSelectView();
 
         console.log("BKDnodeView.mymsa2b callback");
 
         BKDnodeView.mymsa2b.dropAllSelect();
-        BKDnodeView.mymsa2b.setSelectList( Object.keys(smap), rseq );
+        //BKDnodeView.mymsa2b.setSelectList( Object.keys(smap), rseq, 1);
+        BKDnodeView.mymsa2b.setSelectList( canLst, 'Homo sapiens', 1);
         BKDnodeView.mymsa2b.setSelectView();
     },
     
