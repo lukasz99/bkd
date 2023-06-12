@@ -505,7 +505,7 @@ function legend (target, title, series) {
 
             let _titleLen = (title) ? getTextWidth(title, titleFont) : 0;
 
-            let _radioLeft = 12, _radioRight = 5, _radioRadius = 3,
+            let _radioLeft = 12, _radioRight = 5, _radioRadius = 5,
                 _radioStrokeWidth = 1, _radioStroke = "grey";
 
             let _titleInterval = 6,

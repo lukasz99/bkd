@@ -310,9 +310,9 @@ BKDnodeSearch = {
                             "<th align='center' width='5%'>ID</th>"+                                  
                             "<th align='center' width='10%'>Short Name</th>"+
                             "<th align='center'>Full Name</th>"+
-                            "<th align='center' width='10%'>Species</th>"+
+                            //"<th align='center' width='10%'>Species</th>"+
                             "<th align='center' width='10%'>UniprotKB</th>"+
-                            "<th align='center' width='10%'>Type</th>"+
+                            //"<th align='center' width='10%'>Type</th>"+
                             "<th align='center' width='5%' colspan='2'>&nbsp;</th>"+
                             "</tr>");
         for(var i=0; i<data.length; i++){
@@ -325,11 +325,11 @@ BKDnodeSearch = {
             var crow = "<td>" + cdata.ac + "</td>" +
                 "<td align='center'>" + cdata.label + "</td>" +
                 "<td>" + cdata.name + "</td>" +
-                "<td align='center'>" + cdata.taxon.sciName + "</td>" +
+                //"<td align='center'>" + cdata.taxon.sciName + "</td>" +
                 "<td align='center' id='" + modalAct+ "'>" +
                 " <a href='https://www.uniprot.org/uniprot/"+cdata.upr + "' target='_bkd'>"+cdata.upr+"</a>" +
                 "</td>" + 
-                "<td align='center'>" + cdata.cvType.name + "</td>" + 
+                //"<td align='center'>" + cdata.cvType.name + "</td>" + 
                 "<td align='center'>" +
                 "<input type='button' id='"+rid+"_view' value='Details'/>"+
                 "</td>" +                          

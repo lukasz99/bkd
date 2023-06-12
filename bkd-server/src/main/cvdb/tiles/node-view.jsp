@@ -31,6 +31,7 @@
    <script src="js/igv.js" type="text/javascript" charset="utf-8"></script>
    
    <script src="js/bkd-d3msa.js"></script>  
+   <script src="js/bkd-ngl.js"></script>  
 
    <script src="js/bkd-node-search-jq.js" type="text/javascript" language="JavaScript"></script>
    <script src="js/bkd-node-view-jq.js" type="text/javascript" language="JavaScript"></script>

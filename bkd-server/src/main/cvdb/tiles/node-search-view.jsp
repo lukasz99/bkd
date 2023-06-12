@@ -59,10 +59,15 @@
 
               console.log( "body search: " + qmode + ":" + query );
               if( query !== undefined ){
-                 if(query.trim().length > 0 ){
-                    var myurl = "search?qmode=node"
-                              + "&ret=view"  
-                              + "&query=" + query.trim();                   
+                 if( query.trim().length > 0 ){
+                     var fquery = BKDSearch.toFuzzy( query.trim() );
+     
+                     var myurl = "search?qmode=node"
+                                  + "&ret=view"
+                                  + "&query=" + fquery;
+
+                    console.log("url:",myurl);   
+     
                     window.location.href = myurl;
                  }
               }

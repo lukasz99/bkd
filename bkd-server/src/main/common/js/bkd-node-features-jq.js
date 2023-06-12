@@ -9,23 +9,60 @@ BKDnodeFeatures = {
     cgurl: "https://reg.clinicalgenome.org/redmine/projects/registry/genboree_registry/by_canonicalid?canonicalid=",
     ucscPosUrl: "https://genome.ucsc.edu/cgi-bin/hgTracks?db=%BID%&position=%CID%%3A%SID%-%EID%",
     ucscSrcUrl: "https://genome.ucsc.edu/cgi-bin/hgSearch?db=%BID%&search=%SRC%",
-    vclass: [ { "id":"flist-select-1","name":"select-1",
-                "label":"Benign", "value":"benign",
-                "color":"blue" },
-              { "id":"flist-select-2","name":"select-2",
-                "label":"Likely Benign", "value":"likely benign",
-                "color":"cyan" },
-              { "id":"flist-select-3","name":"select-3",
-                "label":"Conflicting Evidence", "value":"conflicting evidence",
-                "color":"#cc79de" },
-              { "id":"flist-select-4","name":"select-4",
-                "label":"Likely Pathogenic", "value":"likely pathogenic",
-                "color":"pink" },
-              { "id":"flist-select-5","name":"select-5",
-                "label":"Pathogenic", "value":"pathogenic",
-                "color":"red" } ],
+
+    sigtag: { ben: "benign", lben: "likely benign",
+              pat: "pathogenic", lpat: "likely pathogenic",
+              cevd: "conflicting evidence"}, 
+    
+    vclass: [ { "id":"flist-color-1","name":"color-1",
+                "label":"Benign", "value":"ben",
+                "color":"#2161b0" },
+              { "id":"flist-color-2","name":"color-2",
+                "label":"Likely Benign", "value":"lben",
+                "color":"#30a0e0" },
+              { "id":"flist-color-3","name":"color-3",
+                "label":"Conflicting Evidence", "value":"cevd",
+                "color":"#d2b4de" },
+              { "id":"flist-color-4","name":"color-4",
+                "label":"Likely Pathogenic", "value":"lpat",
+                "color":"#e0B0B0" },
+              { "id":"flist-color-5","name":"color-5",
+                "label":"Pathogenic", "value":"pat",
+                "color":"#d04030" } ],
+    
+    swmsels: [ { id:"flist-select-1",name:"select-1",
+                 label:"HiQC/All", value:"hiqc",
+                 mode: "bcut" , bval: 0.5, 
+                 color:"#aaaaaa" },
+               { "id":"flist-select-2","name":"select-2",
+                 "label":"Canonical/Current", "value":"aset",
+                 "color":"#aaaaaa" },
+               { "id":"flist-select-3","name":"select-2",
+                 "label":"Monomer/All", "value":"chain",
+                 "color":"#aaaaaa" } ],
+    
+    swmcols: [ { id:"flist-select-1",name:"select-1",
+                 label:"Position", value:"rain",
+                 mode: "rainbow",
+                 "color":"#aaaaaa" },
+               { "id":"flist-select-2","name":"select-2",
+                 "label":"Conservation(MSA)", "value":"cmsa",
+                 "color":"#aaaaaa" },
+               { "id":"flist-select-3","name":"select-3",
+                 "label":"Conservation(SNP)", "value":"csnp",
+                 "color":"#aaaaaa" },
+               { "id":"flist-select-4","name":"select-4",
+                 "label":"Topology", "value":"topo",
+                 "color":"#aaaaaa" },
+               { "id":"flist-select-5","name":"select-5",
+                 "label":"SecStruc", "value":"sstr",
+                 "color":"#aaaaaa" },
+
+
+             ],
+    
     fcolor:   { "pathogenic":"#d04030",
-                "likely pathogenic":"#e08080",
+                "likely pathogenic":"#e0B0B0",
                 "uncertain":"#b0b0b0",
                 "conflicting evidence":"#d2b4de",
                 "unspecified":"#ffffff",
@@ -51,10 +88,14 @@ BKDnodeFeatures = {
     cpos38: "",
     lollipop: null,
     config: {"lollipanel":{ "detailtable":null } },
-    state: { fsel:{ topo:{}, swm:{}, str:{} }, seqvar: null },
+    state: { fsel:{ topo:{}, swm:{}, str:{} },
+             seqvar: null,
+             swm: {},
+             str:{}
+           },
     
     lollipanels:{},
-    
+
     // data value finder
    
     getVal: function( data, path ){ 
@@ -380,9 +421,9 @@ BKDnodeFeatures = {
             BKDnodeFeatures.fstate = {};
             var ftslist = BKDnodeFeatures.getfselist( BKDnodeFeatures.ftypesel );
 
-            BKDnodeFeatures.setNGLSelScheme( BKDnodeFeatures.swmComp,
+            BKDnodeFeatures.setNGLColScheme( BKDnodeFeatures.swmComp,
                                              BKDnodeFeatures.fstate, ftslist );
-            BKDnodeFeatures.setNGLSelScheme( BKDnodeFeatures.strComp,
+            BKDnodeFeatures.setNGLColScheme( BKDnodeFeatures.strComp,
                                              BKDnodeFeatures.fstate, ftslist );
             BKDnodeFeatures.setTopoSelScheme( BKDnodeFeatures.strComp,
                                               BKDnodeFeatures.fstate, ftslist );
@@ -429,10 +470,10 @@ BKDnodeFeatures = {
             BKDnodeFeatures.fstate = {};
             var ftslist = BKDnodeFeatures.getfselist( BKDnodeFeatures.ftypesel );
             
-            BKDnodeFeatures.setNGLSelScheme( BKDnodeFeatures.swmComp,
+            BKDnodeFeatures.setNGLColScheme( BKDnodeFeatures.swmComp,
                                              BKDnodeFeatures.fstate,
                                              ftslist );
-            BKDnodeFeatures.setNGLSelScheme( BKDnodeFeatures.strComp,
+            BKDnodeFeatures.setNGLColScheme( BKDnodeFeatures.strComp,
                                              BKDnodeFeatures.fstate,
                                              ftslist );
             BKDnodeFeatures.setTopoSelScheme( BKDnodeFeatures.strComp,
@@ -609,39 +650,171 @@ BKDnodeFeatures = {
         } catch( err){
             console.log(err);
         }
-        // swissmodel panel
-        //-----------------
+
+        console.log("#############");
         
+        // swissmodel pane
+        //----------------
+
+        var swmUrl = BKDnodeFeatures.siteurl + "swissmodel/"
+            + BKDnodeFeatures.data.ac  + "-1_swm.pdb"; 
+        
+        BKDnodeFeatures.nglSWM = BKDnodeFeatures.nglpane(
+            { anchor: "#swm-port",
+              name: "swm",
+              url: swmUrl,
+              controls: [
+                  { name: "vcls",
+                    label: "Variant:", 
+                    type: "checkbox",
+                    getvcls: BKDnodeFeatures.buildvclist,  // varaint classes
+                    getsels: BKDnodeFeatures.buildlslist,  // lolipop selects
+                    options: BKDnodeFeatures.vclass },
+                  
+                  { name: "sel",
+                    label: "Select:",
+                    type: "checkbox",                            
+                    options: BKDnodeFeatures.swmsels },
+                  
+                  { name: "col",
+                    label: "Color By:",
+                    type: "radio",
+                    options: BKDnodeFeatures.swmcols }   
+              ],
+            },
+            BKDnodeFeatures);
+        
+        // structure pane
+        //---------------
+        /*
+
+
+        var strUrl = BKDnodeFeatures.siteurl + "swissmodel/"
+            + BKDnodeFeatures.data.ac  + "-1_swm.pdb"; 
+
+
+            BKDnodeFeatures.nglSTR = BKDnodeFeatures.nglpane(
+            {  anchor: "#str-port",
+               name: "str",
+               url: strUrl,
+               controls: [ { name: "Variant", 
+                             type: "variant",
+                             conf: BKDnodeFeatures.vclass},
+                           
+                           { name: "Color",
+                             type: "color",
+                             conf: [] } ] },
+            {} );
+        */
+        
+        //------------------------------------------------------------
+        // SwisModel pqanel
+        
+        /*        
         d3.select( "#swm-port" )
             .html( '<div id="swm-controls" class="bkd-select-controls" style="background-color: black; color: white;">'
                    + '<table class="swm-controls-table" width="100%" align="center">'
+                   + '<tr><td id="swm-color-controls" colspan="2"></td></tr>'
                    + '<tr><td id="swm-select-controls" colspan="2"></td></tr>'
                    + '</table>'
                    + '</div>'
-                   + '<div id="swm-view" class="swm-view"></div>' )
+                   + '<div id="swm-view" class="swm-view"></div>' );
+
+       
         
-        BKDnodeFeatures.fselcontrol( "swm-select-controls",
-                                     BKDnodeFeatures.vclass,                                    
-                                     "swm",
+        BKDnodeFeatures.fcolorCtrl( "swm-color-controls",
+                                    BKDnodeFeatures.vclass,                                    
+                                    "swm",
+                                    BKDnodeFeatures.state.fsel.swm,
+                                    BKDnodeFeatures.lollipanels['loli1'],
+                                    BKDnodeFeatures.setNGLColScheme2 );
+                                    //BKDnodeFeatures.lollipanels['loli1'].flistSelEventAction );
+
+
+        BKDnodeFeatures.fselectCtrl( "swm-select-controls",
+                                     "swm", 
+                                     BKDnodeFeatures.state,
+                                     BKDnodeFeatures.selections,    // checkbox list                                   
                                      BKDnodeFeatures.state.fsel.swm,
                                      BKDnodeFeatures.lollipanels['loli1'],
-                                     BKDnodeFeatures.lollipanels['loli1'].flistSelEventAction );
-        
-        var ph = $('#swm-port').height();
-        var ch = $('#swm-controls').height();
-        $('#swm-view').height( ph-ch);
-        
+                                     BKDnodeFeatures.setNGLSelScheme );
+
         $( '#swm-port').show();   
-        BKDnodeFeatures.swmStage = new NGL.Stage("swm-view");   
+        var phght = $('#swm-port').height();
+        var chght = $('#swm-controls').height();
+        $('#swm-view').height( phght - chght);
+        
+        BKDnodeFeatures.swmStage = new NGL.Stage("swm-view");
+        BKDnodeFeatures.state["swm"] = {"stage": BKDnodeFeatures.swmStage };
+        console.log("##### set stage",BKDnodeFeatures.state);
         $( '#swm-port').hide();
         url = BKDnodeFeatures.siteurl;
         id = BKDnodeFeatures.data.ac;
-        
-        console.log("PDB:" + url+"swissmodel/"+id+"-1_swm.pdb");
+
+        console.log( "############SWM: PDB:" + url+"swissmodel/"+id+"-1_swm.pdb");
         
         BKDnodeFeatures.swmStage.loadFile( url+"swissmodel/"+id+"-1_swm.pdb")
             .then( function( o ){      
                 BKDnodeFeatures.swmComp = o;
+                
+                var selStr = "";
+                var selQCut = 0.5;
+                
+                var rmap = {};
+                
+                o.structure.eachAtom(function(atom) {
+                    var bf = atom.bfactor;
+                    var cnm = atom.chainname;                   
+                    var rno = atom.resno;
+
+                    if( bf > selQCut) {
+                        if( rmap[cnm]  == undefined ) rmap[cnm] = {};
+                        if( rmap[cnm][rno] == undefined ) rmap[cnm][rno] = true;
+                    }
+                    //console.log(cnm,rno,bf);                    
+                });
+
+                BKDnodeFeatures.swmrmap = rmap;
+                var rk = Object.keys( rmap );
+                console.log("#### RK:", rk);
+                
+                for( var c in rk ){
+                    console.log("#### RM:",rk[c], rmap[rk[c]]);
+                    var ckl = Object.keys( rmap[rk[c]] );
+                    ckl.sort(function(a,b) { Number(a) > Number(b) } );
+                    console.log("####:: ",rk[c], ":",ckl);                    
+                };
+                
+                var sel = "";
+                var prev = Number(ckl[0]);
+                var lop = "";
+                for( var c in ckl ){
+                    var nc = Number( ckl[c] );
+                    console.log("#### nc: ",nc, prev, nc - prev);
+                    if( nc > prev ){
+                        if( nc - prev == 1 ){ // seq
+                            if( lop != "-"){
+                                lop = "-";
+                                sel = sel + "-";
+                            }
+                            prev = nc;
+                        } else {  // cont or gap                            
+                            if( lop == "-" ){ // gap starts
+                                lop = "";
+                                sel = sel + prev + " or " + nc;
+                            } else{  // next gap 
+                                sel = sel + " or " + nc;
+                            }
+                            prev = nc;
+                        }                            
+                    } else {
+                        sel = String(nc);
+                        prev = nc;
+                    }
+                }
+                console.log("#### sel:",sel);
+                BKDnodeFeatures.swmQCSel = sel;
+                
                 o.setSelection("all");
                 
                 var swmColorScheme = NGL.ColormakerRegistry
@@ -665,18 +838,19 @@ BKDnodeFeatures = {
                    + '</div>'
                    + '<div id="str-view" class="str-view"></div>' )
         
-        BKDnodeFeatures.fselcontrol( "str-select-controls",
+        BKDnodeFeatures.fcolorCtrl( "str-select-controls",
                                      BKDnodeFeatures.vclass,
-                                     "str",
+                                    "str",
                                      BKDnodeFeatures.state.fsel.str,
                                      BKDnodeFeatures.lollipanels['loli1'],
                                      BKDnodeFeatures.lollipanels['loli1'].flistSelEventAction );
-                
-        var ph = $('#str-port').height();
-        var ch = $('#str-controls').height();
-        $('#str-view').height( ph-ch);
+
+
+        $( '#str-port' ).show();
+        var phght = $('#str-port').height();
+        var chght = $('#str-controls').height();
+        $('#str-view').height( phght-chght );
         
-        $( '#str-port').show();
         BKDnodeFeatures.strStage = new NGL.Stage("str-view");
         $( '#str-port').hide();  
         
@@ -688,6 +862,7 @@ BKDnodeFeatures = {
         BKDnodeFeatures.strStage.loadFile(url+"swissmodel/"+id+"-1_swm.pdb")
             .then( function( o ){      
                 BKDnodeFeatures.strComp = o;
+                
                 o.setSelection("all");
                 
                 var strColorScheme = NGL.ColormakerRegistry
@@ -700,8 +875,15 @@ BKDnodeFeatures = {
                 console.log( "strNgl: loaded");
                 
             });
+
+        */
     },
 
+    nglpane: function( config, data){
+        var ngl  = new BkdNGL( config, data );
+        return ngl;
+    },
+    
     topopane: function( anchor, data ){
 
         // topology panel
@@ -745,15 +927,15 @@ BKDnodeFeatures = {
             BKDnodeFeatures.zoom = d3.zoom().on( 'zoom', BKDnodeFeatures.handleMouseZoom );
             d3.select( anchor + ' svg' ).call( BKDnodeFeatures.zoom ); 
            
-            
-            BKDnodeFeatures.fselcontrol( "topo-select-controls",
+            /*
+            BKDnodeFeatures.fcolorCtrl( "topo-select-controls",
                                          BKDnodeFeatures.vclass,                                       
                                          "topo",
                                          BKDnodeFeatures.state.fsel.topo,
                                          BKDnodeFeatures.lollipanels['loli1'],
                                          BKDnodeFeatures.lollipanels['loli1'].flistSelEventAction
                                        );
-
+            */
             BKDnodeFeatures.svgcontrol( "topo-zoom-controls",
                                         "topo-pan-controls",
                                         BKDnodeFeatures.handleButtonZoom,
@@ -897,23 +1079,37 @@ BKDnodeFeatures = {
                 console.log(BKDnodeFeatures.igvbrowse);                               
             });
     },
-       
-    fselcontrol: function( anchor, clist, fselname, fselstate, lpanel, action){
+
+    /*
+    fselectCtrl: function( anchor,    
+                           fselname,    // swm / str
+                           nglstate,   // 
+                           clist,      // checkbox list
+                           fselstate,  // state
+                           lpanel,     // lolipop panel      
+                           action      // action (on struct viewer)
+                         ){
+
+        console.log("##### fselectCtrl: anchor->",anchor, "name->", fselname ,"state->", nglstate)
+        console.log("##### state['swp']: ", nglstate[fselname]);
+        var nglstage = nglstate[fselname].stage;
+        / * args
+        "swm-select-controls",
+        "swm",
+        BKDnodeFeatures.state,
+        BKDnodeFeatures.selections,
+        BKDnodeFeatures.state.fsel.swm,
+        BKDnodeFeatures.lollipanels['loli1'],
+        BKDnodeFeatures.setNGLSelScheme
+        * /
         
-        //"swm-select-controls",
-        //BKDnodeFeatures.vclass,                                    
-        //"swm",
-        //BKDnodeFeatures.state.fsel.swm,
-        //BKDnodeFeatures.lollipanels['loli1'],
-        //BKDnodeFeatures.lollipanels['loli1'].flistSelEventAction );
-            
-        console.log( "BKDnodeFeatures.fselcontrol:", lpanel,action);
+        console.log( "BKDnodeFeatures.fcolorCtrl:", lpanel,action);
         if( ! d3.select( "#" + anchor  ).empty() ){                    
             d3.select( "#" + anchor + " *" ).remove();
         }
-
+        
         d3.select( "#" + anchor )
-            .html('&nbsp;&nbsp;&nbsp;&nbsp;');
+            .html('&nbsp;<b>Select:</b>&nbsp;&nbsp;');
         
         for( var s in clist ){
             d3.select( "#" + anchor )
@@ -933,17 +1129,81 @@ BKDnodeFeatures = {
 
             $( "#" + anchor + "-" + s )
                 .on( 'click', {lpanel: lpanel,
+                               state: nglstate[fselname],
                                fselname: fselname,
                                fselstate: fselstate },
                      (event) => { console.log( 'click: data->', event.data );
-                                  event.data.lpanel.flistSelEventAction( event );
+                                  action( event );
                                 } );
                         
         }
-        console.log( "BKDnodeFeatures.fselcontrol action: ", "#" + anchor + " input");
-        console.log( "BKDnodeFeatures.fselcontrol action: ", lpanel.flistSelEventAction );
+        console.log( "BKDnodeFeatures.fselectCtrl action: ", "#" + anchor + " input");
+        console.log( "BKDnodeFeatures.fselectCtrl action: ", action );
         console.log( $( "#" + anchor + " input") );        
     },
+    */
+
+    /*
+    fcolorCtrl: function( anchor,     //
+                          clist,      //  checkbox list
+                          fselname,   //  swm / str
+                          fselstate,  // 
+                          lpanel,     // lollipop panel
+                          action      // action
+                        ){
+        
+        //"swm-select-controls",
+        //BKDnodeFeatures.vclass,                                    
+        //"swm",
+        //BKDnodeFeatures.state.fsel.swm,
+        //BKDnodeFeatures.lollipanels['loli1'],
+        //BKDnodeFeatures.lollipanels['loli1'].flistSelEventAction );
+            
+        console.log( "BKDnodeFeatures.fcolorCtrl:", lpanel,action);
+        if( ! d3.select( "#" + anchor  ).empty() ){                    
+            d3.select( "#" + anchor + " *" ).remove();
+        }
+
+        //d3.select( "#" + anchor )
+        //    .html('&nbsp;&nbsp;&nbsp;&nbsp;');
+
+        d3.select( "#" + anchor )
+            .html('&nbsp;<b>Variant:</b>&nbsp;');
+        
+        for( var s in clist ){
+            d3.select( "#" + anchor )
+                .append("input")
+                .attr( "type", "checkbox")
+                .attr( "id", anchor + "-" + s )
+                .attr( "name", anchor + "-" + s )
+                .attr( "value", clist[s]["value"])
+                .attr( "style", "accent-color: " + clist[s]["color"]+ ";");
+            
+            d3.select( "#" + anchor )
+                .append( "label" )
+                .attr( "for" , anchor + "-" + s )
+                .html( clist[s]["label"] + " &nbsp;&nbsp;" );
+                
+            BKDnodeFeatures.ftypesel[clist[s]["value"]]=false;
+
+            $( "#" + anchor + "-" + s )
+                .on( 'click', {lpanel: lpanel,
+                               state: nglstate[fselname],
+                               fselname: fselname,
+                               fselstate: fselstate },
+                     
+                     
+                     (event) => { console.log( 'click: data->', event.data );
+                                  //event.data.lpanel.flistSelEventAction( event );
+                                  action( event );
+                                } );
+                        
+        }
+        console.log( "BKDnodeFeatures.fcolorCtrl action: ", "#" + anchor + " input");
+        console.log( "BKDnodeFeatures.fcolorCtrl action: ", lpanel.flistSelEventAction );
+        console.log( $( "#" + anchor + " input") );        
+    },
+    */
     
     flistsel: function(event){
         BKDnodeFeatures.ftypesel[event.target.value] = event.target.checked;
@@ -953,11 +1213,11 @@ BKDnodeFeatures = {
                                           BKDnodeFeatures.fstate,
                                           ftslist );
 
-        BKDnodeFeatures.setNGLSelScheme( BKDnodeFeatures.swmComp,
+        BKDnodeFeatures.setNGLColScheme( BKDnodeFeatures.swmComp,
                                          BKDnodeFeatures.fstate,
                                          ftslist );
         
-        BKDnodeFeatures.setNGLSelScheme( BKDnodeFeatures.strComp,
+        BKDnodeFeatures.setNGLColScheme( BKDnodeFeatures.strComp,
                                          BKDnodeFeatures.fstate,
                                          ftslist );
 
@@ -1072,11 +1332,135 @@ BKDnodeFeatures = {
         //D3MSA2.setNavView(D3MSA2._msaW/2,D3MSA2._msaW);
     },
     
-    // selection action: structure viewer(s)
-    //--------------------------------------
+    // selection action: structure viewer(s) color
+    //--------------------------------------------
+
+    setNGLColScheme: function( bkdngl ){
+        
+        if( bkdngl !== undefined && bkdngl != null ){
+            bkdngl.rerender();            
+        }
+
+    },
+        
+    setNGLColSchemePrev: function( comp, fstate, ftslist ){
+
+        console.log("NGLColScheme: fstate: ",fstate);
+        console.log("NGLColScheme: ftslist: ",ftslist);
+        
+        if( comp !== undefined){
+
+            
+            var rlist = [];
+            
+            for( var i in ftslist ){
+                var pos = ftslist[i].pos;
+                var col = ftslist[i].col;                
+                rlist.push([col,String(pos)]);
+            }
+            
+            for( var k in fstate ){
+                if( fstate[k].on ){
+                    rlist.push(["orange",k]);
+                }            
+            }
+            
+            if( rlist.length > 0 ){
+                rlist.push( ["green","*"]);
+            } else {
+                rlist.push(["atomindex", "*"]);
+            }
+            var colorScheme = NGL.ColormakerRegistry
+                .addSelectionScheme( rlist,"features" );
+            
+            var newrep = comp.addRepresentation(
+                "cartoon",{color: colorScheme});
+           
+            comp.removeRepresentation(BKDnodeFeatures.swmNglrep);
+            BKDnodeFeatures.swmNglrep = newrep;          
+            comp.autoView("all");            
+       }
+    },
+
+    //setNGLColScheme2: function( comp, fstate, ftslist ){
+
+    setNGLColScheme2: function( event ){
+        
+        //console.log( "setNGLColScheme2 -> event:", event);
+        console.log( "setNGLColScheme2 -> event.data:", event.data);
+        
+        console.log("fstate: " + JSON.stringify(event.data.fselstate));
+        
+        console.log( "BKDnodeFeatures.swmStage:", BKDnodeFeatures.swmStage);
+        console.log( "   ", BKDnodeFeatures.swmQCSel);
+        
+        return;
+        
+        if( comp !== undefined){
+
+            //console.log("fstate: " + JSON.stringify(fstate));
+            //console.log("ftslist: " + JSON.stringify(ftslist));
+            
+            var rlist = [];
+            
+            for( var i in ftslist ){
+                var pos = ftslist[i].pos;
+                var col = ftslist[i].col;                
+                rlist.push([col,String(pos)]);
+            }
+            
+            for( var k in fstate ){
+                if( fstate[k].on ){
+                    rlist.push(["orange",k]);
+                }            
+            }
+            
+            if( rlist.length > 0 ){
+                rlist.push( ["green","*"]);
+            } else {
+                rlist.push(["atomindex", "*"]);
+            }
+            var colorScheme = NGL.ColormakerRegistry
+                .addSelectionScheme( rlist,"features" );
+            
+            var newrep = comp.addRepresentation(
+                "cartoon",{color: colorScheme});
+           
+            comp.removeRepresentation(BKDnodeFeatures.swmNglrep);
+            BKDnodeFeatures.swmNglrep = newrep;          
+            comp.autoView("all");            
+       }
+    },
+
+    
+
+    
+
+    // selection action: structure viewer(s) selection
+    //------------------------------------------------
    
-    setNGLSelScheme: function( comp, fstate, ftslist ){
-   
+    //setNGLSelScheme: function( comp, fstate, ftslist ){
+    
+    setNGLSelScheme: function( event ){
+        console.log( "setNGLSelScheme:", event);       
+        console.log( "BKDnodeFeatures.swmStage:", BKDnodeFeatures.swmStage);
+        console.log( "   ", BKDnodeFeatures.swmQCSel);
+
+        var sel = "";
+
+        // ############
+        
+        console.log( "setNGLSelScheme -> tgt:", event.target.name, event.target.value, event.target.checked  );
+        if( event.target.checked && event.target.value == 'hiqc' ) {
+            sel = BKDnodeFeatures.swmQCSel;
+        } else {
+            sel = "all";
+        }
+        
+        BKDnodeFeatures.swmComp.setSelection( sel );
+        
+        return;
+        
         if( comp !== undefined){
 
             //console.log("fstate: " + JSON.stringify(fstate));
@@ -1113,6 +1497,8 @@ BKDnodeFeatures = {
        }
    },
 
+
+    
    // selection: genome viewer
    //-------------------------
    
@@ -1257,15 +1643,19 @@ BKDnodeFeatures = {
        BKDnodeFeatures.setHomolSelScheme( BKDnodeFeatures.strComp,
                                           BKDnodeFeatures.fstate, 
                                           ftslist );
+
+       colsole.log("BKDnodeFeatures.nglSWM",BKDnodeFeatures.nglSWM);
+
        
-       BKDnodeFeatures.setNGLSelScheme( BKDnodeFeatures.swmComp,
-                                        BKDnodeFeatures.fstate,
-                                        ftslist
-                                      );
        
-       BKDnodeFeatures.setNGLSelScheme( BKDnodeFeatures.strComp,
-                                        BKDnodeFeatures.fstate, 
-                                        ftslist );
+       //BKDnodeFeatures.setNGLColScheme( BKDnodeFeatures.swmComp,
+       //                                  BKDnodeFeatures.fstate,
+       //                                  ftslist
+       //                                );
+       
+       //BKDnodeFeatures.setNGLColScheme( BKDnodeFeatures.strComp,
+       //                                 BKDnodeFeatures.fstate, 
+       //                                 ftslist );
        
        BKDnodeFeatures.setIGVSelScheme(pos37map,pos38map,show);              
    },
@@ -1277,6 +1667,8 @@ BKDnodeFeatures = {
         console.log( "state:", state );
         console.log( "slist:", slist );
 
+        BKDnodeFeatures.fstate = state;
+        
         BKDnodeFeatures.setTopoSelScheme( "topo-port",
                                           //BKDnodeFeatures.fstate,
                                           state,
@@ -1290,13 +1682,24 @@ BKDnodeFeatures = {
                                            slist );
         */
         
-        BKDnodeFeatures.setNGLSelScheme( BKDnodeFeatures.swmComp,
+        
+        if( BKDnodeFeatures.nglSWM !== undefined){
+            BKDnodeFeatures.setNGLColScheme( BKDnodeFeatures.nglSWM );
+        }
+        
+        if( BKDnodeFeatures.nglSTR !== undefined){
+            BKDnodeFeatures.setNGLColScheme( BKDnodeFeatures.nglSTR );
+        }
+        
+
+        
+        BKDnodeFeatures.setNGLColScheme( BKDnodeFeatures.swmComp,
                                          //BKDnodeFeatures.fstate,
                                          state,
                                          slist
                                       );
        
-        BKDnodeFeatures.setNGLSelScheme( BKDnodeFeatures.strComp,
+        BKDnodeFeatures.setNGLColScheme( BKDnodeFeatures.strComp,
                                          //BKDnodeFeatures.fstate,
                                          state,
                                          slist );
@@ -1546,7 +1949,7 @@ BKDnodeFeatures = {
     },
         
 
-
+    /*
     homologpane1old: function( anchor, data ){
         msaid = anchor.replace("#","") + "-msa";
         d3.select( anchor )
@@ -1621,9 +2024,8 @@ BKDnodeFeatures = {
                                      msaConfig);
         
     },
+    */
 
-
-    
     xref2inametag: function( xref ){
         var upr = "";
         var rsp = "";
@@ -1653,5 +2055,64 @@ BKDnodeFeatures = {
         }
         
         return tag;
+    },
+
+
+    // lolipop selects
+    //----------------
+    
+    buildlslist: function( args ){
+        return BKDnodeFeatures.fstate;
+    },
+    
+    // variant classes
+    //----------------
+    
+    buildvclist: function( ftypesel ){
+
+        var plist = BKDnodeFeatures.lollipanels['loli1'].data.plist;
+        
+        var tcnt = 0;
+        for( var t in ftypesel.vcls ){            
+            if( ftypesel.vcls[t] == true ){
+                tcnt +=1;
+            }
+        }
+        
+        var ccol = "#808080";
+        
+        var pdict = {}
+        for( var t in ftypesel.vcls ){
+            if( ftypesel.vcls[t] == true ){
+                var sigtag = BKDnodeFeatures.sigtag[t];
+
+                for(var s in BKDnodeFeatures.vclass){
+                    if( BKDnodeFeatures.vclass[s].value  == t ){
+                        ccol = BKDnodeFeatures.vclass[s].color;
+                        break;
+                    }
+                }
+                
+                if( sigtag != undefined ){
+                    for( var i in plist ){  
+                        if( plist[i].significance == sigtag ){
+                            if( tcnt == 1 && ccol == "#808080" ){            
+                                for( var k in BKDnodeFeatures.vclass){
+                                    if( BKDnodeFeatures.vclass[k].value == sigtag ){
+                                        ccol = BKDnodeFeatures.vclass[k].color;
+                                    }
+                                }
+                            }
+                            pdict[plist[i].pos] = {
+                                "pos": plist[i].pos,
+                                "col": ccol,
+                                "name": plist[i].pos
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return pdict;        
     }
 };
