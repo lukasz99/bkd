@@ -56,9 +56,7 @@ BKDnodeFeatures = {
                  "color":"#aaaaaa" },
                { "id":"flist-select-5","name":"select-5",
                  "label":"SecStruc", "value":"sstr",
-                 "color":"#aaaaaa" },
-
-
+                 "color":"#aaaaaa" }
              ],
     
     fcolor:   { "pathogenic":"#d04030",
@@ -69,6 +67,7 @@ BKDnodeFeatures = {
                 "likely benign":"#30a0e0",
                 "benign":"#2161b0"                              
               },
+    
     nodeAnchor: null,
     srcAnchor: null,
     fdata: [],
@@ -201,37 +200,7 @@ BKDnodeFeatures = {
                 "  </td>"+
                 " </tr>"+
                 "</table>" );
-/*
-        $( '#flist-view' ).append(
-            "<div id='track-port' style='width:600px; height:625px;'></div>");
-        $( '#track-port').hide();
-        $( '#track-tab').on('click',BKDnodeFeatures.flviewToggle);
-        
-        $( '#flist-view' ).append(
-            "<div id='homo-port-panther' style='width:600px; height:625px;' class='tab-port'></div>");
-        $( '#homo-port-panther').hide();
-        $( '#homo-tab-panther').on('click',BKDnodeFeatures.flviewToggle);
-        
-        $( '#flist-view' ).append(
-            "<div id='homo-port-ucsc' style='width:600px; height:625px;' class='tab-port'></div>");
-        $( '#homo-port-ucsc').hide();
-        $( '#homo-tab-ucsc').on('click',BKDnodeFeatures.flviewToggle);
-        
-        $( '#flist-view' ).append(
-            " <div id='topo-port' style='width:600px; height:625px;'></div>" );
-        $( '#topo-port').hide();
-        $( '#topo-tab').on('click',BKDnodeFeatures.flviewToggle);
-        
-        $( '#flist-view' ).append(
-            "<div id='swm-port' style='width:600px; height:625px;'></div>");
-        //$( '#swm-port').hide();
-        $( '#swm-tab').on('click',BKDnodeFeatures.flviewToggle);
-        
-        $( '#flist-view' ).append(
-            "<div id='str-port' style='width:600px; height:625px;'></div>");
-        //$( '#str-port').hide();
-        $( '#str-tab').on('click',BKDnodeFeatures.flviewToggle);
-*/
+
         tconf = this.config.tabs;
             
         for( var i = 0; i< tconf.tablist.length; i++ ){
@@ -243,9 +212,8 @@ BKDnodeFeatures = {
                 "<div id='" + vid + "' class='" + tconf['view-class'] + "'></div>" )
             $( '#' + vid ).hide();           
             $( '#' + tid ).on( 'click', BKDnodeFeatures.flviewToggle );
-
         }
-      
+        
         // features: sequence to map
         //--------------------------
 
@@ -258,8 +226,7 @@ BKDnodeFeatures = {
 
         $('#flist-source table tr td:first-of-type').append('Sequence: &nbsp;&nbsp;'
                                   + '<select id="iseq" name="iseq"></select>');
-
-
+        
         // determine order: mane -> canon -> alphabetical 
         //-----------------------------------------------
 
@@ -321,11 +288,9 @@ BKDnodeFeatures = {
             if( selseq == null) selseq = sseq[skeys[k]].upr;            
         }
 
-
         console.log("sseq:", sseq);        
 
         BKDnodeFeatures.state.seqvar = selseq;
-       
         
         $('#flist-source #iseq')
             .on( 'change',
@@ -578,8 +543,6 @@ BKDnodeFeatures = {
         for( var ci in BKDnodeFeatures.iseq ){
             vseq[ BKDnodeFeatures.iseq[ci].upr ] = BKDnodeFeatures.iseq[ci].seq;
         }
-
-        // ?????
         
         var loli1 = new BkdLollipop( { anchor: "flist-lollipop-1",
                                        id: "lpanel-1",
@@ -603,9 +566,7 @@ BKDnodeFeatures = {
                                        detailtable: this.config.lollipanel.detailtable,
                                        detailcbl: [ BKDnodeFeatures.detailCallback ]
                                      } );
-
-
-
+        
         var sqsel = $('#iseq').val(); 
         var cseq ='';
         
@@ -624,6 +585,7 @@ BKDnodeFeatures = {
         
         // genome viewer panel
         //--------------------
+
         try{
             BKDnodeFeatures.genomepane( '#track-port', data );
         }catch( err ){
@@ -632,11 +594,13 @@ BKDnodeFeatures = {
         
         // homology panel(s)
         //------------------
+
         try{
             BKDnodeFeatures.homologpane1( '#homo-port-panther', data );
         } catch( err){
             console.log(err);
         }
+        
         try{
             BKDnodeFeatures.homologpane2( '#homo-port-ucsc', data );
         } catch( err){
@@ -645,13 +609,12 @@ BKDnodeFeatures = {
         
         // topology panel
         //---------------
+
         try{
             BKDnodeFeatures.topopane( '#topo-port', data );
         } catch( err){
             console.log(err);
         }
-
-        console.log("#############");
         
         // swissmodel pane
         //----------------
@@ -686,9 +649,8 @@ BKDnodeFeatures = {
         
         // structure pane
         //---------------
+
         /*
-
-
         var strUrl = BKDnodeFeatures.siteurl + "swissmodel/"
             + BKDnodeFeatures.data.ac  + "-1_swm.pdb"; 
 
@@ -707,176 +669,7 @@ BKDnodeFeatures = {
             {} );
         */
         
-        //------------------------------------------------------------
-        // SwisModel pqanel
         
-        /*        
-        d3.select( "#swm-port" )
-            .html( '<div id="swm-controls" class="bkd-select-controls" style="background-color: black; color: white;">'
-                   + '<table class="swm-controls-table" width="100%" align="center">'
-                   + '<tr><td id="swm-color-controls" colspan="2"></td></tr>'
-                   + '<tr><td id="swm-select-controls" colspan="2"></td></tr>'
-                   + '</table>'
-                   + '</div>'
-                   + '<div id="swm-view" class="swm-view"></div>' );
-
-       
-        
-        BKDnodeFeatures.fcolorCtrl( "swm-color-controls",
-                                    BKDnodeFeatures.vclass,                                    
-                                    "swm",
-                                    BKDnodeFeatures.state.fsel.swm,
-                                    BKDnodeFeatures.lollipanels['loli1'],
-                                    BKDnodeFeatures.setNGLColScheme2 );
-                                    //BKDnodeFeatures.lollipanels['loli1'].flistSelEventAction );
-
-
-        BKDnodeFeatures.fselectCtrl( "swm-select-controls",
-                                     "swm", 
-                                     BKDnodeFeatures.state,
-                                     BKDnodeFeatures.selections,    // checkbox list                                   
-                                     BKDnodeFeatures.state.fsel.swm,
-                                     BKDnodeFeatures.lollipanels['loli1'],
-                                     BKDnodeFeatures.setNGLSelScheme );
-
-        $( '#swm-port').show();   
-        var phght = $('#swm-port').height();
-        var chght = $('#swm-controls').height();
-        $('#swm-view').height( phght - chght);
-        
-        BKDnodeFeatures.swmStage = new NGL.Stage("swm-view");
-        BKDnodeFeatures.state["swm"] = {"stage": BKDnodeFeatures.swmStage };
-        console.log("##### set stage",BKDnodeFeatures.state);
-        $( '#swm-port').hide();
-        url = BKDnodeFeatures.siteurl;
-        id = BKDnodeFeatures.data.ac;
-
-        console.log( "############SWM: PDB:" + url+"swissmodel/"+id+"-1_swm.pdb");
-        
-        BKDnodeFeatures.swmStage.loadFile( url+"swissmodel/"+id+"-1_swm.pdb")
-            .then( function( o ){      
-                BKDnodeFeatures.swmComp = o;
-                
-                var selStr = "";
-                var selQCut = 0.5;
-                
-                var rmap = {};
-                
-                o.structure.eachAtom(function(atom) {
-                    var bf = atom.bfactor;
-                    var cnm = atom.chainname;                   
-                    var rno = atom.resno;
-
-                    if( bf > selQCut) {
-                        if( rmap[cnm]  == undefined ) rmap[cnm] = {};
-                        if( rmap[cnm][rno] == undefined ) rmap[cnm][rno] = true;
-                    }
-                    //console.log(cnm,rno,bf);                    
-                });
-
-                BKDnodeFeatures.swmrmap = rmap;
-                var rk = Object.keys( rmap );
-                console.log("#### RK:", rk);
-                
-                for( var c in rk ){
-                    console.log("#### RM:",rk[c], rmap[rk[c]]);
-                    var ckl = Object.keys( rmap[rk[c]] );
-                    ckl.sort(function(a,b) { Number(a) > Number(b) } );
-                    console.log("####:: ",rk[c], ":",ckl);                    
-                };
-                
-                var sel = "";
-                var prev = Number(ckl[0]);
-                var lop = "";
-                for( var c in ckl ){
-                    var nc = Number( ckl[c] );
-                    console.log("#### nc: ",nc, prev, nc - prev);
-                    if( nc > prev ){
-                        if( nc - prev == 1 ){ // seq
-                            if( lop != "-"){
-                                lop = "-";
-                                sel = sel + "-";
-                            }
-                            prev = nc;
-                        } else {  // cont or gap                            
-                            if( lop == "-" ){ // gap starts
-                                lop = "";
-                                sel = sel + prev + " or " + nc;
-                            } else{  // next gap 
-                                sel = sel + " or " + nc;
-                            }
-                            prev = nc;
-                        }                            
-                    } else {
-                        sel = String(nc);
-                        prev = nc;
-                    }
-                }
-                console.log("#### sel:",sel);
-                BKDnodeFeatures.swmQCSel = sel;
-                
-                o.setSelection("all");
-                
-                var swmColorScheme = NGL.ColormakerRegistry
-                    .addSelectionScheme( [["atomindex", "*"]] );
-                
-                BKDnodeFeatures.swmNglrep =
-                    o.addRepresentation( "cartoon",
-                                         {color: swmColorScheme} );  
-                o.autoView( "all" );
-                console.log( "swmNgl: loaded");
-            });
-        
-        // structure panel
-        //----------------
-
-        d3.select( "#str-port" )
-            .html( '<div id="str-controls" class="bkd-select-controls" style="background-color: black; color: white;">'
-                   + '<table class="str-controls-table" width="100%" align="center">'
-                   + '<tr><td id="str-select-controls" colspan="2"></td></tr>'
-                   + '</table>'
-                   + '</div>'
-                   + '<div id="str-view" class="str-view"></div>' )
-        
-        BKDnodeFeatures.fcolorCtrl( "str-select-controls",
-                                     BKDnodeFeatures.vclass,
-                                    "str",
-                                     BKDnodeFeatures.state.fsel.str,
-                                     BKDnodeFeatures.lollipanels['loli1'],
-                                     BKDnodeFeatures.lollipanels['loli1'].flistSelEventAction );
-
-
-        $( '#str-port' ).show();
-        var phght = $('#str-port').height();
-        var chght = $('#str-controls').height();
-        $('#str-view').height( phght-chght );
-        
-        BKDnodeFeatures.strStage = new NGL.Stage("str-view");
-        $( '#str-port').hide();  
-        
-        url = BKDnodeFeatures.siteurl;
-        id = BKDnodeFeatures.data.ac;
-        
-        console.log("PDB:" + url+"swissmodel/"+id+"-1_swm.pdb");
-        
-        BKDnodeFeatures.strStage.loadFile(url+"swissmodel/"+id+"-1_swm.pdb")
-            .then( function( o ){      
-                BKDnodeFeatures.strComp = o;
-                
-                o.setSelection("all");
-                
-                var strColorScheme = NGL.ColormakerRegistry
-                    .addSelectionScheme([["atomindex", "*"]]);
-                
-                BKDnodeFeatures.strNglrep =
-                    o.addRepresentation( "cartoon",
-                                         {color: strColorScheme} );  
-                o.autoView("all");
-                console.log( "strNgl: loaded");
-                
-            });
-
-        */
     },
 
     nglpane: function( config, data){
@@ -989,9 +782,7 @@ BKDnodeFeatures = {
             d3.select('#topo-port svg').transition().call(BKDnodeFeatures.zoom.scaleBy, 1.1);
         } else if (this.id == 'zoom-minus') {
             d3.select('#topo-port svg').transition().call(BKDnodeFeatures.zoom.scaleBy, 0.9);
-        }
-        
-                        
+        }                        
     },
 
     handleButtonPan: function( e ){        
@@ -1001,10 +792,7 @@ BKDnodeFeatures = {
             d3.select('#topo-port svg').transition().call(BKDnodeFeatures.zoom.translateBy, -50, 0);
         } else if (this.id == 'pan-right') {
             d3.select('#topo-port svg').transition().call(BKDnodeFeatures.zoom.translateBy, 50, 0);
-        }
-        
-
-        
+        }  
     },
 
     genomepane: function( anchor, data ){
@@ -1031,7 +819,6 @@ BKDnodeFeatures = {
                 this.gname = data.alias[a]["alias"]
             }
         }         
-
         
         var gburl = BKDnodeFeatures.ucscSrcUrl.replace('%BID%','hg19');  // build          
         gburl = gburl.replace('%CID%','');  // chromosome
@@ -1042,9 +829,7 @@ BKDnodeFeatures = {
         $( '#bkd-genome-build' ).append("&nbsp;&nbsp;|| &nbsp;&nbsp; UCSC Genome Browser: <a href='" + gburl + "' target='_bkd'>Go</a>");
         
         $( anchor ).append( "<div id='bkd-genome-viewer' class='bkd-genome-viewer' ></div>");
-                
-        //console.log( "Gene Name: ", this.gname );
-
+        
         this.igvinit("hg19");
     },
     
@@ -1079,196 +864,7 @@ BKDnodeFeatures = {
                 console.log(BKDnodeFeatures.igvbrowse);                               
             });
     },
-
-    /*
-    fselectCtrl: function( anchor,    
-                           fselname,    // swm / str
-                           nglstate,   // 
-                           clist,      // checkbox list
-                           fselstate,  // state
-                           lpanel,     // lolipop panel      
-                           action      // action (on struct viewer)
-                         ){
-
-        console.log("##### fselectCtrl: anchor->",anchor, "name->", fselname ,"state->", nglstate)
-        console.log("##### state['swp']: ", nglstate[fselname]);
-        var nglstage = nglstate[fselname].stage;
-        / * args
-        "swm-select-controls",
-        "swm",
-        BKDnodeFeatures.state,
-        BKDnodeFeatures.selections,
-        BKDnodeFeatures.state.fsel.swm,
-        BKDnodeFeatures.lollipanels['loli1'],
-        BKDnodeFeatures.setNGLSelScheme
-        * /
-        
-        console.log( "BKDnodeFeatures.fcolorCtrl:", lpanel,action);
-        if( ! d3.select( "#" + anchor  ).empty() ){                    
-            d3.select( "#" + anchor + " *" ).remove();
-        }
-        
-        d3.select( "#" + anchor )
-            .html('&nbsp;<b>Select:</b>&nbsp;&nbsp;');
-        
-        for( var s in clist ){
-            d3.select( "#" + anchor )
-                .append("input")
-                .attr( "type", "checkbox")
-                .attr( "id", anchor + "-" + s )
-                .attr( "name", anchor + "-" + s )
-                .attr( "value", clist[s]["value"])
-                .attr( "style", "accent-color: " + clist[s]["color"]+ ";");
-            
-            d3.select( "#" + anchor )
-                .append( "label" )
-                .attr( "for" , anchor + "-" + s )
-                .html( clist[s]["label"] + " &nbsp;&nbsp;" );
-                
-            BKDnodeFeatures.ftypesel[clist[s]["value"]]=false;
-
-            $( "#" + anchor + "-" + s )
-                .on( 'click', {lpanel: lpanel,
-                               state: nglstate[fselname],
-                               fselname: fselname,
-                               fselstate: fselstate },
-                     (event) => { console.log( 'click: data->', event.data );
-                                  action( event );
-                                } );
-                        
-        }
-        console.log( "BKDnodeFeatures.fselectCtrl action: ", "#" + anchor + " input");
-        console.log( "BKDnodeFeatures.fselectCtrl action: ", action );
-        console.log( $( "#" + anchor + " input") );        
-    },
-    */
-
-    /*
-    fcolorCtrl: function( anchor,     //
-                          clist,      //  checkbox list
-                          fselname,   //  swm / str
-                          fselstate,  // 
-                          lpanel,     // lollipop panel
-                          action      // action
-                        ){
-        
-        //"swm-select-controls",
-        //BKDnodeFeatures.vclass,                                    
-        //"swm",
-        //BKDnodeFeatures.state.fsel.swm,
-        //BKDnodeFeatures.lollipanels['loli1'],
-        //BKDnodeFeatures.lollipanels['loli1'].flistSelEventAction );
-            
-        console.log( "BKDnodeFeatures.fcolorCtrl:", lpanel,action);
-        if( ! d3.select( "#" + anchor  ).empty() ){                    
-            d3.select( "#" + anchor + " *" ).remove();
-        }
-
-        //d3.select( "#" + anchor )
-        //    .html('&nbsp;&nbsp;&nbsp;&nbsp;');
-
-        d3.select( "#" + anchor )
-            .html('&nbsp;<b>Variant:</b>&nbsp;');
-        
-        for( var s in clist ){
-            d3.select( "#" + anchor )
-                .append("input")
-                .attr( "type", "checkbox")
-                .attr( "id", anchor + "-" + s )
-                .attr( "name", anchor + "-" + s )
-                .attr( "value", clist[s]["value"])
-                .attr( "style", "accent-color: " + clist[s]["color"]+ ";");
-            
-            d3.select( "#" + anchor )
-                .append( "label" )
-                .attr( "for" , anchor + "-" + s )
-                .html( clist[s]["label"] + " &nbsp;&nbsp;" );
-                
-            BKDnodeFeatures.ftypesel[clist[s]["value"]]=false;
-
-            $( "#" + anchor + "-" + s )
-                .on( 'click', {lpanel: lpanel,
-                               state: nglstate[fselname],
-                               fselname: fselname,
-                               fselstate: fselstate },
-                     
-                     
-                     (event) => { console.log( 'click: data->', event.data );
-                                  //event.data.lpanel.flistSelEventAction( event );
-                                  action( event );
-                                } );
-                        
-        }
-        console.log( "BKDnodeFeatures.fcolorCtrl action: ", "#" + anchor + " input");
-        console.log( "BKDnodeFeatures.fcolorCtrl action: ", lpanel.flistSelEventAction );
-        console.log( $( "#" + anchor + " input") );        
-    },
-    */
     
-    flistsel: function(event){
-        BKDnodeFeatures.ftypesel[event.target.value] = event.target.checked;
-        var ftslist = BKDnodeFeatures.getfselist( BKDnodeFeatures.ftypesel );
-
-        BKDnodeFeatures.setTopoSelScheme( BKDnodeFeatures.swmComp,
-                                          BKDnodeFeatures.fstate,
-                                          ftslist );
-
-        BKDnodeFeatures.setNGLColScheme( BKDnodeFeatures.swmComp,
-                                         BKDnodeFeatures.fstate,
-                                         ftslist );
-        
-        BKDnodeFeatures.setNGLColScheme( BKDnodeFeatures.strComp,
-                                         BKDnodeFeatures.fstate,
-                                         ftslist );
-
-
-        BKDnodeFeatures.lollipop.options.legendItems.forEach((d) => {
-            //console.log(d.key +":"+d._status);
-            d._status = BKDnodeFeatures.ftypesel[d.key];
-        } );
-
-        //console.log(BKDnodeFeatures.lollipop.options.legendItems);             
-        //console.log(BKDnodeFeatures.ftypesel);
-             
-    },
-
-    getfselist: function( ftypesel, plist ){
-
-        console.log( "BKDnodeFeatures.getfselist", BKDnodeFeatures.plist );
-        var tcnt = 0;
-        for( var t in ftypesel ){
-            if( ftypesel[t] == true ){
-                tcnt +=1;
-            }
-        }
-
-        var ccol = "#808080";
-        
-        var pdict = {}
-        for( var t in ftypesel ){
-            if( ftypesel[t] == true ){
-                for( var i in plist ){
-                    if( plist[i].significance == t ){
-                        if( tcnt == 1 && ccol == "#808080" ){            
-                            for( var k in BKDnodeFeatures.vclass){
-                                if( BKDnodeFeatures.vclass[k].value == t ){
-                                    ccol = BKDnodeFeatures.vclass[k].color;
-                                }
-                            }
-                        }
-                        pdict[plist[i].pos] = {
-                            "pos": plist[i].pos,
-                            "col": ccol,
-                            "name": plist[i].pos
-                        }
-                    }
-                }
-            }
-        }
-        
-        return pdict;        
-    },
-
     setTopoSelScheme: function( comp, fstate, ftslist ){
         
         // reset all: white
@@ -1301,8 +897,8 @@ BKDnodeFeatures = {
 
         var smap = {};
 
-        D3MSA1.dropAllSelect();
-        D3MSA2.dropAllSelect();
+        //D3MSA1.dropAllSelect();
+        //D3MSA2.dropAllSelect();
         
         for( var i in ftslist ){
             var pos = ftslist[i].pos;
@@ -1342,103 +938,10 @@ BKDnodeFeatures = {
         }
 
     },
-        
-    setNGLColSchemePrev: function( comp, fstate, ftslist ){
-
-        console.log("NGLColScheme: fstate: ",fstate);
-        console.log("NGLColScheme: ftslist: ",ftslist);
-        
-        if( comp !== undefined){
-
-            
-            var rlist = [];
-            
-            for( var i in ftslist ){
-                var pos = ftslist[i].pos;
-                var col = ftslist[i].col;                
-                rlist.push([col,String(pos)]);
-            }
-            
-            for( var k in fstate ){
-                if( fstate[k].on ){
-                    rlist.push(["orange",k]);
-                }            
-            }
-            
-            if( rlist.length > 0 ){
-                rlist.push( ["green","*"]);
-            } else {
-                rlist.push(["atomindex", "*"]);
-            }
-            var colorScheme = NGL.ColormakerRegistry
-                .addSelectionScheme( rlist,"features" );
-            
-            var newrep = comp.addRepresentation(
-                "cartoon",{color: colorScheme});
-           
-            comp.removeRepresentation(BKDnodeFeatures.swmNglrep);
-            BKDnodeFeatures.swmNglrep = newrep;          
-            comp.autoView("all");            
-       }
-    },
-
-    //setNGLColScheme2: function( comp, fstate, ftslist ){
-
-    setNGLColScheme2: function( event ){
-        
-        //console.log( "setNGLColScheme2 -> event:", event);
-        console.log( "setNGLColScheme2 -> event.data:", event.data);
-        
-        console.log("fstate: " + JSON.stringify(event.data.fselstate));
-        
-        console.log( "BKDnodeFeatures.swmStage:", BKDnodeFeatures.swmStage);
-        console.log( "   ", BKDnodeFeatures.swmQCSel);
-        
-        return;
-        
-        if( comp !== undefined){
-
-            //console.log("fstate: " + JSON.stringify(fstate));
-            //console.log("ftslist: " + JSON.stringify(ftslist));
-            
-            var rlist = [];
-            
-            for( var i in ftslist ){
-                var pos = ftslist[i].pos;
-                var col = ftslist[i].col;                
-                rlist.push([col,String(pos)]);
-            }
-            
-            for( var k in fstate ){
-                if( fstate[k].on ){
-                    rlist.push(["orange",k]);
-                }            
-            }
-            
-            if( rlist.length > 0 ){
-                rlist.push( ["green","*"]);
-            } else {
-                rlist.push(["atomindex", "*"]);
-            }
-            var colorScheme = NGL.ColormakerRegistry
-                .addSelectionScheme( rlist,"features" );
-            
-            var newrep = comp.addRepresentation(
-                "cartoon",{color: colorScheme});
-           
-            comp.removeRepresentation(BKDnodeFeatures.swmNglrep);
-            BKDnodeFeatures.swmNglrep = newrep;          
-            comp.autoView("all");            
-       }
-    },
-
     
-
-    
-
     // selection action: structure viewer(s) selection
     //------------------------------------------------
-   
+    
     //setNGLSelScheme: function( comp, fstate, ftslist ){
     
     setNGLSelScheme: function( event ){
@@ -1494,22 +997,20 @@ BKDnodeFeatures = {
             comp.removeRepresentation(BKDnodeFeatures.swmNglrep);
             BKDnodeFeatures.swmNglrep = newrep;          
             comp.autoView("all");            
-       }
-   },
-
-
+        }
+    },
     
-   // selection: genome viewer
-   //-------------------------
+    // selection: genome viewer
+    //-------------------------
    
-   setIGVSelScheme: function(pos37,pos38 ){
-       console.log("setIGVSelScheme",pos37,pos38);
-       rpos ="";
-       for( p in pos37 ){
-           rpos += p +":-1;"
-       }
-       //console.log("setIGVSelScheme: rpos: " + rpos );
-       
+    setIGVSelScheme: function(pos37,pos38 ){
+        console.log("setIGVSelScheme",pos37,pos38);
+        rpos ="";
+        for( p in pos37 ){
+            rpos += p +":-1;"
+        }
+        //console.log("setIGVSelScheme: rpos: " + rpos );
+        
        if( rpos != '' ){
            //console.log("setIGVSelScheme:ON");
            BKDnodeFeatures.igvbrowse.clearROIs();
@@ -1528,139 +1029,10 @@ BKDnodeFeatures = {
            //console.log("setIGVSelScheme: OFF done...");
        }
               
-   },
+    },
 
-   // selection: feature table viewer
-   //--------------------------------
-
-   buildFDets: function( show, data, options ){
-
-       //console.log("FD(data):" + JSON.stringify(data));
-       //console.log("FD(options):" + JSON.stringify(options) + " :: " + show);
-
-       BKDnodeFeatures.fstate[data.position].on=show;
-
-       for( var k in BKDnodeFeatures.fstate ){
-           //console.log(k + " :: " + BKDnodeFeatures.fstate[k]);
-       }
-       //BKDnodeFeatures.plist - list of feaures
-       //BKDnodeFeatures.fstate - map of states
-
-       var rows = {};
-       
-       for( var x in BKDnodeFeatures.plist ){
-           var pos = BKDnodeFeatures.plist[x].pos.toString(); 
-           if(  pos in BKDnodeFeatures.fstate ){
-               if(BKDnodeFeatures.fstate[pos].on){                   
-                   if( ! (pos in rows) ){
-                       rows[pos]= [];
-                   }
-
-                   if( BKDnodeFeatures.plist[x].loaded == undefined){
-                       console.log("read fetures: pos#",BKDnodeFeatures.plist[x].pos);
-                       BKDnodeFeatures.plist[x].loaded = true;
-                   }
-                   
-                   rows[pos].push( BKDnodeFeatures.plist[x] );
-                   console.log( "plist:" + x + " :: " +JSON.stringify(BKDnodeFeatures.plist[x] ));
-               }
-           }
-       }
-       //console.log("X: rows");
-       //console.log( rows );
-       //console.log("X: done");
-       var html = "";
-
-       var pos37map = {};
-       var pos38map = {};
-       
-       if( Object.keys(rows).length > 0 ){
-           $(options.anchor).hide();
-           $(options.anchor + " #fdet-table").remove();
-           $(options.anchor).append(
-               "<table id='fdet-table' width='100%' border='1'></table>" );
-           var head ="<th>AA&nbsp;Position</th>";
-           for(var h = 0; h < options.cols.length; h++){
-               head += "<th>"+options.cols[h]['name']+"</th>";
-           }
-           $("#fdet-table").append("<tr>"+head+"</tr>");
-
-           //console.log("RR: rows");
-
-           for( var r in rows){
-               //console.log(r-1);
-               //console.log("AA: " + '#aa'+(r-1).toString() + '_symbol');
-               //console.log( $('#aa'+r+'_symbol') );
-               $('#aa' + (r-1).toString() + '_symbol')[0].setAttribute('fill','#ff0000');
-               
-               for( var rr in rows[r]){
-                   
-                   //console.log( "row:: " + rr + " :: "+JSON.stringify(rows[r][rr]) );
-                   pos37map[rows[r][rr]['pos37']] = rows[r][rr]['pos37'];
-                   pos38map[rows[r][rr]['pos38']] = rows[r][rr]['pos38'];
-                   var hrow =""
-                   if(rr == 0){
-                       hrow = "<tr>"
-                           + "<td align='center' rowspan='"+rows[r].length+"'>"
-                           + r
-                           + "</td>";
-                   } else {
-                       hrow = "<tr>";
-                   }
-                   for(var c =0; c < options.cols.length; c++ ){
-                       //console.log( "row:: " + c +
-                       //             " ::" +JSON.stringify(options.cols[c]));
-                       
-                       var vlst = rows[r][rr].dtval[options.cols[c]['cid']];
-                       var cclass = options.cols[c]['class'];
-                       if( vlst.length > 0) {
-                           hrow += "<td class='"+ cclass +"'>" + vlst[0] + "</td>";
-                       } else {
-                           hrow += "<td class='"+ cclass +"'>&nbsp;</td>";
-                       }
-                   }
-                   hrow += "</tr>";
-                   //console.log('hrow:' + hrow);
-                   $("#fdet-table").append(hrow);
-               }
-           }
-           //console.log("RR: done");
-           $(options.anchor).show();
-       } else {
-           $(options.anchor).hide();
-           $(options.anchor + " #fdet-table").remove();
-       }
-       
-       var ftslist = BKDnodeFeatures.getfselist( BKDnodeFeatures.ftypesel );
-       //console.log("ftslist");
-       //console.log(BKDnodeFeatures.fstate);
-       
-       BKDnodeFeatures.setTopoSelScheme( "topo-port",
-                                         BKDnodeFeatures.fstate,
-                                         ftslist
-                                       );
-
-       BKDnodeFeatures.setHomolSelScheme( BKDnodeFeatures.strComp,
-                                          BKDnodeFeatures.fstate, 
-                                          ftslist );
-
-       colsole.log("BKDnodeFeatures.nglSWM",BKDnodeFeatures.nglSWM);
-
-       
-       
-       //BKDnodeFeatures.setNGLColScheme( BKDnodeFeatures.swmComp,
-       //                                  BKDnodeFeatures.fstate,
-       //                                  ftslist
-       //                                );
-       
-       //BKDnodeFeatures.setNGLColScheme( BKDnodeFeatures.strComp,
-       //                                 BKDnodeFeatures.fstate, 
-       //                                 ftslist );
-       
-       BKDnodeFeatures.setIGVSelScheme(pos37map,pos38map,show);              
-   },
-
-
+    // selection: feature table viewer (as lollipop callback)
+    //-------------------------------------------------------
     
     detailCallback: function( plist, state, slist ){
         console.log( "detailCallback: called");
@@ -1674,14 +1046,6 @@ BKDnodeFeatures = {
                                           state,
                                           slist
                                         );
-
-        /*
-        BKDnodeFeatures.setHomolSelScheme( BKDnodeFeatures.strComp,
-                                           //BKDnodeFeatures.fstate,
-                                           state,
-                                           slist );
-        */
-        
         
         if( BKDnodeFeatures.nglSWM !== undefined){
             BKDnodeFeatures.setNGLColScheme( BKDnodeFeatures.nglSWM );
@@ -1691,19 +1055,6 @@ BKDnodeFeatures = {
             BKDnodeFeatures.setNGLColScheme( BKDnodeFeatures.nglSTR );
         }
         
-
-        
-        BKDnodeFeatures.setNGLColScheme( BKDnodeFeatures.swmComp,
-                                         //BKDnodeFeatures.fstate,
-                                         state,
-                                         slist
-                                      );
-       
-        BKDnodeFeatures.setNGLColScheme( BKDnodeFeatures.strComp,
-                                         //BKDnodeFeatures.fstate,
-                                         state,
-                                         slist );
-
         var rows = {};
        
         for( var x in plist ){
@@ -1811,23 +1162,6 @@ BKDnodeFeatures = {
         var tabid = "#" + event.currentTarget.id;
         
         console.log( "Toggle: "+ BKDnodeFeatures.flview +" -> " + nview );
-
-        /*
-        
-        $( BKDnodeFeatures.flview + "-port" ).hide();
-        $( BKDnodeFeatures.flview + "-tab" ).addClass('bkd-feat-tab-off');
-        $( BKDnodeFeatures.flview + "-tab" ).removeClass('bkd-feat-tab-on');
-        
-        BKDnodeFeatures.flview = nview;
-        $( BKDnodeFeatures.flview + "-tab" ).addClass('bkd-feat-tab-on');
-        $( BKDnodeFeatures.flview + "-tab" ).removeClass('bkd-feat-tab-off');      
-        $( BKDnodeFeatures.flview + "-port" ).show();
-      
-        //console.log( "Toggle: BKDnodeFeatures.igvbrowse " +
-        //             BKDnodeFeatures.igvbrowse );
-                  
-        */
-
         console.log( "OFF: " +  BKDnodeFeatures.flview + " .tab-port");
         
         $( BKDnodeFeatures.flview.replace('-tab','-port') ).hide();
@@ -1841,8 +1175,6 @@ BKDnodeFeatures = {
         $( BKDnodeFeatures.flview  ).addClass('bkd-feat-tab-on');
         $( BKDnodeFeatures.flview  ).removeClass('bkd-feat-tab-off');      
         $( BKDnodeFeatures.flview.replace('-tab','-port') ).show();
-        
-        
         
         if( BKDnodeFeatures.igvbrowse !== null ){
             BKDnodeFeatures.igvbrowse.visibilityChange();
@@ -1948,84 +1280,6 @@ BKDnodeFeatures = {
                                           "url": msaurl });
     },
         
-
-    /*
-    homologpane1old: function( anchor, data ){
-        msaid = anchor.replace("#","") + "-msa";
-        d3.select( anchor )
-            .html( '<div id="' + msaid +'" class="bkd-msa" style="background-color: black;">'
-                   +'</div>' );
-
-        var msaConfig = { "taxname": {'9606': 'Human',
-                                      '9598': 'Chimpanzee',
-                                      '9595': 'Gorilla',
-                                      '9601': 'Orangutan',
-                                      '9544': 'Rhesus',
-                                      '10090': 'Mouse',
-                                      '10116': 'Rat',
-                                      '10141': 'Guinea pig',
-                                      '9986': 'Rabbit',
-                                      '9615': 'Dog',
-                                      '9031': 'Chicken',
-                                      '8364': 'Xenopus',
-                                      '7955': 'Zebrafish',
-                                      '9557':'Baboon',
-                                      '10029':'Hamster',
-                                      '9986':'Rabbit',
-                                      '9823':'Pig',
-                                      '9913':'Cow',
-                                      '9685':'Cat',
-                                      '9796':'Horse',
-                                      '9940':'Sheep',
-                                      '13616':'Opossum',
-                                      '9258':'Platypus'
-                                     }
-                        };
-
-        var msa = D3MSA1.initialize( '#'+msaid, "msa-ucscgb/" + BKDnodeFeatures.data.ac + ".fasta",
-                                     msaConfig);
-        
-    },  
-
-    homologpane2old: function( anchor, data ){
-        msaid = anchor.replace("#","") + "-msa";
-        console.log("hpane2: " + msaid );
-        d3.select( anchor )
-            .html( '<div id="' + msaid +'" class="bkd-msa" style="background-color: black;">'
-                   +'</div>' );
-
-        var msaConfig = { "taxname": {'9606': 'Human',
-                                      '9598': 'Chimpanzee',
-                                      '9595': 'Gorilla',
-                                      '9601': 'Orangutan',
-                                      '9544': 'Rhesus',
-                                      '10090': 'Mouse',
-                                      '10116': 'Rat',
-                                      '10141': 'Guinea pig',
-                                      '9986': 'Rabbit',
-                                      '9615': 'Dog',
-                                      '9031': 'Chicken',
-                                      '8364': 'Xenopus',
-                                      '7955': 'Zebrafish',
-                                      '9557':'Baboon',
-                                      '10029':'Hamster',
-                                      '9986':'Rabbit',
-                                      '9823':'Pig',
-                                      '9913':'Cow',
-                                      '9685':'Cat',
-                                      '9796':'Horse',
-                                      '9940':'Sheep',
-                                      '13616':'Opossum',
-                                      '9258':'Platypus'
-                                     }
-                        };
-
-        var msa = D3MSA2.initialize( '#'+msaid, "msa-panther/" + BKDnodeFeatures.data.ac + ".fasta",
-                                     msaConfig);
-        
-    },
-    */
-
     xref2inametag: function( xref ){
         var upr = "";
         var rsp = "";

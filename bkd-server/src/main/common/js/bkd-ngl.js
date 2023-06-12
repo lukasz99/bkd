@@ -88,8 +88,6 @@ class BkdNGL{
                     .attr( "for" , cname + "-" + j )
                     .html( copt.label + " &nbsp;&nbsp;" );
                 
-                //BKDnodeFeatures.ftypesel[clist[s]["value"]]=false;
-
                 $( "#" + cname + "-" + j )
                     .on( 'click',
                          { self: this },
@@ -108,9 +106,6 @@ class BkdNGL{
                                       
                                       console.debug( 'BkdNGL: state->', event.data.self.state );
                                       event.data.self.setstyle( pv[0], pv[1], event.target.checked );
-                                      
-                                      //event.data.lpanel.flistSelEventAction( event );
-
                                     });                               
             }
         }
@@ -122,13 +117,7 @@ class BkdNGL{
         this.nglstage = new NGL.Stage( this.pfx + '-view' );
         $( this.anchor ).hide();
         
-        //BKDnodeFeatures.state["swm"] = {"stage": BKDnodeFeatures.swmStage };
-        //console.log("##### set stage",BKDnodeFeatures.state);
-
-        //url = BKDnodeFeatures.siteurl;
-        //id = BKDnodeFeatures.data.ac;
-
-        console.log( "############SWM: PDB:" + config.url );
+        console.log( "BkdNGL: PDB load:" + config.url );
         
         var loadCallback = function( args ){
 
@@ -195,10 +184,9 @@ class BkdNGL{
                         prev = nc;
                     }
                 }
-                console.log("#### sel:",sel);
+
 
                 args.self.rsel.hiqc = sel;
-
                 args.self.rsel.all = "all";
                 
                 o.setSelection( args.self.rsel.all );
@@ -219,9 +207,9 @@ class BkdNGL{
             .then( loadCallback( { self: this,
                                    cutQC: 0.5 }));        
     }
-
+    
     rerender(){
-
+        
         console.log("rerender called");
         this.setstyle("vcls",null, null);            
     }
@@ -287,136 +275,5 @@ class BkdNGL{
             this.currep  = newrep;          
             this.nglcomp.autoView("all");                   
         }
-        
     }
-
-    //--------------------------------------------------------------------------
-    /*        
-    variantCtrl(){
-
-                
-    }
-    
-    selectCtrl( anchor,    
-                fselname,    // swm / str
-                nglstate,   // 
-                clist,      // checkbox list
-                fselstate,  // state
-                lpanel,     // lolipop panel      
-                action      // action (on struct viewer)
-              ){
-        
-        console.log("##### fselectCtrl: anchor->",anchor, "name->", fselname ,"state->", nglstate)
-        console.log("##### state['swp']: ", nglstate[fselname]);
-        var nglstage = nglstate[fselname].stage;
-        / * args
-           "swm-select-controls",
-        "swm",
-        BKDnodeFeatures.state,
-        BKDnodeFeatures.selections,
-        BKDnodeFeatures.state.fsel.swm,
-        BKDnodeFeatures.lollipanels['loli1'],
-        BKDnodeFeatures.setNGLSelScheme
-        * /
-        
-        console.log( "BKDnodeFeatures.fcolorCtrl:", lpanel,action);
-        if( ! d3.select( "#" + anchor  ).empty() ){                    
-            d3.select( "#" + anchor + " *" ).remove();
-        }
-        
-        d3.select( "#" + anchor )
-            .html('&nbsp;<b>Select:</b>&nbsp;&nbsp;');
-        
-        for( var s in clist ){
-            d3.select( "#" + anchor )
-                .append("input")
-                .attr( "type", "checkbox")
-                .attr( "id", anchor + "-" + s )
-                .attr( "name", anchor + "-" + s )
-                .attr( "value", clist[s]["value"])
-                .attr( "style", "accent-color: " + clist[s]["color"]+ ";");
-            
-            d3.select( "#" + anchor )
-                .append( "label" )
-                .attr( "for" , anchor + "-" + s )
-                .html( clist[s]["label"] + " &nbsp;&nbsp;" );
-            
-            BKDnodeFeatures.ftypesel[clist[s]["value"]]=false;
-
-            $( "#" + anchor + "-" + s )
-                .on( 'click', {lpanel: lpanel,
-                               state: nglstate[fselname],
-                               fselname: fselname,
-                               fselstate: fselstate },
-                     (event) => { console.log( 'click: data->', event.data );
-                                  action( event );
-                                } );
-                        
-        }
-        console.log( "BKDnodeFeatures.fselectCtrl action: ", "#" + anchor + " input");
-        console.log( "BKDnodeFeatures.fselectCtrl action: ", action );
-        console.log( $( "#" + anchor + " input") );        
-    }
-    
-    colorCtrl( anchor,     //
-               clist,      //  checkbox list
-               fselname,   //  swm / str
-               fselstate,  // 
-               lpanel,     // lollipop panel
-               action      // action
-             ){
-        
-        //"swm-select-controls",
-        //BKDnodeFeatures.vclass,                                    
-        //"swm",
-        //BKDnodeFeatures.state.fsel.swm,
-        //BKDnodeFeatures.lollipanels['loli1'],
-        //BKDnodeFeatures.lollipanels['loli1'].flistSelEventAction );
-            
-        console.log( "BKDnodeFeatures.fcolorCtrl:", lpanel,action);
-        if( ! d3.select( "#" + anchor  ).empty() ){                    
-            d3.select( "#" + anchor + " *" ).remove();
-        }
-
-        //d3.select( "#" + anchor )
-        //    .html('&nbsp;&nbsp;&nbsp;&nbsp;');
-
-        d3.select( "#" + anchor )
-            .html('&nbsp;<b>Variant:</b>&nbsp;');
-        
-        for( var s in clist ){
-            d3.select( "#" + anchor )
-                .append("input")
-                .attr( "type", "checkbox")
-                .attr( "id", anchor + "-" + s )
-                .attr( "name", anchor + "-" + s )
-                .attr( "value", clist[s]["value"])
-                .attr( "style", "accent-color: " + clist[s]["color"]+ ";");
-            
-            d3.select( "#" + anchor )
-                .append( "label" )
-                .attr( "for" , anchor + "-" + s )
-                .html( clist[s]["label"] + " &nbsp;&nbsp;" );
-                
-            BKDnodeFeatures.ftypesel[clist[s]["value"]]=false;
-
-            $( "#" + anchor + "-" + s )
-                .on( 'click', {lpanel: lpanel,
-                               state: nglstate[fselname],
-                               fselname: fselname,
-                               fselstate: fselstate },
-                     
-                     
-                     (event) => { console.log( 'click: data->', event.data );
-                                  //event.data.lpanel.flistSelEventAction( event );
-                                  action( event );
-                                } );
-                        
-        }
-        console.log( "BKDnodeFeatures.fcolorCtrl action: ", "#" + anchor + " input");
-        console.log( "BKDnodeFeatures.fcolorCtrl action: ", lpanel.flistSelEventAction );
-        console.log( $( "#" + anchor + " input") );        
-    }
-
-    */
 }
