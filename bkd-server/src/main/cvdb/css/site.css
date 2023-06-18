@@ -9,7 +9,15 @@
 }
 
 #bkd-nv-field {
-    margin: 0px 0px 50px 0px;   
+    margin: 0px 0px 50px 0px;
+    padding: 0px;
+    border-width: 0px;
+}
+
+#bkd-nv-feature {
+    margin: 0px 0px 0px 0px;
+    padding: 0px;
+    border-width: 0px;
 }
 
 #bkd-sidebar {
@@ -448,4 +456,11 @@ div.msa_tooltip {
 
 td .page-static {
     font-size: 1.25em;
+}
+
+
+
+#bkd-nv-feature_head {
+    margin: 2px 2px 2px 0px;
+    background-color: #eee;
 }

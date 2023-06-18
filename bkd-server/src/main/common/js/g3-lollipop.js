@@ -1181,7 +1181,7 @@ function Lollipop(target, chartType, width) {
 
     // data and settings
     var snvData = [], domainData = {};
-    var seqData = [];
+    var seqData = [], poiData = {};
     var snvDataFormat, domainDataFormat;
 
     /* private variables */
@@ -1203,7 +1203,7 @@ function Lollipop(target, chartType, width) {
         _lollipopLegend;
 
     var _sequence, _seqAAs, _seqAxis = {}, _seqLbl, _seqLblLst;
-
+    var _poiAAs;
 
     var _domainBrush, _xScaleOrig, _domainZoom, _legendHeight;
     var _domainH, _domainW, _mainH, _mainW, _svgH, _svgW;
@@ -1348,7 +1348,22 @@ function Lollipop(target, chartType, width) {
             .attr("x",function (d) { return _getPosAA(d); })
             .attr("y", function (d) { return sequenceOpt.margin.top
                                       + sequenceOpt.text.offset; })
-            .text(function (d) { return d.aa; });
+            .text(function (d) { return d.aa; } );
+
+        console.log( "LP: ", poiData );
+        
+        _poiAAs = _sequence.append("g")
+            .attr("clip-path", "url(#" + sequenceOpt.defsId+ ")")
+            .selectAll( sequenceOpt.sequenceClassName.group )
+            .data( poiData.pos ).enter()
+            .append("rect")
+            .attr("x",function (d) { return _getPosPOI(d); })
+            .attr("y", function (d) { return sequenceOpt.margin.top
+                                     + sequenceOpt.text.offset; })
+            .attr("width", 10).attr("height", 10)         
+            .style( "fill", poiData.color )
+            .style( "fill-opacity", 0.25);
+
 
         _seqAxis.lblPos = [];
         _seqAxis.tlblPos = [];
@@ -1390,7 +1405,7 @@ function Lollipop(target, chartType, width) {
             .attr("x",function (d) { return _xScale(d); })
             .attr("y", function (d) { return sequenceOpt.margin.top + 10; })
             .text(function (d) { return d.toString(); });
-
+        
         _seqAxis.tticks = _sequence.append("g")
             .attr("clip-path", "url(#" + sequenceOpt.defsId + ")")
             .selectAll(lollipopOpt.lollipopClassName.line)
@@ -1513,6 +1528,13 @@ function Lollipop(target, chartType, width) {
         //   console.log("A: " + _datum.pos + ":"+ _datum.aa + ":"+_xScale(_datum.pos));
         //}
         return _xScale(_datum.pos);
+    };
+
+    var _getPosPOI = function (_datum) {
+        //if( _datum.pos < 10 || _datum.pos > 1950 ){
+        //   console.log("A: " + _datum.pos + ":"+ _datum.aa + ":"+_xScale(_datum.pos));
+        //}
+        return _xScale(_datum);
     };
 
     var _getPopY = function (_datum) {
@@ -2589,6 +2611,7 @@ function Lollipop(target, chartType, width) {
         set snvData(_) { snvData = _; }, get snvData() { return snvData; },
         set domainData(_) { domainData = _; }, get domainData() { return domainData; },
         set seqData(_) { seqData = _; }, get seqData() { return seqData; },
+        set poiData(_) { poiData = _; }, get poiData() { return poiData; },
     };
 
     lollipop.format = {

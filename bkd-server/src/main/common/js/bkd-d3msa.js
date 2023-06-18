@@ -46,11 +46,12 @@ class BkdMSA {
             };
         }
 
-        this._data = {dtrac:[]};
+        this._data = { dtrac:[] };
         
         this._view = { target: null,
                        anchor: null,
                        select: {},
+                       poi: {elem: null, pos: [] },
                        rngOn: false,
                        sindex: 0 };
         
@@ -1371,13 +1372,15 @@ class BkdMSA {
         }
     }
 
-    setSelectList( slist, rseq, rcol, cseq, ccol ){
+    setSelectList( slist, rseq, rcol, cseq, ccol, poi ){
         // slist = [pos:color,pos:color,...]
         // rseq = sequence name
         // rcol = name column (in msaHeader)
 
         // cseq = canonocal sequence name
         // ccol = canonical name column (in msaHeader)
+
+        // position of interest (or null)
         
         console.debug("setSelectList:",slist, rseq, rcol,  );
         var sindex = 0;
@@ -1451,7 +1454,7 @@ class BkdMSA {
         var sindex = this._view.sindex;
         for( var k in this._view.select ){
             var kl = k.split(":");
-            
+            console.log(kl);
             var mp = this._data.msaRMap[sindex][ Number( kl[0] ) ];
             var pos = mp * this._view.aaStep - this._view.aaOffset;
             
@@ -1459,6 +1462,9 @@ class BkdMSA {
                 .attr( "x", pos)
                 .attr( "width", this._view.aaStep );                        
         }
+
+        this.updatePOI();
+        
     }
     
     addSelect( pos, color, name, sindex ){
@@ -1483,6 +1489,77 @@ class BkdMSA {
         
             rect.append("title").text( name );       
         return rect;
+    }
+
+
+    updatePOI(){
+        var sindex = this._view.sindex;
+        for( var k in this._view.poi.pos ){
+            var p = this._view.poi.pos[k];
+            var rpoi = p.rect;
+            var ppoi = p.sqpos;
+            var spoi = p.spoi;
+            
+            var mp = this._data.msaRMap[spoi][ Number( ppoi ) ];
+            var pos = mp * this._view.aaStep - this._view.aaOffset;
+            
+            //this._view.select[k]
+            rpoi.attr( "x", pos)
+                .attr( "width", this._view.aaStep );                        
+        }
+    }
+
+    setPOI( poi ){
+
+        console.log( "setPOI", poi );
+
+        var C = this._conf;
+        var D = this._data;
+        var V = this._view;
+
+        var sindex = 0;
+
+        var poi_view = d3.select( "#" + this._view.target + "_seq_view_poi");
+        
+        if(  poi_view.node() == null ){
+            console.log("POI: null")
+            poi_view = d3.select( "#" + this._view.target + "_seq_view" )
+                .append( "g" )
+                .attr("id", this._view.target + "_seq_view_poi");
+            this._view.poi.elem  = poi_view;
+        } else {
+            console.log("POI:", poi_view.node());
+        }
+        
+        // drop current poi
+        
+        d3.select( "#" + this._view.target + "_seq_view_poi .msa-poi").remove();
+        V.poi.pos= [];
+        
+        for( var i =0; i < poi.pos.length; i++){
+            
+            var mp = D.msaRMap[ sindex ][ poi.pos[i] ];  
+            
+            var x = mp * V.aaStep - V.aaOffset;
+
+            console.log( "poi.pos:", i, poi.pos[i], mp, x,
+                         "#" + this._view.target + "_seq_view_poi" );
+            
+            var rect =  d3.select( "#" + this._view.target + "_seq_view_poi" )
+                .append( "rect" )
+                .style( "fill", poi.color )
+                .style( "fill-opacity", 0.25)
+                .style( "stroke", poi.color )
+                .attr( "x", x )
+                .attr( "y", 0 )
+                .attr( "width", V.aaStep )
+                .attr( "height", C.msaDY*(D.msaSeq.length + 0.5) )
+                .attr( "class", "msa-poi");
+            console.log(rect);
+
+            V.poi.pos.push({ rect:rect, sqpos: poi.pos[i], spoi: sindex } );
+            rect.append("title").text( poi.pos[i] );       
+        }
     }
 
 

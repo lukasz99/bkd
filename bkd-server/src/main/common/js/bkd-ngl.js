@@ -203,7 +203,7 @@ class BkdNGL{
             };            
         }
         
-        this.nglstage.loadFile(  config.url ) // url+"swissmodel/"+id+"-1_swm.pdb")
+        this.nglstage.loadFile(  config.url ) 
             .then( loadCallback( { self: this,
                                    cutQC: 0.5 }));        
     }

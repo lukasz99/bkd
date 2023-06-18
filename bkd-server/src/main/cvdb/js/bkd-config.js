@@ -761,6 +761,19 @@ BKDconf = {
                 {id:"feature",
                  label:"Features",
                  header: true,
+                 header_conf: {
+                     query_id: "poi",
+                     query_tp: "radio",
+                     query_val:[
+                         { label: "All",
+                           id: "poi-all",
+                           value: "all" },
+                         { label: "Aminoacid position of interest:",
+                           id: "poi-text",
+                           value: "%%text%%",
+                           textid: "poi-text-id",
+                           flen: 4 }]
+                 },
                  field:[
                      {name:"Features",
                       vpath:['feature'],  // 'feats' 

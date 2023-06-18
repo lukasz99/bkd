@@ -643,33 +643,42 @@ BKDnodeFeatures = {
                     label: "Color By:",
                     type: "radio",
                     options: BKDnodeFeatures.swmcols }   
-              ],
+              ]
             },
             BKDnodeFeatures);
         
         // structure pane
         //---------------
-
         /*
-        var strUrl = BKDnodeFeatures.siteurl + "swissmodel/"
-            + BKDnodeFeatures.data.ac  + "-1_swm.pdb"; 
-
-
-            BKDnodeFeatures.nglSTR = BKDnodeFeatures.nglpane(
+        var strUrl = BKDnodeFeatures.siteurl + "str-pdb/"
+            + BKDnodeFeatures.data.ac  + ".pdb"; 
+        
+        BKDnodeFeatures.nglSTR = BKDnodeFeatures.nglpane(
             {  anchor: "#str-port",
                name: "str",
                url: strUrl,
-               controls: [ { name: "Variant", 
-                             type: "variant",
-                             conf: BKDnodeFeatures.vclass},
-                           
-                           { name: "Color",
-                             type: "color",
-                             conf: [] } ] },
-            {} );
+               controls: [
+                   { name: "vcls",
+                     label: "Variant:", 
+                     type: "checkbox",
+                     getvcls: BKDnodeFeatures.buildvclist,  // varaint classes
+                     getsels: BKDnodeFeatures.buildlslist,  // lolipop selects
+                     options: BKDnodeFeatures.vclass },
+                   
+                   { name: "sel",
+                     label: "Select:",
+                     type: "checkbox",                            
+                     options: BKDnodeFeatures.swmsels },
+                   
+                   { name: "col",
+                     label: "Color By:",
+                     type: "radio",
+                     options: BKDnodeFeatures.swmcols }   
+               ]
+               
+            },
+            BKDnodeFeatures );
         */
-        
-        
     },
 
     nglpane: function( config, data){
@@ -896,9 +905,6 @@ BKDnodeFeatures = {
         // set ftslist: cyan
 
         var smap = {};
-
-        //D3MSA1.dropAllSelect();
-        //D3MSA2.dropAllSelect();
         
         for( var i in ftslist ){
             var pos = ftslist[i].pos;
@@ -915,17 +921,6 @@ BKDnodeFeatures = {
                     = { "name": BKDnodeFeatures.data.sequence[pos-1] + pos };                             
             }
         }
-
-        //console.log(smap);
-        //console.log(Object.keys(smap));
-        
-        //D3MSA1.setSelectList( Object.keys(smap) );
-        //D3MSA2.setSelectList( Object.keys(smap) );
-
-        //D3MSA.setSelectMap( smap );
-        
-        //D3MSA1.setNavView(D3MSA1._msaW/2,D3MSA1._msaW);
-        //D3MSA2.setNavView(D3MSA2._msaW/2,D3MSA2._msaW);
     },
     
     // selection action: structure viewer(s) color
@@ -1015,7 +1010,7 @@ BKDnodeFeatures = {
            //console.log("setIGVSelScheme:ON");
            BKDnodeFeatures.igvbrowse.clearROIs();
            BKDnodeFeatures.igvbrowse.loadROI([{
-               name: 'Feature xxx',
+               name: 'Feature',
                url: BKDnodeFeatures.siteurl+"roi?pos="+rpos,
                indexed: false,
                color: "rgba(68, 134, 247, 0.25)"
@@ -1128,7 +1123,8 @@ BKDnodeFeatures = {
         var canLst = BKDnodeView.mymsa
             .setSelectList( Object.keys(smap),
                             rseq, 1,
-                            'canonical', 0 );
+                            'canonical', 0,
+                            BKDnodeView.poi );
         
         //console.log("canLst:",canLst);
         BKDnodeView.mymsa.setSelectView();  // set view window
@@ -1143,14 +1139,20 @@ BKDnodeFeatures = {
         
         BKDnodeView.mymsa2a.dropAllSelect();
         //BKDnodeView.mymsa2a.setSelectList( Object.keys(smap), rseq, 1);
-        BKDnodeView.mymsa2a.setSelectList( canLst, 'Homo sapiens', 1);
+        BKDnodeView.mymsa2a.setSelectList( canLst,
+                                           'Homo sapiens', 1,
+                                           null, null,
+                                           BKDnodeView.poi );
         BKDnodeView.mymsa2a.setSelectView();
 
         console.log("BKDnodeView.mymsa2b callback");
 
         BKDnodeView.mymsa2b.dropAllSelect();
         //BKDnodeView.mymsa2b.setSelectList( Object.keys(smap), rseq, 1);
-        BKDnodeView.mymsa2b.setSelectList( canLst, 'Homo sapiens', 1);
+        BKDnodeView.mymsa2b.setSelectList( canLst,
+                                           'Homo sapiens', 1,
+                                           null, null,
+                                           BKDnodeView.poi );
         BKDnodeView.mymsa2b.setSelectView();
     },
     

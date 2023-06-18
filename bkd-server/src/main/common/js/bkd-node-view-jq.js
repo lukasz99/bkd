@@ -14,7 +14,9 @@ BKDnodeView = {
     cpos37: "",
     cpos38: "",
     slist: [],
- 
+    //poi: { pos:[], color: "#674B70" },
+    poi: { pos:[], color: "#B7A4BD" },
+    
     init: function( ns, ac , srcAnchor, srcViewAnchor, nodeAnchor, flist, mode ){
         console.log( "bkd-node-view-jq: BKDnodeView.init" );
         this.ns = ns;
@@ -156,10 +158,87 @@ BKDnodeView = {
                 $("#bkd-nv-field").append("<div id='bkd-nv-"+cid+"' class='nv-field'></div>\n");
                 
                 if( format.pane[i].header){
-                    $( "#bkd-nv-" + cid ).append(" <div id='bkd-nv-" + cid + "_head'>"+clbl+"</div>")
+                    if( format.pane[i].header_conf == undefined ){  
+                        $( "#bkd-nv-" + cid ).append(" <div id='bkd-nv-" + cid + "_head'>"+clbl+"</div>" );
+                    } else {
+                        $( "#bkd-nv-" + cid ).append(" <div id='bkd-nv-" + cid + "_head'>"+clbl+"</div>" );
+
+                        var hconf = format.pane[i].header_conf
+                        
+                        if( hconf.query_tp == "radio" ){ 
+
+                            var etg = {};
+                            
+                            for( var q=0; q < hconf.query_val.length; q++ ){
+                                var chk ="";
+                                if( q == 0 ) chk = " checked ";
+                                $( "#bkd-nv-" + cid + "_head" )
+                                    .append( " | <input type='radio'"
+                                             + chk
+                                             + " id='" + hconf.query_val[q].id + "'"
+                                             + " name='" + hconf.query_id + "'"
+                                             + " value='"+ hconf.query_val[q].value+"'>"
+                                             + " <label"
+                                             + " for='" + hconf.query_val[q].id + "'>"
+                                             + hconf.query_val[q].label
+                                             + "</label> ");
+                                
+                                etg[ 'input[id='+ hconf.query_val[q].id +' ]' ] = hconf.query_id;
+                                
+                                if( hconf.query_val[q].value == '%%text%%' ){
+                                    $( "#bkd-nv-" + cid + "_head" )
+                                        .append( "<input type='text' style='margin: 2px;'"
+                                                 +" size='" + hconf.query_val[q].flen+"'"
+                                                 +" id='"+hconf.query_val[q].textid +"'>");
+                                    
+                                    etg[ 'input[id='+ hconf.query_val[q].textid +' ]' ] = hconf.query_val[q].textid;
+                                    
+                                }                                
+                            }
+
+                            for( var k in etg ){                                
+                                $(k).on( 'click', function() {
+                                    var rval = this.value;
+                                    var rtxt = parseInt( $('#poi-text-id')[0].value );
+                                    
+                                    if( rval == 'all' ){
+                                        $('#poi-text-id')[0].value = '';
+                                        rtxt = 0;
+                                        $('#poi-text-id').prop('disabled', false);
+                                    }
+                                    if( rval == '%%text%%' ){
+                                        if( rtxt > 0 ){
+                                            $('#poi-text-id').prop('disabled', true);
+                                        } else {
+                                            $('#poi-text-id')[0].value = '';
+                                            $('#poi-text-id').prop('disabled', false);
+                                            $('#poi-all')[0].checked = true;
+                                            txtx = 0;
+                                        }
+                                    }
+                                    console.log("FF: click:", this, rval, rtxt);
+
+                                    if( rtxt > 0){
+                                        BKDnodeView.poi.pos = [rtxt];
+                                    } else {
+                                        BKDnodeView.poi.pos = [];
+                                    }
+                                    
+                                    if( BKDnodeView.mymsa !== undefined ){
+                                        BKDnodeView.mymsa.setPOI( BKDnodeView.poi );
+                                    }
+                                    if( BKDnodeView.mymsa2a !== undefined ){
+                                        BKDnodeView.mymsa2a.setPOI( BKDnodeView.poi );
+                                    }
+                                    if( BKDnodeView.mymsa2b !== undefined ){
+                                        BKDnodeView.mymsa2b.setPOI( BKDnodeView.poi );
+                                    }
+                                });
+                            }                        
+                        }
+                    }
                 }
-
-
+                
                 // events
                 //-------
 
@@ -709,7 +788,7 @@ BKDnodeView = {
 
          for( var i =0; i <fvlist.length; i ++ ){             
            if( header ){
-             $( tgt ).append( "<div>" + fvlist[i]+ "</div>" );
+             $( tgt ).append( "<div>" + fvlist[i]+ "XXX</div>" );
            }else{
              $( tgt ).append( "<div>" + format.name + ": " + fvlist[i] + "</div>" );  
            }

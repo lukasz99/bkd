@@ -53,6 +53,9 @@ class BkdLollipop{
                       fdict: {}
                     };
 
+        
+        this.poi_data = { color: '#CFFF7', pos:[225]};
+        
         this.state = {
             dset:{},
             dsel:{},
@@ -142,22 +145,14 @@ class BkdLollipop{
         console.log("rebuildView() called");
 
         for( var s in this.state.dsel){
-
             console.log( "BkdLollipop.rebuildView()", s,
                          "dsel->", this.state.dsel[s], 
                          "dset->", this.data.dset[s] ); 
             
             if( this.state.dsel[s] == false
-                || this.data.dset[s] != null ) continue;
-
-
-
-            
-            
+                || this.data.dset[s] != null ) continue;            
         }
-        
-        this.buildView();
-        
+        this.buildView();        
     }
 
     selReset(){       
@@ -376,6 +371,8 @@ class BkdLollipop{
         // add mutation list
         //lollipop.data.snvData = mutList;
         lollipop.data.snvData = mutation_data;
+
+        lollipop.data.poiData = this.poi_data;
 
         var sd = [];
         for( var i=0; i < this.data.sequence.length; i++){
