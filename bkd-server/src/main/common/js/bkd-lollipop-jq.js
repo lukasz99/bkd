@@ -53,8 +53,7 @@ class BkdLollipop{
                       fdict: {}
                     };
 
-        
-        this.poi_data = { color: '#CFFF7', pos:[225]};
+        this.poi_data = { color: '#CFFF7', pos:[]};
         
         this.state = {
             dset:{},
@@ -137,7 +136,18 @@ class BkdLollipop{
                 target.buildView(); } }( this ) );        
     }
 
+    setPOI( poi ){
+        this.poi_data = poi;
+        this.updatePOI();
+    }
 
+    updatePOI(){
+        if( this.lollipop != null ){
+            this.lollipop.updatePOI( this.poi_data );
+        }
+    }
+
+    
     // redisplay after datasets change
     //--------------------------------
     

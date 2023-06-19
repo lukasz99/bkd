@@ -1141,6 +1141,17 @@ function Lollipop(target, chartType, width) {
 
     // sequence options
 
+    var poiOpt = {
+        id: Prefix + "-poi-" + uniqueID,
+        defsId: Prefix + "-poi-defs-" + uniqueID,
+        poiClassName: {
+            group: "poi_group",
+            domain: Prefix + "_domain",
+            brush: "sequence-x-brush",
+            zoom: "main-viz-zoom"
+        }
+    };
+    
     var sequenceOpt = {
         id: Prefix + "-sequence-" + uniqueID,
         defsId: Prefix + "-sequence-defs-" + uniqueID,
@@ -1203,7 +1214,7 @@ function Lollipop(target, chartType, width) {
         _lollipopLegend;
 
     var _sequence, _seqAAs, _seqAxis = {}, _seqLbl, _seqLblLst;
-    var _poiAAs;
+    var _poiViz, _poiAAs, _poiMain;
 
     var _domainBrush, _xScaleOrig, _domainZoom, _legendHeight;
     var _domainH, _domainW, _mainH, _mainW, _svgH, _svgW;
@@ -1274,6 +1285,26 @@ function Lollipop(target, chartType, width) {
             return _getPosAA(d);
         });
 
+        // update poi pos/width
+
+        _poiAAs.attr( "x", function (d) {
+            return _getPosPOI(d) - 0.5 * _getWidthPOI(d);
+        });
+
+        _poiAAs.attr( "width", function (d) {
+            return _getWidthPOI(d);
+        });
+         
+        _poiMain.attr( "x", function (d) {
+            return _getPosPOI(d) - 0.5 * _getWidthPOI(d);
+        });
+
+        _poiMain.attr( "width", function (d) {
+            return _getWidthPOI(d);
+        });
+
+
+        
         // update seq axis position
 
         _seqAxis.ticks
@@ -1325,6 +1356,57 @@ function Lollipop(target, chartType, width) {
         _updateX();
     };
 
+    var _updatePOI = function( poi ){
+        
+        // drop current 
+
+        if( _poiViz != null){
+            d3.select( "." + poiOpt.poiClassName.group).remove();
+        }
+
+        poiData = poi;
+
+        // display new
+
+        _poiViz  = _mainViz.append("g")
+            .attr("id", poiOpt.id) 
+            .attr("class", poiOpt.poiClassName.group);
+        
+        _poiAAs = _poiViz.append("g")
+            .attr("id", poiOpt.id + "-aa")
+            .attr("clip-path", "url(#" + poiOpt.defsId+ ")")            
+            .classed( poiOpt.poiClassName.group ,true);
+
+        _poiMain = _poiViz.append("g")
+            .attr("id", poiOpt.id + "-main")
+            .attr("clip-path", "url(#" + lollipopOpt.defsId+ ")")
+            .classed( poiOpt.poiClassName.group ,true);
+                
+        _poiAAs = d3.select( "#"+poiOpt.id + "-aa")
+            .selectAll("rect")
+            .data( poiData.pos ).enter()
+            .append("rect")
+            .attr("x",function (d) {                
+                return _getPosPOI(d) - 0.5*_getWidthPOI(d); })
+            .attr("y", - _seqH + sequenceOpt.backgroundDY)
+            .attr("width", function (d) { return _getWidthPOI(d); })
+            .attr("height", _seqH - sequenceOpt.backgroundDY)         
+            .style( "fill", poiData.color )
+            .style( "fill-opacity", 0.25);
+
+        _poiMain = d3.select( "#"+poiOpt.id + "-main")
+            .selectAll("rect")
+            .data( poiData.pos ).enter()
+            .append("rect")
+            .attr("x",function (d) {
+                return _getPosPOI(d) - 0.5*_getWidthPOI(d); })
+            .attr("y", 0 ) 
+            .attr("width", function (d) { return _getWidthPOI(d); })
+            .attr("height", lollipopOpt.height)         
+            .style( "fill", poiData.color )
+            .style( "fill-opacity", 0.25);
+    };
+    
     var _drawSequence = function () {
        
         // sequence
@@ -1349,27 +1431,10 @@ function Lollipop(target, chartType, width) {
             .attr("y", function (d) { return sequenceOpt.margin.top
                                       + sequenceOpt.text.offset; })
             .text(function (d) { return d.aa; } );
-
-        console.log( "LP: ", poiData );
         
-        _poiAAs = _sequence.append("g")
-            .attr("clip-path", "url(#" + sequenceOpt.defsId+ ")")
-            .selectAll( sequenceOpt.sequenceClassName.group )
-            .data( poiData.pos ).enter()
-            .append("rect")
-            .attr("x",function (d) { return _getPosPOI(d); })
-            .attr("y", function (d) { return sequenceOpt.margin.top
-                                     + sequenceOpt.text.offset; })
-            .attr("width", 10).attr("height", 10)         
-            .style( "fill", poiData.color )
-            .style( "fill-opacity", 0.25);
-
-
         _seqAxis.lblPos = [];
         _seqAxis.tlblPos = [];
         
-        console.log("lolli1: ",seqData.length);
-
         for( var i = 100; i< seqData.length; i+=100 ){
             _seqAxis.lblPos.push(i);
         }
@@ -1377,8 +1442,6 @@ function Lollipop(target, chartType, width) {
         for( var i = 10; i< seqData.length; i+=10 ){
             if( i % 100 > 0 ){ _seqAxis.tlblPos.push(i); }
         }
-        console.log("lolli1: ", _seqAxis.lblPos);
-        console.log("lolli1: ", _seqAxis.tlblPos);
         
         _seqAxis.ticks = _sequence.append("g")
             .attr("clip-path", "url(#" + lollipopOpt.defsId + ")")            
@@ -1431,10 +1494,45 @@ function Lollipop(target, chartType, width) {
             .attr("x",function (d) { return _xScale(d); })
             .attr("y", function (d) { return sequenceOpt.margin.top
                                       + 10; })
-            .text(function (d) { return d.toString(); });
-        
+            .text(function (d) { return d.toString(); });        
     };
 
+    var _drawPOI = function () {
+        
+        _poiViz  = _mainViz.append("g")
+            .attr("id", poiOpt.id) 
+            .attr("class", poiOpt.poiClassName.group);
+        
+        _poiAAs = _poiViz.append("g")
+            .attr("id", poiOpt.id + "-aa")
+            .attr("clip-path", "url(#" + poiOpt.defsId+ ")")            
+            .classed( poiOpt.poiClassName.group ,true)
+            .selectAll("rect")
+            .data( [] ).enter()
+            .append("rect")
+            .attr("x",function (d) { return _getPosPOI(d); })
+            .attr("y", - _seqH + sequenceOpt.backgroundDY)
+            .attr("width", function (d) { _getWidthPOI(d); })
+            .attr("height", _seqH - sequenceOpt.backgroundDY)         
+            .style( "fill", poiData.color )
+            .style( "fill-opacity", 0.25);
+        
+        _poiMain = _poiViz.append("g")
+            .attr("id", poiOpt.id + "-main")
+            .attr("clip-path", "url(#" + lollipopOpt.defsId+ ")")
+            .classed( poiOpt.poiClassName.group ,true)
+            .selectAll("rect")
+            .data( [] ).enter()
+            .append("rect")
+            .attr("x",function (d) {
+                return _getPosPOI(d); })
+            .attr("y", 0 ) 
+            .attr("width", function (d) { _getWidthPOI(d); })
+            .attr("height", lollipopOpt.height)         
+            .style( "fill", poiData.color )
+            .style( "fill-opacity", 0.25);               
+    };
+    
     var _drawDomain = function () {
         // domain protein bar
         let _barH = _domainH - domainOpt.bar.margin.top - domainOpt.bar.margin.bottom;
@@ -1517,24 +1615,21 @@ function Lollipop(target, chartType, width) {
     };
 
     var _getPopX = function (_datum) {
-        //if( _datum.position < 10 || _datum.position > 1950 ){
-        //  console.log("X: " + _datum.position + ":"+ _xScale(_datum.position));
-        //}
         return _xScale(_datum.position);
     };
 
     var _getPosAA = function (_datum) {
-        //if( _datum.pos < 10 || _datum.pos > 1950 ){
-        //   console.log("A: " + _datum.pos + ":"+ _datum.aa + ":"+_xScale(_datum.pos));
-        //}
         return _xScale(_datum.pos);
     };
 
     var _getPosPOI = function (_datum) {
-        //if( _datum.pos < 10 || _datum.pos > 1950 ){
-        //   console.log("A: " + _datum.pos + ":"+ _datum.aa + ":"+_xScale(_datum.pos));
-        //}
         return _xScale(_datum);
+    };
+
+    var _getWidthPOI = function (_datum) {
+        var wdth = _xScale(_datum) - _xScale(_datum-1);
+        if( wdth < 5 ) wdth = 5;
+        return wdth;
     };
 
     var _getPopY = function (_datum) {
@@ -2381,6 +2476,13 @@ function Lollipop(target, chartType, width) {
             .attr("width", _mainW + 20) // TODO
             .attr("height", 30);
 
+        _mainViz.append("clipPath")
+            .attr("id", poiOpt.defsId)
+            .append("rect")
+            .attr("transform","translate(0,"+(-_seqH + sequenceOpt.backgroundDY)+")")
+            .attr("width", _mainW) // TODO
+            .attr("height", _mainH + domainOpt.margin.top );        
+
         // defs
         _domainViz.append("clipPath")
             .attr("id", domainOpt.defsId)
@@ -2655,8 +2757,11 @@ function Lollipop(target, chartType, width) {
         }
 
         // add lollipops
-        _drawLollipops()
-        ;
+        _drawLollipops();
+
+        _drawPOI();
+        
+        
         if (options.legend) {
             _addLollipopLegend();
         }
@@ -2668,6 +2773,12 @@ function Lollipop(target, chartType, width) {
         _chartInit = true;
     };
 
+
+    lollipop.updatePOI = function( poi ){
+        _updatePOI( poi);        
+    };
+
+    
     return lollipop;
 }
 

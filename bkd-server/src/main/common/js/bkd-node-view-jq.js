@@ -14,8 +14,8 @@ BKDnodeView = {
     cpos37: "",
     cpos38: "",
     slist: [],
-    //poi: { pos:[], color: "#674B70" },
-    poi: { pos:[], color: "#B7A4BD" },
+    poi: { pos:[], color: "#674B70" },
+    //poi: { pos:[], color: "#B7A4BD" },
     
     init: function( ns, ac , srcAnchor, srcViewAnchor, nodeAnchor, flist, mode ){
         console.log( "bkd-node-view-jq: BKDnodeView.init" );
@@ -233,6 +233,10 @@ BKDnodeView = {
                                     if( BKDnodeView.mymsa2b !== undefined ){
                                         BKDnodeView.mymsa2b.setPOI( BKDnodeView.poi );
                                     }
+
+                                    BKDnodeFeatures.setPOI( BKDnodeView.poi );
+
+                                    
                                 });
                             }                        
                         }

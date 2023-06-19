@@ -1313,7 +1313,16 @@ BKDnodeFeatures = {
         return tag;
     },
 
+    // POI set/reset
+    //--------------
 
+    setPOI: function( poi ){
+        console.log("POI: BKDnodeFeatures.setPOI:", poi);
+        if( BKDnodeFeatures.lollipanels[ 'loli1' ] != null ){
+            BKDnodeFeatures.lollipanels[ 'loli1' ].setPOI( poi );            
+        }
+    },
+    
     // lolipop selects
     //----------------
     
