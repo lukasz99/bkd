@@ -26,6 +26,7 @@
 -->
 
    <script src="js/g3-lollipop.js" type="text/javascript" language="JavaScript"></script> 
+   <script src="js/d3-context-menu.js" type="text/javascript" language="JavaScript"></script> 
    <script src="js/feature-viewer.bundle.js" type="text/javascript" language="JavaScript"></script> 
    <script src="js/ngl.js"></script> 
    <script src="js/igv.js" type="text/javascript" charset="utf-8"></script>

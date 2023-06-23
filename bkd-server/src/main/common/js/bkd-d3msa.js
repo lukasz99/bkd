@@ -119,7 +119,7 @@ class BkdMSA {
                 if( brlimit >msa._conf.brushLimit){  // no slope modification                  
                     msa._view._brl = Math.floor( brlimit ); 
                 }
-
+                msa._initMSA();
                 msa._initViz();                
                 msa._render();                
             }
@@ -135,6 +135,42 @@ class BkdMSA {
 
     }
 
+
+    _initMSA(){
+
+        var AA= '-ACDEFGHIKLMNPQRSTVWY';
+        
+        var dms = this._data.msaSeq;
+        
+        var msaCnt = [];  // AA counts at each position
+        var msaEnt = [];  // entropy at each position
+
+        for( var p = 0; p < dms[0].length; p ++){
+            var frq = {};
+
+            for( var s in dms ){  // go over sequences
+                //console.log("initMSA", s, p, dms[s][p]);
+                if( frq[ dms[s][p] ] == undefined  ) frq[ dms[s][p] ] = 0;
+                frq[ dms[s][p] ] += 1;
+            }
+            msaCnt.push(frq);
+            //console.log("initMSA -> frq",frq);
+            var ent = 0;
+            for( var aa in AA){
+                if( frq[AA[aa]] != undefined ){ 
+                    ent -= frq[ AA[aa] ] * Math.log2( frq[AA[aa]]/dms.length );
+                }
+            }
+            ent = ent/dms.length;
+            msaEnt.push(ent);
+        }
+
+        //console.log( "initMSA -> msaCnt:", msaCnt);
+        //console.log( "initMSA -> masEnt:", msaEnt);
+        this._data.msaCnt = msaCnt;
+        this._data.msaEnt = msaEnt;
+    }
+    
     _initViz(){
 
         // calculate positions/sizes

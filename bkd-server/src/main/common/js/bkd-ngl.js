@@ -39,15 +39,17 @@ class BkdNGL{
                 break;
             }
         }
-        
+
         d3.select( this.anchor )
             .html( '<div id="'+ this.pfx + '-controls" '
                    + ' class="bkd-ngl-controls" '
                    + ' style="background-color: black; color: white;">'
-                   + '<table class="bkd-ngl-controls-table" width="100%" align="center">'
+                   + '<table class="bkd-ngl-controls-table"'
+                   + ' width="100%" align="center">'
                    + '</table>'
                    + '</div>'
-                   + '<div id="'+ this.pfx + '-view" class="bkd-ngl-view"></div>' );
+                   + '<div id="'+ this.pfx + '-view" '
+                   + ' class="bkd-ngl-view"></div>');
         
         console.log("BkdNGL: controls->", config.controls);
         
@@ -62,12 +64,12 @@ class BkdNGL{
             
             var osel = this.anchor + " .bkd-ngl-controls-table ." + cname;
             console.log( "BkdNGL: osel:", osel );
-
+            
             var a  = d3.select( osel );                
             console.log( "BkdNGL: a: " , a);               
             
             if( config.controls[i].label != undefined ){
-                a.html("&nbsp;" + config.controls[i].label + "&nbsp;&nbsp;");
+               a.html("&nbsp;" + config.controls[i].label + "&nbsp;&nbsp;");
             }
             
             for( var j in config.controls[i].options ){
@@ -87,26 +89,32 @@ class BkdNGL{
                     .append( "label" )
                     .attr( "for" , cname + "-" + j )
                     .html( copt.label + " &nbsp;&nbsp;" );
-                
+
                 $( "#" + cname + "-" + j )
                     .on( 'click',
                          { self: this },
-                         (event) => { console.debug( 'click: event->', event.target  );
-                                      var pv = event.target.value.split(':');
-                                      console.debug( 'click: par->', pv[0],
-                                                     ' val->', pv[1],
-                                                     ' state->', event.target.checked);
-                                      event.data.self.state[pv[0]][pv[1]] = event.target.checked;
-                                      if( event.target.type == 'radio'){
-                                          var cst = event.data.self.state[pv[0]];
-                                          for(var i in cst ){
-                                              if( i != pv[1] ) cst[i] = ! event.target.checked;
-                                          }
-                                      }
-                                      
-                                      console.debug( 'BkdNGL: state->', event.data.self.state );
-                                      event.data.self.setstyle( pv[0], pv[1], event.target.checked );
-                                    });                               
+                         (event) => {
+                             console.debug( 'click: event->', event.target  );
+                             var pv = event.target.value.split(':');
+                             console.debug( 'click: par->', pv[0],
+                                            ' val->', pv[1],
+                                            ' state->', event.target.checked);
+                             event.data.self.state[pv[0]][pv[1]]
+                                 = event.target.checked;
+                             if( event.target.type == 'radio'){
+                                 var cst = event.data.self.state[pv[0]];
+                                 for(var i in cst ){
+                                     if( i != pv[1] ){
+                                         cst[i] = ! event.target.checked;
+                                     }
+                                 }
+                             }
+                             
+                             console.debug( 'BkdNGL: state->',
+                                            event.data.self.state );
+                             event.data.self.setstyle( pv[0], pv[1],
+                                                       event.target.checked );
+                         });                               
             }
         }
 
@@ -141,10 +149,13 @@ class BkdNGL{
                     
                     if( bf > selQCut) {
                         if( rmap[cnm]  == undefined ) rmap[cnm] = {};
-                        if( rmap[cnm][rno] == undefined ) rmap[cnm][rno] = true;
+                        if( rmap[cnm][rno] == undefined ){
+                            rmap[cnm][rno] = true;
+                        }
                     }
                     //console.log(cnm,rno,bf);                    
                 });
+                
                 
                 //var swmrmap = rmap;
                 var rk = Object.keys( rmap );
@@ -202,24 +213,24 @@ class BkdNGL{
                 console.log( "BkdNGL: loaded");
             };            
         }
-        
+
         this.nglstage.loadFile(  config.url ) 
             .then( loadCallback( { self: this,
                                    cutQC: 0.5 }));        
     }
     
-    rerender(){
-        
+    rerender(){        
         console.log("rerender called");
         this.setstyle("vcls",null, null);            
     }
     
-    //---------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
 
     setstyle( par, value, state ){
         
         console.log( "setstyle called:", par, value, state);
+        console.log( " data.state:",this.state);
         console.log( " data.fstate:",this._data.fstate);
 
         // handle selection
@@ -231,15 +242,18 @@ class BkdNGL{
             this.nglcomp.setSelection( csel );
         }
 
+        
+        
         // handle vcls
 
+        var rlist = []; 
+        
         if( par == 'vcls' &&  this.getvcls != undefined ){
             // lolipop selections - see BKDnodeFeatures.fstate
-            // this.state - see  BKDnodeFeatures.ftypesel[clist[s]["value"]]=false; - checkboxes 
+            // this.state - see:
+            // BKDnodeFeatures.ftypesel[clist[s]["value"]]=false; - checkboxes 
             var rmap = this.getvcls( this.state );
             console.log("rmap:", rmap);
-
-            var rlist = []; 
             
             for( var i in rmap ){
                 var pos = rmap[i].pos;
@@ -255,25 +269,45 @@ class BkdNGL{
                     rlist.push(["orange",k]);
                 }            
             }
-            
-            if( rlist.length > 0 ){
-                rlist.push( ["green","*"]);
-            } else {
-                rlist.push(["atomindex", "*"]);
-            }
-
-            console.log("rlist->",rlist);
-            
-            
-            var colorScheme = NGL.ColormakerRegistry
-                .addSelectionScheme( rlist,"features" );
-            
-            var newrep = this.nglcomp.addRepresentation(
-                "cartoon",{color: colorScheme});
-           
-            this.nglcomp.removeRepresentation( this.currep );
-            this.currep  = newrep;          
-            this.nglcomp.autoView("all");                   
         }
-    }
+
+        if( rlist.length > 0 ){
+            rlist.push( ["green","*"]);
+        } else {
+
+            var data = BKDnodeView.mymsa2a._data;
+            console.log("  BkdNGL: data->", data.msaEnt);
+            
+            if( this.state.col.rain ) rlist.push(["atomindex", "*"]);
+
+            if( this.state.col.cmsa ){
+                
+                var emax = 0;
+
+                for( var i = 0; i < data.msaEnt.length; i++){
+                    if( data.msaEnt[i] > emax  ) emax = data.msaEnt[i];                        
+                }
+                if( emax == 0) emax = 1;
+                const interpolator = d3.interpolateRgb.gamma(2.1)("green", "magenta");
+                for( var i = 0; i < data.msaEnt.length; i++){
+                    var c = 2*(data.msaEnt[i]/emax)**1.5;
+                    var col = d3.color(interpolator(c)).formatHex();
+                    //console.log(col.r,col.g,col.b);
+                    rlist.push([col,String(i)]);                   
+                }
+            }
+        }
+        
+        console.log("rlist->",rlist);
+        
+        var colorScheme = NGL.ColormakerRegistry
+            .addSelectionScheme( rlist,"features" );
+        
+        var newrep = this.nglcomp.addRepresentation(
+            "cartoon",{color: colorScheme});
+        
+        this.nglcomp.removeRepresentation( this.currep );
+        this.currep  = newrep;          
+        this.nglcomp.autoView("all");                   
+    }    
 }
