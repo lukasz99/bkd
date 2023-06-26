@@ -556,6 +556,15 @@
                 <include>*.css</include>                   
               </includes>
             </resource>
+            
+            <resource>
+              <directory>${basedir}/src/main/common/img</directory>
+              <targetPath>img</targetPath>
+              <filtering>true</filtering>
+              <includes>
+                <include>*.svg</include>                   
+              </includes>
+            </resource>
  
             <resource>
               <directory>${basedir}/src/main/${db.ver}/tiles</directory>

@@ -628,19 +628,19 @@ BKDnodeFeatures = {
               url: swmUrl,
               controls: [
                   { name: "vcls",
-                    label: "Variant:", 
+                    label: "Variant", 
                     type: "checkbox",
                     getvcls: BKDnodeFeatures.buildvclist,  // varaint classes
                     getsels: BKDnodeFeatures.buildlslist,  // lolipop selects
                     options: BKDnodeFeatures.vclass },
                   
                   { name: "sel",
-                    label: "Select:",
+                    label: "Select",
                     type: "checkbox",                            
                     options: BKDnodeFeatures.swmsels },
                   
                   { name: "col",
-                    label: "Color By:",
+                    label: "Color By",
                     type: "radio",
                     options: BKDnodeFeatures.swmcols }   
               ]

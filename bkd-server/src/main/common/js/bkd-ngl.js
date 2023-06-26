@@ -44,23 +44,136 @@ class BkdNGL{
             .html( '<div id="'+ this.pfx + '-controls" '
                    + ' class="bkd-ngl-controls" '
                    + ' style="background-color: black; color: white;">'
-                   + '<table class="bkd-ngl-controls-table"'
-                   + ' width="100%" align="center">'
-                   + '</table>'
+                   + '<table class="bkd-ngl-controls-table" width="100%" align="center"></table>'
                    + '</div>'
                    + '<div id="'+ this.pfx + '-view" '
                    + ' class="bkd-ngl-view"></div>');
-        
+
         console.log("BkdNGL: controls->", config.controls);
+
+        var row = d3.select( this.anchor + " .bkd-ngl-controls-table")
+            .append("tr");
+        
+        row.append("td")
+            .attr("class", cname)
+            .attr("colspan","1")
+            .attr("align","left")            
+        //.style("padding-left","3px")
+        //.style("padding-top","3px")
+            .append("img")
+            .attr("src","img/hamburger-menu-white.svg")
+            .classed("bkd-ngl-icon",true);
+        
+        row.append("td")
+            .attr("class", cname)
+            .attr("colspan","1")
+            .attr("width","95%")
+            .attr("align", "center")
+            .attr("id",this.pfx + '-controls-var');
+        
+        row.append("td")
+            .attr("class", cname)
+            .attr("colspan","1")
+            .attr("align","right")
+            .style("padding-right","4px")
+            .style("padding-top","3px")
+            .append("img")
+            .attr("src","img/search-white.svg")
+            .classed("bkd-ngl-icon",true);
+        
+        var menu = [];
         
         for( var i in config.controls){
+            var mitem = {children:[]};
+            menu.push(mitem);
             console.log(i);
             var cname = this.pfx + "-controls-" + config.controls[i].name;
+            mitem.title = config.controls[i].label;
+            
+            var osel = this.anchor + " .bkd-ngl-controls-table ." + cname;
+            console.log( "BkdNGL: osel:", osel );
+            
+            if( config.controls[i].name == "vcls"){
+                for( var j in config.controls[i].options ){
+                    
+                    var copt = config.controls[i].options[j];
+                    
+                    console.log( "BkdNGL: copt:", copt, " copt.id->", cname + "-" + j );
+                    
+                    var oname = cname;
+                    mitem.children.push( { title: copt.label,
+                                           action: function(d){ console.log("action!!!") }
+                                         } );
+                    
+                    if( config.controls[i].type != 'radio') oname = oname + "-" + j;
+                    
+                    d3.select( '#' + this.pfx + '-controls-var' )
+                        .append( "input" )
+                        .attr( "type", config.controls[i].type)
+                        .attr( "id", cname + "-" + j )
+                        .attr( "name", oname )
+                        .attr( "value", config.controls[i].name+":"+copt.value)
+                        .attr( "style", "accent-color: " + copt.color+ ";");
+                    
+                    d3.select( '#' + this.pfx + '-controls-var' )
+                        .append( "label" )
+                        .attr( "for" , cname + "-" + j )
+                        .html( copt.label + " &nbsp;&nbsp;" );
+                    
+                    $( "#" + cname + "-" + j )
+                        .on( 'click',
+                             { self: this },
+                             (event) => {
+                                 console.debug( 'click: event->', event.target  );
+                                 var pv = event.target.value.split(':');
+                                 console.debug( 'click: par->', pv[0],
+                                                ' val->', pv[1],
+                                                ' state->', event.target.checked);
+                                 event.data.self.state[pv[0]][pv[1]]
+                                     = event.target.checked;
+                                 if( event.target.type == 'radio'){
+                                     var cst = event.data.self.state[pv[0]];
+                                     for(var i in cst ){
+                                         if( i != pv[1] ){
+                                             cst[i] = ! event.target.checked;
+                                         }
+                                     }
+                                 }
+                                 
+                                 console.debug( 'BkdNGL: state->',
+                                                event.data.self.state );
+                                 event.data.self.setstyle( pv[0], pv[1],
+                                                           event.target.checked );
+                             });
+                }      
+                
+            } else {
+            
+                var osel = this.anchor + " .bkd-ngl-controls-table ." + cname;
+                console.log( "BkdNGL: osel:", osel );
+                
+                for( var j in config.controls[i].options ){
+                    var copt = config.controls[i].options[j];
+                    mitem.children.push( { title: copt.label,
+                                           action: function(d){ console.log("action!!!") }
+                                         } );                                        
+                }                
+            }
+        }    
+           
+        /*
 
-            d3.select( this.anchor + " .bkd-ngl-controls-table")
-                .append("tr").append("td")
-                .attr("class", cname)
-                .attr("colspan","2");
+        for( var i in config.controls){
+            var mitem = {children:[]};
+            menu.push(mitem);
+            console.log(i);
+            var cname = this.pfx + "-controls-" + config.controls[i].name;
+            mitem.title = config.controls[i].label;
+            
+            //d3.select( this.anchor + " .bkd-ngl-controls-table")
+            //    .append("tr").append("td")
+            //    .attr("class", cname)
+            //    .attr("colspan","2");
             
             var osel = this.anchor + " .bkd-ngl-controls-table ." + cname;
             console.log( "BkdNGL: osel:", osel );
@@ -69,21 +182,25 @@ class BkdNGL{
             console.log( "BkdNGL: a: " , a);               
             
             if( config.controls[i].label != undefined ){
-               a.html("&nbsp;" + config.controls[i].label + "&nbsp;&nbsp;");
+               //a.html("&nbsp;" + config.controls[i].label + "&nbsp;&nbsp;");
             }
             
             for( var j in config.controls[i].options ){
                 var copt = config.controls[i].options[j];
                 console.log( "BkdNGL: copt:", copt, " copt.id->", cname + "-" + j );
                 var oname = cname;
+                mitem.children.push( { title: copt.label,
+                                       action: function(d){ console.log("action!!!") }
+                                     } );
+                
                 if( config.controls[i].type != 'radio') oname = oname + "-" + j;
                 
-                a.append("input")
-                    .attr( "type", config.controls[i].type)
-                    .attr( "id", cname + "-" + j )
-                    .attr( "name", oname )
-                    .attr( "value", config.controls[i].name+":"+copt.value)
-                    .attr( "style", "accent-color: " + copt.color+ ";");
+                //a.append("input")
+                //    .attr( "type", config.controls[i].type)
+                //    .attr( "id", cname + "-" + j )
+                //    .attr( "name", oname )
+                //    .attr( "value", config.controls[i].name+":"+copt.value)
+                //    .attr( "style", "accent-color: " + copt.color+ ";");
                 
                 d3.select( osel )
                     .append( "label" )
@@ -114,16 +231,23 @@ class BkdNGL{
                                             event.data.self.state );
                              event.data.self.setstyle( pv[0], pv[1],
                                                        event.target.checked );
-                         });                               
+                         });
+            }         
             }
-        }
 
-        $( this.anchor ).show();   
+        */
+        
+        d3.select(".bkd-ngl-icon")
+            .on('click', d3.contextMenu(menu));
+        
+        $( this.anchor ).show();
+        
         var phght = $( this.anchor ).height();
         var chght = $( '#' + this.pfx+'-controls' ).height();
-        $( '#' + this.pfx + '-view' ).height( phght - chght );
+        $( '#' + this.pfx + '-view' ).height( phght - chght - 12 );
         this.nglstage = new NGL.Stage( this.pfx + '-view' );
         $( this.anchor ).hide();
+        
         
         console.log( "BkdNGL: PDB load:" + config.url );
         
