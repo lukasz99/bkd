@@ -11,6 +11,7 @@
 .d3-context-menu ul li {
 	margin: 0;
 	padding: 0;
+    white-space: nowrap;
 }
 
 .d3-context-menu ul {
@@ -111,7 +112,7 @@
 */
 .d3-context-menu-theme ul li.is-parent:after {
 	border-left: 7px solid transparent;
-	border-top: 7px solid red;
+	border-top: 7px solid gray;
 	content: "";
 	height: 0;
 	position: absolute;

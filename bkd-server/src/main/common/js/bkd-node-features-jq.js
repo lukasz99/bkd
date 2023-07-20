@@ -86,6 +86,8 @@ BKDnodeFeatures = {
     cpos37: "",
     cpos38: "",
     lollipop: null,
+    nglSWM: null,
+    nglSTR: null,
     config: {"lollipanel":{ "detailtable":null } },
     state: { fsel:{ topo:{}, swm:{}, str:{} },
              seqvar: null,
@@ -643,7 +645,8 @@ BKDnodeFeatures = {
                     label: "Color By",
                     type: "radio",
                     options: BKDnodeFeatures.swmcols }   
-              ]
+              ],
+              poiColor: "#B71DDE"   // "#B7A4BD"
             },
             BKDnodeFeatures);
         
@@ -674,8 +677,8 @@ BKDnodeFeatures = {
                      label: "Color By:",
                      type: "radio",
                      options: BKDnodeFeatures.swmcols }   
-               ]
-               
+               ],
+               poiColor: "#B71DDE"   // "#B7A4BD"               
             },
             BKDnodeFeatures );
         */
@@ -1042,11 +1045,11 @@ BKDnodeFeatures = {
                                           slist
                                         );
         
-        if( BKDnodeFeatures.nglSWM !== undefined){
+        if( BKDnodeFeatures.nglSWM !== null){
             BKDnodeFeatures.setNGLColScheme( BKDnodeFeatures.nglSWM );
         }
         
-        if( BKDnodeFeatures.nglSTR !== undefined){
+        if( BKDnodeFeatures.nglSTR !== null){
             BKDnodeFeatures.setNGLColScheme( BKDnodeFeatures.nglSTR );
         }
         
@@ -1315,12 +1318,20 @@ BKDnodeFeatures = {
 
     // POI set/reset
     //--------------
-
+    
     setPOI: function( poi ){
         console.log("POI: BKDnodeFeatures.setPOI:", poi);
         if( BKDnodeFeatures.lollipanels[ 'loli1' ] != null ){
             BKDnodeFeatures.lollipanels[ 'loli1' ].setPOI( poi );            
         }
+
+        if( BKDnodeFeatures.nglSWM != null ){
+            BKDnodeFeatures.nglSWM.setPOI( poi );            
+        }
+
+        if( BKDnodeFeatures.nglSTR != null ){
+            BKDnodeFeatures.nglSTR.setPOI( poi );            
+        } 
     },
     
     // lolipop selects

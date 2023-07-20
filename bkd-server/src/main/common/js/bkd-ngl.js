@@ -20,6 +20,10 @@ class BkdNGL{
         this.rcol = { rain: null, asel: null,
                       cmsa: null, csnp: null };
 
+        this.detail = false;
+        this.poi = null;
+        this.poiColor = "#674B70";
+
         this.state = { sel:{ hiqc: false, chain: false,
                              aset: false },
                        
@@ -78,8 +82,20 @@ class BkdNGL{
             .style("padding-right","4px")
             .style("padding-top","3px")
             .append("img")
-            .attr("src","img/search-white.svg")
+            .attr("src","img/search-plus-white.svg")
+            .attr("id", this.pfx + "controls-detail")
             .classed("bkd-ngl-icon",true);
+
+
+        $( "#" + this.pfx + "controls-detail")
+            .on( 'click',
+                 { self: this },
+                 (event) => {
+                     console.log( 'click: event->', event.target  );
+                     console.log( 'click: data->', event.data  );
+                     event.data.self.toggleDetail();
+                     
+                 });
         
         var menu = [];
         
@@ -118,7 +134,7 @@ class BkdNGL{
                     d3.select( '#' + this.pfx + '-controls-var' )
                         .append( "label" )
                         .attr( "for" , cname + "-" + j )
-                        .html( copt.label + " &nbsp;&nbsp;" );
+                        .html( copt.label + " &nbsp;&nbsp;" ); //  \&#x2611;"
                     
                     $( "#" + cname + "-" + j )
                         .on( 'click',
@@ -244,7 +260,7 @@ class BkdNGL{
         
         var phght = $( this.anchor ).height();
         var chght = $( '#' + this.pfx+'-controls' ).height();
-        $( '#' + this.pfx + '-view' ).height( phght - chght - 12 );
+        $( '#' + this.pfx + '-view' ).height( phght - chght - 0 );
         this.nglstage = new NGL.Stage( this.pfx + '-view' );
         $( this.anchor ).hide();
         
@@ -264,7 +280,7 @@ class BkdNGL{
                 var selStr = "";
                 var selQCut = args.cutQC;
                 
-                var rmap = {};
+                var rmap = {};  //  eg rmap[A][123];
             
                 o.structure.eachAtom( function(atom) {
                     var bf = atom.bfactor;
@@ -284,8 +300,9 @@ class BkdNGL{
                 //var swmrmap = rmap;
                 var rk = Object.keys( rmap );
                 console.log("#### RK:", rk);
-                
-                for( var c in rk ){
+
+                //var ckl = [];
+                for( var c in rk ){    // chains
                     console.log("#### RM:",rk[c], rmap[rk[c]]);
                     var ckl = Object.keys( rmap[rk[c]] );
                     ckl.sort(function(a,b) { Number(a) > Number(b) } );
@@ -347,16 +364,164 @@ class BkdNGL{
         console.log("rerender called");
         this.setstyle("vcls",null, null);            
     }
+
+    setPOI( poi ){
+        this.poi = poi;
+        this.setstyle( 'poi', this.poi, null );
+    }
     
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
 
+    toggleDetail(){
+        console.log( " detail: ", this.detail );
+
+        this.detail =   ! this.detail ;
+        
+        if( this.detail ){
+            d3.select( "#" + this.pfx + "controls-detail")
+                .attr("src","img/search-minus-white.svg");
+        } else {
+            d3.select( "#" + this.pfx + "controls-detail")
+                .attr("src","img/search-plus-white.svg");            
+        }
+
+        if( this.detail ){
+            
+            var mst = this.nglcomp.structure;
+            var rmap = {};
+            
+            var xr = null;
+            var yr = null;
+            var zr = null;
+
+            var poi = this.poi;
+            
+            mst.eachAtom( function(atom) {                            
+                var cnm = atom.chainname;                   
+                var rno = atom.resno;
+                console.log("POI:",poi);
+                if(cnm == 'A' && poi.pos.includes( Number(rno) ) ){
+                    xr = atom.x;
+                    yr = atom.y;                   
+                    zr = atom.z;
+                    console.log( xr, yr, zr );
+                }
+            });
+
+            if( xr == null) {
+                return;
+            }
+            
+            mst.eachAtom( function(atom) {
+                var x = xr - atom.x;
+                var y = yr - atom.y;
+                var z = zr - atom.z;
+                var cnm = atom.chainname;
+                var rno = atom.resno;
+                
+                if( x*x + y*y + z*z < 300 ){                    
+                    if( rmap[cnm]  == undefined ) rmap[cnm] = {};
+                    if( rmap[cnm][rno] == undefined ){
+                        rmap[cnm][rno] = true;
+                    }
+                }               
+            });
+            
+            var rk = Object.keys( rmap );
+            
+            var sel = "";
+           
+            for( var c in rk ){ // go over chains
+                console.log("#### RM:",rk[c], rmap[rk[c]]);
+                var ckl = Object.keys( rmap[rk[c]] );
+                ckl.sort(function(a,b) { Number(a) > Number(b) } );
+                console.log("####:: ",rk[c], ":",ckl);                    
+                
+                var prev = Number(ckl[0]);
+                var lop = "";
+                for( var c in ckl ){
+                    var nc = Number( ckl[c] );
+                    console.log("#### nc: ",nc, prev, nc - prev);
+                    if( nc > prev ){
+                        if( nc - prev == 1 ){ // seq
+                            if( lop != "-"){
+                                lop = "-";
+                                sel = sel + "-";
+                            }
+                            prev = nc;
+                        } else {  // cont or gap                            
+                            if( lop == "-" ){ // gap starts
+                                lop = "";
+                                sel = sel + prev + " or " + nc;
+                            } else{  // next gap 
+                                sel = sel + " or " + nc;
+                            }
+                            prev = nc;
+                        }                            
+                    } else {
+                        sel = String(nc);
+                        prev = nc;
+                    }
+                }
+            }
+            
+            console.log( "SEL:" , sel[sel.length-1] );
+
+            if( sel[sel.length-1] == '-') sel = sel.substring(0,sel.length-1);
+
+            console.log( "SEL:" , sel );
+            
+            var spos = String(this.poi.pos[0]);
+            var pclr = this.poiColor;
+            
+            if( this._conf.poiColor != undefined ) pclr = this._conf.poiColor;  
+
+                        
+            var cs = NGL.ColormakerRegistry
+                .addSelectionScheme( [ [ pclr, spos + " and _C"],
+                                       ["element","*"] ],"poi" );
+            
+            var newrep = this.nglcomp.addRepresentation( 
+               "licorice", { color: "element" } );
+
+            //var newrep = this.nglcomp.addRepresentation( 
+            //    "surface", { color: cs, type: "dot" } );
+
+            this.nglcomp.removeRepresentation( this.currep );
+            this.currep  = newrep;
+            this.nglcomp.setSelection( sel );
+            
+            this.nglcomp.autoView(sel);            
+            
+        } else {
+
+            var newrep = this.nglcomp.addRepresentation(
+                "cartoon",  { color: this.currentColorScheme } );
+
+            this.nglcomp. setSelection( "all" );
+            this.nglcomp.removeRepresentation( this.currep );
+            this.currep  = newrep;
+            this.nglcomp.autoView("all");
+        }
+            
+        
+    }
+    
     setstyle( par, value, state ){
         
         console.log( "setstyle called:", par, value, state);
         console.log( " data.state:",this.state);
         console.log( " data.fstate:",this._data.fstate);
 
+        // handle poi change
+        //------------------
+
+        if(  par == 'poi'){
+            
+            return;
+        }
+        
         // handle selection
         
         if( par == 'sel'){
@@ -365,9 +530,7 @@ class BkdNGL{
             
             this.nglcomp.setSelection( csel );
         }
-
-        
-        
+   
         // handle vcls
 
         var rlist = []; 
@@ -424,11 +587,11 @@ class BkdNGL{
         
         console.log("rlist->",rlist);
         
-        var colorScheme = NGL.ColormakerRegistry
+        this.currentColorScheme = NGL.ColormakerRegistry
             .addSelectionScheme( rlist,"features" );
         
         var newrep = this.nglcomp.addRepresentation(
-            "cartoon",{color: colorScheme});
+            "cartoon",{color: this.currentColorScheme });
         
         this.nglcomp.removeRepresentation( this.currep );
         this.currep  = newrep;          

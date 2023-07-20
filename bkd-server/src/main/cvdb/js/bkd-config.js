@@ -772,7 +772,13 @@ BKDconf = {
                            id: "poi-text",
                            value: "%%text%%",
                            textid: "poi-text-id",
-                           flen: 4 }]
+                           flen: 4 },
+                         { label: "Genome position of interest:",
+                           id: "poi-genome",
+                           value: "%%text%%",
+                           textid: "poi-genome-id",
+                           flen: 8 }
+                     ]
                  },
                  field:[
                      {name:"Features",
