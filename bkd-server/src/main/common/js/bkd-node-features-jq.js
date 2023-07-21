@@ -628,24 +628,24 @@ BKDnodeFeatures = {
             { anchor: "#swm-port",
               name: "swm",
               url: swmUrl,
-              controls: [
-                  { name: "vcls",
-                    label: "Variant", 
-                    type: "checkbox",
-                    getvcls: BKDnodeFeatures.buildvclist,  // varaint classes
-                    getsels: BKDnodeFeatures.buildlslist,  // lolipop selects
-                    options: BKDnodeFeatures.vclass },
+              controls:{
+                  vcls: { name: "vcls",
+                          label: "Variant", 
+                          type: "checkbox",
+                          getvcls: BKDnodeFeatures.buildvclist,  // variant classes
+                          getsels: BKDnodeFeatures.buildlslist,  // lolipop selects
+                          options: BKDnodeFeatures.vclass },
+                  menu:[
+                      { name: "sel",
+                        label: "Select",
+                        type: "checkbox",                            
+                        options: BKDnodeFeatures.swmsels },
                   
-                  { name: "sel",
-                    label: "Select",
-                    type: "checkbox",                            
-                    options: BKDnodeFeatures.swmsels },
-                  
-                  { name: "col",
-                    label: "Color By",
-                    type: "radio",
-                    options: BKDnodeFeatures.swmcols }   
-              ],
+                      { name: "col",
+                        label: "Color By",
+                        type: "radio",
+                        options: BKDnodeFeatures.swmcols }   
+                  ] },
               poiColor: "#B71DDE"   // "#B7A4BD"
             },
             BKDnodeFeatures);
@@ -656,19 +656,20 @@ BKDnodeFeatures = {
         var strUrl = BKDnodeFeatures.siteurl + "str-pdb/"
             + BKDnodeFeatures.data.ac  + ".pdb"; 
         
-        BKDnodeFeatures.nglSTR = BKDnodeFeatures.nglpane(
+            BKDnodeFeatures.nglSTR = BKDnodeFeatures.nglpane(
             {  anchor: "#str-port",
                name: "str",
                url: strUrl,
                controls: [
+               
                    { name: "vcls",
                      label: "Variant:", 
                      type: "checkbox",
                      getvcls: BKDnodeFeatures.buildvclist,  // varaint classes
                      getsels: BKDnodeFeatures.buildlslist,  // lolipop selects
                      options: BKDnodeFeatures.vclass },
-                   
-                   { name: "sel",
+                     
+        { name: "sel",
                      label: "Select:",
                      type: "checkbox",                            
                      options: BKDnodeFeatures.swmsels },
