@@ -58,7 +58,30 @@ BKDnodeFeatures = {
                  "label":"SecStruc", "value":"sstr",
                  "color":"#aaaaaa" }
              ],
+
+    nglexport: [
+        { "id":"ngl-export-1","name":"ngl-export-1",
+          "label":"PDB File", "value":"ngl-export-pdb" },
+
+        { "id":"ngl-export-2","name":"ngl-export-2",
+          "label":"Image", "value":"ngl-export-img" }
+    ],
     
+    nglhelp: [
+        { "id":"ngl-help-1","name":"ngl-help-1",
+          "label":"View Control", "value":"help-ngl-viewcontrol" },
+
+        { "id":"ngl-help-2","name":"ngl-help-2",
+          "label":"Color Contorl", "value":"help-ngl-colorcontrol" },
+
+        { "id":"ngl-help-3","name":"ngl-help-3",
+          "label":"Detail View", "value":"help-ngl-detailview" },
+
+        { "id":"ngl-help-4","name":"ngl-help-4",
+          "label":"Export", "value":"help-ngl-export" }          
+    ],
+    
+      
     fcolor:   { "pathogenic":"#d04030",
                 "likely pathogenic":"#e0B0B0",
                 "uncertain":"#b0b0b0",
@@ -88,6 +111,7 @@ BKDnodeFeatures = {
     lollipop: null,
     nglSWM: null,
     nglSTR: null,
+    bkdtopo: null,
     config: {"lollipanel":{ "detailtable":null } },
     state: { fsel:{ topo:{}, swm:{}, str:{} },
              seqvar: null,
@@ -520,7 +544,11 @@ BKDnodeFeatures = {
         });
 
         $('#flist-source table tr td:last-of-type')
-            .append("<a href='page?id=help-lollipop'>Help</a>" );
+            .append("<a id='bkd-lollipop-help' href='page?id=help-lollipop'>Help</a>" );
+
+        BKDmodal.init( '#bkd-modal-div',
+                       '#bkd-lollipop-help',
+                       'page?id=help-lollipop&ret=body' ); 
         
         // lollipop panel 
         //---------------
@@ -613,7 +641,7 @@ BKDnodeFeatures = {
         //---------------
 
         try{
-            BKDnodeFeatures.topopane( '#topo-port', data );
+            this.bkdtopo = BKDnodeFeatures.topopane( '#topo-port', data );
         } catch( err){
             console.log(err);
         }
@@ -644,7 +672,18 @@ BKDnodeFeatures = {
                       { name: "col",
                         label: "Color By",
                         type: "radio",
-                        options: BKDnodeFeatures.swmcols }   
+                        options: BKDnodeFeatures.swmcols },
+                      
+                      { name: "exp",
+                        label: "Export",
+                        type: "list",
+                        options: BKDnodeFeatures.nglexport },
+                      
+                      { name: "help",
+                        label: "Help",
+                        type: "list",
+                        options: BKDnodeFeatures.nglhelp }
+                      
                   ] },
               poiColor: "#B71DDE"   // "#B7A4BD"
             },
@@ -691,62 +730,12 @@ BKDnodeFeatures = {
     },
     
     topopane: function( anchor, data ){
-
-        // topology panel
-        //---------------
-     
-        purl = BKDnodeFeatures.siteurl+"protter/"+ data.ac +".svg";
-        console.log("PROTTER:" + purl);      
-
-        d3.select( anchor )
-            .html( '<div id="topo-controls" class="bkd-select-controls">'
-                   + '<table class="topo-controls-table" width="100%" align="center">'
-                   + '<tr><td id="topo-select-controls" colspan="2"></td></tr>'
-                   + '<tr><td id="topo-zoom-controls"></td><td id="topo-pan-controls"></td></tr>'
-                   + '</table>'
-                   + '</div>'
-            );
-        d3.select( anchor )
-            .append("div")
-            .attr("id", "topo-view")
-            .attr("class","xxbkd-topo-ovr xxbkd-stack-top");
         
-        $( "#topo-view" ).load( purl, function(){
-            
-            //console.log( "TOPO: width= " + $( "#topo-port > svg").width() );
-            //console.log( "TOPO: height=" +  $( "#topo-port > svg").height() );
-            //console.log( "TOPO: bb=" +  $( "#topo-port > svg") );
-            
-            var svgw = $( "#topo-view > svg").width();
-            var svgh = $( "#topo-view > svg").height();
-            
-            var scl = 570.0 / svgh;
-            var trX = 0;  //svgw/2.0;  //*(scl-1); 
-            var trY = svgh/2.0*(scl-1);   
-
-            //alert("TOPO: " + trX + ":" + trY + ":" + scl );
-            
-            $( " #topo-view > svg" ).attr(
-                'transform',
-                'translate('+trX+','+trY+') scale('+scl+')' );
-
-            BKDnodeFeatures.zoom = d3.zoom().on( 'zoom', BKDnodeFeatures.handleMouseZoom );
-            d3.select( anchor + ' svg' ).call( BKDnodeFeatures.zoom ); 
-           
-            /*
-            BKDnodeFeatures.fcolorCtrl( "topo-select-controls",
-                                         BKDnodeFeatures.vclass,                                       
-                                         "topo",
-                                         BKDnodeFeatures.state.fsel.topo,
-                                         BKDnodeFeatures.lollipanels['loli1'],
-                                         BKDnodeFeatures.lollipanels['loli1'].flistSelEventAction
-                                       );
-            */
-            BKDnodeFeatures.svgcontrol( "topo-zoom-controls",
-                                        "topo-pan-controls",
-                                        BKDnodeFeatures.handleButtonZoom,
-                                        BKDnodeFeatures.handleButtonPan);
-        });
+        var config = { anchor: anchor,
+                       vclass: BKDnodeFeatures.vclass,            
+                       siteurl: BKDnodeFeatures.siteurl};
+        
+        return topo  = new BkdTopo( config, data );
     },
 
     svgcontrol: function( zoomanchor, pananchor, zoomaction, panaction ){
@@ -879,29 +868,7 @@ BKDnodeFeatures = {
     },
     
     setTopoSelScheme: function( comp, fstate, ftslist ){
-        
-        // reset all: white
-        
-        $( "svg circle[id$='_symbol']" ).attr('fill','#ffffff');
-
-        // set ftslist: cyan
-        
-        for( var i in ftslist ){
-            var pos = ftslist[i].pos;
-            var col = ftslist[i].col;
-            $('#aa' + (pos-1).toString() + '_symbol')[0].setAttribute('fill', col );
-        }
-
-        // set fstate: orange
-
-        for( var i in fstate ){
-            if( fstate[i].on){
-                console.log("FSTATE ON:", i);
-                if( $('#aa' + (i-1).toString() + '_symbol').length > 0){
-                    $('#aa' + (i-1).toString() + '_symbol')[0].setAttribute('fill', "orange")
-                }
-            }
-        }        
+        BKDnodeFeatures.bkdtopo.setColor( BKDnodeFeatures.fstate );               
     },
 
     setHomolSelScheme: function( comp, fstate, ftslist ){
@@ -1091,7 +1058,6 @@ BKDnodeFeatures = {
 
         // isoform sequence MSA
         //---------------------
-        
         
         var smap = {};
         var ftslist = slist;

@@ -240,6 +240,21 @@ BKDnodeView = {
                                 });
                             }                        
                         }
+
+                        if( format.pane[i].help == true ){
+                            var help_anchor = format.pane[i].help_conf.anchor;
+                            var show_anchor = "#bkd-nv-" + cid + "_head_help";
+                            
+                            var help_url = format.pane[i].help_conf.url;
+
+                            console.log("ModalHelp: ", help_anchor, show_anchor); 
+                            
+                            $( "#bkd-nv-" + cid + "_head" )
+                                .append( " | <a id='bkd-nv-" + cid + "_head_help' "
+                                         + " href='"+help_url+"'>Help</a>" );
+
+                            BKDmodal.init( help_anchor, show_anchor, help_url );                            
+                        }
                     }
                 }
                 

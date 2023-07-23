@@ -777,8 +777,13 @@ BKDconf = {
                            id: "poi-genome",
                            value: "%%text%%",
                            textid: "poi-genome-id",
-                           flen: 8 }
-                     ]
+                           flen: 8 }]
+                     
+                 },
+                 help: true,
+                 help_conf: {
+                     anchor: "#bkd-modal-div",
+                     url: "page?id=help-feature-selection&ret=body"
                  },
                  field:[
                      {name:"Features",

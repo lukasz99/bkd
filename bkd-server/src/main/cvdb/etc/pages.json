@@ -1,55 +1,55 @@
 {
-  "pageConfig":{
-    "pathregex":"^/pages/[a-zA-Z0-9_\\-\\.]+$",
-    "idregex":"^[a-zA-Z0-9_\\-]+$",
-    "pages":{
-        "cover":{ "active":"true",
-                  title:"Channel VUS Database",
-                  "menusel":"1:0:0",
-                  "viewtype":"file-html",
-                  "viewpath":"/pages/cover.html"
-                },
-        "test":{ "active":"true",
-                 "title":"Channel VUS: Test Page",
-                 "menusel":"1:1",
-                 "urlindex":"pages/test-index.html",
-                 "showindex":"true",
-                 "viewtype":"file-html",
-                 "viewpath":"/pages/test.html"
-               },
-        "variant-gene":{ "active":"true",
-                         "title":"Channel VUS: Gene variant form",
-                         "menusel":"1:3:1",
-                         "urlindex":"pages/test-index.html",
-                         "showindex":"false",
-                         "viewtype":"file-html",
-                         "viewpath":"/pages/variant-gene.html"
-                       },
-        "variant-protein":{ "active":"true",
-                            "title":"Channel VUS: Protein variant",
-                            "menusel":"1:3:2",
-                            "urlindex":"pages/test-index.html",
+    "pageConfig":{
+        "pathregex":"^/pages/[a-zA-Z0-9_\\-\\.]+$",
+        "idregex":"^[a-zA-Z0-9_\\-]+$",
+        "pages":{
+            "cover":{ "active":"true",
+                      title:"Channel VUS Database",
+                      "menusel":"1:0:0",
+                      "viewtype":"file-html",
+                      "viewpath":"/pages/cover.html"
+                    },
+            "test":{ "active":"true",
+                     "title":"Channel VUS: Test Page",
+                     "menusel":"1:1",
+                     "urlindex":"pages/test-index.html",
+                     "showindex":"true",
+                     "viewtype":"file-html",
+                     "viewpath":"/pages/test.html"
+                   },
+            "variant-gene":{ "active":"true",
+                             "title":"Channel VUS: Gene variant form",
+                             "menusel":"1:3:1",
+                             "urlindex":"pages/test-index.html",
+                             "showindex":"false",
+                             "viewtype":"file-html",
+                             "viewpath":"/pages/variant-gene.html"
+                           },
+            "variant-protein":{ "active":"true",
+                                "title":"Channel VUS: Protein variant",
+                                "menusel":"1:3:2",
+                                "urlindex":"pages/test-index.html",
+                                "showindex":"false",
+                                "viewtype":"file-html",
+                                "viewpath":"/pages/variant-protein.html"
+                              },
+            "view-protein":{ "active":"true",
+                             "title":"Channel VUS: Protein view",
+                             "menusel":"1:3:2",
+                             "urlindex":"pages/test-index.html",
+                             "showindex":"false",
+                             "viewtype":"file-html",
+                             "viewpath":"/pages/view-protein.html"
+                           },
+            "databasemgr":{ "active":"true",
+                            "title":"Channel VUS: Database Manager",
+                            "menusel":"3:1:1",
+                            "urlindex":"pages/databasemgr.html",
                             "showindex":"false",
                             "viewtype":"file-html",
-                            "viewpath":"/pages/variant-protein.html"
+                            "viewpath":"/pages/databasemgr.html"
                           },
-        "view-protein":{ "active":"true",
-                         "title":"Channel VUS: Protein view",
-                         "menusel":"1:3:2",
-                         "urlindex":"pages/test-index.html",
-                         "showindex":"false",
-                         "viewtype":"file-html",
-                         "viewpath":"/pages/view-protein.html"
-                       },
-        "databasemgr":{ "active":"true",
-                         "title":"Channel VUS: Database Manager",
-                         "menusel":"3:1:1",
-                         "urlindex":"pages/databasemgr.html",
-                         "showindex":"false",
-                         "viewtype":"file-html",
-                         "viewpath":"/pages/databasemgr.html"
-                       },
-        "indexmgr":{ "active":"true",
+            "indexmgr":{ "active":"true",
                          "title":"Channel VUS: Database Manager",
                          "menusel":"3:1:2",
                          "urlindex":"pages/indexmgr.html",
@@ -57,343 +57,388 @@
                          "viewtype":"file-html",
                          "viewpath":"/pages/indexmgr.html"
                        },
+            
+            browse:{
+                active:true,
+                title:"CVDB: Browse",
+                menusel:"1:1",
+                urlindex:"pages/test-index.html",
+                showindex:"false",
+                viewtype:"file-html",
+                viewpath:"/pages/browse.html"
+            },
+            index:{
+                active:true,
+                title:"CVDB: Index",
+                menusel:"1:1",
+                urlindex:"",
+                showindex:"false",
+                viewtype:"file-html",
+                viewpath:"/pages/index.html"
+            },
+            search:{
+                active:true,
+                title:"CVDB: Search",
+                menusel:"1:2",
+                viewtype:"file-html",
+                viewpath:"/pages/search.html"
+            },
+            pubadd:{
+                active:true,
+                title:"CVDB: Add",
+                menusel:"1:3",
+                viewtype:"file-html",
+                viewpath:"/pages/pubadd.html"
+            },
+            about:{
+                active:true,
+                title:"About CVDB",
+                menudef:"0:2",
+                menusel:"5:0",
+                viewtype:"file-html",
+                viewpath:"/pages/about.html"
+            },
+            admin:{
+                active:true,
+                title:"CVDB: Site Administration",
+                menudef:"0:2",
+                menusel:"3",
+                viewtype:"file-html",
+                viewpath:"/pages/admin.html"
+            },
+            usermgr:{
+                active:true,
+                title:"CVDB: User Manager",
+                menudef:"0:2:0",
+                menusel:"3:1",
+                viewtype:"file-html",
+                viewpath:"/pages/useradmin.html"
+            },
+            workflowmgr:{
+                active:true,
+                title:"CVDB: Workflow Manager",
+                menudef:"0:2:1",
+                menusel:"3:2",
+                viewtype:"file-html",
+                viewpath:"/pages/workflowadmin.html"
+            },
+            backendmgr:{
+                active:true,
+                title:"CVDB: Back-End Manager",
+                menudef:"0:2:2",
+                menusel:"3:3:1",
+                viewtype:"file-html",
+                viewpath:"/pages/udev.html"
+            },
+            proxymgr:{
+                active:true,
+                title:"CVDB: Proxy Manager",
+                menudef:"0:2:2",
+                menusel:"3:3:2",
+                viewtype:"file-html",
+                viewpath:"/pages/udev.html"
+            },
+            accessmgr:{
+                active:true,
+                title:"CVDB: Access Manager",
+                menusel:"3:4",
+                viewtype:"file-html",
+                viewpath:"/pages/udev.html"
+            },
+            tracker:{
+                active:true,
+                title:"Tracker",
+                menudef:"0:0:0",
+                menusel:"1:0",
+                viewtype:"file-html",
+                viewpath:"/pages/tracker.html"
+            },
+            preferences:{
+                active:true,
+                title:"CVDB: Preferences",
+                menusel:"4",
+                viewtype:"file-html",
+                viewpath:"/pages/udev.html"
+            },
+            dbsettings:{
+                active:true,
+                title:"CVDB: Database Settings",
+                menusel:"4",
+                viewtype:"file-html",
+                viewpath:"/pages/udev.html"
+            },
+            
+            news:{
+                active:true,
+                title:"CVDB: News",
+                menudef:"0:2:0",
+                menusel:"1:1",
+                viewtype:"file-html",
+                viewpath:"/pages/news.html"
+            },
+            guide:{
+                active:true,
+                title:"CVDB: Guide",
+                menusel:"3:4:0",
+                viewtype:"file-html",
+                viewpath:"/pages/guide/contents.html"
+            },
+            tools:{
+                active:true,
+                title:"CVDB: Tools",
+                
+                menusel:"2:0",
+                viewtype:"file-html",
+                viewpath:"/pages/tools.html"
+            },
+            miftools:{
+                active:true,
+                title:"CVDB: Submission Tools",
+                menudef:"0:1",
+                menusel:"2:2",
+                viewtype:"file-html",
+                viewpath:"/pages/miftools.html"
+            },
+            submit:{
+                active:true,
+                title:"CVDB: Data Submission",
+                menudef:"0:0",
+                menusel:"1:3:0",
+                viewtype:"file-html",
+                viewpath:"/pages/submit.html"
+            },
+            articles:{
+                active:true,
+                title:"DIP Search",
+                menudef:"0:2",
+                menusel:"3:3:0",
+                viewtype:"file-html",
+                viewpath:"/pages/articles.html"
+            },
+            feedback:{
+                active:true,
+                title:"CVDB: Feedback",
+                menudef:"0:0:0",
+                menusel:"0:0:0",
+                viewtype:"file-html",
+                viewpath:"/pages/feedback.html"
+            },
+            webservices:{
+                active:true,
+                title:"CVDB: Web Services",
+                menudef:"0:1",
+                menusel:"2:1",
+                viewtype:"file-html",
+                viewpath:"/pages/webservices.html"
+            },
+            template:{
+                active:true,
+                title:"CVDB: ",
+                menudef:"0:0:0",
+                menusel:"0:0:0",
+                viewtype:"file-html",
+                viewpath:"/pages/template.html"
+            },
+            
+            "success":{
+                active:true,
+                title:"Update Successful",
+                menudef:"0:0:0",
+                menusel:"0:0:0",
+                viewtype:"file-html",
+                viewpath:"/pages/success.html"
+            },
+            
+            "exception202":{
+                active:true,
+                title:"Exception: 202",
+                menudef:"0:0:0",
+                menusel:"0:0:0",
+                viewtype:"file-html",
+                viewpath:"/pages/exception/202.html"
+            },
+            
+            "exception203":{
+                active:true,
+                title:"Exception: 203",
+                menudef:"0:0:0",
+                menusel:"0:0:0",
+                viewtype:"file-html",
+                viewpath:"/pages/exception/203.html"
+            },
+            
+            
+            "help":{
+                active:true,
+                title:"${bkd.pagetitleshort}: Help",
+                menudef:"0:2",
+                menusel:"5:1",
+                viewtype:"file-html",
+                viewpath:"/pages/help.html"
+            },
+            
+            "help-simple-query":{
+                active:true,
+                title:"${bkd.pagetitleshort} Help: Simple Query",
+                menudef:"0:2",
+                menusel:"5:1",
+                viewtype:"file-html",
+                viewpath:"/pages/help-simple-query.html"
+            },
+            
+            "help-ngl-viewcontrol":{
+                active:true,
+                title:"${bkd.pagetitleshort} Help: Structure View Control",
+                menudef:"0:2",
+                menusel:"5:1",
+                viewtype:"file-html",
+                viewpath:"/pages/help-ngl-viewcontrol.html"
+            },
+            
+            "help-ngl-colorcontrol":{
+                active:true,
+                title:"${bkd.pagetitleshort} Help: Structure View Colors",
+                menudef:"0:2",
+                menusel:"5:1",
+                viewtype:"file-html",
+                viewpath:"/pages/help-ngl-colorcontrol.html"
+            },
 
-      browse:{
-        active:true,
-        title:"CVDB: Browse",
-        menusel:"1:1",
-        urlindex:"pages/test-index.html",
-        showindex:"false",
-        viewtype:"file-html",
-        viewpath:"/pages/browse.html"
-      },
-      index:{
-        active:true,
-        title:"CVDB: Index",
-        menusel:"1:1",
-        urlindex:"",
-        showindex:"false",
-        viewtype:"file-html",
-        viewpath:"/pages/index.html"
-      },
-      search:{
-        active:true,
-        title:"CVDB: Search",
-        menusel:"1:2",
-        viewtype:"file-html",
-        viewpath:"/pages/search.html"
-      },
-      pubadd:{
-        active:true,
-        title:"CVDB: Add",
-        menusel:"1:3",
-        viewtype:"file-html",
-        viewpath:"/pages/pubadd.html"
-      },
-      about:{
-        active:true,
-        title:"About CVDB",
-        menudef:"0:2",
-        menusel:"5:0",
-        viewtype:"file-html",
-        viewpath:"/pages/about.html"
-      },
-      admin:{
-        active:true,
-        title:"CVDB: Site Administration",
-        menudef:"0:2",
-        menusel:"3",
-        viewtype:"file-html",
-        viewpath:"/pages/admin.html"
-      },
-      usermgr:{
-        active:true,
-        title:"CVDB: User Manager",
-        menudef:"0:2:0",
-        menusel:"3:1",
-        viewtype:"file-html",
-        viewpath:"/pages/useradmin.html"
-      },
-      workflowmgr:{
-        active:true,
-        title:"CVDB: Workflow Manager",
-        menudef:"0:2:1",
-        menusel:"3:2",
-        viewtype:"file-html",
-        viewpath:"/pages/workflowadmin.html"
-      },
-      backendmgr:{
-        active:true,
-        title:"CVDB: Back-End Manager",
-        menudef:"0:2:2",
-        menusel:"3:3:1",
-        viewtype:"file-html",
-        viewpath:"/pages/udev.html"
-      },
-      proxymgr:{
-        active:true,
-        title:"CVDB: Proxy Manager",
-        menudef:"0:2:2",
-        menusel:"3:3:2",
-        viewtype:"file-html",
-        viewpath:"/pages/udev.html"
-      },
-      accessmgr:{
-        active:true,
-        title:"CVDB: Access Manager",
-        menusel:"3:4",
-        viewtype:"file-html",
-        viewpath:"/pages/udev.html"
-      },
-      tracker:{
-        active:true,
-        title:"Tracker",
-        menudef:"0:0:0",
-        menusel:"1:0",
-        viewtype:"file-html",
-        viewpath:"/pages/tracker.html"
-      },
-      preferences:{
-        active:true,
-        title:"CVDB: Preferences",
-        menusel:"4",
-        viewtype:"file-html",
-        viewpath:"/pages/udev.html"
-      },
-      dbsettings:{
-        active:true,
-        title:"CVDB: Database Settings",
-        menusel:"4",
-        viewtype:"file-html",
-        viewpath:"/pages/udev.html"
-      },
-
-      news:{
-        active:true,
-        title:"CVDB: News",
-        menudef:"0:2:0",
-        menusel:"1:1",
-        viewtype:"file-html",
-        viewpath:"/pages/news.html"
-      },
-      guide:{
-        active:true,
-        title:"CVDB: Guide",
-        menusel:"3:4:0",
-        viewtype:"file-html",
-        viewpath:"/pages/guide/contents.html"
-      },
-      tools:{
-        active:true,
-        title:"CVDB: Tools",
-       
-        menusel:"2:0",
-        viewtype:"file-html",
-        viewpath:"/pages/tools.html"
-      },
-      miftools:{
-        active:true,
-        title:"CVDB: Submission Tools",
-        menudef:"0:1",
-        menusel:"2:2",
-        viewtype:"file-html",
-        viewpath:"/pages/miftools.html"
-      },
-      submit:{
-        active:true,
-        title:"CVDB: Data Submission",
-        menudef:"0:0",
-        menusel:"1:3:0",
-        viewtype:"file-html",
-        viewpath:"/pages/submit.html"
-      },
-      articles:{
-        active:true,
-        title:"DIP Search",
-        menudef:"0:2",
-        menusel:"3:3:0",
-        viewtype:"file-html",
-        viewpath:"/pages/articles.html"
-      },
-      feedback:{
-        active:true,
-        title:"CVDB: Feedback",
-        menudef:"0:0:0",
-        menusel:"0:0:0",
-        viewtype:"file-html",
-        viewpath:"/pages/feedback.html"
-      },
-      webservices:{
-        active:true,
-        title:"CVDB: Web Services",
-        menudef:"0:1",
-        menusel:"2:1",
-        viewtype:"file-html",
-        viewpath:"/pages/webservices.html"
-      },
-      template:{
-        active:true,
-        title:"CVDB: ",
-        menudef:"0:0:0",
-        menusel:"0:0:0",
-        viewtype:"file-html",
-        viewpath:"/pages/template.html"
-      },
-
-      "success":{
-        active:true,
-        title:"Update Successful",
-        menudef:"0:0:0",
-        menusel:"0:0:0",
-        viewtype:"file-html",
-        viewpath:"/pages/success.html"
-      },
-
-       "exception202":{
-        active:true,
-        title:"Exception: 202",
-        menudef:"0:0:0",
-        menusel:"0:0:0",
-        viewtype:"file-html",
-        viewpath:"/pages/exception/202.html"
-      },
-
-       "exception203":{
-        active:true,
-        title:"Exception: 203",
-        menudef:"0:0:0",
-        menusel:"0:0:0",
-        viewtype:"file-html",
-        viewpath:"/pages/exception/203.html"
-      },
-
-
-       "help":{
-        active:true,
-        title:"${bkd.pagetitleshort}: Help",
-        menudef:"0:2",
-        menusel:"5:1",
-        viewtype:"file-html",
-        viewpath:"/pages/help.html"
-      },
-
-        "help-simple-query":{
-        active:true,
-        title:"${bkd.pagetitleshort} Help: Simple Query",
-        menudef:"0:2",
-        menusel:"5:1",
-        viewtype:"file-html",
-        viewpath:"/pages/help-simple-query.html"
-      },
-
-       "help-overview":{
-        active:true,
-        title:"${bkd.pagetitleshort}: Overview",
-        menudef:"0:2:0",
-        menusel:"5:1:1",
-        viewtype:"file-html",
-        viewpath:"/pages/help-overview.html"
-      },
-
-       "help-lollipop":{
-        active:true,
-        title:"${bkd.pagetitleshort}: Feature Panel",
-        menudef:"0:2:0",
-        menusel:"5:1:1",
-        viewtype:"file-html",
-        viewpath:"/pages/help-lollipop.html"
-      },
-
-      "help-signup":{
-        active:true,
-        title:"${bkd.pagetitleshort}: Help: Signing Up",
-        menudef:"0:2:0",
-        menusel:"5:1:2",
-        viewtype:"file-html",
-        viewpath:"/pages/help-signup.html"
-      },
-      "help-records":{
-        active:true,
-        title:"CVDB Help: Curation Records",
-        menudef:"0:2:0",
-        menusel:"5:1:3",
-        viewtype:"file-html",
-        viewpath:"/pages/udev.html"
-      },
-      "help-register":{
-        active:true,
-        title:"${bkd.pagetitleshort} Help: Register",
-        menudef:"0:2:0",
-        menusel:"5:1:4",
-        viewtype:"file-html",
-        viewpath:"/pages/help-register.html"
-      },
-      "help-attach":{
-        active:true,
-        title:"CVDB Help: Attach",
-        menudef:"0:2:0",
-        menusel:"5:1:5",
-        viewtype:"file-html",
-        viewpath:"/pages/help-attach.html"
-      },
-      "help-watchlist":{
-        active:true,
-        title:"CVDB Help: Watch List",
-        menudef:"0:2:0",
-        menusel:"5:1:6",
-        viewtype:"file-html",
-        viewpath:"/pages/help-watchlist.html"
-      },      
-      "help-user-prefs":{
-        active:true,
-        title:"${bkd.pagetitleshort} Help: Account Settings",
-        menudef:"0:2:0",
-        menusel:"5:1:0",
-        viewtype:"file-html",
-        viewpath:"/pages/help-preferences.html"
-      },
-      faq:{
-        active:true,
-        title:"${bkd.pagetitleshort}: FAQ",
-        menudef:"0:2",
-        menusel:"5:2",
-        viewtype:"file-html",
-        viewpath:"/pages/faq.html"
-      },      
-      relnotes:{
-        active:true,
-        title:"${bkd.pagetitleshort}: Release Notes",
-        menudef:"0:2",
-        menusel:"5:4",
-        viewtype:"file-html",
-        viewpath:"/RELEASE-NOTES.txt"
-      }, 
-      projectmgr:{
-        active:true,
-        title:"CVDB:Project Manager",
-        menudef:"0:2:0",
-        menusel:"1:2:2",
-        viewtype:"file-html",
-        viewpath:"/pages/udev.html"
-      },
-      "stats-history":{ 
-         active:true, 
-         title:"CVDB: Curation", 
-         menudef:"1:4:2", 
-         menusel:"1:4:2", 
-         viewtype:"file-html", 
-         viewpath:"/pages/stats-history.html" 
-      }, 
-      "stats-journals":{ 
-         active:true, 
-         title:"CVDB: IMEx Journals", 
-         menudef:"1:4:3", 
-         menusel:"1:4:3", 
-         viewtype:"file-html", 
-         viewpath:"/pages/stats-journals.html" 
-      } 
+            "help-ngl-detailview":{
+                active:true,
+                title:"${bkd.pagetitleshort} Help: Detail View",
+                menudef:"0:2",
+                menusel:"5:1",
+                viewtype:"file-html",
+                viewpath:"/pages/help-ngl-detailview.html"
+            },
+            
+            "help-ngl-export":{
+                active:true,
+                title:"${bkd.pagetitleshort} Help: Structure Export",
+                menudef:"0:2",
+                menusel:"5:1",
+                viewtype:"file-html",
+                viewpath:"/pages/help-ngl-export.html"
+            },
+            
+            "help-feature-selection": {
+                active:true,
+                title:"${bkd.pagetitleshort} Help: Feature Selection",
+                menudef:"0:2",
+                menusel:"5:1",
+                viewtype:"file-html",
+                viewpath:"/pages/help-feature-selection.html"
+            },
+            
+            "help-overview":{
+                active:true,
+                title:"${bkd.pagetitleshort}: Overview",
+                menudef:"0:2:0",
+                menusel:"5:1:1",
+                viewtype:"file-html",
+                viewpath:"/pages/help-overview.html"
+            },
+            
+            "help-lollipop":{
+                active:true,
+                title:"${bkd.pagetitleshort}: Feature Panel",
+                menudef:"0:2:0",
+                menusel:"5:1:1",
+                viewtype:"file-html",
+                viewpath:"/pages/help-lollipop.html"
+            },
+            
+            "help-signup":{
+                active:true,
+                title:"${bkd.pagetitleshort}: Help: Signing Up",
+                menudef:"0:2:0",
+                menusel:"5:1:2",
+                viewtype:"file-html",
+                viewpath:"/pages/help-signup.html"
+            },
+            "help-records":{
+                active:true,
+                title:"CVDB Help: Curation Records",
+                menudef:"0:2:0",
+                menusel:"5:1:3",
+                viewtype:"file-html",
+                viewpath:"/pages/udev.html"
+            },
+            "help-register":{
+                active:true,
+                title:"${bkd.pagetitleshort} Help: Register",
+                menudef:"0:2:0",
+                menusel:"5:1:4",
+                viewtype:"file-html",
+                viewpath:"/pages/help-register.html"
+            },
+            "help-attach":{
+                active:true,
+                title:"CVDB Help: Attach",
+                menudef:"0:2:0",
+                menusel:"5:1:5",
+                viewtype:"file-html",
+                viewpath:"/pages/help-attach.html"
+            },
+            "help-watchlist":{
+                active:true,
+                title:"CVDB Help: Watch List",
+                menudef:"0:2:0",
+                menusel:"5:1:6",
+                viewtype:"file-html",
+                viewpath:"/pages/help-watchlist.html"
+            },      
+            "help-user-prefs":{
+                active:true,
+                title:"${bkd.pagetitleshort} Help: Account Settings",
+                menudef:"0:2:0",
+                menusel:"5:1:0",
+                viewtype:"file-html",
+                viewpath:"/pages/help-preferences.html"
+            },
+            faq:{
+                active:true,
+                title:"${bkd.pagetitleshort}: FAQ",
+                menudef:"0:2",
+                menusel:"5:2",
+                viewtype:"file-html",
+                viewpath:"/pages/faq.html"
+            },      
+            relnotes:{
+                active:true,
+                title:"${bkd.pagetitleshort}: Release Notes",
+                menudef:"0:2",
+                menusel:"5:4",
+                viewtype:"file-html",
+                viewpath:"/RELEASE-NOTES.txt"
+            }, 
+            projectmgr:{
+                active:true,
+                title:"CVDB:Project Manager",
+                menudef:"0:2:0",
+                menusel:"1:2:2",
+                viewtype:"file-html",
+                viewpath:"/pages/udev.html"
+            },
+            "stats-history":{ 
+                active:true, 
+                title:"CVDB: Curation", 
+                menudef:"1:4:2", 
+                menusel:"1:4:2", 
+                viewtype:"file-html", 
+                viewpath:"/pages/stats-history.html" 
+            }, 
+            "stats-journals":{ 
+                active:true, 
+                title:"CVDB: IMEx Journals", 
+                menudef:"1:4:3", 
+                menusel:"1:4:3", 
+                viewtype:"file-html", 
+                viewpath:"/pages/stats-journals.html" 
+            } 
+        }
     }
-  }
 }
 
 
