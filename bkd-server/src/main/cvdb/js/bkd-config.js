@@ -763,22 +763,31 @@ BKDconf = {
                  header: true,
                  header_conf: {
                      query_id: "poi",
-                     query_tp: "radio",
+                     query_prelabel: ": ",
+                     query_postlabel: " position of interest",
+                     query_tp: "type_set_clear",
+                     query_vtype: "%%int%%",
+                     query_vlen: 10,
+                     query_tlist: [
+                         { label: "Protein", value: "protein" },
+                         { label: "Genome", value: "genome" } ]
+
+                     /*
                      query_val:[
-                         { label: "All",
-                           id: "poi-all",
-                           value: "all" },
-                         { label: "Aminoacid position of interest:",
-                           id: "poi-text",
+                         //{ label: "All",
+                         //  id: "poi-all",
+                         //  value: "all" },
+                         { label: "Protein position of interest:",
+                           id: "poi-protein",
                            value: "%%text%%",
-                           textid: "poi-text-id",
+                           textid: "poi-protein-id",
                            flen: 4 },
                          { label: "Genome position of interest:",
                            id: "poi-genome",
                            value: "%%text%%",
                            textid: "poi-genome-id",
                            flen: 8 }]
-                     
+                     */
                  },
                  help: true,
                  help_conf: {

@@ -1,7 +1,7 @@
 console.log("bkd-node-features-jq: common");
         
 BKDnodeFeatures = {
-    myurl: "",
+     myurl: "",
     siteurl: "./",
     dsurl: "https://www.ncbi.nlm.nih.gov/snp/",
     cvurl: "https://www.ncbi.nlm.nih.gov/clinvar/variation/",
@@ -16,46 +16,84 @@ BKDnodeFeatures = {
     
     vclass: [ { "id":"flist-color-1","name":"color-1",
                 "label":"Benign", "value":"ben",
-                "color":"#2161b0" },
+                //"color":"#3171c0" },
+                "color":"#80d0ff" },
               { "id":"flist-color-2","name":"color-2",
                 "label":"Likely Benign", "value":"lben",
-                "color":"#30a0e0" },
+                //"color":"#50c0ff" },
+                "color":"#3171c0" },
               { "id":"flist-color-3","name":"color-3",
                 "label":"Conflicting Evidence", "value":"cevd",
-                "color":"#d2b4de" },
+                //"color":"#d2b4de" },
+                "color":"#b284be" },
               { "id":"flist-color-4","name":"color-4",
                 "label":"Likely Pathogenic", "value":"lpat",
-                "color":"#e0B0B0" },
+                //"color":"#e0B0B0" },
+                //"color":"#ffB0B0" },
+                "color":"#d01008" },
               { "id":"flist-color-5","name":"color-5",
                 "label":"Pathogenic", "value":"pat",
-                "color":"#d04030" } ],
-    
+                //"color":"#d04030" } ],
+                //"color":"#c02010" } ],
+                "color":"#ffB0B0" }  ],   
     swmsels: [ { id:"flist-select-1",name:"select-1",
-                 label:"HiQC/All", value:"hiqc",
+                 label:"HiQC", value:"hiqc",                
+                 labelOn: "HiQC", labelOff: "All",
                  mode: "bcut" , bval: 0.5, 
-                 color:"#aaaaaa" },
-               { "id":"flist-select-2","name":"select-2",
-                 "label":"Canonical/Current", "value":"aset",
-                 "color":"#aaaaaa" },
-               { "id":"flist-select-3","name":"select-2",
-                 "label":"Monomer/All", "value":"chain",
-                 "color":"#aaaaaa" } ],
+                 color:"#aaaaaa",
+                 callback: "select",
+                 opt:{
+                     style: "cbox", default: "off",
+                     mode: "chn",
+                     states: { on: { mode: "step", val: "bfact", vcut: 0.5,
+                                     colLo: "green", opaqLo: 1.0, 
+                                     colHi: "gray", opaqHi: 0.6   },
+                               off: { mode: "solid", color: "green", opaq: 1.0 }
+                             }
+                 }
+               },
+               { id: "flist-select-2","name":"select-2",
+                 label: "Current Sequence", "value":"aset",
+                 labelOn: "Canonical", labelOff: "Current Sequence",                 
+                 color: "#aaaaaa",
+                 callback: "select",
+                 style: "cbox", default: "off",
+                 mode: "chn",
+                 opt: {} },
+               
+               { id: "flist-select-3","name":"select-2",
+                 label: "Monomer", "value":"chain",
+                 labelOn: "Monomer", labelOff: "All",
+                 color: "#aaaaaa",
+                 callback: "select",
+                 style: "rbox", default: "A",
+                 mode: "chn",
+                 opt: {} } ],
     
     swmcols: [ { id:"flist-select-1",name:"select-1",
-                 label:"Position", value:"rain",
+                 label:"Position",
+                 calback: "color",
+                 value:"rain",
                  mode: "rainbow",
                  "color":"#aaaaaa" },
                { "id":"flist-select-2","name":"select-2",
-                 "label":"Conservation(MSA)", "value":"cmsa",
+                 "label":"Conservation(MSA)",
+                 callback: "color",
+                 "value":"cmsa",
                  "color":"#aaaaaa" },
                { "id":"flist-select-3","name":"select-3",
-                 "label":"Conservation(SNP)", "value":"csnp",
+                 "label":"Conservation(SNP)",
+                 callback: "color",
+                 "value":"csnp",
                  "color":"#aaaaaa" },
                { "id":"flist-select-4","name":"select-4",
                  "label":"Topology", "value":"topo",
+                 calback: "color",
                  "color":"#aaaaaa" },
                { "id":"flist-select-5","name":"select-5",
-                 "label":"SecStruc", "value":"sstr",
+                 "label":"SecStruc",
+                 callback: "color",
+                 "value":"sstr",
                  "color":"#aaaaaa" }
              ],
 
@@ -662,16 +700,17 @@ BKDnodeFeatures = {
                           type: "checkbox",
                           getvcls: BKDnodeFeatures.buildvclist,  // variant classes
                           getsels: BKDnodeFeatures.buildlslist,  // lolipop selects
+                          getpois: BKDnodeFeatures.buildpoilist,  // poi selects
                           options: BKDnodeFeatures.vclass },
                   menu:[
                       { name: "sel",
                         label: "Select",
-                        type: "checkbox",                            
+                        type: "cbox",                            
                         options: BKDnodeFeatures.swmsels },
                   
                       { name: "col",
                         label: "Color By",
-                        type: "radio",
+                        type: "radio-off",
                         options: BKDnodeFeatures.swmcols },
                       
                       { name: "exp",
@@ -715,7 +754,7 @@ BKDnodeFeatures = {
                    
                    { name: "col",
                      label: "Color By:",
-                     type: "radio",
+                     type: "radio-off",
                      options: BKDnodeFeatures.swmcols }   
                ],
                poiColor: "#B71DDE"   // "#B7A4BD"               
@@ -900,7 +939,8 @@ BKDnodeFeatures = {
     setNGLColScheme: function( bkdngl ){
         
         if( bkdngl !== undefined && bkdngl != null ){
-            bkdngl.rerender();            
+            //bkdngl.rerender();
+            bkdngl.setHamStyle( 'poi', this.poi, null );
         }
 
     },
@@ -1014,6 +1054,7 @@ BKDnodeFeatures = {
                                         );
         
         if( BKDnodeFeatures.nglSWM !== null){
+            
             BKDnodeFeatures.setNGLColScheme( BKDnodeFeatures.nglSWM );
         }
         
@@ -1307,6 +1348,17 @@ BKDnodeFeatures = {
     buildlslist: function( args ){
         return BKDnodeFeatures.fstate;
     },
+
+
+
+    // poi selects
+    //------------
+    
+    buildpoilist: function( args ){
+        return BKDnodeView.poi;
+    },
+
+
     
     // variant classes
     //----------------

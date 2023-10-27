@@ -1392,6 +1392,7 @@ function Lollipop(target, chartType, width) {
             .attr("width", function (d) { return _getWidthPOI(d); })
             .attr("height", _seqH - sequenceOpt.backgroundDY)         
             .style( "fill", poiData.color )
+            // .style( "stroke", poiData.stroke )
             .style( "fill-opacity", 0.25);
 
         _poiMain = d3.select( "#"+poiOpt.id + "-main")

@@ -14,7 +14,7 @@ BKDnodeView = {
     cpos37: "",
     cpos38: "",
     slist: [],
-    poi: { pos:[], color: "#674B70" },
+    poi: { pos:[], color: "#674B70",stroke: "#000000" },
     //poi: { pos:[], color: "#B7A4BD" },
     
     init: function( ns, ac , srcAnchor, srcViewAnchor, nodeAnchor, flist, mode ){
@@ -164,10 +164,110 @@ BKDnodeView = {
                         $( "#bkd-nv-" + cid ).append(" <div id='bkd-nv-" + cid + "_head'>"+clbl+"</div>" );
 
                         var hconf = format.pane[i].header_conf
+                        var etg = {};
+
+                        if( hconf.query_tp == "type_set_clear" ){
+
+                            $( "#bkd-nv-" + cid + "_head" )
+                                .append( "<input id='" + hconf.query_id + "-vtype' "
+                                         + "type='hidden' "
+                                         + "value='" + hconf.query_vtype + "'/>");
+                            
+                            // prelabel
+                            
+                            if( hconf.query_prelabel.length > 0 ){                                
+                                $( "#bkd-nv-" + cid + "_head" )
+                                    .append(hconf.query_prelabel);
+                                }
+
+                            // type pulldown
+
+                            var tsel ="<select id='"+hconf.query_id + "-ptype' "
+                                + "class='bkd-report' style='text-align: right;'>";
+                            for( var n = 0; n < hconf.query_tlist.length; n++ ){
+                                tsel = tsel +"<option value='" +
+                                    hconf.query_tlist[n].value+"'>" +
+                                    hconf.query_tlist[n].label+"</option>";
+                            }
+                            tsel = tsel + "</select>";
+
+                            $( "#bkd-nv-" + cid + "_head" ).append(tsel);
+                            
+                            // postlabel
+                            
+                            if( hconf.query_postlabel.length > 0 ){                                
+                                $( "#bkd-nv-" + cid + "_head" )
+                                    .append(hconf.query_postlabel);
+                                }
+
+                            // value
+                            
+                            if( hconf.query_vtype == '%%text%%' ||
+                                hconf.query_vtype == '%%int%%' ){
+                                $( "#bkd-nv-" + cid + "_head" )
+                                    .append( "<input type='text' style='margin: 2px;'"
+                                             +" size='" + hconf.query_vlen+"'"
+                                             +" id='"+hconf.query_id +"-val'>");
+                                
+                            }
+                            
+                            // Set/Clear buttons
+
+                            $( "#bkd-nv-" + cid + "_head" )
+                                .append( " <input id='" + hconf.query_id + "-set'"
+                                         + " type='button' value='Set'>" );
+                            
+                            etg[ 'input[id='+ hconf.query_id +'-set]' ]
+                                = hconf.query_id + "-set";
+                            
+                            $( "#bkd-nv-" + cid + "_head" )
+                                .append( "<input id='" + hconf.query_id + "-clr'"
+                                         + " type='button' value='Clear'>" );                                    
+                            
+                            etg[ 'input[id='+ hconf.query_id +'-clr ]' ]
+                                = hconf.query_id + "-clr";   
+                        }
+                        
+                        if( hconf.query_tp == "set_clear" ){
+                            for( var q=0; q < hconf.query_val.length; q++ ){
+
+                                if( q == 0 ){                                
+                                    $( "#bkd-nv-" + cid + "_head" )
+                                    .append(":");
+                                } else {
+                                     $( "#bkd-nv-" + cid + "_head" )
+                                    .append("| ");
+                                }
+                                 $( "#bkd-nv-" + cid + "_head" )
+                                    .append( " " + hconf.query_val[q].label + " ");
+                                if( hconf.query_val[q].value == '%%text%%' ){
+                                    $( "#bkd-nv-" + cid + "_head" )
+                                        .append( "<input type='text' style='margin: 2px;'"
+                                                 +" size='" + hconf.query_val[q].flen+"'"
+                                                 +" id='"+hconf.query_val[q].textid +"'>");
+                                   
+                                    
+                                }                                
+                                
+                                $( "#bkd-nv-" + cid + "_head" )
+                                    .append( " <input id='" + hconf.query_val[q].id + "-set'"
+                                             + " type='button' value='Set'>" );
+
+                                etg[ 'input[id='+ hconf.query_val[q].id +'-set]' ]
+                                    = hconf.query_val[q].id + "-set";
+                                
+                                $( "#bkd-nv-" + cid + "_head" )
+                                    .append( "<input id='" + hconf.query_val[q].id + "-clr'"
+                                             + " type='button' value='Clear'>" );                                    
+
+                                etg[ 'input[id='+ hconf.query_val[q].id +'-clr ]' ]
+                                    = hconf.query_val[q].id + "-clr";
+                            }
+                        }
                         
                         if( hconf.query_tp == "radio" ){ 
 
-                            var etg = {};
+                            //var etg = {};
                             
                             for( var q=0; q < hconf.query_val.length; q++ ){
                                 var chk ="";
@@ -195,66 +295,89 @@ BKDnodeView = {
                                     
                                 }                                
                             }
+                        }
 
-                            for( var k in etg ){                                
-                                $(k).on( 'click', function() {
-                                    var rval = this.value;
-                                    var rtxt = parseInt( $('#poi-text-id')[0].value );
+                        for( var k in etg ){
+                            console.log("KKK:" + k);
+                            $(k).on( 'click', function() {
+                                console.log("KKK Click:" + this.value  +":" + this.id);
+                                var rval = this.value;
+
+                                var posid = this.id.replace( '-set','' ).replace( '-clr','' );
+                                console.log("KKK::: " + rval +":"+ posid);
+                                
+                                var ptype = $( "#" + posid + '-ptype' )[0].value;
+                                var vtype = $( "#" + posid + '-vtype' )[0].value;
+                                var postx = $('#'+ posid +'-val' )[0].value;
+                                var posi = 0;
+                                
+                                if( rval == 'Clear') rval = 'all';
+                                
+                                if( rval == 'Set'){
+                                    rval = vtype;                                  
+                                    if( rval == '%%int%%'){
+                                        posi = parseInt( postx );
+                                    }
+                                }
+                                
+                                console.log( "KKK: " + posid  +":" + vtype+ ":" + rval + " :: "
+                                             + ptype + "::"+postx + ":::" + posi);
+                                
+                                if( rval == 'all' ){
+                                    $('#' + posid + '-val')[0].value = '';
+                                    postx = "";
+                                    posi = 0;
+                                    $('#' + posid).prop('disabled', false);
                                     
-                                    if( rval == 'all' ){
-                                        $('#poi-text-id')[0].value = '';
-                                        rtxt = 0;
-                                        $('#poi-text-id').prop('disabled', false);
-                                    }
-                                    if( rval == '%%text%%' ){
-                                        if( rtxt > 0 ){
-                                            $('#poi-text-id').prop('disabled', true);
-                                        } else {
-                                            $('#poi-text-id')[0].value = '';
-                                            $('#poi-text-id').prop('disabled', false);
-                                            $('#poi-all')[0].checked = true;
-                                            txtx = 0;
-                                        }
-                                    }
-                                    console.log("FF: click:", this, rval, rtxt);
-
-                                    if( rtxt > 0){
-                                        BKDnodeView.poi.pos = [rtxt];
+                                }
+                                if( rval == '%%text%%' ){
+                                    if( rtxt > 0 ){
+                                        $('#poi-text-id').prop('disabled', true);
                                     } else {
-                                        BKDnodeView.poi.pos = [];
+                                        $('#poi-text-id')[0].value = '';
+                                        $('#poi-text-id').prop('disabled', false);
+                                        $('#poi-all')[0].checked = true;
+                                        txtx = 0;
                                     }
-                                    
-                                    if( BKDnodeView.mymsa !== undefined ){
-                                        BKDnodeView.mymsa.setPOI( BKDnodeView.poi );
-                                    }
-                                    if( BKDnodeView.mymsa2a !== undefined ){
-                                        BKDnodeView.mymsa2a.setPOI( BKDnodeView.poi );
-                                    }
-                                    if( BKDnodeView.mymsa2b !== undefined ){
-                                        BKDnodeView.mymsa2b.setPOI( BKDnodeView.poi );
-                                    }
+                                }
+                                console.log("KKK: click processed:", this, rval, posi);
+                                
+                                if( posi > 0){
+                                    BKDnodeView.poi.pos = [posi];
+                                } else {
+                                    BKDnodeView.poi.pos = [];
+                                }
+                                
+                                if( BKDnodeView.mymsa !== undefined ){
+                                    BKDnodeView.mymsa.setPOI( BKDnodeView.poi );
+                                }
+                                if( BKDnodeView.mymsa2a !== undefined ){
+                                    BKDnodeView.mymsa2a.setPOI( BKDnodeView.poi );
+                                }
+                                if( BKDnodeView.mymsa2b !== undefined ){
+                                    BKDnodeView.mymsa2b.setPOI( BKDnodeView.poi );
+                                }
+                                
+                                BKDnodeFeatures.setPOI( BKDnodeView.poi );
+                                
+                                
+                            });
+                        }                        
+                    }
 
-                                    BKDnodeFeatures.setPOI( BKDnodeView.poi );
-
-                                    
-                                });
-                            }                        
-                        }
-
-                        if( format.pane[i].help == true ){
-                            var help_anchor = format.pane[i].help_conf.anchor;
-                            var show_anchor = "#bkd-nv-" + cid + "_head_help";
-                            
-                            var help_url = format.pane[i].help_conf.url;
-
-                            console.log("ModalHelp: ", help_anchor, show_anchor); 
-                            
-                            $( "#bkd-nv-" + cid + "_head" )
-                                .append( " | <a id='bkd-nv-" + cid + "_head_help' "
-                                         + " href='"+help_url+"'>Help</a>" );
-
-                            BKDmodal.init( help_anchor, show_anchor, help_url );                            
-                        }
+                    if( format.pane[i].help == true ){
+                        var help_anchor = format.pane[i].help_conf.anchor;
+                        var show_anchor = "#bkd-nv-" + cid + "_head_help";
+                        
+                        var help_url = format.pane[i].help_conf.url;
+                        
+                        console.log("ModalHelp: ", help_anchor, show_anchor); 
+                        
+                        $( "#bkd-nv-" + cid + "_head" )
+                            .append( " | <a id='bkd-nv-" + cid + "_head_help' "
+                                     + " href='"+help_url+"'>Help</a>" );
+                        
+                        BKDmodal.init( help_anchor, show_anchor, help_url );                            
                     }
                 }
                 
