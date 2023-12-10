@@ -94,13 +94,17 @@
 
          
      
-
+        var state = {};
      
         if( ns.length > 0 && ac.length >0 ){     // show node
 
             BKDnodeView.init( ns, ac,
-                               "#bkd-node-search", "#bkd-search-view",
-                               "#bkd-node-view", BKDconf["node"], mode );
+                              "#bkd-node-search",
+                              "#bkd-search-view",
+                              "#bkd-node-view",
+                              BKDconf["node"],
+                              mode,
+                              state);
      
         } else {
             // hide node view

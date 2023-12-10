@@ -2,7 +2,7 @@ console.log("bkd-ngl: common");
  
 class BkdNGL{
     
-    constructor( config, data ){
+    constructor( config, data, msa ){
 
         console.log(" BkdNGL: new-> ", config );
         this._conf = config;
@@ -10,6 +10,10 @@ class BkdNGL{
         this.name = config.name;
         
         this._data = data;  // BKDnodeFeatures
+        this._msa = msa;    // msa list
+
+
+        console.log("BkdNGL MSA:", this._msa);
         
         this.pfx = "bkd-ngl-" + this.name;
         this._view = {};
@@ -47,7 +51,8 @@ class BkdNGL{
                        
                        col:{ rain: true, asel: false,
                              cmsa: false, csnp: false,
-                             topo: false, sstr: false },
+                             topo: false, sstr: false,
+                             bfac: false, cchn: false },
                        
                        vcls:{ ben: false, lben: false,
                               cevd: false, lpat: false,
@@ -76,15 +81,46 @@ class BkdNGL{
                   on: false, rep: [] },
             
             chn:{ style: "cartoon", scale: 10.0, color: "solid",
+
+                  cselect:{
+                      all:   { mode:"all" },
+                      chain: { mode:"chain", clist:['A'] },                      
+                      hiqc:  { mode: "step",
+                               //states: [{ val: "bfact", vmin: -1000, vmax: 0.5 },
+                               //         { val: "bfact", vmin: -1000, vmax: 0.5 } ]
+                               states: [{ val: "bfact", vmin: 0.5, vmax: 1000.0 }]
+                             },
+                      aset:  { mode:"aset", rlist:[1,2,3,4] }
+                  },
+                  
                   cstyle: { "solid": {mode: "solid", color:"green", opaq: 1.0 },
                             
-                            "sqpos": {mode: "grad", opaq: 1.0, val: "atomindex" },
+                            "cdef": {mode: "grad", opaq: 1.0, val: "atomindex" },
+
+                            "cpos": {mode: "grad", opaq: 1.0, val: "atomindex" },
+
+                            "cchn": {mode: "solid", opaq: 1.0,
+                                     clist:[ "#46AB21","#80B192","#6A8D92","#646890"] },
                             
-                            "sqmsa": {mode: "grad", colLo: "grey", colHi:"magenta", 
-                                      gamma: 2.1, opaq: 1.0, val: "msa" },
+                            "cmsa": { mode: "grad", // valLo: 0, valHi: 1.0, 
+                                      colLo: "magenta", colHi:"#808080",
+                                      //cbasis: ["red","yellow","blue"],
+                                      gamma: 2.0, opaq: 1.0, msa: this._msa[0], val: "ent" },
                             
-                            "squal": {mode: "grad", colLo: "grey", colHi:"magenta", 
-                                      gamma: 2.1, opaq: 1.0, val: "bfact" },
+                            "csnp": {mode: "grad", 
+                                     colLo: "grey", colHi:"magenta",
+                                     cbasis: ["red","white","blue"],
+                                     gamma: 5.0, opaq: 1.0, val: "bfact" },
+                            
+                            "cbfc": {mode: "grad",valLo: 0, valHi: 1.0, 
+                                     colLo: "grey", colHi:"magenta",
+                                     cbasis: ["red","white","blue"],
+                                     gamma: 10.0, opaq: 1.0, val: "bfact" },
+                            
+                            "squal": {mode: "grad", valLo: 0, valHi: 1.0, 
+                                      colLo: "grey", colHi:"magenta",
+                                      cbasis: ["red","white","blue"],
+                                      gamma: 2.2, opaq: 1.0, val: "bfact" },
                             
                             "strsqS": {mode: "step", val: "bfact", vcut: 0.5,
                                        colLo: "green", opaqLo: 1.0, 
@@ -149,6 +185,9 @@ class BkdNGL{
                      
                  });
 
+        d3.select( "#" + this.pfx + "controls-detail")
+            .style("visibility", "hidden");
+        
         // vcls selections
         //----------------
         
@@ -189,6 +228,7 @@ class BkdNGL{
                          var pv = event.target.value.split(':');
                          console.debug( 'click: par->', pv[0],
                                         ' val->', pv[1],
+
                                         ' state->', event.target.checked);
                          event.data.self.state[pv[0]][pv[1]]
                              = event.target.checked;
@@ -258,6 +298,8 @@ class BkdNGL{
                 
                 var callback = function( ictrl, iopt, itype, iself ){                    
                     return function(d) {
+                        console.log( "HAM: callback:", ictrl, iopt, itype );                        
+                        
                         if( ictrl in iself.state ){
                             var icst = iself.state[ictrl][iopt.value];                    
                             
@@ -343,10 +385,10 @@ class BkdNGL{
                     }
                     
                     if( cnm in args.self.view.chains ){
-                        console.log("ZZZZ: chain(o):",cnm, args.self.view.chains);
+                        //console.log("ZZZZ: chain(o):",cnm, args.self.view.chains);
                     } else {
                         args.self.view.chains[cnm] = false;
-                        console.log("ZZZZ: chain(+):",cnm, args.self.view.chains);
+                        //console.log("ZZZZ: chain(+):",cnm, args.self.view.chains);
                     }
                     
                     //console.log(cnm,rno,bf);                    
@@ -355,14 +397,14 @@ class BkdNGL{
                 
                 //var swmrmap = rmap;
                 var rk = Object.keys( rmap );
-                console.log("#### RK:", rk);
+                //console.log("#### RK:", rk);
 
                 //var ckl = [];
                 for( var c in rk ){    // chains
-                    console.log("#### RM:",rk[c], rmap[rk[c]]);
+                    //console.log("#### RM:",rk[c], rmap[rk[c]]);
                     var ckl = Object.keys( rmap[rk[c]] );
                     ckl.sort(function(a,b) { Number(a) > Number(b) } );
-                    console.log("####:: ",rk[c], ":",ckl);                    
+                    //console.log("####:: ",rk[c], ":",ckl);                    
                 };
                 
                 var sel = "";
@@ -370,7 +412,7 @@ class BkdNGL{
                 var lop = "";
                 for( var c in ckl ){
                     var nc = Number( ckl[c] );
-                    console.log("#### nc: ",nc, prev, nc - prev);
+                    //console.log("#### nc: ",nc, prev, nc - prev);
                     if( nc > prev ){
                         if( nc - prev == 1 ){ // seq
                             if( lop != "-"){
@@ -422,8 +464,21 @@ class BkdNGL{
 
         if( this.poi.pos.length > 0){
             this.view.poi.on = true;
+
+            // show detail
+            
+            d3.select( "#" + this.pfx + "controls-detail")
+                .style("visibility", "visible")
+            
         } else {
             this.view.poi.on = false;
+
+            // hide detail
+
+            d3.select( "#" + this.pfx + "controls-detail")
+                .style("visibility", "hidden");
+
+            
         }                       
         
         this.setHamStyle( 'poi', this.poi, null );
@@ -483,17 +538,18 @@ class BkdNGL{
     
     setOutStyle(){
 
-        var newrep = this.nglcomp.addRepresentation(
-            "cartoon",  { color: this.currentColorScheme } );
+       // var newrep = this.nglcomp.addRepresentation(
+       //     "cartoon",  { color: this.currentColorScheme } );
         
-        this.nglcomp.setSelection( "all" );
+       // this.nglcomp.setSelection( "all" );
         
-        for(var r in this.currep){
-            this.nglcomp.removeRepresentation( this.currep[r] );
-        }
+        //for(var r in this.currep){
+        //    this.nglcomp.removeRepresentation( this.currep[r] );
+        //}
         
-        this.currep.push(newrep);
-        this.nglcomp.autoView("all");
+        //this.currep.push(newrep);
+        this.rerender();
+        //this.nglcomp.autoView("all");
         
     }
     
@@ -511,22 +567,23 @@ class BkdNGL{
             .addSelectionScheme( [ [ pclr, spos + " and _C"],
                                    ["element","*"] ],"poi" );
 
-        var newOutRep = this.nglcomp.addRepresentation(
-            "cartoon",  { color: this.currentColorScheme, sele: "all" } );
+        //var newOutRep = this.nglcomp.addRepresentation(
+        //    "cartoon",  { color: this.currentColorScheme, sele: "all" } );
 
         
-       var newPoiRep = this.nglcomp.addRepresentation( 
+        var newPoiRep = this.nglcomp.addRepresentation( 
             "ball+stick", { color: "magenta", sele: spos + ":A and _C" } );
         
-        var newLicRep = this.nglcomp.addRepresentation( 
-            "cartoon", { color: "darkmagenta", sele: poiSel.sel } );
+        //var newLicRep = this.nglcomp.addRepresentation( 
+        //    "cartoon", { color: "darkmagenta", sele: poiSel.sel } );
         
         for(var r in this.currep){
             this.nglcomp.removeRepresentation( this.currep[r] );
         }
+        this.currep = [];
         
-        this.currep.push( newOutRep );
-        this.currep.push( newLicRep );
+        //this.currep.push( newOutRep );
+        //this.currep.push( newLicRep );
         this.currep.push( newPoiRep );
         
         this.nglcomp.autoView(poiSel.sel);                
@@ -546,8 +603,8 @@ class BkdNGL{
             .addSelectionScheme( [ [ pclr, spos + " and _C"],
                                    ["element","*"] ],"poi" );
 
-        var newOutRep = this.nglcomp.addRepresentation(
-            "cartoon",  { color: this.currentColorScheme, sele: "all" } );
+        //var newOutRep = this.nglcomp.addRepresentation(
+        //    "cartoon",  { color: this.currentColorScheme, sele: "all" } );
 
         
        var newPoiRep = this.nglcomp.addRepresentation( 
@@ -563,8 +620,10 @@ class BkdNGL{
         for(var r in this.currep){
             this.nglcomp.removeRepresentation( this.currep[r] );
         }
+
+        this.currep = [];
         
-        this.currep.push( newOutRep );
+        //this.currep.push( newOutRep );
         this.currep.push( newLicRep );
         this.currep.push( newBASRep );
         this.currep.push( newPoiRep );
@@ -586,8 +645,8 @@ class BkdNGL{
             .addSelectionScheme( [ [ pclr, spos + " and _C"],
                                    ["element","*"] ],"poi" );
 
-        var newOutRep = this.nglcomp.addRepresentation(
-            "cartoon",  { color: this.currentColorScheme, sele: "all" } );
+        //var newOutRep = this.nglcomp.addRepresentation(
+        //    "cartoon",  { color: this.currentColorScheme, sele: "all" } );
 
         
        var newPoiBasRep = this.nglcomp.addRepresentation( 
@@ -596,15 +655,16 @@ class BkdNGL{
        var newPoiSurRep = this.nglcomp.addRepresentation( 
            "surface", { color: "darkmagenta", surfaceType: "av", opacity: 0.1, sele: spos + ":A" } );
         
-        var newLicRep = this.nglcomp.addRepresentation( 
-            "cartoon", { color: "darkmagenta", sele: poiSel.sel } );
+        //var newLicRep = this.nglcomp.addRepresentation( 
+        //    "cartoon", { color: "darkmagenta", sele: poiSel.sel } );
         
         for(var r in this.currep){
             this.nglcomp.removeRepresentation( this.currep[r] );
         }
+        this.currep = [];
         
-        this.currep.push( newOutRep );
-        this.currep.push( newLicRep );
+        //this.currep.push( newOutRep );
+        //this.currep.push( newLicRep );
         this.currep.push( newPoiBasRep );
         this.currep.push( newPoiSurRep );
         
@@ -639,6 +699,7 @@ class BkdNGL{
         for(var r in this.currep){
             this.nglcomp.removeRepresentation( this.currep[r] );
         }
+        this.currep = [];
         
         this.currep.push( newLicRep );
         this.currep.push( newBasRep );
@@ -791,17 +852,28 @@ class BkdNGL{
         }                    
     }
     
-    setHamStyle( par, value, menu ){
+    setHamStyle( par1, value1, menu1 ){
         
-        console.log( "HAM setHamStyle called:", par, value, menu);
+        //console.log( "HAM setHamStyle called:", par, value, menu);
         console.log( "HAM data.state:",this.state);
+
         console.log( "HAM data.fstate:",this._data.fstate);
-       
-        console.log("HAM component:", this.nglcomp);
+        //console.log( "HAM ngl._data:",this._data);
+               
+        console.log("HAM ngl._msa:", this._msa);
+        console.log( "HAM ngl._msa[0].ent:",  this._msa[0].getEnt() );
+
+
+        //console.log("HAM component:", this.nglcomp);
         
         var op = "change";
         var state = this.state;
 
+        var  chncol = this.view.chn.cstyle;
+        var  chnsel = this.view.chn.cselect;
+
+        console.log("HAM chncol:", this.view.chn.cstyle);
+        
         var view = this.view;
         console.log("HAM view (old):", view);
         
@@ -911,15 +983,25 @@ class BkdNGL{
             //----------------------
 
             var selLst = [];
+            var csconf = { mode: "all" };
+            var selChn = "";
+            console.log( "HAM: selection: ",  state.sel);
+                        
+            if( state.sel.aset ){  // set of residues
+                csconf = chnsel.aset;
+            }
             
-            if( state.sel.hiqc ){            
-                var csconf = {
-                    mode: "step",
-                    //states: [{ val: "bfact", vmin: -1000, vmax: 0.5 },
-                    //         { val: "bfact", vmin: -1000, vmax: 0.5 } ]
-                    states: [{ val: "bfact", vmin: 0.5, vmax: 1000.0 }]
-                } 
-                
+            if( state.sel.chain ){  // set of chains
+                var csconf = chnsel.chain;
+                for( var c in csconf.clist){
+                    selChn = selChn +":" + csconf.clist[c] + " or ";
+                }
+                selChn = "(" + selChn.substring(0,selChn.length-3)+")";
+            }
+
+            if( state.sel.hiqc ){   //  bfact cutoff  
+                var csconf = chnsel.hiqc;
+                        
                 if( csconf.mode == "step" ){
                     for( var s in csconf.states ){
                         var cst = csconf.states[s];
@@ -941,13 +1023,17 @@ class BkdNGL{
                     }
                 }
             }
-
+            
+            if( csconf.mode == "all" ){
+                selLst = [];
+            }
+            
             var selStr = "";
 
             if( selLst.length == 0){
                 selStr = "*";
             } else {
-
+                
                 selStr = "";
 
                 var rlst = []; 
@@ -995,23 +1081,157 @@ class BkdNGL{
                     if( selStr[selStr.length-1] == '-') selStr = selStr + nc;                
                 }
             }
-                        
+
+            if( selChn.length > 0){
+                selStr = selChn + " and (" + selStr + ")";                 
+            }
+
+            
             // main chain: color
             //-----------------
 
-            var chnColLst = [["green","*"]];
+            //col:{ rain: true, asel: false,
+            //      cmsa: false, csnp: false,
+            //      topo: false, sstr: false,
+            //      cbfc: false },
+
+
+            console.log( "HAM: color: ",  state.col);
             
-            if( state.col.rain ){
+            var chnColLst = [];
+            var ccs =  chncol.cdef;   // curent color style;
+            
+            if( state.col.rain ){      // color by position
                 chnColLst = [["atomindex", "*"]];
             }
+            
+            if( state.col.cmsa ){        // color by msa
+                ccs =  chncol.cmsa;                   
+            } else if( state.col.csnp ){ // color by snp count
+                ccs =  chncol.csnp;                   
+            } else if( state.col.cbfc ){      // color by bfact
+                ccs =  chncol.cbfc;                
+            } 
 
-            if( state.col.cmsa ){
-                //colLst = [["atomindex", "*"]];
+            console.log( "HAM: color ccs: ",  ccs);
+
+            var binter = null;
+            
+            if( state.col.cmsa || state.col.csnp || state.col.cbfc ){
+   
+                if( ccs.cbasis !== undefined ){                
+                    binter = d3.interpolateRgbBasis( ccs.cbasis );
+                    console.log("HAM: RGBbasis: ", ccs.cbasis );
+                } else {
+                    binter = d3.interpolateRgb.gamma(ccs.gamma)( ccs.colLo, ccs.colHi );
+                }
             }
 
+            if( state.col.cmsa || state.col.csnp ){
+
+                var cval = [];
+                
+                if( ccs.val == "ent" ){
+                    cval = ccs.msa.getEnt();
+                } else{
+                    cval = ccs.msa.getCnt();
+                }
+                
+                var cmax = ccs.valHi;
+                var cmin = ccs.valLo;
+
+                if( cmax == undefined || cmin == undefined ){
+
+                    cmin = +1e20;
+                    cmax = -1e10;
+
+                    for( var p=0; p <cval.length; p++ ){
+                        if( cval[p] < cmin ) cmin = cval[p];
+                        if( cval[p] > cmax ) cmax = cval[p];
+                        
+                    }
+                }
+                
+                console.log("HAM: cmin, cmax=", cmin,cmax);
+                
+                this.nglcomp.structure.eachAtom( function(atom) {                            
+                    
+                    if( atom.atomname == "CA" && atom.chainname == "A" ){                        
+                        //var cnm = atom.chainname;                   
+                        var rno = atom.resno;
+                        
+                        var bf = 1 - ((cval[rno] - cmin )/( cmax-cmin ))**(1/2);
+                        
+                        //var c = 2*(data.msaEnt[i]/emax)**1.5;
+                        var col = d3.color(binter(bf)).formatHex();
+                        chnColLst.push([col,String(rno)]);
+                    }
+                });
+                
+            }
+            
+            if( state.col.cbfc ){  // bfactor
+
+                var cmax = ccs.valHi;
+                var cmin = ccs.valLo;
+
+                if( cmax == undefined || cmin == undefined ){
+
+                    cmin = +1e20;
+                    cmax = -1e10;
+                    
+                    this.nglcomp.structure.eachAtom(
+                        function(atom) {                            
+                            if( atom.bfactor < cmin ) cmin = atom.bfactor;
+                            if( atom.bfactor > cmax ) cmax = atom.bfactor;
+                        }
+                    );
+                }
+
+                console.log("HAM: cmin, cmax=", cmin,cmax);
+                
+                this.nglcomp.structure.eachAtom( function(atom) {                            
+                    
+                    if( atom.atomname == "CA" && atom.chainname == "A" ){
+                        var bf = (atom.bfactor - cmin )/( cmax-cmin );
+                        //var cnm = atom.chainname;                   
+                        var rno = atom.resno;
+                                
+                        //var c = 2*(data.msaEnt[i]/emax)**1.5;
+                        var col = d3.color(binter(bf)).formatHex();
+                        chnColLst.push([col,String(rno)]);
+                    }
+                });                
+            }
+
+
+            
             if( state.col.step ){
                 //colLst = [["atomindex", "*"]];
             }
+
+            var repParam = {
+                sele: selStr,
+                smoothSheet: true,
+                quality: "high",
+                opacity: 1.0
+            };
+            
+            if( chnColLst.length > 0){ 
+
+                repParam.color = NGL.ColormakerRegistry
+                    .addSelectionScheme( chnColLst,
+                                         "chnColScheme" );                
+            } else {
+                if( state.col.cchn ){
+                    repParam.colorScheme = "chainindex";                    
+                } else {                
+                    repParam.color = NGL.ColormakerRegistry
+                        .addSelectionScheme( [["green","*"]],
+                                             "chnColScheme" );
+                }                        
+            }
+
             
             // main chain: render
             //-------------------
@@ -1019,20 +1239,12 @@ class BkdNGL{
             console.log( "HAM: chnColLst:", chnColLst ); 
             console.log( "HAM: selStr:", selStr ); 
             
-            var chnColScheme = NGL.ColormakerRegistry
-                .addSelectionScheme( chnColLst,"chnColScheme" );
-            
-            var chnSelRep = this.nglcomp.addRepresentation(
-                "cartoon", { color: chnColScheme,
-                             sele: selStr,
-                             smoothSheet: true,
-                             quality: "high",
-                             opacity: 1.0
-                           } );
+            var chnSelRep = this.nglcomp.addRepresentation( "cartoon",
+                                                            repParam );
             
             view.chn.rep.push(chnSelRep);
             
-                    
+                     
             /*
             
             // details override
@@ -1151,7 +1363,7 @@ class BkdNGL{
                     var chnHiRep = this.nglcomp.addRepresentation(
                         view.chn.style, { color: chnHiScheme } );
                     
-                    view.chn.rep.push(chnHiRep);                                                                         
+                    view.chn.rep.push(chnHiRep);
                 }
                 
             } else {
@@ -1220,8 +1432,7 @@ class BkdNGL{
                                           quality: "high",
                                           opacity: cstyle.opaqHi } );
                     
-                    view.chn.rep.push(chnHiRep);                                                                         
-                    
+                    view.chn.rep.push(chnHiRep);
                     
                     //var poirep = this.nglcomp.addRepresentation(
                     //    view.poi.style, { color: poischeme,
@@ -1599,6 +1810,28 @@ class BkdNGL{
             return BKDmodal.showurl( anchor, url );            
         }
 
+        if( cctrl == 'exp' ){
+            console.log( "HAM: menucallback: export" );
+            if( opt.value == "ngl-export-pdb" ){
+                console.log( "HAM: menucallback: export pdb" );
+                return;
+            }
+            if( opt.value == "ngl-export-img" ){
+                console.log( "HAM: menucallback: export image" );
+
+                var blob = self.nglstage.makeImage(
+                    { //onProgress: onProgress,
+                      factor: 4,
+                      antialias: true,
+                      trim: true,
+                        transparent: false });
+                NGL.download(blob, 'screenshot.png');
+                return;
+            }
+        }
+
+
+        
         console.log("HAM state:", self.state);
         self.setHamStyle( cctrl, opt, self.state );        
     }        

@@ -755,7 +755,13 @@ BKDconf = {
                      {name:"Sequence",
                       vpath:['sequence'],  // 'feats' 
                       type:"sequence",
-                      "config":{}
+                      "msa-config":{"track-color":{ "extracell":"#00cc66",
+                                                    "intracell":"#99ccff",
+                                                    "transmemb":"#ffb266" },
+                                    "width": 1620,
+                                    "height":350,
+                                    "taxname": {'9606': 'Human' }
+                                   }
                      }]
                 },                
                 {id:"feature",

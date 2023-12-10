@@ -1,7 +1,7 @@
 console.log("bkd-d3msa: common");
   
 class BkdMSA {
-    
+     
     constructor( config ){
         this._conf = {   // defaults
             navig: true,
@@ -108,7 +108,7 @@ class BkdMSA {
                 }
                 msa._data.msaHead = msaHead;
                 msa._data.msaSeq = msaSeq;
-                                
+                            
                 msa._view._brl = msa._conf.brushLimit;    // shortest brush range
                 
                // brush range corresponding to longest aa step (aaMaxStep)
@@ -134,81 +134,14 @@ class BkdMSA {
                }).done( callback( this ) );
 
     }
-
-
+        
     _initMSA(){
 
-        var AA= '-ACDEFGHIKLMNPQRSTVWY';
-        
-        var dms = this._data.msaSeq;
-        
-        var msaCnt = [];  // AA counts at each position
-        var msaEnt = [];  // entropy at each position
-
-        for( var p = 0; p < dms[0].length; p ++){
-            var frq = {};
-
-            for( var s in dms ){  // go over sequences
-                //console.log("initMSA", s, p, dms[s][p]);
-                if( frq[ dms[s][p] ] == undefined  ) frq[ dms[s][p] ] = 0;
-                frq[ dms[s][p] ] += 1;
-            }
-            msaCnt.push(frq);
-            //console.log("initMSA -> frq",frq);
-            var ent = 0;
-            for( var aa in AA){
-                if( frq[AA[aa]] != undefined ){ 
-                    ent -= frq[ AA[aa] ] * Math.log2( frq[AA[aa]]/dms.length );
-                }
-            }
-            ent = ent/dms.length;
-            msaEnt.push(ent);
-        }
-
-        //console.log( "initMSA -> msaCnt:", msaCnt);
-        //console.log( "initMSA -> masEnt:", msaEnt);
-        this._data.msaCnt = msaCnt;
-        this._data.msaEnt = msaEnt;
-    }
-    
-    _initViz(){
-
-        // calculate positions/sizes
-
-        this._view.svgWidth = this._conf.width;
-        this._view.navWidth = this._conf.width-50-172;
-        
-        this._view.svgHeight = this._conf.height - 0;
-
-        var target = null;
-        
-        if( !this._view.target ){
-            
-            target = this._conf.viewId + "_" + this.iid;            
-            d3.select( this._view.anchor )
-                .append( "div" )
-                .attr( "id", target );            
-        }
-        
-        var svg = d3.select( "#" + target ).append("svg");
-        svg.attr( "width", this._view.svgWidth )
-            .attr( "height", this._view.svgHeight )
-            .attr( "xmlns", "http://www.w3.org/2000/svg" )
-            .attr( "xmlns:xlink", "http://www.w3.org/1999/xlink" );
-        
-        svg.classed( this._conf.className, true)        
-            .attr("id", target + "_svg"  )
-            .style("background-color", this._conf.background||"transparent");
-
-        this._view.target = target;
-        this._view.svg = svg;
-        
-    }
-
-    _render(){
+        // MSA<->seq pos mapping
+        //----------------------
 
         // map sequences to MSA position
-        //  msaSeq  - msa sequences (with gaps) as strings 
+        // msaSeq  - msa sequences (with gaps) as strings 
 
         var C = this._conf;
         var V = this._view;
@@ -271,6 +204,289 @@ class BkdMSA {
                 }
             }
         }
+
+        console.log( "_initMSA:",D.msaMap );
+        
+        // domain/feature position remapping
+        //----------------------------------
+
+        // Note: Assumes domain positions correspond
+        //       to the position in the first (msaSeq[0]) sequence   
+        //       if needed, add seq selection parameter   
+        
+        for( var t=0; t < D.dtrac.length; t++ ){
+            console.log("INITMSA:", t, ctrac);
+
+            var ctrac = D.dtrac[t]; 
+            var name = ctrac.name;
+            var dpos = ctrac.dpos;
+            
+            for( var d=0; d < dpos.length; d++ ){
+                
+                var cbeg = dpos[d].beg;  // in msaSeq[0]
+                var cend = dpos[d].end;  // in msaSeq[0]
+
+                console.log("INITMSA: beg,end", cbeg, cend); 
+                dpos[d].beg = this.getMsaPos2( cbeg, 0 );
+                dpos[d].end = this.getMsaPos2( cend, 0 );
+            }
+        }
+        
+
+        // variability statistics/scores
+        //------------------------------
+        
+        var AA= '-ACDEFGHIKLMNPQRSTVWY';
+        
+        var dms = D.msaSeq;
+        
+        D.msaCnt = [];  // AA counts at each position
+        D.msaEnt = [];  // entropy at each position
+
+        var tcnt = {};
+        
+        for( var p = 0; p < dms[0].length; p ++){
+            var pcnt = {};
+
+            for( var s in dms ){  // go over sequences
+                //console.log("initMSA", s, p, dms[s][p]);
+                if( pcnt[ dms[s][p] ] == undefined  ){
+                    pcnt[ dms[s][p] ] = 1;
+                } else {
+                    pcnt[ dms[s][p] ] += 1;
+                }
+                
+                if( tcnt[ dms[s][p] ] == undefined  ){
+                    tcnt[ dms[s][p] ] = 1;
+                } else {
+                    tcnt[ dms[s][p] ] += 1;
+                }                
+            }
+            
+            D.msaCnt.push( pcnt );
+            //console.log("initMSA -> pcnt",pcnt);
+            var ent = 0;
+            for( var aa in AA){
+                if( pcnt[AA[aa]] != undefined ){ 
+                    ent -= pcnt[ AA[aa] ]*Math.log2( pcnt[ AA[aa] ]/dms.length);
+                }
+            }
+            ent = ent/dms.length;
+            D.msaEnt.push(ent);
+        }
+
+        // normalize (Gerstein&Altman 1995; PMID: 7643385)
+
+        var rent = 0;
+        for(var k in tcnt){
+            var rf = tcnt[k]/(dms[0].length*dms.length); 
+            rent +=  rf * Math.log(rf);
+        }
+        
+        for(var i=0; i < D.msaEnt.length; i++ ){
+            D.msaEnt[i] += rent;
+        }        
+    }
+
+    getMsaPos2( pos, ref ){
+
+                
+        var msaMap = this._data.msaMap;
+        var msal = msaMap[0].length;
+
+        console.log("getMsaPos2:msaMap:", msaMap);
+        console.log("getMsaPos2: pos, ref", pos,ref);
+
+
+        var slimit = 32;
+        
+        // MSA  position corresponding to pos in ref sequence 
+
+        if( ref == undefined ){  // ref -> pos in MSA
+            return pos;
+        }
+        
+        if( pos < msaMap[ref][0]
+            || pos > msaMap[ref][msal] ){
+
+            return null;
+        }
+       
+        var pmin = 0;
+        var pmax = msaMap[ref].length - 1;
+
+        var pcur = Math.trunc( (pmax - pmin)/2 );
+        
+        if( pos == msaMap[ref][msal] ) {  // last pos
+
+            var cpos = 0;
+            while( pmax - pmin > 1){
+                cpos = Math.trunc( (pmin + pmax )/2 );
+                
+                if( msaMap[ref][cpos] < pos ){
+                    pmin = cpos;
+                }else{
+                    pmax = cpos;
+                }
+                slimit-=1;
+                if( slimit < 0 ){
+                    console.log( "(1) pos, ref :: pmin,pmax,cpos: msaMap[ref][cpos]",
+                                 pos, ref, "::", pmin, pmax, cpos, msaMap[ref][cpos] );
+                    break;
+                }
+                
+            }
+            
+            cpos +=1;
+        } else {
+            
+            while( pmin < pmax ){
+                cpos = Math.trunc( ( pmin + pmax )/2 );
+
+                if( msaMap[ref][cpos] > pos){
+                    pmax = cpos;                    
+                }else{
+                    pmin = cpos;
+                }
+                
+                if( pmax-pmin == 1 && msaMap[ref][cpos] == pos ){
+                    break;
+                }
+
+                slimit-=1;
+                if( slimit < 0 ){
+                    console.log( "(2) pos, ref :: pmin,pmax,cpos: msaMap[ref][cpos]",
+                                 pos, ref, "::", pmin, pmax, cpos, msaMap[ref][cpos] );
+                    break;
+                }
+            }
+        }
+
+        return cpos;        
+    }
+    
+    getSeqPos( pos, ref ){   
+        // sequence positions corresponding to pos in ref sequence 
+
+        var plst = [];
+        
+        var msaSeq = this._data.msaSeq;
+        var msaMap = this._data.msaMap;
+        var msal = msaMap[0].length;
+            
+        if( ref == undefined ){  // ref -> pos in MSA
+            for(var i = 0; i < msaMap.length; i ++){
+                if( msaSeq[i][pos] == '-' ){
+                    plst.push(0);
+                } else {
+                    plst.push(msaMap[i][pos]);
+                }                             
+            }
+            return plst;
+        }
+        
+        if( pos < msaMap[ref][0]
+            || pos > msaMap[ref][msal] ){
+
+            return null;
+        }
+       
+        var pmin = 0;
+        var pmax = msaMap[ref].length - 1;
+
+        var pcur = Math.trunc( (pmax - pmin)/2 );
+
+        
+        if( pos == msaMap[ref][msal] ) {  // last pos
+
+            var cpos = 0;
+            while( pmax - pmin > 1){
+                cpos = Math.trunc( (pmin + pmax )/2 );
+                
+                if( msaMap[ref][cpos] < pos ){
+                    pmin = cpos;
+                }else{
+                    pmax = cpos;
+                }
+            }
+            
+            cpos +=1;
+        } else {
+            
+            while( pmin < pmax ){
+                cpos = Math.trunc( ( pmin + pmax )/2 );
+
+                if( msaMap[ref][cpos] > pos){
+                    pmax = cpos;                    
+                }else{
+                    pmin = cpos;
+                }
+                
+                if( pmax-pmin == 1 && msaMap[ref][cpos] == pos ){
+                    break;
+                }                       
+            }
+        }
+
+        for(var i = 0; i < msaMap.length; i ++){
+            if( msaSeq[i][cpos] == '-' ){
+                plst.push(0);
+            } else {
+                plst.push(msaMap[i][cpos]);
+            }                             
+        }
+        return plst;
+    }
+    
+    getEnt(){
+        return this._data.msaEnt;
+    }
+    getVCnt(){
+        return this._data.msaCnt;
+    }
+
+    getMSA(){
+        return this._data.msaSeq;
+    }
+    
+    _initViz(){
+
+        // calculate positions/sizes
+
+        this._view.svgWidth = this._conf.width;
+        this._view.navWidth = this._conf.width-50-172;
+        
+        this._view.svgHeight = this._conf.height - 0;
+
+        var target = null;
+        
+        if( !this._view.target ){            
+            target = this._conf.viewId + "_" + this.iid;            
+            d3.select( this._view.anchor )
+                .append( "div" )
+                .attr( "id", target );            
+        }
+        
+        var svg = d3.select( "#" + target ).append("svg");
+        svg.attr( "width", this._view.svgWidth )
+            .attr( "height", this._view.svgHeight )
+            .attr( "xmlns", "http://www.w3.org/2000/svg" )
+            .attr( "xmlns:xlink", "http://www.w3.org/1999/xlink" );
+        
+        svg.classed( this._conf.className, true)        
+            .attr("id", target + "_svg"  )
+            .style("background-color", this._conf.background||"transparent");
+
+        this._view.target = target;
+        this._view.svg = svg;
+        
+    }
+
+    _render(){
+       
+        var C = this._conf;
+        var V = this._view;
+        var D = this._data;
 
         // offsets
         
@@ -477,9 +693,10 @@ class BkdMSA {
             }            
         }
         
-        var _full =  this.navButton(this._view.svg,
-                                    this._view.target + "_full",
-                                    this._view.svgWidth-40, 13, 32, 20, "Full", "14px")
+        var _full =  this.navButton( this._view.svg,
+                                     this._view.target + "_full",
+                                     this._view.svgWidth-40,
+                                     13, 32, 20, "Full", "14px")
             .on( "click", _fullCB( this ) );
         
         var _navG = this._view.svg.append("g")
@@ -531,9 +748,11 @@ class BkdMSA {
                 var fr_cover_max = 1;  
 
                 // min coverage (fract)
-                var fr_cover_min = V.navWidth/C.aaMaxStep/D.msaSeq[0].length;                            
+                var fr_cover_min = V.navWidth/C.aaMaxStep/D.msaSeq[0].length;
                               
-                var fr_aaa = (fr_cover_max -fr_cover_min)/(V.navWidth-C.brushLimit);
+                var fr_aaa = (fr_cover_max -fr_cover_min)/
+                    (V.navWidth-C.brushLimit);
+
                 var fr_bbb = fr_cover_max - fr_aaa * V.navWidth;
 
                 V.fr_alpha= fr_aaa;
@@ -543,8 +762,9 @@ class BkdMSA {
                 V.aaStep = V.navWidth/V.fr_cover/D.msaSeq[0].length;
 
                 console.debug( "V.fr_alpha",V.fr_alpha,"V.fr_beta",V.fr_beta,
-                             "V.navWidth/V.aaStep=",V.navWidth/V.aaStep,
-                             "brwdth=", brWdth,"V.fr_cover=",V.fr_cover, "fr_cover_min=",fr_cover_min );
+                               "V.navWidth/V.aaStep=",V.navWidth/V.aaStep,
+                               "brwdth=", brWdth,"V.fr_cover=",V.fr_cover,
+                               "fr_cover_min=",fr_cover_min );
                 
                 var brCntr_raw = (brLeft+brRight)/2;
                 var fr_brCntr_raw = (brLeft+brRight)/2/V.navWidth; //*D.msaSeq[0].length;
@@ -628,7 +848,7 @@ class BkdMSA {
         
         var _seqMSA = this._view.svg.append("g")
             .attr( "id", this._view.target + "_seq" )
-            .attr("transform", "translate(0, " + ( this._view.offsetY) + ")");        
+            .attr("transform", "translate(0, " + ( this._view.offsetY) + ")");
 
         _seqMSA.append("clipPath")
             .attr("id", this._view.target + "_seq_clip")
@@ -889,7 +1109,7 @@ class BkdMSA {
                         .attr( "height", C.msaBoxY )
                         .attr( "class", "msa-rect")
                         .style( "fill", C._palette1[ aa ] )
-                        .attr( "fill-opacity", V.aaStep > 16 ? 0.5 : 1 )                        
+                        .attr( "fill-opacity", V.aaStep > 16 ? 0.5 : 1 )
                         .append("title").text(aa + (D.msaMap[j][i]));
                     
                     // letter 
@@ -1180,8 +1400,11 @@ class BkdMSA {
         var C = this._conf;
         var V = this._view;
         
-        var _dtrMSA = this._view.svg.append("g").attr( "id", V.target + "_dtr" )
+        var _dtrMSA = this._view.svg
+            .append("g")
+            .attr( "id", V.target + "_dtr" )
             .attr("transform", "translate(0, " + ( V.offsetDtrY) + ")");        
+
         _dtrMSA.append( "clipPath" )
             .attr("id", V.target + "_dtr_clip")
             .append("rect")
@@ -1190,14 +1413,19 @@ class BkdMSA {
             .attr("width", V.navWidth) // TODO
             .attr("height", C.msaDY*(this._data.dtrac.length+1));
         
-        var _dtrMSA_head = _dtrMSA.append("g").attr( "id", V.target + "_dtr_head" );
+        var _dtrMSA_head = _dtrMSA
+            .append("g")
+            .attr( "id", V.target + "_dtr_head" );
         
-        var _dtrMSA_port = _dtrMSA.append("g").attr( "id", V.target + "_dtr_port" )
+        var _dtrMSA_port = _dtrMSA
+            .append("g")
+            .attr( "id", V.target + "_dtr_port" )
             .attr("clip-path", "url(#"+ V.target + "_dtr_clip)" )
-            .attr("transform", "translate(100, 0)");
+            .attr("transform", "translate(172, 0)");
         
-        var _dtrMSA_view
-            = _dtrMSA_port.append("g").attr( "id", V.target + "_dtr_view" );
+        var _dtrMSA_view = _dtrMSA_port
+            .append("g")
+            .attr( "id", V.target + "_dtr_view" );
         
         this.renderDtracHead();
         this.renderDtracDoms();
@@ -1247,10 +1475,11 @@ class BkdMSA {
                 }
             }
             
-            var _seqSG = d3.select("g[id='"+ V.target + "_dtr_view']").append("g")
+            var _seqSG = d3.select("g[id='"+ V.target + "_dtr_view']")
+                .append("g")
                 .attr( "id", ssid + i.toString() )
                 .attr( "transform", "translate( 0, "+ (i+1)*C.msaDY + ")" );
-
+            
             d3.select("#"+ ssid + i.toString() )
                 .append("g")
                 .attr( "id", ssid + i.toString() );
@@ -1275,8 +1504,8 @@ class BkdMSA {
             
             for( var d=0; d < dpos.length; d++ ){
                 
-                var pbeg = (dpos[d].beg - 1) * V.aaStep - V.aaOffset;
-                var pend = (dpos[d].end - 1) * V.aaStep - V.aaOffset;
+                var pbeg = (dpos[d].beg - 0) * V.aaStep - V.aaOffset;
+                var pend = (dpos[d].end - 0) * V.aaStep - V.aaOffset;
                 var dcol = dpos[d].color;
                 console.log("col",dcol);
                 
@@ -1313,8 +1542,8 @@ class BkdMSA {
             
             for( var d=0; d < dpos.length; d++ ){
                 
-                var pbeg = (dpos[d].beg - 1) * V.aaStep - V.aaOffset;
-                var pend = (dpos[d].end - 1) * V.aaStep - V.aaOffset;
+                var pbeg = (dpos[d].beg - 0) * V.aaStep - V.aaOffset;
+                var pend = (dpos[d].end - 0) * V.aaStep - V.aaOffset;
                 
                 d3.select( "#" + V.target + "_dtr_dom_" + t.toString() +" " +
                            "rect[d='"+(d)+"']" )

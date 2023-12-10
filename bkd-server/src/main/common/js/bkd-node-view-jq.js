@@ -16,19 +16,42 @@ BKDnodeView = {
     slist: [],
     poi: { pos:[], color: "#674B70",stroke: "#000000" },
     //poi: { pos:[], color: "#B7A4BD" },
-    
-    init: function( ns, ac , srcAnchor, srcViewAnchor, nodeAnchor, flist, mode ){
+    config: {},
+      
+    init: function( ns, ac , srcAnchor, srcViewAnchor, nodeAnchor,
+                    flist, mode, state ){
         console.log( "bkd-node-view-jq: BKDnodeView.init" );
-        this.ns = ns;
-        this.ac = ac;
+        
+        this.state = state;
+        this.config = flist;
+        
+        if( state.ns !== undefined){
+            this.ns = state.ns;
+        } else {
+            state.ns = ns;
+            this.ns = ns;
+        }
 
+        if( state.ac !== undefined){
+            this.ac = state.ac;
+        } else {
+            state.ac = ac;
+            this.ac = ac;
+        }
+
+        if( state.svar !== undefined){
+            this.svar = state.svar;
+        } else {
+            this.svar = 0;
+        }
+        
         this.srcAnchor=srcAnchor;
         this.srcViewAnchor=srcViewAnchor;
         this.nodeAnchor=nodeAnchor;
-        
+
         if( ns.length > 0 && ac.length >0 ){     // show node
             this.myurl ="node?ns="+ns+"&ac="+ac+"&ret=data&format=json";          
-            $.ajax( { url: this.myurl} )
+            $.ajax( { url: this.myurl, context: this} )
                 .done( function(data, textStatus, jqXHR){                  
                     BKDnodeView.view( data.node, BKDconf["node"], mode) } );
         }               
@@ -61,17 +84,19 @@ BKDnodeView = {
         // view type
         //----------
 
-        var tvpath = fmt.type.vpath;
+        var tvpath = this.config.type.vpath;
+
         var vformat = data;
-        //console.log(fmt.type.vpath);
-        console.log(data);
+        
         for( var t = 0; t <tvpath.length; t++){
             vformat = vformat[tvpath[t]]; 
         }
 
         //console.log( "FORMAT: " + JSON.stringify(vformat) );
 
-        var format = fmt.type.view[vformat];
+        //var format = fmt.type.view[vformat];
+
+        var format = this.config.type.view[vformat];
 
         //console.log( "NA: " + nodeViewAnchor );
         //console.log( "FL: " + JSON.stringify(format) );
@@ -129,7 +154,8 @@ BKDnodeView = {
                     this.showSequence( "#bkd-hv-field", cfield, data );    
                     break;
                 case "feature":             
-                    BKDnodeFeatures.init( "#bkd-hv-field", cfield, this.data, this.myurl );    
+                    BKDnodeFeatures.init( "#bkd-hv-field", cfield,
+                                          this.data, this.myurl );    
                     break;
                     
                 default:
@@ -152,16 +178,20 @@ BKDnodeView = {
                 var cid = format.pane[i].id;
                 var clbl = format.pane[i].label;
                 
-                $("#bkd-sidebar").append("<div id='bkd-sb-"+cid+"' class='sidebar-entry'>"+
-                                         clbl+"</div>\n"); 
+                $("#bkd-sidebar").append( "<div id='bkd-sb-" + cid + "'" +
+                                          " class='sidebar-entry'>"+
+                                          clbl + "</div>\n"); 
                 
-                $("#bkd-nv-field").append("<div id='bkd-nv-"+cid+"' class='nv-field'></div>\n");
+                $("#bkd-nv-field").append( "<div id='bkd-nv-" + cid +"'" +
+                                           " class='nv-field'></div>\n");
                 
                 if( format.pane[i].header){
                     if( format.pane[i].header_conf == undefined ){  
-                        $( "#bkd-nv-" + cid ).append(" <div id='bkd-nv-" + cid + "_head'>"+clbl+"</div>" );
+                        $( "#bkd-nv-"+cid ).append(" <div id='bkd-nv-" + cid +
+                                                   "_head'>"+clbl+"</div>" );
                     } else {
-                        $( "#bkd-nv-" + cid ).append(" <div id='bkd-nv-" + cid + "_head'>"+clbl+"</div>" );
+                        $( "#bkd-nv-"+cid ).append(" <div id='bkd-nv-" + cid +
+                                                   "_head'>"+clbl+"</div>" );
 
                         var hconf = format.pane[i].header_conf
                         var etg = {};
@@ -169,13 +199,13 @@ BKDnodeView = {
                         if( hconf.query_tp == "type_set_clear" ){
 
                             $( "#bkd-nv-" + cid + "_head" )
-                                .append( "<input id='" + hconf.query_id + "-vtype' "
-                                         + "type='hidden' "
+                                .append( "<input id='" + hconf.query_id +
+                                         "-vtype' type='hidden' "
                                          + "value='" + hconf.query_vtype + "'/>");
                             
                             // prelabel
                             
-                            if( hconf.query_prelabel.length > 0 ){                                
+                            if( hconf.query_prelabel.length > 0 ){
                                 $( "#bkd-nv-" + cid + "_head" )
                                     .append(hconf.query_prelabel);
                                 }
@@ -183,7 +213,8 @@ BKDnodeView = {
                             // type pulldown
 
                             var tsel ="<select id='"+hconf.query_id + "-ptype' "
-                                + "class='bkd-report' style='text-align: right;'>";
+                                + "class='bkd-report' " +
+                                "style='text-align: right;'>";
                             for( var n = 0; n < hconf.query_tlist.length; n++ ){
                                 tsel = tsel +"<option value='" +
                                     hconf.query_tlist[n].value+"'>" +
@@ -195,7 +226,7 @@ BKDnodeView = {
                             
                             // postlabel
                             
-                            if( hconf.query_postlabel.length > 0 ){                                
+                            if( hconf.query_postlabel.length > 0 ){
                                 $( "#bkd-nv-" + cid + "_head" )
                                     .append(hconf.query_postlabel);
                                 }
@@ -205,9 +236,10 @@ BKDnodeView = {
                             if( hconf.query_vtype == '%%text%%' ||
                                 hconf.query_vtype == '%%int%%' ){
                                 $( "#bkd-nv-" + cid + "_head" )
-                                    .append( "<input type='text' style='margin: 2px;'"
-                                             +" size='" + hconf.query_vlen+"'"
-                                             +" id='"+hconf.query_id +"-val'>");
+                                    .append( "<input type='text' " +
+                                             " style='margin: 2px;'" +
+                                             " size='" + hconf.query_vlen+"'" +
+                                             " id='"+hconf.query_id +"-val'>");
                                 
                             }
                             
@@ -222,7 +254,7 @@ BKDnodeView = {
                             
                             $( "#bkd-nv-" + cid + "_head" )
                                 .append( "<input id='" + hconf.query_id + "-clr'"
-                                         + " type='button' value='Clear'>" );                                    
+                                         + " type='button' value='Clear'>" );
                             
                             etg[ 'input[id='+ hconf.query_id +'-clr ]' ]
                                 = hconf.query_id + "-clr";   
@@ -239,28 +271,33 @@ BKDnodeView = {
                                     .append("| ");
                                 }
                                  $( "#bkd-nv-" + cid + "_head" )
-                                    .append( " " + hconf.query_val[q].label + " ");
+                                    .append(" " + hconf.query_val[q].label + " ");
                                 if( hconf.query_val[q].value == '%%text%%' ){
                                     $( "#bkd-nv-" + cid + "_head" )
-                                        .append( "<input type='text' style='margin: 2px;'"
-                                                 +" size='" + hconf.query_val[q].flen+"'"
-                                                 +" id='"+hconf.query_val[q].textid +"'>");
+                                        .append( "<input type='text' " +
+                                                 " style='margin: 2px;'" +
+                                                 " size='" +
+                                                 hconf.query_val[q].flen + "'" +
+                                                 " id='"+
+                                                 hconf.query_val[q].textid +"'>");
                                    
                                     
                                 }                                
                                 
                                 $( "#bkd-nv-" + cid + "_head" )
-                                    .append( " <input id='" + hconf.query_val[q].id + "-set'"
+                                    .append( " <input id='" +
+                                             hconf.query_val[q].id + "-set'"
                                              + " type='button' value='Set'>" );
 
                                 etg[ 'input[id='+ hconf.query_val[q].id +'-set]' ]
                                     = hconf.query_val[q].id + "-set";
                                 
                                 $( "#bkd-nv-" + cid + "_head" )
-                                    .append( "<input id='" + hconf.query_val[q].id + "-clr'"
-                                             + " type='button' value='Clear'>" );                                    
+                                    .append( "<input id='" +
+                                             hconf.query_val[q].id + "-clr'" +
+                                             " type='button' value='Clear'>" );
 
-                                etg[ 'input[id='+ hconf.query_val[q].id +'-clr ]' ]
+                                etg[ 'input[id='+hconf.query_val[q].id+'-clr ]' ]
                                     = hconf.query_val[q].id + "-clr";
                             }
                         }
@@ -275,15 +312,17 @@ BKDnodeView = {
                                 $( "#bkd-nv-" + cid + "_head" )
                                     .append( " | <input type='radio'"
                                              + chk
-                                             + " id='" + hconf.query_val[q].id + "'"
+                                             + " id='"+hconf.query_val[q].id+"'"
                                              + " name='" + hconf.query_id + "'"
-                                             + " value='"+ hconf.query_val[q].value+"'>"
+                                             + " value='"
+                                             + hconf.query_val[q].value+"'>"
                                              + " <label"
-                                             + " for='" + hconf.query_val[q].id + "'>"
+                                             + " for='"+hconf.query_val[q].id+"'>"
                                              + hconf.query_val[q].label
                                              + "</label> ");
                                 
-                                etg[ 'input[id='+ hconf.query_val[q].id +' ]' ] = hconf.query_id;
+                                etg[ 'input[id='+ hconf.query_val[q].id +' ]' ]
+                                    = hconf.query_id;
                                 
                                 if( hconf.query_val[q].value == '%%text%%' ){
                                     $( "#bkd-nv-" + cid + "_head" )
@@ -300,10 +339,12 @@ BKDnodeView = {
                         for( var k in etg ){
                             console.log("KKK:" + k);
                             $(k).on( 'click', function() {
-                                console.log("KKK Click:" + this.value  +":" + this.id);
+                                console.log( "KKK Click:" + this.value
+                                            + ":" + this.id);
                                 var rval = this.value;
 
-                                var posid = this.id.replace( '-set','' ).replace( '-clr','' );
+                                var posid = this.id.replace( '-set','' )
+                                    .replace( '-clr','' );
                                 console.log("KKK::: " + rval +":"+ posid);
                                 
                                 var ptype = $( "#" + posid + '-ptype' )[0].value;
@@ -314,13 +355,14 @@ BKDnodeView = {
                                 if( rval == 'Clear') rval = 'all';
                                 
                                 if( rval == 'Set'){
-                                    rval = vtype;                                  
+                                    rval = vtype;
                                     if( rval == '%%int%%'){
                                         posi = parseInt( postx );
                                     }
                                 }
                                 
-                                console.log( "KKK: " + posid  +":" + vtype+ ":" + rval + " :: "
+                                console.log( "KKK: " + posid
+                                             +":" + vtype+ ":" + rval + " :: "
                                              + ptype + "::"+postx + ":::" + posi);
                                 
                                 if( rval == 'all' ){
@@ -340,7 +382,8 @@ BKDnodeView = {
                                         txtx = 0;
                                     }
                                 }
-                                console.log("KKK: click processed:", this, rval, posi);
+                                console.log( "KKK: click processed:", this,
+                                             rval, posi );
                                 
                                 if( posi > 0){
                                     BKDnodeView.poi.pos = [posi];
@@ -377,7 +420,7 @@ BKDnodeView = {
                             .append( " | <a id='bkd-nv-" + cid + "_head_help' "
                                      + " href='"+help_url+"'>Help</a>" );
                         
-                        BKDmodal.init( help_anchor, show_anchor, help_url );                            
+                        BKDmodal.init( help_anchor, show_anchor, help_url );
                     }
                 }
                 
@@ -1058,25 +1101,37 @@ BKDnodeView = {
        
         var seq = this.getVal( data, format.vpath);
         console.log("SHOWSEQUENCE: START:", seq);
+        console.log("ABC: showSequence: format", format);
         
         $( tgt ).append( "<div id='seq-viewer-1' style='width:1640px;'></div>" );
        
         var myurl =this.myurl + "&detail=FEATS";          
-        $.ajax( { url: myurl} )
+        $.ajax( { url: myurl, context: this} )
             .done( function(data, textStatus, jqXHR){                  
                 
+                console.log( "showSequence:", this.config );
+                
                 var anchor = "#seq-viewer-1";
-                var msaConfig = {
-                    "width": 1620,
-                    "height":350,
-                    "taxname": {'9606': 'Human' }
-                }
+                var msaConfig = {};
 
+                if(format["msa-config"] != undefined ){
+                    msaConfig = format["msa-config"];
+                } else {
+                    msaConfig = {
+                        "width": 1620,
+                        "height":350,
+                        "taxname": {'9606': 'Human' }
+                    }
+                }
+                
                 var dtrak = [];
                 var cyto = [];
                 var membrane = [];
                 var extra = [];
+
                 var topology = [];
+                
+                
                 var structure = [];
                 var ipro = [];  // one track per ipro domain
                 
@@ -1091,8 +1146,16 @@ BKDnodeView = {
                                         end:flst[f].range[0].stop,
                                         name:'helix',
                                         link: null,
-                                        color:"#40FFFF"};
+                                        color: msaConfig["track-color"].transmemb};
                             membrane.push(cdom);
+                            
+                            var tdom = {beg:flst[f].range[0].start,
+                                         end:flst[f].range[0].stop,
+                                         name:'helix',
+                                         link: null,
+                                         color: msaConfig["track-color"].transmemb};
+                            
+                            topology.push( tdom );
                         }
 
                         if( flst[f]['type-name'] == "structure-feature" ){
@@ -1111,43 +1174,55 @@ BKDnodeView = {
                                         end: flst[f].range[0].stop,
                                         name: dname,
                                         link: null,
-                                        color: "#FF4040"};
-                            //console.log("cdom", cdom);
+                                        color: msaConfig["track-color"][dname] };
                             structure.push(cdom);
                         }
 
                         if( flst[f]['type-name'] == "topology-feature" ){
-                            
+                            console.log("DTRAK: topology-feature",  flst[f]); 
                             var dname = '';
                             var dcol = '#808080';
-                            if( flst[f].attr != undefined && flst[f].attr != null){
-                                //console.log("feature attr", flst[f].attr);
-                                for( var a in flst[f].attr){
-                                    var attr = flst[f].attr[a];
+                            if( flst[f].attrs != undefined && flst[f].attrs != null){
+                                console.log("DTRAK:  feature attr", flst[f].attrs);
+                                for( var a in flst[f].attrs){
+                                    var attr = flst[f].attrs[a];
                                     if( attr.name == "description"){
                                         dname = attr.value;
                                         if( dname == 'Cytoplasmic' ){
-                                            dcol = '#40FF40';
+                                            //dcol = '#99CCFF';
+                                            dcol=msaConfig["track-color"].intracell;
                                         }
                                         if( dname == 'Extracellular' ){
-                                            dcol = '#4040FF';
+                                            //dcol = '#00CC66';
+                                            dcol=msaConfig["track-color"].extracell;
                                         }
                                     }
                                 }
                             }
-                            var cdom = {beg: flst[f].range[0].start,
+                            var tdom = {beg: flst[f].range[0].start,
                                         end: flst[f].range[0].stop,
                                         name: dname,
                                         link: null,
                                         color: dcol};
-                            topology.push(cdom);
+                            topology.push(tdom);
                             if(dname == 'Cytoplasmic' ){
+                                var cdom = {beg: flst[f].range[0].start,
+                                            end: flst[f].range[0].stop,
+                                            name: dname,
+                                            link: null,
+                                            color: dcol};                                
                                 cyto.push(cdom);                                
-                            }if(dname == 'Extracellular' ){
+                            }
+                            if(dname == 'Extracellular' ){
+                                var cdom = {beg: flst[f].range[0].start,
+                                            end: flst[f].range[0].stop,
+                                            name: dname,
+                                            link: null,
+                                            color: dcol};
                                 extra.push(cdom);                                
                             }
                         }
-
+                                               
                         if( flst[f]['type-name'] == "domain"){
                             console.log("DOMAIN:",flst[f]);
                             var cf = flst[f];
@@ -1190,29 +1265,38 @@ BKDnodeView = {
                         }
                     }
                 }
-                
-                //if(topology.length > 0){
-                //    dtrak.push({name: "Topology",
-                //                link: null,
-                //                dpos: topology});
-                //}
 
-                if(extra.length > 0){
-                    dtrak.push({name: "Exracellular",
-                                link: null,
-                                dpos: extra});
-                }
 
-                if(membrane.length > 0){
-                    dtrak.push({name: "Membrane",
-                                link: null,
-                                dpos: membrane});
+                console.log("DTRAK: topo", topology);
+                console.log("DTRAK: extra", extra);
+                console.log("DTRAK: membrane", membrane);
+                console.log("DTRAK: cyto", cyto);
+
+                if( 1==1 ){
+                    if(topology.length > 0){
+                        dtrak.push({name: "Topology",
+                                    link: null,
+                                    dpos: topology});
+                    }
                 }
+                if( 1==1 ){
+                    if(extra.length > 0){
+                        dtrak.push({name: "Extracellular",
+                                    link: null,
+                                    dpos: extra});
+                    }
+
+                    if(membrane.length > 0){
+                        dtrak.push({name: "Membrane",
+                                    link: null,
+                                    dpos: membrane});
+                    }
                 
-                if(cyto.length > 0){
-                    dtrak.push({name: "Cytoplasmic",
-                                link: null,
-                                dpos: cyto});
+                    if(cyto.length > 0){
+                        dtrak.push({name: "Cytoplasmic",
+                                    link: null,
+                                    dpos: cyto});
+                    }
                 }
 
                 console.log("IPRO:",ipro);

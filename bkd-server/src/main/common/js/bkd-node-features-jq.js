@@ -1,7 +1,7 @@
 console.log("bkd-node-features-jq: common");
         
 BKDnodeFeatures = {
-     myurl: "",
+    myurl: "",
     siteurl: "./",
     dsurl: "https://www.ncbi.nlm.nih.gov/snp/",
     cvurl: "https://www.ncbi.nlm.nih.gov/clinvar/variation/",
@@ -26,16 +26,27 @@ BKDnodeFeatures = {
                 "label":"Conflicting Evidence", "value":"cevd",
                 //"color":"#d2b4de" },
                 "color":"#b284be" },
+              
               { "id":"flist-color-4","name":"color-4",
                 "label":"Likely Pathogenic", "value":"lpat",
-                //"color":"#e0B0B0" },
-                //"color":"#ffB0B0" },
-                "color":"#d01008" },
+                //"color":"#e0B0B0" ,
+                //"color":"#ffB0B0" ,
+
+                //"color":"#d01008" ,  // red
+                "color":"#ffB0B0"   // pink
+              } , 
+              
+              
               { "id":"flist-color-5","name":"color-5",
                 "label":"Pathogenic", "value":"pat",
-                //"color":"#d04030" } ],
-                //"color":"#c02010" } ],
-                "color":"#ffB0B0" }  ],   
+                //"color":"#d04030" },
+                //"color":"#c02010" },
+                
+                "color":"#d01008"   // red
+                //"color":"#ffB0B0"   // pink
+              }
+            ],
+    
     swmsels: [ { id:"flist-select-1",name:"select-1",
                  label:"HiQC", value:"hiqc",                
                  labelOn: "HiQC", labelOff: "All",
@@ -70,11 +81,16 @@ BKDnodeFeatures = {
                  mode: "chn",
                  opt: {} } ],
     
-    swmcols: [ { id:"flist-select-1",name:"select-1",
+    swmcols: [ { id:"flist-select-0",name:"select-0",
                  label:"Position",
-                 calback: "color",
+                 callback: "color",
                  value:"rain",
                  mode: "rainbow",
+                 "color":"#aaaaaa" },
+               { "id":"flist-select-1","name":"select-1",
+                 "label":"Chain",
+                 callback: "color",
+                 "value":"cchn",
                  "color":"#aaaaaa" },
                { "id":"flist-select-2","name":"select-2",
                  "label":"Conservation(MSA)",
@@ -87,10 +103,15 @@ BKDnodeFeatures = {
                  "value":"csnp",
                  "color":"#aaaaaa" },
                { "id":"flist-select-4","name":"select-4",
+                 "label":"Prediction QScr",
+                 callback: "color",
+                 "value":"cbfc",
+                 "color":"#aaaaaa" },
+               { "id":"flist-select-5","name":"select-5",
                  "label":"Topology", "value":"topo",
                  calback: "color",
                  "color":"#aaaaaa" },
-               { "id":"flist-select-5","name":"select-5",
+               { "id":"flist-select-6","name":"select-6",
                  "label":"SecStruc",
                  callback: "color",
                  "value":"sstr",
@@ -726,7 +747,12 @@ BKDnodeFeatures = {
                   ] },
               poiColor: "#B71DDE"   // "#B7A4BD"
             },
-            BKDnodeFeatures);
+            BKDnodeFeatures,
+            [ BKDnodeView.mymsa2a,
+              BKDnodeView.mymsa2b,
+              BKDnodeView.mymsa
+            ]
+        );
         
         // structure pane
         //---------------
@@ -737,7 +763,7 @@ BKDnodeFeatures = {
             BKDnodeFeatures.nglSTR = BKDnodeFeatures.nglpane(
             {  anchor: "#str-port",
                name: "str",
-               url: strUrl,
+               url: strUrl,               
                controls: [
                
                    { name: "vcls",
@@ -759,12 +785,17 @@ BKDnodeFeatures = {
                ],
                poiColor: "#B71DDE"   // "#B7A4BD"               
             },
-            BKDnodeFeatures );
+            BKDnodeFeatures,
+            [ BKDnodeView.mymsa2a,
+              BKDnodeView.mymsa2b,
+              BKDnodeView.mymsa
+            ]
+           );
         */
     },
 
-    nglpane: function( config, data){
-        var ngl  = new BkdNGL( config, data );
+    nglpane: function( config, data, msa){
+        var ngl  = new BkdNGL( config, data, msa );
         return ngl;
     },
     
@@ -1240,7 +1271,7 @@ BKDnodeFeatures = {
                    +'</div>' );
         
         BKDnodeView.mymsa2a.initialize( { "anchor": '#' + msaid,
-                                        "url": msaurl });
+                                          "url": msaurl });     
        
     },
                 
