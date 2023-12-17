@@ -748,11 +748,13 @@ BKDnodeFeatures = {
               poiColor: "#B71DDE"   // "#B7A4BD"
             },
             BKDnodeFeatures,
-            [ BKDnodeView.mymsa2a,
-              BKDnodeView.mymsa2b,
-              BKDnodeView.mymsa
-            ]
+            [ {base:BKDnodeView, key:"mymsa2a"},
+              {base:BKDnodeView, key:"mymsa2b"},
+              {base:BKDnodeView, key:"mymsa"}]        
         );
+
+        console.log("TOPO:", BKDnodeView.mymsa2a, BKDnodeView.mymsa2b,BKDnodeView.mymsa);
+        
         
         // structure pane
         //---------------
@@ -786,9 +788,9 @@ BKDnodeFeatures = {
                poiColor: "#B71DDE"   // "#B7A4BD"               
             },
             BKDnodeFeatures,
-            [ BKDnodeView.mymsa2a,
-              BKDnodeView.mymsa2b,
-              BKDnodeView.mymsa
+            [ {base:BKDnodeView, key:"mymsa2a"},
+              {base:BKDnodeView, key:"mymsa2b"},
+              {base:BKDnodeView, key:"mymsa"}]
             ]
            );
         */

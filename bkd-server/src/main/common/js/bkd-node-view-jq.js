@@ -151,11 +151,16 @@ BKDnodeView = {
                     break;
                     
                 case "sequence":
-                    this.showSequence( "#bkd-hv-field", cfield, data );    
+                    console.log("TOPO: sequence field", BKDnodeView.mymsa);
+                    this.showSequence( "#bkd-hv-field", cfield, data );
+                    console.log("TOPO: sequence field DONE", BKDnodeView.mymsa);
                     break;
-                case "feature":             
+                case "feature":
+                    console.log("TOPO: feature field", BKDnodeView.mymsa);
                     BKDnodeFeatures.init( "#bkd-hv-field", cfield,
-                                          this.data, this.myurl );    
+                                          this.data, this.myurl );
+                    console.log("TOPO: feature field DONE", BKDnodeView.mymsa);
+                    
                     break;
                     
                 default:
@@ -470,10 +475,16 @@ BKDnodeView = {
                             this.showText( "#bkd-nv-"+cid, cfield, data );    
                             break;
                         case "sequence":
-                            this.showSequence( "#bkd-nv-"+cid, cfield, data );    
+                            console.log("TOPO: feature pane", BKDnodeView.mymsa);
+                            this.showSequence( "#bkd-nv-"+cid, cfield, data );
+                            console.log("TOPO: feature pane DONE", BKDnodeView.mymsa);
+
                             break;
                         case "feature":
-                            BKDnodeFeatures.init( "#bkd-nv-"+cid, cfield, data );    
+                            console.log("TOPO: feature pane", BKDnodeView.mymsa);
+                            BKDnodeFeatures.init( "#bkd-nv-"+cid, cfield, data );
+                            console.log("TOPO: feature pane DONE", BKDnodeView.mymsa);
+
                             break;
                         case "xref":
                             this.showXref( "#bkd-nv-"+cid, cfield, data );    
@@ -1100,7 +1111,7 @@ BKDnodeView = {
     showSequence: function( tgt, format, data ){
        
         var seq = this.getVal( data, format.vpath);
-        console.log("SHOWSEQUENCE: START:", seq);
+        console.log("TOPO: SHOWSEQUENCE: START:", seq);
         console.log("ABC: showSequence: format", format);
         
         $( tgt ).append( "<div id='seq-viewer-1' style='width:1640px;'></div>" );
@@ -1310,6 +1321,7 @@ BKDnodeView = {
 
                                
                 var msaurl =  "msa-iso/" + BKDnodeView.data.ac + ".fasta";
+                console.log("TOPO: showseq: new BkdMSA")
                 BKDnodeView.mymsa = new BkdMSA( msaConfig );
 
                 console.log("DTRAK:", dtrak);
