@@ -1,5 +1,5 @@
 console.log("bkd-ngl: common");
- 
+  
 class BkdNGL{
     
     constructor( config, data, msa ){
@@ -17,6 +17,8 @@ class BkdNGL{
         //              {base: BkdView, key:'mymsa'}]
 
         this._msa = msa;    
+
+        this._msa[2].base[this._msa[2].key]
         
         console.log("TOPO: BkdNGL MSA:", this._msa);
         
@@ -53,7 +55,7 @@ class BkdNGL{
         this.poiColor = "#674B70";
 
         this.state = { sel:{ hiqc: false, chain: false,
-                             aset: false, canon: false },
+                             aset: false, canon: false, smsa: false },
                        
                        col:{ rain: true, asel: false,
                              cmsa: false, csnp: false,
@@ -118,7 +120,7 @@ class BkdNGL{
                                 colLo: "magenta", colHi:"#808080",
                                 //cbasis: ["red","yellow","blue"],
                                 gamma: 2.0, opaq: 1.0,
-                                msa: this._msa[0], val: "ent" },
+                                msa: 0, val: "ent" },   //this._msa[0]
                             
                       "csnp": {mode: "grad", 
                                colLo: "grey", colHi:"magenta",
@@ -479,7 +481,7 @@ class BkdNGL{
     
     rerender(){        
         console.log("HAM rerender called");
-        this.setHamStyle("vcls",null, null);
+        this.setHamStyle("vcls",undefined, null);
         console.log("HAM rerender DONE");
     }
 
@@ -879,10 +881,214 @@ class BkdNGL{
             this.nglcomp.autoView("all");
         }                    
     }
+
+    renderChainOutline(){
+
+        // show/hide outline. Returns:
+        //   true - render chain  
+        //   false - do not render chain
+        
+        var view = this.view;
+    
+        if( ! view.chn.on ){
+            if( view.chn.rep.length > 0 ){
+                for( var r in view.chn.rep ){
+                    view.chn.rep[r].dispose();
+                }
+                view.chn.rep = [];
+            }
+
+            return false;
+        } else {
+            
+            // only if op == "change" ?
+            
+            if( view.chn.rep.length > 0 ){
+                for( var r in view.chn.rep ){
+                    view.chn.rep[r].dispose();
+                }
+                view.chn.rep = [];
+            }
+
+            if( this.currep.length > 0 ){
+                for( var r in this.currep ){
+                    this.currep[r].dispose();
+                }
+                this.currep = [];
+            }
+           
+            // main chain: outline
+            //--------------------
+            
+            var chnOutScheme = NGL.ColormakerRegistry
+                .addSelectionScheme( [[ "white", "*" ]], "chainOut" );
+            
+            var chnOutRep = this.nglcomp.addRepresentation(
+                "cartoon", { color: chnOutScheme, 
+                             sele: "*",
+                             smoothSheet: true,
+                             quality: "high",
+                             metalness: 0.1,
+                             roughness: 0.0,
+                             opacity: 0.33 } );
+            
+            view.chn.rep.push( chnOutRep );
+
+            return true;
+        }
+    }
+
+    buildChainSelect( opt ){
+
+        console.log( "HAM setHamStyle called (buildChainSelect): opt->", opt );
+        
+        var state = this.state;
+        var view = this.view;
+        
+        var chncol = view.chn.cstyle;
+        var chnsel = view.chn.cselect;
+        
+        // main chain: selection
+        //----------------------
+
+        var selLst = [];
+        var csconf = { mode: "all" };
+        var selChn = "";
+        console.log( "HAM: selection: ",  state.sel);
+
+        if( state.sel.aset ){  // set of residues
+            csconf = chnsel.aset;
+        }
+
+        if( state.sel.smsa ){  // msa subset
+            console.log( "HAM: selection: ",  state.sel.smsa,
+                         "state(on):", opt.states.on);
+
+            var msan = opt.states.on.msa;
+            var cmsa =this._msa[msan].base[this._msa[msan].key];
+
+            var cref = opt.states.on.sref;
+            var csel = opt.states.on.ssel;
+
+            console.log( "HAM: selection: cref, csel, msa", cref, csel, cmsa );
+            
+            
+        } else {
+            
+            console.log( "HAM: selection: ",  state.sel.smsa,
+                         "states:", opt);
+            
+
+        }
+
+        if( state.sel.chain ){  // set of chains
+            var csconf = chnsel.chain;
+            for( var c in csconf.clist){
+                selChn = selChn +":" + csconf.clist[c] + " or ";
+            }
+            selChn = "(" + selChn.substring(0,selChn.length-3)+")";
+        }
+
+        if( state.sel.hiqc ){   //  bfact cutoff  
+            var csconf = chnsel.hiqc;
+
+            if( csconf.mode == "step" ){
+                for( var s in csconf.states ){
+                    var cst = csconf.states[s];
+                    var stateLst = [];
+                    if( cst.val == "bfact" ){
+                        this.nglcomp.structure.eachAtom( function(atom) {
+
+                            if( atom.atomname == "CA" &&
+                                atom.chainname == "A" ){
+
+                                var bf = atom.bfactor;
+                                var rno = atom.resno;
+
+                                if( bf >= cst.vmin && bf < cst.vmax ){
+                                    stateLst.push(String(rno));
+                                }                                 
+                            }
+                        });                            
+                    }
+                    selLst.push(stateLst);
+                }
+            }
+        }
+
+        if( csconf.mode == "all" ){
+            selLst = [];
+        }
+
+        var selStr = "";
+
+        if( selLst.length == 0){
+            selStr = "*";
+        } else {
+
+            selStr = "";
+
+            var rlst = []; 
+            for(var s in selLst){
+                var csel = selLst[s]; 
+                rlst = rlst.concat(csel);
+            }
+            rlst.sort(function(a,b) { Number(a) > Number(b) } );
+
+            console.log("HAM:", rlst);
+
+            if(rlst.length == 0 ){
+                selStr = "*"
+            } else {
+
+                var prev = Number(rlst[0]);
+                var lop = "";
+                var nc = 0;
+                for( var c in rlst ){
+                    nc = Number( rlst[c] );
+                    // console.log("#### nc: ",nc, prev, nc - prev);
+                    if( nc > prev ){
+                        if( nc - prev == 1 ){ // seq
+                            if( lop != "-"){
+                                lop = "-";
+                                selStr = selStr + "-";
+                            }
+                            prev = nc;
+                        } else {  // cont or gap                            
+                            if( lop == "-" ){ // gap starts
+                                lop = "";
+                                selStr = selStr + prev + " or " + nc;
+                            } else{  // next gap 
+                                selStr = selStr + " or " + nc;
+                            }
+                            prev = nc;
+                        }                            
+                    } else {
+                        selStr = String(nc);
+                        prev = nc;
+                    }
+                }
+
+                //if( selStr[selStr.length-1] == '-'){
+                //    selStr = selStr.substring(0,selStr.length-1);
+                //}
+                if( selStr[selStr.length-1] == '-') selStr = selStr + nc;
+            }
+        }
+
+        if( selChn.length > 0){
+            selStr = selChn + " and (" + selStr + ")";                 
+        }
+
+        return selStr;        
+    } 
     
     setHamStyle( par1, value1, menu1 ){
         
-        //console.log( "HAM setHamStyle called:", par, value, menu);
+        console.log( "HAM setHamStyle called: par->", par1 );
+        console.log( "HAM setHamStyle called: val->", value1 );
+        console.log( "HAM setHamStyle called: men->", menu1);
+
         console.log( "HAM data.state:",this.state);
 
         console.log( "HAM data.fstate:",this._data.fstate);
@@ -903,6 +1109,7 @@ class BkdNGL{
         console.log("HAM chncol:", this.view.chn.cstyle);
         
         var view = this.view;
+        
         console.log("HAM view (old):", view);
         
         //{ poi:{ style: "ball+stick", on: false,
@@ -931,9 +1138,9 @@ class BkdNGL{
             } 
         }
 
-        console.log( "HAM lps.on:", this.view.lps.on );
-
-        // get varaint classes (vcls)
+        console.log( "HAM lps.on:", this.view.lps.on );        
+        
+        // get variant classes (vcls)
         //---------------------------
 
         this.view.var.on = false;
@@ -950,6 +1157,7 @@ class BkdNGL{
         // render: main chain
         //-------------------
 
+              
         /*
         chn:{ style: "cartoon", scale: 10.0, color: "solid",
               cstyle: { "solid": {mode: "solid", color:"green", opaq: 1.0 },
@@ -965,160 +1173,12 @@ class BkdNGL{
               on: true, rep: [] }
         */
         
-        if( ! view.chn.on ){
-            if( view.chn.rep.length > 0 ){
-                for( var r in view.chn.rep ){
-                    view.chn.rep[r].dispose();
-                }
-                view.chn.rep = [];
-            }
-        } else {
-        
-            // only if op == "change" ?
+        if( this.renderChainOutline() ){    // render/hide outline if needed
+
+            var opt = {};
             
-            if( view.chn.rep.length > 0 ){
-                for( var r in view.chn.rep ){
-                    view.chn.rep[r].dispose();
-                }
-                view.chn.rep = [];
-            }
-
-
-            if( this.currep.length > 0 ){
-                for( var r in this.currep ){
-                    this.currep[r].dispose();
-                }
-                this.currep = [];
-            }
-           
-            // main chain: outline
-            //--------------------
-            
-            var chnOutScheme = NGL.ColormakerRegistry
-                .addSelectionScheme( [[ "white", "*" ]], "chainOut" );
-            
-            var chnOutRep = this.nglcomp.addRepresentation(
-                "cartoon", { color: chnOutScheme, 
-                             sele: "*",
-                             smoothSheet: true,
-                             quality: "high",
-                             metalness: 0.1,
-                             roughness: 0.0,
-                             opacity: 0.33 } );
-            
-            view.chn.rep.push( chnOutRep );
-            
-            // main chain: selection
-            //----------------------
-
-            var selLst = [];
-            var csconf = { mode: "all" };
-            var selChn = "";
-            console.log( "HAM: selection: ",  state.sel);
-                        
-            if( state.sel.aset ){  // set of residues
-                csconf = chnsel.aset;
-            }
-            
-            if( state.sel.chain ){  // set of chains
-                var csconf = chnsel.chain;
-                for( var c in csconf.clist){
-                    selChn = selChn +":" + csconf.clist[c] + " or ";
-                }
-                selChn = "(" + selChn.substring(0,selChn.length-3)+")";
-            }
-
-            if( state.sel.hiqc ){   //  bfact cutoff  
-                var csconf = chnsel.hiqc;
-                        
-                if( csconf.mode == "step" ){
-                    for( var s in csconf.states ){
-                        var cst = csconf.states[s];
-                        var stateLst = [];
-                        if( cst.val == "bfact" ){
-                            this.nglcomp.structure.eachAtom( function(atom) {
-                                
-                                if( atom.atomname == "CA" &&
-                                    atom.chainname == "A" ){
-
-                                    var bf = atom.bfactor;
-                                    var rno = atom.resno;
-                                    
-                                    if( bf >= cst.vmin && bf < cst.vmax ){
-                                        stateLst.push(String(rno));
-                                    }                                 
-                                }
-                            });                            
-                        }
-                        selLst.push(stateLst);
-                    }
-                }
-            }
-            
-            if( csconf.mode == "all" ){
-                selLst = [];
-            }
-            
-            var selStr = "";
-
-            if( selLst.length == 0){
-                selStr = "*";
-            } else {
-                
-                selStr = "";
-
-                var rlst = []; 
-                for(var s in selLst){
-                    var csel = selLst[s]; 
-                    rlst = rlst.concat(csel);
-                }
-                rlst.sort(function(a,b) { Number(a) > Number(b) } );
-
-                console.log("HAM:", rlst);
-                
-                if(rlst.length == 0 ){
-                    selStr = "*"
-                } else {
-                    
-                    var prev = Number(rlst[0]);
-                    var lop = "";
-                    var nc = 0;
-                    for( var c in rlst ){
-                        nc = Number( rlst[c] );
-                        // console.log("#### nc: ",nc, prev, nc - prev);
-                        if( nc > prev ){
-                            if( nc - prev == 1 ){ // seq
-                                if( lop != "-"){
-                                    lop = "-";
-                                    selStr = selStr + "-";
-                                }
-                                prev = nc;
-                            } else {  // cont or gap                            
-                                if( lop == "-" ){ // gap starts
-                                    lop = "";
-                                    selStr = selStr + prev + " or " + nc;
-                                } else{  // next gap 
-                                    selStr = selStr + " or " + nc;
-                                }
-                                prev = nc;
-                            }                            
-                        } else {
-                            selStr = String(nc);
-                            prev = nc;
-                        }
-                    }
-                
-                    //if( selStr[selStr.length-1] == '-'){
-                    //    selStr = selStr.substring(0,selStr.length-1);
-                    //}
-                    if( selStr[selStr.length-1] == '-') selStr = selStr + nc;
-                }
-            }
-
-            if( selChn.length > 0){
-                selStr = selChn + " and (" + selStr + ")";                 
-            }
-
+            if( value1 !== undefined ) opt = value1.opt;
+            var selStr = this.buildChainSelect( opt );
             
             // main chain: color
             //-----------------

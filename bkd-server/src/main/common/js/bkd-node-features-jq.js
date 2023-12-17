@@ -64,13 +64,20 @@ BKDnodeFeatures = {
                  }
                },
                { id: "flist-select-2","name":"select-2",
-                 label: "Current Sequence", "value":"aset",
+                 label: "Current Sequence", "value":"smsa",
                  labelOn: "Canonical", labelOff: "Current Sequence",                 
                  color: "#aaaaaa",
                  callback: "select",
                  style: "cbox", default: "off",
                  mode: "chn",
-                 opt: {} },
+                 opt: {
+                     style: "cbox", default: "off",
+                     mode: "smsa",
+                     states: { on: { mode: "msa", msa: 2, sref: 0, ssel: 1 },
+                               off: { mode: "msa", msa: 2, sref: 0, ssel: 0 }
+                             }
+                 }
+               },
                
                { id: "flist-select-3","name":"select-2",
                  label: "Monomer", "value":"chain",

@@ -108,15 +108,15 @@ class BkdMSA {
                 }
                 msa._data.msaHead = msaHead;
                 msa._data.msaSeq = msaSeq;
-                            
-                msa._view._brl = msa._conf.brushLimit;    // shortest brush range
+
+                msa._view._brl = msa._conf.brushLimit;   // shortest brush range
                 
                // brush range corresponding to longest aa step (aaMaxStep)
                 
                 var brlimit = msa._conf._msaW/msa._conf.aaMaxStep;
-                brlimit = brlimit / msa._data.msaSeq[0].length * msa._conf._msaW; 
+                brlimit = brlimit/msa._data.msaSeq[0].length*msa._conf._msaW; 
                 
-                if( brlimit >msa._conf.brushLimit){  // no slope modification                  
+                if( brlimit >msa._conf.brushLimit){  // no slope modification
                     msa._view._brl = Math.floor( brlimit ); 
                 }
                 msa._initMSA();
@@ -132,7 +132,6 @@ class BkdMSA {
                      xhr.overrideMimeType("text/plain; charset=x-user-defined");
                  }
                }).done( callback( this ) );
-
     }
         
     _initMSA(){
@@ -330,13 +329,13 @@ class BkdMSA {
                 }
                 slimit-=1;
                 if( slimit < 0 ){
-                    console.log( "(1) pos, ref :: pmin,pmax,cpos: msaMap[ref][cpos]",
-                                 pos, ref, "::", pmin, pmax, cpos, msaMap[ref][cpos] );
+                    console.log( "(1) pos, ref :: pmin,pmax,cpos: ",
+                                 "msaMap[ref][cpos]",
+                                 pos, ref, "::", pmin, pmax, cpos,
+                                 msaMap[ref][cpos] );
                     break;
-                }
-                
-            }
-            
+                }                
+            }            
             cpos +=1;
         } else {
             
@@ -355,13 +354,14 @@ class BkdMSA {
 
                 slimit-=1;
                 if( slimit < 0 ){
-                    console.log( "(2) pos, ref :: pmin,pmax,cpos: msaMap[ref][cpos]",
-                                 pos, ref, "::", pmin, pmax, cpos, msaMap[ref][cpos] );
+                    console.log( "(2) pos, ref :: pmin,pmax,cpos:",
+                                 "msaMap[ref][cpos]",
+                                 pos, ref, "::", pmin, pmax, cpos,
+                                 msaMap[ref][cpos] );
                     break;
                 }
             }
         }
-
         return cpos;        
     }
     
@@ -550,8 +550,8 @@ class BkdMSA {
                 msa._view.displayend
                     = msa._view.brushRight / msa._view.navWidth*100;
                 
-                msa.updatePolygon( msa._view.brushLeft / msa._view.navWidth*100,
-                                   msa._view.brushRight / msa._view.navWidth*100);
+                msa.updatePolygon( msa._view.brushLeft/msa._view.navWidth*100,
+                                   msa._view.brushRight/msa._view.navWidth*100 );
                 msa.updateMSA();              
                 msa.updateSelect();                
                 msa.getViewportParams();
@@ -581,9 +581,8 @@ class BkdMSA {
                 msa._view.displayend
                     = msa._view.brushRight / msa._view.navWidth*100;
                 
-                msa.updatePolygon( msa._view.brushLeft / msa._view.navWidth*100,
-                                   msa._view.brushRight / msa._view.navWidth*100);
-                                   
+                msa.updatePolygon( msa._view.brushLeft/msa._view.navWidth*100,
+                                   msa._view.brushRight/msa._view.navWidth*100);
                 msa.updateMSA();              
                 msa.updateSelect();                
                 msa.getViewportParams();
@@ -767,22 +766,30 @@ class BkdMSA {
                                "fr_cover_min=",fr_cover_min );
                 
                 var brCntr_raw = (brLeft+brRight)/2;
-                var fr_brCntr_raw = (brLeft+brRight)/2/V.navWidth; //*D.msaSeq[0].length;
-                var aa_brCntr_raw = (brLeft+brRight)/2/V.navWidth*D.msaSeq[0].length;
+                
+                var fr_brCntr_raw = (brLeft+brRight)/2/
+                    V.navWidth; //*D.msaSeq[0].length;
+                    
+                var aa_brCntr_raw = (brLeft+brRight)/2/
+                    V.navWidth*D.msaSeq[0].length;
 
                 var brCntr_alpha = 1/( V.navWidth - C.brushLimit );
                 var brCntr_beta = -0.5 * C.brushLimit * brCntr_alpha; 
 
                 var fr_brCntr = (brCntr_alpha * brCntr_raw + brCntr_beta);
-                var aa_brCntr = (brCntr_alpha * brCntr_raw + brCntr_beta)*D.msaSeq[0].length;
+                var aa_brCntr = (brCntr_alpha * brCntr_raw + brCntr_beta)*
+                    D.msaSeq[0].length;
 
-                console.debug("fr_brCntr_raw=",fr_brCntr_raw,"fr_brCntr=",fr_brCntr);
+                console.debug( "fr_brCntr_raw=",fr_brCntr_raw,
+                               "fr_brCntr=",fr_brCntr);
                 
-                V.displaystart = (aa_brCntr - 0.5 *  V.navWidth/V.aaStep)/D.msaSeq[0].length * 100;
-                V.displayend = (aa_brCntr + 0.5 *  V.navWidth/V.aaStep)/D.msaSeq[0].length * 100;
+                V.displaystart = (aa_brCntr - 0.5 *  V.navWidth/V.aaStep)/
+                    D.msaSeq[0].length * 100;
+                V.displayend = (aa_brCntr + 0.5 *  V.navWidth/V.aaStep)/
+                    D.msaSeq[0].length * 100;
                 
                 if( V.displaystart < 0 ){
-                    V.displayend = V.displayend - V.displaystart;                    
+                    V.displayend = V.displayend - V.displaystart;
                     V.displaystart = 0;
                 }
                 if( V.displayend > 100 ){
@@ -790,11 +797,14 @@ class BkdMSA {
                     V.displayend = 100;
                 }
                     
-                console.debug("V.displaystart=",V.displaystart,"V.displayend=",V.displayend,"delta=",V.displayend-V.displaystart);
+                console.debug("V.displaystart=",V.displaystart,
+                              "V.displayend=",V.displayend,
+                              "delta=",V.displayend-V.displaystart);
                 
-                console.debug("brush disp(for poly):", msa._view.displaystart, msa._view.displayend);
-                msa.updatePolygon( msa._view.brushLeft / msa._view.navWidth*100,
-                                   msa._view.brushRight / msa._view.navWidth*100);
+                console.debug("brush disp(for poly):",
+                              msa._view.displaystart, msa._view.displayend);
+                msa.updatePolygon( msa._view.brushLeft/msa._view.navWidth*100,
+                                   msa._view.brushRight/msa._view.navWidth*100);
                 msa.updateMSA();  // calls msa.getViewportParams();
                 msa.updateDtracDoms();
                 msa.updateSelect();                
@@ -1031,11 +1041,15 @@ class BkdMSA {
         this._view.rectPos = new Array(this._data.msaSeq[0].length);
 
         var jmin= parseInt(this._view.aaOffset/this._view.aaStep + 1/2);
-        var jmax= parseInt((this._view.navWidth+this._view.aaOffset)/this._view.aaStep - 1/2);
+        var jmax= parseInt((this._view.navWidth+this._view.aaOffset)/
+                           this._view.aaStep - 1/2);
 
         if( jmin < 0 ) jmin = 0;
-        //if( jmax >= this._data.msaSeq[0].length ) jmax = this._data.msaMap[i].length-1;
-        if( jmax >= this._data.msaSeq[0].length ) jmax = this._data.msaSeq[0].length-1;
+        //if( jmax >= this._data.msaSeq[0].length )
+        //  jmax = this._data.msaMap[i].length-1;
+        
+        if( jmax >= this._data.msaSeq[0].length )
+            jmax = this._data.msaSeq[0].length-1;
 
         var frMsaPos = new Array( jmax-jmin+1 );
         var frRectPos = new Array( jmax-jmin+1 );
@@ -1053,13 +1067,16 @@ class BkdMSA {
             this._view.msaMax[i] = this._data.msaMap[i][jmax];
         }
 
-        for( var j = 0; j <this._view.msaPos.length; j++ ){   // j - sequence position
+        for( var j = 0; j <this._view.msaPos.length; j++ ){
+            // j - sequence position
             this._view.msaPos[j] = -100;
             this._view.rectPos[j] = -100;
         }
 
-        for( var j = jmin; j <=jmax; j++ ){   // j - sequence position
-            var pos = 0.5 * this._view.aaStep + j * this._view.aaStep - this._view.aaOffset;
+        for( var j = jmin; j <=jmax; j++ ){
+            // j - sequence position
+            var pos = 0.5 * this._view.aaStep +
+                j*this._view.aaStep-this._view.aaOffset;
             this._view.msaPos[j] = pos;
             this._view.rectPos[j] = pos - 0.5 * this._view.aaStep;
 
@@ -1069,12 +1086,14 @@ class BkdMSA {
 
         for( var i = 0; i <this._data.msaHead.length; i++ ){                     
             if(this._view.msaMin){                
-                d3.select( "#" + this._view.target + "_seq_head_" + i.toString() + " .msa-min")
+                d3.select( "#" + this._view.target + "_seq_head_" +
+                           i.toString() + " .msa-min")
                     .text( this._view.msaMin[i] );
                 }
             
             if(this._view.msaMax){
-                d3.select( "#" +this._view.target + "_seq_head_" + i.toString() + " .msa-max")
+                d3.select( "#" +this._view.target + "_seq_head_" +
+                           i.toString() + " .msa-max")
                     .text( this._view.msaMax[i] );
             }                       
         }
@@ -1132,7 +1151,8 @@ class BkdMSA {
         
         for( var i = 0; i < D.msaHead.length; i++ ){
             for( var j = 0; j < D.msaSeq[i].length; j++){
-                d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"bk rect[i='"+j+"']")
+                d3.select( "#" + V.target + "_seq_seq_" + i.toString()
+                           +"bk rect[i='"+j+"']")
                     .attr( "fill-opacity", V.msaOpa)
                     .attr( "x", V.rectPos[j] )
                     .attr( "width", V.aaStep );
@@ -1141,7 +1161,8 @@ class BkdMSA {
         
         for( var i = 0; i < D.msaHead.length; i++ ){
             for( var j = 0; j < D.msaSeq[i].length; j++){            
-                d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"aa text[i='"+j+"']")
+                d3.select( "#" + V.target + "_seq_seq_" + i.toString()
+                           +"aa text[i='"+j+"']")
                     .attr( "x", V.msaPos[j])
                     .attr( "fill-opacity", function (d) {
                         if( V.aaStep > 16 ){
@@ -1175,18 +1196,19 @@ class BkdMSA {
         //                     "rectPos": frRectPos
         //                    };
 
-        for( var i = 0; i < D.msaHead.length; i++ ){        
-            d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"bk ")  // box
+        for( var i = 0; i < D.msaHead.length; i++ ){
+            // box
+            d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"bk ")  
                 .attr( "style", "visibility: visible;" );
-            d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"aa ") // letter 
+            //letter
+            d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"aa ")
                 .attr( "style", "visibility: visible;" ); 
         }
         
         var msaVonCurrent = [];
-
+        
         var oonmin = -1;
         var oonmax = -1;
-
         
         for( var i = 0; i < V.rectPos.length; i++ ){
             msaVonCurrent.push( V.rectPos[i] < -V.aaStep  ||
@@ -1226,7 +1248,8 @@ class BkdMSA {
                             
                             var aa =  D.msaSeq[i][j];
                             
-                            d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"bk")  // box
+                            d3.select( "#" + V.target + "_seq_seq_" +
+                                       i.toString() +"bk")  // box
                                 .append( "rect" )                
                                 .attr( "i", j )
                                 .attr( "x", V.rectPosOld[j] )
@@ -1239,7 +1262,8 @@ class BkdMSA {
                                 .attr( "fill-opacity", V.aaStep > 16 ? 0.5:1 )
                                 .append("title").text(aa+(D.msaMap[i][j+joff]));
                             
-                            d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"aa") // letter 
+                            d3.select( "#" + V.target + "_seq_seq_" +
+                                       i.toString() +"aa") // letter 
                                 .append( "text" )
                                 .attr( "class", "msa-aa" )
                                 .style( "font", C.msaFont)  
@@ -1255,8 +1279,10 @@ class BkdMSA {
                         
                     } else { // drop AA/box
                         
-                        d3.selectAll( "#" + V.target + "_seq_view text[i='"+j+"']").remove();
-                        d3.selectAll( "#" + V.target + "_seq_view rect[i='"+j+"']").remove();                    
+                        d3.selectAll( "#" + V.target +
+                                      "_seq_view text[i='"+j+"']").remove();
+                        d3.selectAll( "#" + V.target +
+                                      "_seq_view rect[i='"+j+"']").remove();
                     }
                 }
             }
@@ -1314,10 +1340,12 @@ class BkdMSA {
         
         for( var i = 0; i < D.msaHead.length; i++ ){
             // over sequences
-            
-            d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"bk")  // box
+            // box
+            d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"bk")  
                 .attr( "style", "visibility: hidden;" );
-            d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"aa") // letter 
+            
+            // letter 
+            d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"aa")
                 .attr( "style", "visibility: hidden;" ); 
         }
     }
@@ -1355,7 +1383,8 @@ class BkdMSA {
                     .attr( "fill-opacity", opq )
                     .style("visibility", "visible");
             } else {
-                d3.select( "#" + V.target + "_seq_seq_" + i.toString() + "rn") //  .bkd-msa-range")
+                d3.select( "#" + V.target + "_seq_seq_" + i.toString() + "rn")
+                //  .bkd-msa-range")
                     .attr( "fill-opacity", 0)
                     .style("visibility", "hidden");
             }
@@ -1521,7 +1550,7 @@ class BkdMSA {
 
                 if( dpos[d].name != undefined){
                     if( dpos[d].name.length >0 ){
-                        r.append("title").text(dpos[d].name);                     
+                        r.append("title").text(dpos[d].name);
                     }
                 }
             }
@@ -1578,7 +1607,8 @@ class BkdMSA {
         // max coverage (fract)
         var fr_cover_max = 1;
 
-        //var fr_cover_min = V.navWidth/C.aaMaxStep/D.msaSeq[0].length;  // min coverage (fract)
+        // min coverage (fract)
+        //var fr_cover_min = V.navWidth/C.aaMaxStep/D.msaSeq[0].length;
 
         // min coverage (fract)
         var fr_cover_min = V.navWidth/C.aaMaxStep/D.msaSeq[0].length;
@@ -1592,11 +1622,15 @@ class BkdMSA {
         V.fr_cover = fr_bbb + fr_aaa * brWdth;
         V.aaStep = V.navWidth/V.fr_cover/D.msaSeq[0].length;
         
-        console.debug( "V.fr_alpha",V.fr_alpha,"V.fr_beta",V.fr_beta,"brwdth=", brWdth,"V.fr_cover=",V.fr_cover, "fr_cover_min=",fr_cover_min );
-        console.debug( "V.displaystart=", V.displaystart, "V.displayend=",V.displayend);
+        console.debug( "V.fr_alpha",V.fr_alpha,"V.fr_beta",V.fr_beta,
+                       "brwdth=", brWdth,"V.fr_cover=",V.fr_cover,
+                       "fr_cover_min=",fr_cover_min );
+        console.debug( "V.displaystart=", V.displaystart,
+                       "V.displayend=",V.displayend);
         
         console.debug("br_center[fr]:", (V.displaystart + V.displayend)/2);
-        console.debug("br_center[aa]:", (V.displaystart + V.displayend)/200*D.msaSeq[0].length);
+        console.debug("br_center[aa]:", (V.displaystart + V.displayend)/200*
+                      D.msaSeq[0].length);
 
         var aa_ctr=  (V.displaystart + V.displayend)/2*D.msaSeq[0].length/100;
 
@@ -1612,7 +1646,8 @@ class BkdMSA {
     }
     
     dropAllSelect(){
-        console.log("dropAllSelect:", "#" + this._view.target + "_seq_view_select");
+        console.log("dropAllSelect:", "#" + this._view.target +
+                    "_seq_view_select");
         d3.select( "#" + this._view.target + "_seq_view_select").remove();
         d3.select( "#" + this._view.target + "_seq_view" )
             .append( "g" )
@@ -1622,9 +1657,13 @@ class BkdMSA {
 
     setSelectMap( smap, rseq ){
         for( var pc of this._view.select ){ // go over existing elements
-            if( pc in Object.keys(smap) ){ // no selection change, remove from smap                
+            
+
+            if( pc in Object.keys(smap) ){
+                // no selection change, remove from smap                
                 smap.delete( pc );                 
-            } else { // drop selection
+            } else {
+                // drop selection
                 this._view.select[pc].remove(); // drop rectangle
                 delete this._view.select[pc];  // drop from map   
             }
@@ -1633,7 +1672,7 @@ class BkdMSA {
         for( var pc of Object.keys(smap) ){
             var pcl = pc.split(":");
             this._view.select[pc] =
-                this.addSelect( Number(pcl[0]), pcl[1], smap[pc].name, rseq);            
+                this.addSelect( Number(pcl[0]), pcl[1], smap[pc].name, rseq);
         }
     }
 
@@ -1893,27 +1932,39 @@ class BkdMSA {
             
             var port_pixel_width = V.navWidth;
                         
-            var aa_pixel_width = V.navWidth/Math.max( 1, 1.05 *Math.abs(10 + maxSel-minSel) );
-            var aaWdth = port_pixel_width/aa_pixel_width/D.msaSeq[0].length;            
+            var aa_pixel_width =
+                V.navWidth/Math.max( 1, 1.05 * Math.abs(10 + maxSel-minSel));
+
+            var aaWdth = port_pixel_width/aa_pixel_width/D.msaSeq[0].length;
             
             if( aa_pixel_width > this._conf.aaMaxStep ){ //if too wide
                 aa_pixel_width = this._conf.aaMaxStep;
-                aaWdth = port_pixel_width/aa_pixel_width/D.msaSeq[0].length; // corrected fractional AA port width 
+                // corrected fractional AA port width 
+                aaWdth = port_pixel_width/aa_pixel_width/D.msaSeq[0].length; 
             }
 
-            console.debug("port_pixel_width=",port_pixel_width,"aa_pixel_width=",aa_pixel_width,"aaWdth=",aaWdth);
+            console.debug( "port_pixel_width=",port_pixel_width,
+                           "aa_pixel_width=",aa_pixel_width,
+                           "aaWdth=",aaWdth);
             
             var port_pixel_center = aaCntr*D.msaSeq[0].length*aa_pixel_width;  
 
-            var port_left_aa = aaCntr - aaWdth/2;    // fractional AA pos of left port
-            var port_right_aa = aaCntr + aaWdth/2;   // fractional AA pos of right port
+            // fractional AA pos of left port
+            var port_left_aa = aaCntr - aaWdth/2;
+
+            // fractional AA pos of right port
+            var port_right_aa = aaCntr + aaWdth/2;
 
             console.debug("port[fr]", port_left_aa, '<->', port_right_aa,
-                        aaCntr);
-            console.debug("port[px]", port_left_aa*V.navWidth,"<->",port_right_aa*V.navWidth,
-                        aaCntr*V.navWidth);
-            console.debug("port[aa]", port_left_aa*D.msaSeq[0].length,"<->",port_right_aa*D.msaSeq[0].length,
-                        aaCntr*D.msaSeq[0].length);
+                          aaCntr);
+            
+            console.debug("port[px]", port_left_aa*V.navWidth,"<->",
+                          port_right_aa*V.navWidth,
+                          aaCntr*V.navWidth);
+            
+            console.debug("port[aa]", port_left_aa*D.msaSeq[0].length,"<->",
+                          port_right_aa*D.msaSeq[0].length,
+                          aaCntr*D.msaSeq[0].length);
             
             // get brush position for port edges : FIX ME !!!
             //-----------------------------------------------
@@ -1933,18 +1984,24 @@ class BkdMSA {
 
 
             
-            console.debug( "brush[px]", aa_pixel_width, br_pixel_width, ":", br_left_pixel,"<->",br_right_pixel);           
+            console.debug( "brush[px]", aa_pixel_width, br_pixel_width, ":",
+                           br_left_pixel,"<->",br_right_pixel);
+            
             console.debug( "SSS(+):",minSel, maxSel, ":",
-                           aaCntr,aaWdth,this._view._brl,":",V.brushLeft,V.brushRight);
+                           aaCntr,aaWdth,this._view._brl,":",
+                           V.brushLeft,V.brushRight);
 
-            if( (maxSel-minSel) < V.navWidth/this._conf.aaMaxStep ){  // AAs too wide
-                aaWdth = V.navWidth/this._conf.aaMaxStep;                                 
+            if( (maxSel-minSel) < V.navWidth/this._conf.aaMaxStep ){
+                // AAs too wide
+                aaWdth = V.navWidth/this._conf.aaMaxStep;
                 console.debug("SSS(adjust aaWdth): aa=", aaWdth);
             }
             
-            console.debug("SSS(+):",minSel, maxSel, aaCntr,aaWdth, V.brushLeft,V.brushRight);            
-            this.setNavBrush( br_left_pixel,br_right_pixel);                        
-            console.debug("SSS(+):",minSel, maxSel, aaCntr,aaWdth, V.brushLeft,V.brushRight);
+            console.debug("SSS(+):",minSel, maxSel, aaCntr,aaWdth,
+                          V.brushLeft,V.brushRight);            
+            this.setNavBrush( br_left_pixel,br_right_pixel);
+            console.debug("SSS(+):",minSel, maxSel, aaCntr,aaWdth,
+                          V.brushLeft,V.brushRight);
             
         } else {
             console.debug("SSS(-):",V.brushLeft,V.brushRight);
@@ -2019,11 +2076,12 @@ class BkdMSA {
             
             if( brushLeft < 1 ){
                 brushLeft  = 0;
-                brushRight = this._view._brl;  // /D3MSA3._brRatio;
+                brushRight = this._view._brl; // /D3MSA3._brRatio;
             }
             
             if( brushRight >  this._view.navWidth ){ 
-                brushLeft = this._view.navWidth - this._view._brl - 1; // /D3MSA3._brRatio - 1;
+                brushLeft = this._view.navWidth - this._view._brl - 1;
+                // /D3MSA3._brRatio - 1;
                 brushRight = this._view.navWidth ;                      
             }
             console.log("@@@", brushLeft,brushRight);
@@ -2031,7 +2089,7 @@ class BkdMSA {
         }        
         if(reset){
             this._view.navBrushG.call( this._view.viewport.move,
-                                       [brushLeft, brushRight] );                   
+                                       [brushLeft, brushRight] );
         }
         this._view.brushLeft = brushLeft;
         this._view.brushRight = brushRight;     
