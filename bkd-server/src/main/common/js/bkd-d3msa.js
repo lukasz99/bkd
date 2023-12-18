@@ -364,12 +364,64 @@ class BkdMSA {
         }
         return cpos;        
     }
+
+    getTgtSeqSelStr( nseq, ntgt=0 ){ 
+        var selStr = "";
+
+        var msaMap = this._data.msaMap[ntgt];
+        
+        // get MSA segments
+        
+        var segl = this.getMsaSeqSel( nseq );
+
+        // convert msa pos -> nref pos 
+
+        for( var i = 0; i < segl.length; i++){
+            var cbeg = msaMap[segl[i][0]]; 
+            var cend = msaMap[segl[i][1]]; 
+            selStr += " " + cbeg.toString() + "-" + cend.toString() + " or";
+        }
+        return selStr.substring(0,selStr.length-3);
+    }
+    
+    getMsaSeqSel( nseq=0 ){  // MSA ranges with non-empty nseq
+        var segl = [];
+        var msaSeq = this._data.msaSeq;
+        var msaMap = this._data.msaMap;
+        var msal = msaMap[0].length;
+
+        var cbeg = -10;
+        var cend = -10;
+        var match = false;
+        
+        for( var p = 0; p < msal; p++){ 
+            if( msaSeq[nseq][p] == '-' ){  // gap
+                match = false;                    
+                if( p == cend + 1){ // end of segment
+                    console.debug("segment:", cbeg, "<->", cend );
+                    segl.push([cbeg,cend]);
+                }
+            } else {     // match
+                if( match ){    // extend match
+                    cend = p;
+                } else {        // start new match
+                    cbeg = p;
+                    cend = p;
+                    match = true;
+                }                                    
+            }
+        }
+        if( match ){  // finish last segment
+            console.debug("segment(last):", cbeg, "<->", cend );
+            segl.push([cbeg,cend]);
+        }
+        return segl;        
+    }
     
     getSeqPos( pos, ref ){   
         // sequence positions corresponding to pos in ref sequence 
 
         var plst = [];
-        
         var msaSeq = this._data.msaSeq;
         var msaMap = this._data.msaMap;
         var msal = msaMap[0].length;
@@ -393,9 +445,7 @@ class BkdMSA {
        
         var pmin = 0;
         var pmax = msaMap[ref].length - 1;
-
         var pcur = Math.trunc( (pmax - pmin)/2 );
-
         
         if( pos == msaMap[ref][msal] ) {  // last pos
 
@@ -408,8 +458,7 @@ class BkdMSA {
                 }else{
                     pmax = cpos;
                 }
-            }
-            
+            }            
             cpos +=1;
         } else {
             
@@ -1636,8 +1685,10 @@ class BkdMSA {
 
         V.aaOffset =  V.aaStep * aa_ctr - msaW/2;
 
-        console.debug( "V.fr_alpha=",V.fr_alpha," V.fr_beta=",V.fr_beta, "brWdth=",brWdth,"aaStep=",V.aaStep);
-        console.debug( "V.aaOffset=",aa_ctr, V.aaStep*aa_ctr, V.aaOffset, V.aaStep*aa_ctr-V.aaOffset );
+        console.debug( "V.fr_alpha=",V.fr_alpha," V.fr_beta=",V.fr_beta,
+                       "brWdth=",brWdth,"aaStep=",V.aaStep);
+        console.debug( "V.aaOffset=",aa_ctr, V.aaStep*aa_ctr, V.aaOffset,
+                       V.aaStep*aa_ctr-V.aaOffset );
         
         V.msaOpa = 0.5;
         if( V.aaStep <= 16 ){
