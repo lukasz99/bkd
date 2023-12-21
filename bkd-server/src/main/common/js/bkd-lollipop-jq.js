@@ -1,6 +1,6 @@
 console.log("bkd-lollipop-jq: common");
 class BkdLollipop{
-    
+
     constructor( conf ){
 
         this.UIDTag = this.getUniqueID();
@@ -291,7 +291,7 @@ class BkdLollipop{
                 cfeat['res'] = cvs;
                 cfeat['significance'] = [];
 
-                for( var cent in fbypos[ cpos][cvs] ){                                   
+                for( var cent in fbypos[ cpos][cvs] ){
                     cfeat['significance']
                         .push( fbypos[cpos][cvs][cent]["csig-name"] );
                     continue;  // NOTE: just single val !!! fix me !!!
@@ -302,6 +302,32 @@ class BkdLollipop{
         }        
     }
 
+    getVarCnt(vnme){
+        console.log("CSNP: getVarCnt -> vname:", vnme);
+        console.log("CSNP: getVarCnt -> dset:", this.data.dset[vnme]);
+
+        var dset = this.data.dset[vnme];
+        
+        //var cmap = new Map();
+
+        var cnt = new Array(this.data.sequence.length)
+            .fill( 1, 0, this.data.sequence.length);
+
+        console.log("CSNP: len->", dset.length);
+        console.log("CSNP: getVarCnt -> cnt(init):", cnt);
+                
+        for( var i = 0; i < dset.length; i++){
+            var pos = dset[i].range[0].pos;
+            cnt[pos]+=1;
+        }
+        
+        console.log("CSNP: getVarCnt -> cnt(final):", cnt);
+
+        return cnt;
+        
+
+    }
+        
     buildPanel(){
 
         var mutation_data = this.data.plist;
@@ -545,7 +571,7 @@ class BkdLollipop{
             var npe = npl[pos][ feat.range[0].sequence ];
 
             if( "csig-name" in feat ){
-                if( ! npe.clinsig.includes( feat["csig-name"]) ){                   
+                if( ! npe.clinsig.includes( feat["csig-name"]) ){
                     npe.clinsig.push( feat["csig-name"] );
                 }
             }else{
@@ -562,9 +588,9 @@ class BkdLollipop{
             for( var j = 0; j < feat.xref.length; j ++){
                 // go over feature xrefs
                 
-                if( "grch37" == feat.xref[j].ns.toLowerCase() ){                    
-                    if( ! npe.pos37.includes( feat.xref[j].ac ) ){                        
-                        npe.pos37.push( feat.xref[j].ac );                        
+                if( "grch37" == feat.xref[j].ns.toLowerCase() ){
+                    if( ! npe.pos37.includes( feat.xref[j].ac ) ){
+                        npe.pos37.push( feat.xref[j].ac );
                     }
                     continue;
                 }
@@ -585,7 +611,7 @@ class BkdLollipop{
                 
                 if( "grch38.p13" == feat.xref[j].ns.toLowerCase() ){
                     if( ! npe.pos38.includes( feat.xref[j].ac ) ){
-                        npe.pos38.push( feat.xref[j].ac );                        
+                        npe.pos38.push( feat.xref[j].ac );
                     }
                     continue;
                 }
@@ -700,7 +726,7 @@ class BkdLollipop{
 
                     for(var c=0; c < dtconf.column.length; c++ ){
                         
-                        var vlst = rows[r][rr][dtconf.column[c].value];                      
+                        var vlst = rows[r][rr][dtconf.column[c].value];
                         var cclass = dtconf.column[c]['data_class'];
                         if( vlst != undefined && vlst.length > 0 ){
                             hrow += "<td class='"+ cclass +"'>";

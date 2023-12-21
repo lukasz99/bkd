@@ -795,6 +795,12 @@ BKDconf = {
                            flen: 8 }]
                      */
                  },
+                 report:{
+                     name: "PoI Report",
+                     state: false,
+                     anchor: "#bkd-modal-div",
+                     url: "page?id=poi-report-template&ret=body"
+                 },
                  help: true,
                  help_conf: {
                      anchor: "#bkd-modal-div",

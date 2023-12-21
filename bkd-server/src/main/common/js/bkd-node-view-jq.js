@@ -14,7 +14,7 @@ BKDnodeView = {
     cpos37: "",
     cpos38: "",
     slist: [],
-    poi: { pos:[], color: "#674B70",stroke: "#000000" },
+    poi: { pos:[], color: "#674B70",stroke: "#000000", report: false },
     //poi: { pos:[], color: "#B7A4BD" },
     config: {},
       
@@ -408,11 +408,43 @@ BKDnodeView = {
                                 
                                 BKDnodeFeatures.setPOI( BKDnodeView.poi );
                                 
-                                
+                                if( BKDnodeView.poi.pos.length > 0 ){
+                                    $( '#' + BKDnodeView.poi.anchor ).show();
+                                } else {
+                                    $( '#' + BKDnodeView.poi.anchor ).hide();
+                                }                                                          
                             });
                         }                        
                     }
 
+                    if( format.pane[i].report != undefined ){
+                        var report_name = format.pane[i].report.name;
+                        var report_anchor = format.pane[i].report.anchor;
+                        var show_anchor = "bkd-nv-" + cid + "_head_report";
+                        
+                        var report_url = format.pane[i].report.url;
+                            
+                        console.log( "ModalReport: ", report_anchor,
+                                     show_anchor ); 
+                        
+                        $( "#bkd-nv-" + cid + "_head" )
+                            .append( " | <a id='" + show_anchor + "' "
+                                     + "href='"+report_url+"'>"
+                                     + report_name+"</a>" );
+                        
+                        this.poi.report = format.pane[i].report.state;
+                        this.poi.anchor = show_anchor;
+                        
+                        if( format.pane[i].report.state ){
+                            $( '#' + show_anchor ).show();
+                        } else {
+                            $( '#' + show_anchor ).hide();
+                        }
+                        
+                        BKDmodal.init( help_anchor, show_anchor, help_url );
+                    }
+
+                    
                     if( format.pane[i].help == true ){
                         var help_anchor = format.pane[i].help_conf.anchor;
                         var show_anchor = "#bkd-nv-" + cid + "_head_help";

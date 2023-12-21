@@ -65,7 +65,7 @@ BKDnodeFeatures = {
                },
                { id: "flist-select-2","name":"select-2",
                  label: "Current Sequence", "value":"smsa",
-                 labelOn: "Canonical", labelOff: "Current Sequence",                 
+                 labelOn: "Canonical", labelOff: "Current Sequence",
                  color: "#aaaaaa",
                  callback: "select",
                  style: "cbox", default: "off",
@@ -115,7 +115,7 @@ BKDnodeFeatures = {
                  "value":"cbfc",
                  "color":"#aaaaaa" },
                { "id":"flist-select-5","name":"select-5",
-                 "label":"Topology", "value":"topo",
+                 "label":"Topology", "value":"ctpo",
                  calback: "color",
                  "color":"#aaaaaa" },
                { "id":"flist-select-6","name":"select-6",
@@ -301,7 +301,8 @@ BKDnodeFeatures = {
 
             console.log( "TAB:", tconf['view-anchor'], tid, vid );            
             $( tconf['view-anchor'] ).append( 
-                "<div id='" + vid + "' class='" + tconf['view-class'] + "'></div>" )
+                "<div id='" + vid
+                    + "' class='" + tconf['view-class'] + "'></div>" )
             $( '#' + vid ).hide();           
             $( '#' + tid ).on( 'click', BKDnodeFeatures.flviewToggle );
         }
@@ -316,8 +317,9 @@ BKDnodeFeatures = {
                      + " <tr><td></td><td valign='right'></td></tr>"
                      + "</table>");
 
-        $('#flist-source table tr td:first-of-type').append('Sequence: &nbsp;&nbsp;'
-                                  + '<select id="iseq" name="iseq"></select>');
+        $('#flist-source table tr td:first-of-type')
+            .append('Sequence: &nbsp;&nbsp;'
+                    + '<select id="iseq" name="iseq"></select>');
         
         // determine order: mane -> canon -> alphabetical 
         //-----------------------------------------------
@@ -414,35 +416,37 @@ BKDnodeFeatures = {
                      var fdurl = parent.myurl.replace("detail=FULL","fpos=");
 
                      var nloli =
-                         new BkdLollipop( { anchor: "flist-lollipop-1",
-                                            id: "lpanel-1",
-                                            dset:{ default:"clinvar",
-                                                   conf:{
-                                                       clinvar:{
-                                                           url: flurl+"&dts=clinvar" },
-                                                       dbsnp: {
-                                                           url:flurl+"&dts=dbsnp"
-                                                       },
-                                                       bkdrep:{
-                                                           url:flurl+"&dts=bkdrep" }
-                                                   }
-                                                 },
-                                            fdet:{ url: fdurl }, 
-                                            url: flurl,
-                                            uprv: $('#flist-source #iseq').val(),
-                                            format: format,
-                                            fcolor: parent.fcolor,
-                                            vclass: parent.vclass,
-                                            uprotname: '',
-                                            detailtable: parent.config.lollipanel.detailtable,
-                                            detailcbl: [ BKDnodeFeatures.detailCallback ]
-                                          } );
+                         new BkdLollipop(
+                             { anchor: "flist-lollipop-1",
+                               id: "lpanel-1",
+                               dset:{ default:"clinvar",
+                                      conf:{
+                                          clinvar:{
+                                              url: flurl+"&dts=clinvar" },
+                                          dbsnp: {
+                                              url:flurl+"&dts=dbsnp"
+                                          },
+                                          bkdrep:{
+                                              url:flurl+"&dts=bkdrep" }
+                                      }
+                                    },
+                               fdet:{ url: fdurl }, 
+                               url: flurl,
+                               uprv: $('#flist-source #iseq').val(),
+                               format: format,
+                               fcolor: parent.fcolor,
+                               vclass: parent.vclass,
+                               uprotname: '',
+                               detailtable: parent.config.lollipanel.detailtable,
+                               detailcbl: [ BKDnodeFeatures.detailCallback ]
+                             } );
 
                      parent.lollipanels[ 'loli1' ] = nloli;
                      
                      var vseq = {};
                      for( var ci in BKDnodeFeatures.iseq ){
-                         vseq[ BKDnodeFeatures.iseq[ci].upr ] = BKDnodeFeatures.iseq[ci].seq;
+                         vseq[ BKDnodeFeatures.iseq[ci].upr ]
+                             = BKDnodeFeatures.iseq[ci].seq;
                      }
                                           
                      nloli.initialize ( {
@@ -465,8 +469,10 @@ BKDnodeFeatures = {
 
         $('#flist-source table tr td:first-of-type')
             .append('&nbsp;&nbsp;|&nbsp;&nbsp;Feature Source:&nbsp;&nbsp;')
-            .append('<input type="checkbox" id="cvflag" name="cvflag" value="true">')
-            .append('<label for="cvflag">ClinVar</label>&nbsp;&nbsp;&nbsp;&nbsp;');
+            .append('<input type="checkbox" id="cvflag" '
+                    + 'name="cvflag" value="true">')
+            .append('<label for="cvflag">ClinVar</label>'
+                    +' &nbsp;&nbsp;&nbsp;&nbsp;');
         
         $("#cvflag").prop( "checked", true );
         $("#cvflag").click( function(){
@@ -515,8 +521,10 @@ BKDnodeFeatures = {
         //-----------
         
         $('#flist-source table tr td:first-of-type')
-            .append('<input type="checkbox" id="snflag" name="snflag" value="true">')
-            .append(`<label for="snflag">dbSNP</label>&nbsp;&nbsp;&nbsp;&nbsp;`);
+            .append('<input type="checkbox" id="snflag"'
+                    + 'name="snflag" value="true">')
+            .append('<label for="snflag">dbSNP</label>' 
+                    + '&nbsp;&nbsp;&nbsp;&nbsp;');
         $( "#snflag" ).prop( "checked", false );
         
         $('#snflag').click(function(){
@@ -565,7 +573,7 @@ BKDnodeFeatures = {
                                                               textStatus,
                                                               jqXHR ){
                         
-                        lpan1.data.dset.dbsnp = data.node.feature;                        
+                        lpan1.data.dset.dbsnp = data.node.feature;
                         lpan1.buildView(); } }( this ) );
                 
             } else {
@@ -578,7 +586,8 @@ BKDnodeFeatures = {
         });
            
         $('#flist-source table tr td:first-of-type')
-            .append('<input type="checkbox" id="bkflag" name="bkflag" value="true">')
+            .append('<input type="checkbox" id="bkflag"'
+                    + ' name="bkflag" value="true">')
             .append('<label for="bkflag">CVDB Reports</label>');
         
         $('#bkflag').click(function(){
@@ -610,8 +619,9 @@ BKDnodeFeatures = {
         });
 
         $('#flist-source table tr td:last-of-type')
-            .append("<a id='bkd-lollipop-help' href='page?id=help-lollipop'>Help</a>" );
-
+            .append("<a id='bkd-lollipop-help' "
+                    + "href='page?id=help-lollipop'>Help</a>" );
+        
         BKDmodal.init( '#bkd-modal-div',
                        '#bkd-lollipop-help',
                        'page?id=help-lollipop&ret=body' ); 
@@ -629,8 +639,10 @@ BKDnodeFeatures = {
         console.log("BKDnodeFeatures.init(tgt): ", tgt );
         console.log("BKDnodeFeatures.init(format): ", format );
         console.log("BKDnodeFeatures.init(myurl): ",  BKDnodeView.myurl);
-        console.log("BKDnodeFeatures.init(seq): ",  BKDnodeFeatures.data.sequence);
-        console.log("BKDnodeFeatures.init(detailtable): ",   this.config.lollipanel.detailtable);
+        console.log("BKDnodeFeatures.init(seq): ",
+                    BKDnodeFeatures.data.sequence);
+        console.log("BKDnodeFeatures.init(detailtable): ",
+                    this.config.lollipanel.detailtable);
         
         var flurl = BKDnodeView.myurl + "&detail=FEATL";
         var fdurl = BKDnodeView.myurl + "&fpos=";
@@ -640,28 +652,29 @@ BKDnodeFeatures = {
             vseq[ BKDnodeFeatures.iseq[ci].upr ] = BKDnodeFeatures.iseq[ci].seq;
         }
         
-        var loli1 = new BkdLollipop( { anchor: "flist-lollipop-1",
-                                       id: "lpanel-1",
-                                       dset:{ default:"clinvar",
-                                                   conf:{
-                                                       clinvar:{
-                                                           url: flurl+"&dts=clinvar" },
-                                                       dbsnp: {
-                                                           url:flurl+"&dts=dbsnp"
-                                                       },
-                                                       bkdrep:{
-                                                           url:flurl+"&dts=bkdrep" }
-                                                   }
-                                            },
-                                       fdet:{ url:fdurl },                                      
-                                       url: this.myurl.replace("FULL","FEATL"),
-                                       uprv: selseq,
-                                       format: format,
-                                       fcolor: BKDnodeFeatures.fcolor,
-                                       vclass: BKDnodeFeatures.vclass,
-                                       detailtable: this.config.lollipanel.detailtable,
-                                       detailcbl: [ BKDnodeFeatures.detailCallback ]
-                                     } );
+        var loli1 = new BkdLollipop(
+            { anchor: "flist-lollipop-1",
+              id: "lpanel-1",
+              dset:{ default:"clinvar",
+                     conf:{
+                         clinvar:{
+                             url: flurl+"&dts=clinvar" },
+                         dbsnp: {
+                             url:flurl+"&dts=dbsnp"
+                         },
+                         bkdrep:{
+                             url:flurl+"&dts=bkdrep" }
+                     }
+                   },
+              fdet:{ url:fdurl },                                      
+              url: this.myurl.replace("FULL","FEATL"),
+              uprv: selseq,
+              format: format,
+              fcolor: BKDnodeFeatures.fcolor,
+              vclass: BKDnodeFeatures.vclass,
+              detailtable: this.config.lollipanel.detailtable,
+              detailcbl: [ BKDnodeFeatures.detailCallback ]
+            } );
         
         var sqsel = $('#iseq').val(); 
         var cseq ='';
@@ -726,9 +739,15 @@ BKDnodeFeatures = {
                   vcls: { name: "vcls",
                           label: "Variant", 
                           type: "checkbox",
-                          getvcls: BKDnodeFeatures.buildvclist,  // variant classes
-                          getsels: BKDnodeFeatures.buildlslist,  // lolipop selects
-                          getpois: BKDnodeFeatures.buildpoilist,  // poi selects
+
+                          // variant classes
+                          getvcls: BKDnodeFeatures.buildvclist,
+
+                          // lolipop selects
+                          getsels: BKDnodeFeatures.buildlslist,
+
+                          // poi selects
+                          getpois: BKDnodeFeatures.buildpoilist, 
                           options: BKDnodeFeatures.vclass },
                   menu:[
                       { name: "sel",
@@ -757,10 +776,15 @@ BKDnodeFeatures = {
             BKDnodeFeatures,
             [ {base:BKDnodeView, key:"mymsa2a"},
               {base:BKDnodeView, key:"mymsa2b"},
-              {base:BKDnodeView, key:"mymsa"}]        
+              {base:BKDnodeView, key:"mymsa"}],
+
+            { base: BKDnodeFeatures.lollipanels,
+              key: "loli1" }
         );
 
-        console.log("TOPO:", BKDnodeView.mymsa2a, BKDnodeView.mymsa2b,BKDnodeView.mymsa);
+        console.log( "TOPO:", BKDnodeView.mymsa2a,
+                     BKDnodeView.mymsa2b,
+                     BKDnodeView.mymsa);
         
         
         // structure pane
@@ -803,8 +827,8 @@ BKDnodeFeatures = {
         */
     },
 
-    nglpane: function( config, data, msa){
-        var ngl  = new BkdNGL( config, data, msa );
+    nglpane: function( config, data, msa, lollipop){
+        var ngl  = new BkdNGL( config, data, msa, lollipop );
         return ngl;
     },
     
@@ -830,17 +854,21 @@ BKDnodeFeatures = {
         d3.select( "#" + zoomanchor )
             .html( '<input type="button" id="zoom-plus" name="plus" value="+">'
                    + '&nbsp;'
-                   + '<input type="button" id="zoom-reset" name="zreset" value="Zoom reset">'
+                   + '<input type="button" id="zoom-reset" '
+                   + ' name="zreset" value="Zoom reset">'
                    + '&nbsp;'       
-                   + '<input type="button" id="zoom-minus" name="minus" value="-">');
-                                
+                   + '<input type="button" id="zoom-minus" '
+                   + ' name="minus" value="-">');
+        
         d3.select( "#" + pananchor )
             .html( '<input type="button" id="pan-left" name="plus" value="<">'
                    + '&nbsp;'
-                   + '<input type="button" id="pan-reset" name="preset" value="Pan reset">'
+                   + '<input type="button" id="pan-reset" '
+                   + ' name="preset" value="Pan reset">'
                    + '&nbsp;'       
-                   + '<input type="button" id="pan-right" name="minus" value=">">');                        
-
+                   + '<input type="button" id="pan-right" '
+                   + ' name="minus" value=">">');                        
+        
         d3.select( "#zoom-plus").on('click', zoomaction );
         d3.select( "#zoom-reset").on('click', zoomaction);
         d3.select( "#zoom-minus").on('click', zoomaction);
@@ -858,36 +886,51 @@ BKDnodeFeatures = {
     handleButtonZoom: function( e ){
         
         if( this.id == 'zoom-reset'){
-            d3.select('#topo-port svg').transition().call(BKDnodeFeatures.zoom.transform, d3.zoomIdentity);           
+            d3.select('#topo-port svg').transition()
+                .call(BKDnodeFeatures.zoom.transform, d3.zoomIdentity);
         } else if( this.id == 'zoom-plus') {
-            d3.select('#topo-port svg').transition().call(BKDnodeFeatures.zoom.scaleBy, 1.1);
+            d3.select('#topo-port svg').transition()
+                .call(BKDnodeFeatures.zoom.scaleBy, 1.1);
         } else if (this.id == 'zoom-minus') {
-            d3.select('#topo-port svg').transition().call(BKDnodeFeatures.zoom.scaleBy, 0.9);
+            d3.select('#topo-port svg').transition()
+                .call(BKDnodeFeatures.zoom.scaleBy, 0.9);
         }                        
     },
 
     handleButtonPan: function( e ){        
         if( this.id == 'pan-reset'){
-            d3.select('#topo-port svg').transition().call(BKDnodeFeatures.zoom.transform, d3.zoomIdentity);           
+            d3.select( '#topo-port svg').transition()
+                .call( BKDnodeFeatures.zoom.transform, d3.zoomIdentity );
         } else if( this.id == 'pan-left') {
-            d3.select('#topo-port svg').transition().call(BKDnodeFeatures.zoom.translateBy, -50, 0);
+            d3.select( '#topo-port svg').transition()
+                .call( BKDnodeFeatures.zoom.translateBy, -50, 0 );
         } else if (this.id == 'pan-right') {
-            d3.select('#topo-port svg').transition().call(BKDnodeFeatures.zoom.translateBy, 50, 0);
+            d3.select( '#topo-port svg').transition()
+                .call( BKDnodeFeatures.zoom.translateBy, 50, 0 );
         }  
     },
 
     genomepane: function( anchor, data ){
         
         $( anchor ).show();
-        $( anchor ).append( "<div id='bkd-genome-build' class='bkd-select-panel' ></div>");
-        $( '#bkd-genome-build' ).append('Genome Build:&nbsp;&nbsp;<input type="radio" id="build37flag" name="buildflag" value="build37">')
-            .append(`<label for="build37flag">GRCh37/hg19</label>&nbsp;&nbsp;&nbsp;&nbsp;`);
+        $( anchor )
+            .append( "<div id='bkd-genome-build' "
+                     + " class='bkd-select-panel' ></div>");
+        $( '#bkd-genome-build' )
+            .append( 'Genome Build:&nbsp;&nbsp;'
+                     + '<input type="radio" id="build37flag" name="buildflag"'
+                     + ' value="build37">')
+            .append('<label for="build37flag">GRCh37/hg19</label>'
+                    +'&nbsp;&nbsp;&nbsp;&nbsp;');
         $( "#build37flag" ).prop( "checked", true );
-        $('#build37flag').click(function(){           
+        $( '#build37flag' ).click(function(){           
             BKDnodeFeatures.igvinit("hg19");
         });
-        $( '#bkd-genome-build' ).append('<input type="radio" id="build38flag" name="buildflag" value="build38">')
-            .append(`<label for="build38flag">GRCh38/hg38</label>&nbsp;&nbsp;&nbsp;&nbsp;`);
+        $( '#bkd-genome-build' )
+            .append('<input type="radio" id="build38flag" '
+                    + ' name="buildflag" value="build38">')
+            .append('<label for="build38flag">GRCh38/hg38</label>'
+                    + '&nbsp;&nbsp;&nbsp;&nbsp;');
         $( "#build38flag" ).prop( "checked", false );
         $('#build38flag').click(function(){           
             BKDnodeFeatures.igvinit("hg38");
@@ -900,16 +943,22 @@ BKDnodeFeatures = {
                 this.gname = data.alias[a]["alias"]
             }
         }         
+
+        // build
         
-        var gburl = BKDnodeFeatures.ucscSrcUrl.replace('%BID%','hg19');  // build          
+        var gburl = BKDnodeFeatures.ucscSrcUrl.replace('%BID%','hg19');  
         gburl = gburl.replace('%CID%','');  // chromosome
         gburl = gburl.replace('%SID%','');  // start
         gburl = gburl.replace('%EID%','');  // stop
         gburl = gburl.replace('%SRC%',this.gname);    // gene name
         
-        $( '#bkd-genome-build' ).append("&nbsp;&nbsp;|| &nbsp;&nbsp; UCSC Genome Browser: <a href='" + gburl + "' target='_bkd'>Go</a>");
+        $( '#bkd-genome-build' )
+            .append("&nbsp;&nbsp;|| &nbsp;&nbsp; UCSC Genome Browser: "
+                    + "<a href='" + gburl + "' target='_bkd'>Go</a>");
         
-        $( anchor ).append( "<div id='bkd-genome-viewer' class='bkd-genome-viewer' ></div>");
+        $( anchor )
+            .append( "<div id='bkd-genome-viewer' "
+                     + " class='bkd-genome-viewer' ></div>");
         
         this.igvinit("hg19");
     },
@@ -942,12 +991,12 @@ BKDnodeFeatures = {
             .then( function (browser) {
                 console.log("Created IGV browser");
                 BKDnodeFeatures.igvbrowse = browser;
-                console.log(BKDnodeFeatures.igvbrowse);                               
+                console.log(BKDnodeFeatures.igvbrowse);
             });
     },
     
     setTopoSelScheme: function( comp, fstate, ftslist ){
-        BKDnodeFeatures.bkdtopo.setColor( BKDnodeFeatures.fstate );               
+        BKDnodeFeatures.bkdtopo.setColor( BKDnodeFeatures.fstate );
     },
 
     setHomolSelScheme: function( comp, fstate, ftslist ){
@@ -968,7 +1017,7 @@ BKDnodeFeatures = {
         for( var pos in fstate ){
             if( fstate[pos].on){
                 smap[ (pos) + ":" + "orange" ]
-                    = { "name": BKDnodeFeatures.data.sequence[pos-1] + pos };                             
+                    = { "name": BKDnodeFeatures.data.sequence[pos-1] + pos };
             }
         }
     },
@@ -999,7 +1048,8 @@ BKDnodeFeatures = {
 
         // ############
         
-        console.log( "setNGLSelScheme -> tgt:", event.target.name, event.target.value, event.target.checked  );
+        console.log( "setNGLSelScheme -> tgt:", event.target.name,
+                     event.target.value, event.target.checked  );
         if( event.target.checked && event.target.value == 'hiqc' ) {
             sel = BKDnodeFeatures.swmQCSel;
         } else {
@@ -1156,7 +1206,7 @@ BKDnodeFeatures = {
         for( var pos in fstate ){
             if( fstate[pos].on){
                 smap[ (pos) + ":" + "orange" ]
-                    = { "name": BKDnodeFeatures.data.sequence[pos-1] + pos };                             
+                    = { "name": BKDnodeFeatures.data.sequence[pos-1] + pos };
             }
         }
 
@@ -1276,7 +1326,8 @@ BKDnodeFeatures = {
         BKDnodeView.mymsa2a = new BkdMSA( msaConfig );
         
         d3.select( anchor )
-            .html( '<div id="' + msaid +'" class="bkd-msa" style="background-color: black;">'
+            .html( '<div id="' + msaid
+                   + '" class="bkd-msa" style="background-color: black;">'
                    +'</div>' );
         
         BKDnodeView.mymsa2a.initialize( { "anchor": '#' + msaid,
@@ -1326,8 +1377,9 @@ BKDnodeFeatures = {
         BKDnodeView.mymsa2b = new BkdMSA( msaConfig );
         
         d3.select( anchor )
-            .html( '<div id="' + msaid +'" class="bkd-msa" style="background-color: black;">'
-                   +'</div>' );
+            .html( '<div id="' + msaid
+                   + '" class="bkd-msa" style="background-color: black;">'
+                   + '</div>' );
         
         BKDnodeView.mymsa2b.initialize( { "anchor": '#' + msaid,
                                           "url": msaurl });
@@ -1433,7 +1485,8 @@ BKDnodeFeatures = {
                         if( plist[i].significance == sigtag ){
                             if( tcnt == 1 && ccol == "#808080" ){            
                                 for( var k in BKDnodeFeatures.vclass){
-                                    if( BKDnodeFeatures.vclass[k].value == sigtag ){
+                                    if( BKDnodeFeatures
+                                        .vclass[k].value == sigtag ){
                                         ccol = BKDnodeFeatures.vclass[k].color;
                                     }
                                 }

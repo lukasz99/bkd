@@ -55,8 +55,7 @@ class BkdMSA {
                        rngOn: false,
                        sindex: 0 };
         
-        this._data.iid = this.getUniqueID();  // generate iid
-        
+        this._data.iid = this.getUniqueID();  // generate iid        
     }
 
     get conf(){

@@ -268,6 +268,15 @@
             },
             
             
+            "poi-report-template":{
+                active:true,
+                title:"${bkd.pagetitleshort}: PoI Report",
+                menudef:"0:1:2",
+                menusel:"0:1:2",
+                viewtype:"file-html",
+                viewpath:"/pages/poi-report-template.html"
+            },
+            
             "help":{
                 active:true,
                 title:"${bkd.pagetitleshort}: Help",
