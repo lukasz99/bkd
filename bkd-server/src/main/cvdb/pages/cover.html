@@ -1,8 +1,10 @@
-
 <script>
   $(function(){
      BkdNews.boxinit( '#newsbox', 'news' );
-     
+
+     BkdStat.init("etc/stats.json",'#grp-list', true);
+     console.log("!!!!!");
+  
      $("#bkd-head-search-go").on( 'click',
         function (event) { 
            console.log("head search clicked");
@@ -82,6 +84,7 @@ CVUS Database is designed to simplify access to information about known missense
  <tr>
    <td colspan="3">
      <table border="0" width="100%">
+       <tr><td><div id="grp-list" /></td></tr>
        <tr>
          <td valign="top">
           The database currently covers:

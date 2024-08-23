@@ -2,7 +2,7 @@ console.log("bkd-ngl: common");
   
 class BkdNGL{
     
-    constructor( config, data, msa, lpop ){
+    constructor( config, data, msa ){
 
         console.log(" BkdNGL: new-> ", config );
         this._conf = config;
@@ -17,17 +17,13 @@ class BkdNGL{
         //              {base: BkdView, key:'mymsa'}]
 
         this._msa = msa;    
-
-        //this._msa[2].base[this._msa[2].key]
         
         console.log("TOPO: BkdNGL MSA:", this._msa);
         
-        this._lpop = lpop;    
         
         this.pfx = "bkd-ngl-" + this.name;
-        console.log("BkdNGL: prefix->", this.pfx );
         this._view = {};
-        
+
         this.currep = [];
         
         this.rsel = { all: "all", hiqc: "all", chain: "all", aset: "all" };
@@ -56,13 +52,12 @@ class BkdNGL{
         this.poi = null;
         this.poiColor = "#674B70";
 
-        this.state = { str: { "swm":true },
-                       sel:{ hiqc: false, chain: false,
+        this.state = { sel:{ hiqc: false, chain: false,
                              aset: false, canon: false, smsa: false },
                        
-                       col:{ rain: false, asel: false,
+                       col:{ rain: true, asel: false,
                              cmsa: false, csnp: false,
-                             ctpo: false, sstr: false,
+                             topo: false, sstr: false,
                              bfac: false, cchn: false },
                        
                        vcls:{ ben: false, lben: false,
@@ -77,7 +72,7 @@ class BkdNGL{
         this.view = {
             chains: { A: true},
             poi:{ style: "ball+stick", scale: 20.0,
-                  color: "#FFFFFF", opaq :0.8,
+                  color: "#C0C0C0", opaq :0.75,
                   detail: "none",
                   dstyle: {
                       none: { style: "" },
@@ -92,7 +87,6 @@ class BkdNGL{
                   on: false, rep: [] },
 
             lps:{ style: "ball+stick", scale: 10.0,
-                  color: "#FF8000", opaq :1.0,  // dark orange ? 
                   on: false, rep: [] },
             
             chn:{ style: "cartoon", scale: 10.0, color: "solid",
@@ -121,24 +115,16 @@ class BkdNGL{
                                        "#6A8D92","#646890"] },
                       
                       "cmsa": { mode: "grad", // valLo: 0, valHi: 1.0, 
-                                colHi: "magenta", colLo:"gray",
-                                //cbasis: ["red","yellow","blue"],
-                                gamma: 4.8, opaq: 1.0,
-                                msaNo: 0, msaSq: 0, val: "ent" },
-                                   
-                      "csnp": {mode: "grad", variant: "dbsnp", 
-                               colHi: "cyan", colLo: "gray",
-                               //cbasis: ["magenta","gray","white"],
-                               gamma: 4.0, opaq: 1.0, val: "ent" },
-                      
-                      "ctpo": { mode: "grad", // valLo: 0, valHi: 1.0, 
                                 colLo: "magenta", colHi:"#808080",
-                                gamma: 4.8, opaq: 1.0,
-                                trsel:{ "Extracellular": { "color":"#00cc66" },
-                                        "Cytoplasmic": { "color":"#99ccff" },
-                                        "Membrane": { "color":"#ffb266" } },
-                                msaNo: 2, msaSq: 0, val: "track" },
-                      
+                                //cbasis: ["red","yellow","blue"],
+                                gamma: 2.0, opaq: 1.0,
+                                msa: 0, val: "ent" },   //this._msa[0]
+                            
+                      "csnp": {mode: "grad", 
+                               colLo: "grey", colHi:"magenta",
+                               cbasis: ["red","white","blue"],
+                               gamma: 5.0, opaq: 1.0, val: "bfact" },
+                            
                       "cbfc": {mode: "grad",valLo: 0, valHi: 1.0, 
                                colLo: "grey", colHi:"magenta",
                                cbasis: ["red","white","blue"],
@@ -168,12 +154,7 @@ class BkdNGL{
                    + ' align="center"></table>'
                    + '</div>'
                    + '<div id="'+ this.pfx + '-view" '
-                   + ' class="bkd-ngl-view"></div>'
-                   + '<div id="'+ this.pfx + '-legend" '
-                   + ' class="bkd-ngl-controls" '
-                   + ' style="background-color: black; color: white;">'
-                   + ' legend </div>'
-                 );
+                   + ' class="bkd-ngl-view"></div>');
 
         console.log("BkdNGL: controls->", config.controls);
 
@@ -188,7 +169,6 @@ class BkdNGL{
         //.style("padding-top","3px")
             .append("img")
             .attr("src","img/hamburger-menu-white.svg")
-            .attr("id", this.pfx + "controls-ham")
             .classed("bkd-ngl-icon",true);
         
         row.append("td")
@@ -387,7 +367,7 @@ class BkdNGL{
             }                
         }    
         
-        d3.select("#" + this.pfx + "controls-ham")
+        d3.select(".bkd-ngl-icon")
             .on('click', d3.contextMenu(menu));
         
         $( this.anchor ).show();
@@ -499,7 +479,7 @@ class BkdNGL{
     
     rerender(){        
         console.log("HAM rerender called");
-        this.setHamStyle("vcls",undefined, null);
+        this.setHamStyle("vcls",null, null);
         console.log("HAM rerender DONE");
     }
 
@@ -940,28 +920,24 @@ class BkdNGL{
             
             var chnOutScheme = NGL.ColormakerRegistry
                 .addSelectionScheme( [[ "white", "*" ]], "chainOut" );
-
-
-            if( this.nglcomp !== undefined){ 
-                var chnOutRep = this.nglcomp.addRepresentation(
-                    "cartoon", { color: chnOutScheme, 
-                                 sele: "*",
-                                 smoothSheet: true,
-                                 quality: "high",
-                                 metalness: 0.1,
-                                 roughness: 0.0,
-                                 opacity: 0.33 } );
             
-                view.chn.rep.push( chnOutRep );
-            }
+            var chnOutRep = this.nglcomp.addRepresentation(
+                "cartoon", { color: chnOutScheme, 
+                             sele: "*",
+                             smoothSheet: true,
+                             quality: "high",
+                             metalness: 0.1,
+                             roughness: 0.0,
+                             opacity: 0.33 } );
+            
+            view.chn.rep.push( chnOutRep );
+
             return true;
         }
     }
 
-    buildChainSelect( opt ){
+    buildChainSelect( par1, value1, menu1 ){
 
-        console.log( "HAM setHamStyle called (buildChainSelect): opt->", opt );
-        
         var state = this.state;
         var view = this.view;
         
@@ -976,32 +952,8 @@ class BkdNGL{
         var selChn = "";
         console.log( "HAM: selection: ",  state.sel);
 
-        var msaSelStr = "";
-        
         if( state.sel.aset ){  // set of residues
             csconf = chnsel.aset;
-        }
-
-        if( state.sel.smsa ){  // msa subset
-            console.log( "HAM: selection: ",  state.sel.smsa,
-                         "state(on):", opt.states.on);
-
-            var msan = opt.states.on.msa;
-            var cmsa =this._msa[msan].base[this._msa[msan].key];
-
-            var cref = opt.states.on.sref;
-            var csel = opt.states.on.ssel;
-
-            console.log( "HAM: selection: cref, csel, msa", cref, csel, cmsa );
-            msaSelStr = cmsa.getTgtSeqSelStr( csel, cref ); 
-            console.log( "HAM: selection: msaSelStr-> ", msaSelStr);
-            
-        } else {
-            
-            console.log( "HAM: selection: ",  state.sel.smsa,
-                         "states:", opt);
-            
-
         }
 
         if( state.sel.chain ){  // set of chains
@@ -1103,271 +1055,11 @@ class BkdNGL{
             selStr = selChn + " and (" + selStr + ")";                 
         }
 
-        if( msaSelStr.length > 0){
-            selStr = "(" + msaSelStr + ") and (" + selStr + ")";                 
-        }
-        console.log("HAM: selection: selStr", selStr);
-        return selStr;        
+
+        return selStr;
+        
     } 
-
-    renderChainDetail( selStr ){
-
-        // main chain: color
-        //-----------------
-
-        //col:{ rain: true, asel: false,
-        //      cmsa: false, csnp: false,
-        //      ctp: false, sstr: false,
-        //      cbfc: false },
-
-        var state = this.state;
-        var view = this.view;
-
-        var  chncol = view.chn.cstyle;
-        var  chnsel = view.chn.cselect;
-        
-        console.log( "HAM: color: selStr",  selStr);
-        console.log( "HAM: color: ",  state.col);
-
-        var chnColLst = [];
-        var ccs =  chncol.cdef;   // curent color style;
-
-        if( state.col.rain ){      // color by position
-            chnColLst = [["atomindex", "*"]];
-        }
-
-        if( state.col.cmsa ){        // color by msa
-            ccs =  chncol.cmsa;                   
-        } else if( state.col.csnp ){ // color by snp count
-            ccs =  chncol.csnp;                   
-        } else if( state.col.cbfc ){      // color by bfact
-            ccs =  chncol.cbfc;                
-        } else if( state.col.ctpo ){      // color by topo
-            ccs =  chncol.ctpo;                
-        } 
-
-        console.log( "HAM: color ccs: ",  ccs);
-
-        var binter = null;
-
-        if( state.col.cmsa || state.col.csnp || state.col.cbfc ){
-
-            if( ccs.cbasis !== undefined ){                
-                binter = d3.interpolateRgbBasis( ccs.cbasis );
-                console.log("HAM: RGBbasis: ", ccs.cbasis );
-            } else {
-                binter = d3.interpolateRgb.gamma(ccs.gamma)( ccs.colLo,
-                                                             ccs.colHi );
-            }
-        }
-
-        if( state.col.csnp ){
-            
-            console.log("CSNP: ccs->", ccs);
-            console.log("CSNP: lpop->", this._lpop);
-            var clpop = this._lpop.base[this._lpop.key];
-            var snpCnt = clpop.getVarCnt(ccs.variant);
-            
-            var cmax = ccs.valHi;
-            var cmin = ccs.valLo;
-
-            if( cmax == undefined || cmin == undefined ){
-
-                cmin =  1e10;
-                cmax = -1e10;
-
-                for( var p=1; p <snpCnt.length; p++ ){
-                    if( snpCnt[p] < cmin ) cmin = snpCnt[p];
-                    if( snpCnt[p] > cmax ) cmax = snpCnt[p];
-                }
-            }
-
-            console.log("CSNP: cmin, cmax=", cmin,cmax);
-            console.log("CVAL(snp):",snpCnt);
-            var bfl = [];
-            this.nglcomp.structure.eachAtom( function(atom) {
-
-                if( atom.atomname == "CA" && atom.chainname == "A" ){
-                    //var cnm = atom.chainname;                   
-                    var rno = atom.resno;
-
-                    var bf = 1 - ((snpCnt[rno] - cmin )/( cmax-cmin ))**(1/2);
-                    bfl.push(bf);
-                    //var c = 2*(data.msaEnt[i]/emax)**1.5;
-                    var col = d3.color(binter(bf)).formatHex();
-                    chnColLst.push([col,String(rno)]);
-                }
-            });
-            console.log("BFL:", bfl);
-        }
-
-        
-        if( state.col.cmsa ){
-
-            var msaNo = ccs.msaNo;
-            var msaSq = ccs.msaSq;
-
-            var cmsa = this._msa[msaNo].base[this._msa[msaNo].key]
-            var cval = [];
-
-            if( ccs.val == "ent" ){   
-                cval = cmsa.getEnt();  // entropy
-            } else{
-                cval = cmsa.getCnt();  // counts
-            }
-            console.log("CVAL(msa):",cval);
-            var cmax = ccs.valHi;
-            var cmin = ccs.valLo;
-
-            if( cmax == undefined || cmin == undefined ){
-
-                cmin = +1e20;
-                cmax = -1e10;
-
-                for( var p=0; p <cval.length; p++ ){
-                    if( cval[p] < cmin ) cmin = cval[p];
-                    if( cval[p] > cmax ) cmax = cval[p];
-                }
-            }
-
-            console.log("HAM: cmin, cmax=", cmin,cmax);
-
-            var bfl = [];
-            
-            this.nglcomp.structure.eachAtom( function(atom) {
-
-                if( atom.atomname == "CA" && atom.chainname == "A" ){
-                    //var cnm = atom.chainname;                   
-                    var rno = atom.resno;
-                    
-                    //var bf = 1 - ((cval[rno] - cmin )/( cmax-cmin ));  //**(1/2);
-                    var bf =  ((cval[rno] - cmin )/( cmax-cmin ))**(1/2);
-                    bfl.push(bf);
-
-                    //var c = 2*(data.msaEnt[i]/emax)**1.5;
-                    var col = d3.color(binter(bf)).formatHex();
-                    chnColLst.push([col,String(rno)]);
-                }
-            });
-            console.log("BFL:",bfl);
-        }
-
-        if( state.col.ctpo ){
-
-            var msaNo = ccs.msaNo;
-            var msaSq = ccs.msaSq;
-
-            var trsel = ccs.trsel;
-            
-            var cmsa = this._msa[msaNo].base[this._msa[msaNo].key]
-
-            var trlst = cmsa._data.dtrac;
-
-            console.log("HAM topo: sel", trsel);
-            console.log("HAM topo: lst", trlst);
-
-            for(var i = 0; i < trlst.length; i ++){
-                
-                if( Object.keys(trsel).includes( trlst[i].name ) ){
-
-                    var tselStr = "";
-
-                    console.log( "HAM topo: key/track",
-                                 trlst[i].name,
-                                 trsel[trlst[i].name].color,
-                                 trlst[i].dpos );
-
-                    for( var j =0; j < trlst[i].dpos.length; j++ ){
-                        tselStr += trlst[i].dpos[j].beg + "-" +
-                            trlst[i].dpos[j].end + " or "; 
-                    }
-                    
-                    if( tselStr.length > 0 ){
-                        tselStr= tselStr.substring(0, tselStr.length-4);
-                        console.log( "HAM topo: tselstr", tselStr);
-                        
-                        chnColLst.push( [ trsel[trlst[i].name].color,
-                                          tselStr ] );                    
-                    }                                        
-                }   
-            }            
-        }
-        
-
-        if( state.col.cbfc ){  // bfactor
-
-            var cmax = ccs.valHi;
-            var cmin = ccs.valLo;
-
-            if( cmax == undefined || cmin == undefined ){
-
-                cmin = +1e20;
-                cmax = -1e10;
-
-                this.nglcomp.structure.eachAtom(
-                    function(atom) {                            
-                        if( atom.bfactor < cmin ) cmin = atom.bfactor;
-                        if( atom.bfactor > cmax ) cmax = atom.bfactor;
-                    }
-                );
-            }
-
-            console.log("HAM: cmin, cmax=", cmin,cmax);
-
-            this.nglcomp.structure.eachAtom( function(atom) {
-
-                if( atom.atomname == "CA" && atom.chainname == "A" ){
-                    var bf = (atom.bfactor - cmin )/( cmax-cmin );
-                    //var cnm = atom.chainname;                   
-                    var rno = atom.resno;
-
-                    //var c = 2*(data.msaEnt[i]/emax)**1.5;
-                    var col = d3.color(binter(bf)).formatHex();
-                    chnColLst.push([col,String(rno)]);
-                }
-            });                
-        }
-        
-        if( state.col.step ){
-            //colLst = [["atomindex", "*"]];
-        }
-        
-        var repParam = {
-            sele: selStr,
-            smoothSheet: true,
-            quality: "high",
-            opacity: 1.0
-        };
-
-        if( chnColLst.length > 0){ 
-
-            repParam.color = NGL.ColormakerRegistry
-                .addSelectionScheme( chnColLst,
-                                     "chnColScheme" );                
-        } else {
-            if( state.col.cchn ){
-                repParam.colorScheme = "chainindex";                    
-            } else {                
-                repParam.color = NGL.ColormakerRegistry
-                    .addSelectionScheme( [["gray","*"]],
-                                         "chnColScheme" );
-            }                        
-        }
-
-        // main chain: render
-        //-------------------
-
-        console.log( "HAM: chnColLst:", chnColLst ); 
-        console.log( "HAM: selStr:", selStr ); 
-
-        if(this.nglcomp !== undefined){
-            var chnSelRep = this.nglcomp.addRepresentation( "cartoon",
-                                                            repParam );
-            view.chn.rep.push(chnSelRep);
-        }
-    }
-
-
+    
     setHamStyle( par1, value1, menu1 ){
         
         console.log( "HAM setHamStyle called: par->", par1 );
@@ -1377,8 +1069,13 @@ class BkdNGL{
         console.log( "HAM data.state:",this.state);
 
         console.log( "HAM data.fstate:",this._data.fstate);
-                       
+        //console.log( "HAM ngl._data:",this._data);
+               
         console.log("HAM ngl._msa:", this._msa);
+        //console.log( "HAM ngl._msa[0].ent:",  this._msa[0].getEnt() );
+
+
+        //console.log("HAM component:", this.nglcomp);
         
         var op = "change";
         var state = this.state;
@@ -1391,7 +1088,18 @@ class BkdNGL{
         var view = this.view;
         
         console.log("HAM view (old):", view);
-                
+        
+        //{ poi:{ style: "ball+stick", on: false,
+        //        detail: false, dstyle: "ball+stick",
+        //        rep: [] },
+        //  var:{ style: "ball+stick", on: false,
+        //        rep: [] },
+        //  lps:{ style: "ball+stick", on: false,
+        //        rep: [] },
+        //  chn:{ style: "cartoon", on: true,
+        //        rep: [] }
+        //      }
+        
         // get lpops
         //----------
 
@@ -1425,17 +1133,537 @@ class BkdNGL{
         
         // render: main chain
         //-------------------
+
+              
+        /*
+        chn:{ style: "cartoon", scale: 10.0, color: "solid",
+              cstyle: { "solid": {mode: "solid", color:"green", opaq: 1.0 },
+                        "sqpos": {mode: "grad", opaq: 1.0, val: "atomindex" },
+                        "sqmsa": {mode: "grad", colL: "grey", colH:"magenta", 
+                                  gamma: 2.1, opaq: 1.0, val: "msa" },
+                        "squal": {mode: "grad", colL: "grey", colH:"magenta", 
+                                  gamma: 2.1, opaq: 1.0, val: "bfact" },
+                        "strsq": {mode: "step", colL: "green", opaqL: 1.0, 
+                                  colL:"gray", opaqH:0.6, val: "bfact", 
+                                  vcut: 0.5 }
+                      } 
+              on: true, rep: [] }
+        */
         
         if( this.renderChainOutline() ){    // render/hide outline if needed
 
-            var opt = {};
-            
-            if( value1 !== undefined ) opt = value1.opt;
-            var selStr = this.buildChainSelect( opt );
-            
-            this.renderChainDetail( selStr );
-        }
+            var selStr = this.buildChainSelect( par1, value1, menu1 );
 
+            /*
+              
+            // main chain: selection
+            //----------------------
+            
+            var selLst = [];
+            var csconf = { mode: "all" };
+            var selChn = "";
+            console.log( "HAM: selection: ",  state.sel);
+                        
+            if( state.sel.aset ){  // set of residues
+                csconf = chnsel.aset;
+            }
+            
+            if( state.sel.chain ){  // set of chains
+                var csconf = chnsel.chain;
+                for( var c in csconf.clist){
+                    selChn = selChn +":" + csconf.clist[c] + " or ";
+                }
+                selChn = "(" + selChn.substring(0,selChn.length-3)+")";
+            }
+
+            if( state.sel.hiqc ){   //  bfact cutoff  
+                var csconf = chnsel.hiqc;
+                        
+                if( csconf.mode == "step" ){
+                    for( var s in csconf.states ){
+                        var cst = csconf.states[s];
+                        var stateLst = [];
+                        if( cst.val == "bfact" ){
+                            this.nglcomp.structure.eachAtom( function(atom) {
+                                
+                                if( atom.atomname == "CA" &&
+                                    atom.chainname == "A" ){
+
+                                    var bf = atom.bfactor;
+                                    var rno = atom.resno;
+                                    
+                                    if( bf >= cst.vmin && bf < cst.vmax ){
+                                        stateLst.push(String(rno));
+                                    }                                 
+                                }
+                            });                            
+                        }
+                        selLst.push(stateLst);
+                    }
+                }
+            }
+            
+            if( csconf.mode == "all" ){
+                selLst = [];
+            }
+            
+            var selStr = "";
+
+            if( selLst.length == 0){
+                selStr = "*";
+            } else {
+                
+                selStr = "";
+
+                var rlst = []; 
+                for(var s in selLst){
+                    var csel = selLst[s]; 
+                    rlst = rlst.concat(csel);
+                }
+                rlst.sort(function(a,b) { Number(a) > Number(b) } );
+
+                console.log("HAM:", rlst);
+                
+                if(rlst.length == 0 ){
+                    selStr = "*"
+                } else {
+                    
+                    var prev = Number(rlst[0]);
+                    var lop = "";
+                    var nc = 0;
+                    for( var c in rlst ){
+                        nc = Number( rlst[c] );
+                        // console.log("#### nc: ",nc, prev, nc - prev);
+                        if( nc > prev ){
+                            if( nc - prev == 1 ){ // seq
+                                if( lop != "-"){
+                                    lop = "-";
+                                    selStr = selStr + "-";
+                                }
+                                prev = nc;
+                            } else {  // cont or gap                            
+                                if( lop == "-" ){ // gap starts
+                                    lop = "";
+                                    selStr = selStr + prev + " or " + nc;
+                                } else{  // next gap 
+                                    selStr = selStr + " or " + nc;
+                                }
+                                prev = nc;
+                            }                            
+                        } else {
+                            selStr = String(nc);
+                            prev = nc;
+                        }
+                    }
+                
+                    //if( selStr[selStr.length-1] == '-'){
+                    //    selStr = selStr.substring(0,selStr.length-1);
+                    //}
+                    if( selStr[selStr.length-1] == '-') selStr = selStr + nc;
+                }
+            }
+
+            if( selChn.length > 0){
+                selStr = selChn + " and (" + selStr + ")";                 
+            }
+
+            */
+
+
+            // main chain: color
+            //-----------------
+
+            //col:{ rain: true, asel: false,
+            //      cmsa: false, csnp: false,
+            //      topo: false, sstr: false,
+            //      cbfc: false },
+
+
+            console.log( "HAM: color: ",  state.col);
+            
+            var chnColLst = [];
+            var ccs =  chncol.cdef;   // curent color style;
+            
+            if( state.col.rain ){      // color by position
+                chnColLst = [["atomindex", "*"]];
+            }
+            
+            if( state.col.cmsa ){        // color by msa
+                ccs =  chncol.cmsa;                   
+            } else if( state.col.csnp ){ // color by snp count
+                ccs =  chncol.csnp;                   
+            } else if( state.col.cbfc ){      // color by bfact
+                ccs =  chncol.cbfc;                
+            } 
+
+            console.log( "HAM: color ccs: ",  ccs);
+
+            var binter = null;
+            
+            if( state.col.cmsa || state.col.csnp || state.col.cbfc ){
+   
+                if( ccs.cbasis !== undefined ){                
+                    binter = d3.interpolateRgbBasis( ccs.cbasis );
+                    console.log("HAM: RGBbasis: ", ccs.cbasis );
+                } else {
+                    binter = d3.interpolateRgb.gamma(ccs.gamma)( ccs.colLo,
+                                                                 ccs.colHi );
+                }
+            }
+
+            if( state.col.cmsa || state.col.csnp ){
+
+                var cval = [];
+                
+                if( ccs.val == "ent" ){
+                    cval = ccs.msa.getEnt();
+                } else{
+                    cval = ccs.msa.getCnt();
+                }
+                
+                var cmax = ccs.valHi;
+                var cmin = ccs.valLo;
+
+                if( cmax == undefined || cmin == undefined ){
+
+                    cmin = +1e20;
+                    cmax = -1e10;
+
+                    for( var p=0; p <cval.length; p++ ){
+                        if( cval[p] < cmin ) cmin = cval[p];
+                        if( cval[p] > cmax ) cmax = cval[p];
+                        
+                    }
+                }
+                
+                console.log("HAM: cmin, cmax=", cmin,cmax);
+                
+                this.nglcomp.structure.eachAtom( function(atom) {
+                    
+                    if( atom.atomname == "CA" && atom.chainname == "A" ){
+                        //var cnm = atom.chainname;                   
+                        var rno = atom.resno;
+                        
+                        var bf = 1 - ((cval[rno] - cmin )/( cmax-cmin ))**(1/2);
+                        
+                        //var c = 2*(data.msaEnt[i]/emax)**1.5;
+                        var col = d3.color(binter(bf)).formatHex();
+                        chnColLst.push([col,String(rno)]);
+                    }
+                });
+                
+            }
+            
+            if( state.col.cbfc ){  // bfactor
+
+                var cmax = ccs.valHi;
+                var cmin = ccs.valLo;
+
+                if( cmax == undefined || cmin == undefined ){
+
+                    cmin = +1e20;
+                    cmax = -1e10;
+                    
+                    this.nglcomp.structure.eachAtom(
+                        function(atom) {                            
+                            if( atom.bfactor < cmin ) cmin = atom.bfactor;
+                            if( atom.bfactor > cmax ) cmax = atom.bfactor;
+                        }
+                    );
+                }
+
+                console.log("HAM: cmin, cmax=", cmin,cmax);
+                
+                this.nglcomp.structure.eachAtom( function(atom) {
+                    
+                    if( atom.atomname == "CA" && atom.chainname == "A" ){
+                        var bf = (atom.bfactor - cmin )/( cmax-cmin );
+                        //var cnm = atom.chainname;                   
+                        var rno = atom.resno;
+                                
+                        //var c = 2*(data.msaEnt[i]/emax)**1.5;
+                        var col = d3.color(binter(bf)).formatHex();
+                        chnColLst.push([col,String(rno)]);
+                    }
+                });                
+            }
+
+                       
+            if( state.col.step ){
+                //colLst = [["atomindex", "*"]];
+            }
+
+            if( state.col.topo ){
+                //colLst = [["atomindex", "*"]];
+
+                console.log("TOPO:", this._msa);
+                
+                var msa_bk = this._msa[2];
+                var tpo = msa_bk.base[msa_bk.key]._dtrac;
+
+                console.log("TOPO:", tpo);
+                
+
+
+            }
+
+            var repParam = {
+                sele: selStr,
+                smoothSheet: true,
+                quality: "high",
+                opacity: 1.0
+            };
+            
+            if( chnColLst.length > 0){ 
+
+                repParam.color = NGL.ColormakerRegistry
+                    .addSelectionScheme( chnColLst,
+                                         "chnColScheme" );                
+            } else {
+                if( state.col.cchn ){
+                    repParam.colorScheme = "chainindex";                    
+                } else {                
+                    repParam.color = NGL.ColormakerRegistry
+                        .addSelectionScheme( [["green","*"]],
+                                             "chnColScheme" );
+                }                        
+            }
+
+            
+            // main chain: render
+            //-------------------
+
+            console.log( "HAM: chnColLst:", chnColLst ); 
+            console.log( "HAM: selStr:", selStr ); 
+            
+            var chnSelRep = this.nglcomp.addRepresentation( "cartoon",
+                                                            repParam );
+            
+            view.chn.rep.push(chnSelRep);
+            
+                     
+            /*
+            
+            // details override
+            //-----------------
+            
+            if( view.poi.on || view.var.on || view.lps.on){  
+                // residue selections
+
+                var cstyle = view.chn.cstyle[view.chn.color];
+
+                if( cstyle.mode == "solid" ){
+                    
+                    var chnrlist = [];
+                    chnrlist.push( [cstyle.color,"*"] );
+                    
+                    var chnscheme = NGL.ColormakerRegistry
+                        .addSelectionScheme( chnrlist,"chnsolid" );
+                    
+                    var chnrep = this.nglcomp.addRepresentation(
+                        view.chn.style, { color: chnscheme,
+                                          opacity: cstyle.opaq } );
+                    
+                    view.chn.rep.push( chnrep );                    
+                }
+                
+                if( cstyle.mode == "grad" ){
+
+                    var chnrlist = [];
+
+                    if( cstyle.val == "atomindex" ){
+                        chnlist.push(["atomindex", "*"]);
+                    }
+ 
+                    if( cstyle.val == "msa" ){
+                        
+                        var data = BKDnodeView.mymsa2a._data;
+                        console.log("  BkdNGL: data->", data.msaEnt);
+
+                        var emax = 0;
+                    
+                        for( var i = 0; i < data.msaEnt.length; i++){
+                            if( data.msaEnt[i] > emax  ) emax = data.msaEnt[i];
+                        }
+                        if( emax == 0) emax = 1;
+                        const interpolator = d3.interpolateRgb
+                              .gamma(cstyle.gamma)( cstyle.colLo, 
+                                                    cstyle.colHi );
+                        for( var i = 0; i < data.msaEnt.length; i++){
+                            var c = 2*(data.msaEnt[i]/emax)**1.5;
+                            var col = d3.color(interpolator(c)).formatHex();
+                            //console.log(col.r,col.g,col.b);
+                            chnlist.push([col,String(i)]);                   
+                        }
+                    }
+
+                    if( cstyle.val == "bfact" ){
+                        
+                        const binter = d3.interpolateRgb
+                              .gamma(cstyle.gamma)( cstyle.colLo, 
+                                                    cstyle.colHi );
+                        
+                        this.nglcomp.structure.eachAtom( function(atom) {
+                            
+                            if( atom.atomname == "CA" 
+                                && atom.chainname == "A" ){
+                                
+                                var bf = atom.bfactor;
+                                //var cnm = atom.chainname;                   
+                                var rno = atom.resno;
+                                
+                                //var c = 2*(data.msaEnt[i]/emax)**1.5;
+                                var col = d3.color(binter(bf)).formatHex();
+                                chnlist.push([col,String(i)]);
+                            }
+                        });
+                    }
+                     
+                    var chnscheme = NGL.ColormakerRegistry
+                        .addSelectionScheme( chnrlist,"chain" );
+                    
+                    var chnrep = this.nglcomp.addRepresentation(
+                        view.chn.style, { color: chnscheme } );
+                    
+                    view.chn.rep.push(chnrep)
+                }
+                         
+                if( cstyle.mode == "step" ){
+                    
+                    var chnlistLo = [];
+                    var chnlistHi = [];
+
+                    if( cstyle.val == "bfact" ){
+                        
+                        this.nglcomp.structure.eachAtom( function(atom) {
+                        
+                            if( atom.atomname == "CA" 
+                                && atom.chainname == "A" ){
+                                var bf = atom.bfactor;
+                                var rno = atom.resno;
+                                
+                                if( bf > cstyle.vcut ){
+                                    chnlistHi.push([cstyle.colHi, String(rno)]);
+                                } else {
+                                    chnlistLo.push([cstyle.colLo, String(rno)]);
+                                }
+                                
+                            }
+                        });
+                    }
+                    
+                    var chnLoScheme = NGL.ColormakerRegistry
+                        .addSelectionScheme( chnlistLo,"chainLo" );
+                    
+                    var chnLoRep = this.nglcomp.addRepresentation(
+                        view.chn.style, { color: chnLoScheme } );
+                    
+                    view.chn.rep.push(chnLoRep);
+                    
+                    var chnHiScheme = NGL.ColormakerRegistry
+                        .addSelectionScheme( chnlistHi,"chainHi" );
+                    
+                    var chnHiRep = this.nglcomp.addRepresentation(
+                        view.chn.style, { color: chnHiScheme } );
+                    
+                    view.chn.rep.push(chnHiRep);
+                }
+                
+            } else {
+ 
+                // no details: show chain select
+                //------------------------------
+                console.log("ZZZZ chain select", this.state['sel']);
+
+                if( this.state['sel']['hiqc'] ){
+                    console.log("ZZZZ chain select: hiqc");
+
+                    // retrive from menu def
+                    var cstyle = { mode: "step", val: "bfact", vcut: 0.5,
+                                   colLo: "#FFFFFF", opaqLo: 0.33, 
+                                   colHi: "green", opaqHi: 1.0   };
+                    
+                    var chnlistLo = [];
+                    var chnlistHi = [];
+
+                    if( cstyle.val == "bfact" ){
+
+                        console.log("ZZZZ col hi/lo:",  
+                           cstyle.colHi,cstyle.colLo );
+                        
+                        this.nglcomp.structure.eachAtom( function(atom) {
+                            
+                            if( atom.atomname == "CA" 
+                                && atom.chainname == "A" ){
+                                
+                                var bf = atom.bfactor;
+                                var rno = atom.resno;
+                                
+                                if( bf >= cstyle.vcut ){
+                                    chnlistHi.push([cstyle.colHi, String(rno)]);
+                                } else {
+                                    chnlistLo.push([cstyle.colLo, String(rno)]);
+                                }
+                                
+                            }
+                        });
+                    }
+
+                    var betaLoSel = this.getBetaSelection( -100, cstyle.vcut );
+                    var betaHiSel = this.getBetaSelection( cstyle.vcut, 
+                                                           1000.0 );
+                    
+                    for( var rr in this.nglcomp.reprList){
+                        this.nglcomp.reprList[rr].dispose();
+                    }
+                    
+                    var chnLoScheme = NGL.ColormakerRegistry
+                        .addSelectionScheme( chnlistLo,"chainLo" );
+                    
+                    var chnLoRep = this.nglcomp.addRepresentation(
+                        view.chn.style, { color: chnLoScheme, 
+                                          //sele: betaLoSel.sel,
+                                          smoothSheet: true,
+                                          quality: "high",
+                                          opacity: cstyle.opaqLo } );
+                    
+                    view.chn.rep.push(chnLoRep);
+                    
+                    var chnHiScheme = NGL.ColormakerRegistry
+                        .addSelectionScheme( chnlistHi,"chainHi" );
+                    
+                    var chnHiRep = this.nglcomp.addRepresentation(
+                        view.chn.style, { color: chnHiScheme,
+                                          sele: betaHiSel.sel,
+                                          smoothSheet: true,
+                                          quality: "high",
+                                          opacity: cstyle.opaqHi } );
+                    
+                    view.chn.rep.push(chnHiRep);
+                    
+                    //var poirep = this.nglcomp.addRepresentation(
+                    //    view.poi.style, { color: poischeme,
+                    //                      opacity: 0.75,
+                    //                      sele: psel + ":A and .CA",
+                    //                      aspectRatio: view.poi.scale  });
+                }
+                             
+                //  default: rainbow
+                var chnlist = [];
+                chnlist.push(["atomindex", "*"]);
+                
+                //var chnscheme = NGL.ColormakerRegistry
+                //    .addSelectionScheme( chnlist,"chain" );
+                    
+                //var chnrep = this.nglcomp.addRepresentation(
+                //    view.chn.style,{color: chnscheme });
+
+                //view.chn.rep.push(chnrep);
+                               
+            }
+
+            */            
+        }
         
         // render: poi
         //------------
@@ -1495,7 +1723,8 @@ class BkdNGL{
                 view.poi.rep = [];
             }
         }        
-        
+
+
         // render: variants
         //-----------------
         
@@ -1542,6 +1771,7 @@ class BkdNGL{
                       aspectRatio: 10.0  } );
                 
                 view.var.rep.push( varrep );
+                
             } 
         }
         
@@ -1556,9 +1786,10 @@ class BkdNGL{
                 view.var.rep = [];
             }
         }        
+
         
-        // render: lolipops ok
-        //--------------------
+        // render: lolipops  ok
+        //---------------------
         
         if( view.lps.on && op == "change" ){
             
@@ -1576,7 +1807,7 @@ class BkdNGL{
             
             for( var p in lpops ){
                 if( lpops[p].on ){
-                    lpslist.push([view.lps.color,p]);
+                    lpslist.push(["orange",p]);
                 }            
             }
 
@@ -1598,19 +1829,21 @@ class BkdNGL{
             } else {
                 lpsel = "";
             }
+
+            console.log("ZZZZ lpsel:", lpsel);
+            var lprep = this.nglcomp.addRepresentation(
+                view.lps.style,
+                { color: lpscheme,
+                  sele: lpsel + " :A and .CA",
+                  aspectRatio: 10.0  } );
             
-            if( this.nglcomp !==undefined){
-                var lprep = this.nglcomp.addRepresentation(
-                    view.lps.style,
-                    { color: lpscheme,
-                      sele: lpsel + " :A and .CA",
-                      aspectRatio: 10.0  } );
-            
-                view.lps.rep.push(lprep);
-            }
+            view.lps.rep.push(lprep);
         }
         
-        if( ! view.lps.on ){  
+        if( ! view.lps.on ){
+
+            console.log("ZZZZ lps.off");
+            
             if( view.lps.rep.length > 0 ){
                 for( var r in view.lps.rep ){
                     view.lps.rep[r].dispose();
@@ -1618,8 +1851,12 @@ class BkdNGL{
                 view.lps.rep = [];
             }
         }
+        
+        console.log("ZZZZ view (new):", view);
+        
     }
-    
+
+
     getPoiSelection( poi ){
 
         if(poi == null ) return null;
@@ -1765,7 +2002,11 @@ class BkdNGL{
         console.log("SEL:" , sel);
                  
     }
-        
+    
+
+
+    
+    
     getBetaSelection( bmin, bmax ){
 
         if( bmin == null | bmax == null) return null;

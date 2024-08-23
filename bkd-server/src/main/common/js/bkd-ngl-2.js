@@ -168,12 +168,7 @@ class BkdNGL{
                    + ' align="center"></table>'
                    + '</div>'
                    + '<div id="'+ this.pfx + '-view" '
-                   + ' class="bkd-ngl-view"></div>'
-                   + '<div id="'+ this.pfx + '-legend" '
-                   + ' class="bkd-ngl-controls" '
-                   + ' style="background-color: black; color: white;">'
-                   + ' legend </div>'
-                 );
+                   + ' class="bkd-ngl-view"></div>');
 
         console.log("BkdNGL: controls->", config.controls);
 
@@ -940,20 +935,18 @@ class BkdNGL{
             
             var chnOutScheme = NGL.ColormakerRegistry
                 .addSelectionScheme( [[ "white", "*" ]], "chainOut" );
-
-
-            if( this.nglcomp !== undefined){ 
-                var chnOutRep = this.nglcomp.addRepresentation(
-                    "cartoon", { color: chnOutScheme, 
-                                 sele: "*",
-                                 smoothSheet: true,
-                                 quality: "high",
-                                 metalness: 0.1,
-                                 roughness: 0.0,
-                                 opacity: 0.33 } );
             
-                view.chn.rep.push( chnOutRep );
-            }
+            var chnOutRep = this.nglcomp.addRepresentation(
+                "cartoon", { color: chnOutScheme, 
+                             sele: "*",
+                             smoothSheet: true,
+                             quality: "high",
+                             metalness: 0.1,
+                             roughness: 0.0,
+                             opacity: 0.33 } );
+            
+            view.chn.rep.push( chnOutRep );
+
             return true;
         }
     }
@@ -1161,47 +1154,6 @@ class BkdNGL{
             }
         }
 
-        if( state.col.csnp ){
-            
-            console.log("CSNP: ccs->", ccs);
-            console.log("CSNP: lpop->", this._lpop);
-            var clpop = this._lpop.base[this._lpop.key];
-            var snpCnt = clpop.getVarCnt(ccs.variant);
-            
-            var cmax = ccs.valHi;
-            var cmin = ccs.valLo;
-
-            if( cmax == undefined || cmin == undefined ){
-
-                cmin =  1e10;
-                cmax = -1e10;
-
-                for( var p=1; p <snpCnt.length; p++ ){
-                    if( snpCnt[p] < cmin ) cmin = snpCnt[p];
-                    if( snpCnt[p] > cmax ) cmax = snpCnt[p];
-                }
-            }
-
-            console.log("CSNP: cmin, cmax=", cmin,cmax);
-            console.log("CVAL(snp):",snpCnt);
-            var bfl = [];
-            this.nglcomp.structure.eachAtom( function(atom) {
-
-                if( atom.atomname == "CA" && atom.chainname == "A" ){
-                    //var cnm = atom.chainname;                   
-                    var rno = atom.resno;
-
-                    var bf = 1 - ((snpCnt[rno] - cmin )/( cmax-cmin ))**(1/2);
-                    bfl.push(bf);
-                    //var c = 2*(data.msaEnt[i]/emax)**1.5;
-                    var col = d3.color(binter(bf)).formatHex();
-                    chnColLst.push([col,String(rno)]);
-                }
-            });
-            console.log("BFL:", bfl);
-        }
-
-        
         if( state.col.cmsa ){
 
             var msaNo = ccs.msaNo;
@@ -1215,7 +1167,7 @@ class BkdNGL{
             } else{
                 cval = cmsa.getCnt();  // counts
             }
-            console.log("CVAL(msa):",cval);
+
             var cmax = ccs.valHi;
             var cmin = ccs.valLo;
 
@@ -1227,29 +1179,25 @@ class BkdNGL{
                 for( var p=0; p <cval.length; p++ ){
                     if( cval[p] < cmin ) cmin = cval[p];
                     if( cval[p] > cmax ) cmax = cval[p];
+
                 }
             }
 
             console.log("HAM: cmin, cmax=", cmin,cmax);
 
-            var bfl = [];
-            
             this.nglcomp.structure.eachAtom( function(atom) {
 
                 if( atom.atomname == "CA" && atom.chainname == "A" ){
                     //var cnm = atom.chainname;                   
                     var rno = atom.resno;
-                    
-                    //var bf = 1 - ((cval[rno] - cmin )/( cmax-cmin ));  //**(1/2);
-                    var bf =  ((cval[rno] - cmin )/( cmax-cmin ))**(1/2);
-                    bfl.push(bf);
+
+                    var bf = 1 - ((cval[rno] - cmin )/( cmax-cmin ))**(1/2);
 
                     //var c = 2*(data.msaEnt[i]/emax)**1.5;
                     var col = d3.color(binter(bf)).formatHex();
                     chnColLst.push([col,String(rno)]);
                 }
             });
-            console.log("BFL:",bfl);
         }
 
         if( state.col.ctpo ){
@@ -1293,6 +1241,93 @@ class BkdNGL{
             }            
         }
         
+        if( state.col.csnp ){
+            
+            console.log("CSNP: ccs->", ccs);
+            console.log("CSNP: lpop->", this._lpop);
+            var clpop = this._lpop.base[this._lpop.key];
+            var snpCnt = clpop.getVarCnt(ccs.variant);
+            
+            var cmax = ccs.valHi;
+            var cmin = ccs.valLo;
+
+            if( cmax == undefined || cmin == undefined ){
+
+                cmin = 1;
+                cmax = -1e10;
+
+                for( var p=1; p <snpCnt.length; p++ ){
+                    if( snpCnt[p] < cmin ) cmin = snpCnt[p];
+                    if( snpCnt[p] > cmax ) cmax = snpCnt[p];
+                }
+            }
+
+            console.log("CSNP: cmin, cmax=", cmin,cmax);
+
+            this.nglcomp.structure.eachAtom( function(atom) {
+
+                if( atom.atomname == "CA" && atom.chainname == "A" ){
+                    //var cnm = atom.chainname;                   
+                    var rno = atom.resno;
+
+                    var bf = 1 - ((snpCnt[rno] - cmin )/( cmax-cmin ))**(1/2);
+
+                    //var c = 2*(data.msaEnt[i]/emax)**1.5;
+                    var col = d3.color(binter(bf)).formatHex();
+                    chnColLst.push([col,String(rno)]);
+                }
+            });
+            
+            /*
+            var msaNo = ccs.msaNo;
+            var msaSq = ccs.msaSq;
+
+            var cmsa = this._msa[msaNo].base[this._msa[msaNo].key]
+
+            // msaNo: 2, msaSq: 0, val: "ent" },   //this._msa[0]
+            //this._msa[2].base[this._msa[2].key]
+            
+            var cval = [];
+
+            if( ccs.val == "ent" ){   
+                cval = cmsa.getEnt();  // entropy
+            } else{
+                cval = cmsa.getCnt();  // counts
+            }
+
+            var cmax = ccs.valHi;
+            var cmin = ccs.valLo;
+
+            if( cmax == undefined || cmin == undefined ){
+
+                cmin = +1e20;
+                cmax = -1e10;
+
+                for( var p=0; p <cval.length; p++ ){
+                    if( cval[p] < cmin ) cmin = cval[p];
+                    if( cval[p] > cmax ) cmax = cval[p];
+
+                }
+            }
+
+            console.log("HAM: cmin, cmax=", cmin,cmax);
+
+            this.nglcomp.structure.eachAtom( function(atom) {
+
+                if( atom.atomname == "CA" && atom.chainname == "A" ){
+                    //var cnm = atom.chainname;                   
+                    var rno = atom.resno;
+
+                    var bf = 1 - ((cval[rno] - cmin )/( cmax-cmin ))**(1/2);
+
+                    //var c = 2*(data.msaEnt[i]/emax)**1.5;
+                    var col = d3.color(binter(bf)).formatHex();
+                    chnColLst.push([col,String(rno)]);
+                }
+            });
+
+            */
+        }
 
         if( state.col.cbfc ){  // bfactor
 
@@ -1360,11 +1395,9 @@ class BkdNGL{
         console.log( "HAM: chnColLst:", chnColLst ); 
         console.log( "HAM: selStr:", selStr ); 
 
-        if(this.nglcomp !== undefined){
-            var chnSelRep = this.nglcomp.addRepresentation( "cartoon",
-                                                            repParam );
-            view.chn.rep.push(chnSelRep);
-        }
+        var chnSelRep = this.nglcomp.addRepresentation( "cartoon",
+                                                        repParam );
+        view.chn.rep.push(chnSelRep);                                 
     }
 
 
@@ -1598,19 +1631,21 @@ class BkdNGL{
             } else {
                 lpsel = "";
             }
+
+            console.log("ZZZZ lpsel:", lpsel);
+            var lprep = this.nglcomp.addRepresentation(
+                view.lps.style,
+                { color: lpscheme,
+                  sele: lpsel + " :A and .CA",
+                  aspectRatio: 10.0  } );
             
-            if( this.nglcomp !==undefined){
-                var lprep = this.nglcomp.addRepresentation(
-                    view.lps.style,
-                    { color: lpscheme,
-                      sele: lpsel + " :A and .CA",
-                      aspectRatio: 10.0  } );
-            
-                view.lps.rep.push(lprep);
-            }
+            view.lps.rep.push(lprep);
         }
         
-        if( ! view.lps.on ){  
+        if( ! view.lps.on ){
+
+            console.log("ZZZZ lps.off");
+            
             if( view.lps.rep.length > 0 ){
                 for( var r in view.lps.rep ){
                     view.lps.rep[r].dispose();
@@ -1618,6 +1653,7 @@ class BkdNGL{
                 view.lps.rep = [];
             }
         }
+        console.log("ZZZZ view (new):", view);        
     }
     
     getPoiSelection( poi ){

@@ -1,4 +1,4 @@
-console.log("bkd-node-features-jq: common");
+ console.log("bkd-node-features-jq: common");
         
 BKDnodeFeatures = {
     myurl: "",
@@ -9,7 +9,25 @@ BKDnodeFeatures = {
     cgurl: "https://reg.clinicalgenome.org/redmine/projects/registry/genboree_registry/by_canonicalid?canonicalid=",
     ucscPosUrl: "https://genome.ucsc.edu/cgi-bin/hgTracks?db=%BID%&position=%CID%%3A%SID%-%EID%",
     ucscSrcUrl: "https://genome.ucsc.edu/cgi-bin/hgSearch?db=%BID%&search=%SRC%",
-
+    /*
+    fcolor:   { "pathogenic":"#d04030",
+                "likely pathogenic":"#e0B0B0",
+                "uncertain":"#b0b0b0",
+                "conflicting evidence":"#d2b4de",
+                "unspecified":"#ffffff",
+                "likely benign":"#30a0e0",
+                "benign":"#2161b0"                              
+              },
+    */
+    fcolor:   { "pathogenic":"#f02020",
+                "likely pathogenic":"#ffa0a0",
+                "uncertain":"#b0b0b0",
+                "conflicting evidence":"#ffcf40",
+                "unspecified":"#ffffff",
+                "likely benign":"#30a0e0",
+                "benign":"#80ff80"                              
+              },
+    
     sigtag: { ben: "benign", lben: "likely benign",
               pat: "pathogenic", lpat: "likely pathogenic",
               cevd: "conflicting evidence"}, 
@@ -17,15 +35,22 @@ BKDnodeFeatures = {
     vclass: [ { "id":"flist-color-1","name":"color-1",
                 "label":"Benign", "value":"ben",
                 //"color":"#3171c0" },
-                "color":"#80d0ff" },
+                //"color":"#80d0ff" },
+                "color":"#80ff80" },
+              
               { "id":"flist-color-2","name":"color-2",
                 "label":"Likely Benign", "value":"lben",
                 //"color":"#50c0ff" },
-                "color":"#3171c0" },
+                //"color":"#3171c0" },
+                //"color":"#80d0ff" },
+                "color":"#30a0e0" },
+              
               { "id":"flist-color-3","name":"color-3",
                 "label":"Conflicting Evidence", "value":"cevd",
                 //"color":"#d2b4de" },
-                "color":"#b284be" },
+                //"color":"#b284be" },
+                //"color":"#ffcf40" },
+                "color":"#ffcf40" },
               
               { "id":"flist-color-4","name":"color-4",
                 "label":"Likely Pathogenic", "value":"lpat",
@@ -33,7 +58,8 @@ BKDnodeFeatures = {
                 //"color":"#ffB0B0" ,
 
                 //"color":"#d01008" ,  // red
-                "color":"#ffB0B0"   // pink
+                //"color":"#ffb0b0"   // pink]
+                "color":"#ffa0a0"   // pink
               } , 
               
               
@@ -42,10 +68,44 @@ BKDnodeFeatures = {
                 //"color":"#d04030" },
                 //"color":"#c02010" },
                 
-                "color":"#d01008"   // red
+                "color":"#f02020"   // red
                 //"color":"#ffB0B0"   // pink
               }
             ],
+
+    predlst:[{ id:"flist-select-p-0",name:"select-p-0",
+                 label:"SwissModel", value:"hiqc",                
+                 labelOn: "SwissModel", labelOff: "SwissModel",
+                 mode: "bcut" , bval: 0.5, 
+                 color:"#aaaaaa",
+                 callback: "struct",
+                 opt:{
+                     style: "cbox", default: "off",
+                     mode: "chn",
+                     states: { on: { mode: "step", val: "bfact", vcut: 0.5,
+                                     colLo: "green", opaqLo: 1.0, 
+                                     colHi: "gray", opaqHi: 0.6   },
+                               off: { mode: "solid", color: "green", opaq: 1.0 }
+                             }
+                 }
+             }],
+    
+    exptlst:[{ id:"flist-select-e-0",name:"select-e-0",
+                 label:"PDB", value:"hiqc",                
+                 labelOn: "PDB", labelOff: "PDB",
+                 mode: "bcut" , bval: 0.5, 
+                 color:"#aaaaaa",
+                 callback: "struct",
+                 opt:{
+                     style: "cbox", default: "off",
+                     mode: "chn",
+                     states: { on: { mode: "step", val: "bfact", vcut: 0.5,
+                                     colLo: "green", opaqLo: 1.0, 
+                                     colHi: "gray", opaqHi: 0.6   },
+                               off: { mode: "solid", color: "green", opaq: 1.0 }
+                             }
+                 }
+               }],
     
     swmsels: [ { id:"flist-select-1",name:"select-1",
                  label:"HiQC", value:"hiqc",                
@@ -124,6 +184,84 @@ BKDnodeFeatures = {
                  "value":"sstr",
                  "color":"#aaaaaa" }
              ],
+    
+    strsels: [ { id:"flist-select-1",name:"select-1",
+                 label:"HiQC", value:"hiqc",                
+                 labelOn: "HiQC", labelOff: "All",
+                 mode: "bcut" , bval: 0.5, 
+                 color:"#aaaaaa",
+                 callback: "select",
+                 opt:{
+                     style: "cbox", default: "off",
+                     mode: "chn",
+                     states: { on: { mode: "step", val: "bfact", vcut: 0.5,
+                                     colLo: "green", opaqLo: 1.0, 
+                                     colHi: "gray", opaqHi: 0.6   },
+                               off: { mode: "solid", color: "green", opaq: 1.0 }
+                             }
+                 }
+               },
+               { id: "flist-select-2","name":"select-2",
+                 label: "Current Sequence", "value":"smsa",
+                 labelOn: "Canonical", labelOff: "Current Sequence",
+                 color: "#aaaaaa",
+                 callback: "select",
+                 style: "cbox", default: "off",
+                 mode: "chn",
+                 opt: {
+                     style: "cbox", default: "off",
+                     mode: "smsa",
+                     states: { on: { mode: "msa", msa: 2, sref: 0, ssel: 1 },
+                               off: { mode: "msa", msa: 2, sref: 0, ssel: 0 }
+                             }
+                 }
+               },
+               
+               { id: "flist-select-3","name":"select-2",
+                 label: "Monomer", "value":"chain",
+                 labelOn: "Monomer", labelOff: "All",
+                 color: "#aaaaaa",
+                 callback: "select",
+                 style: "rbox", default: "A",
+                 mode: "chn",
+                 opt: {} } ],
+    
+    strcols: [ { id:"flist-select-0",name:"select-0",
+                 label:"Position",
+                 callback: "color",
+                 value:"rain",
+                 mode: "rainbow",
+                 "color":"#aaaaaa" },
+               { "id":"flist-select-1","name":"select-1",
+                 "label":"Chain",
+                 callback: "color",
+                 "value":"cchn",
+                 "color":"#aaaaaa" },
+               { "id":"flist-select-2","name":"select-2",
+                 "label":"Conservation(MSA)",
+                 callback: "color",
+                 "value":"cmsa",
+                 "color":"#aaaaaa" },
+               { "id":"flist-select-3","name":"select-3",
+                 "label":"Conservation(SNP)",
+                 callback: "color",
+                 "value":"csnp",
+                 "color":"#aaaaaa" },
+               { "id":"flist-select-4","name":"select-4",
+                 "label":"Prediction QScr",
+                 callback: "color",
+                 "value":"cbfc",
+                 "color":"#aaaaaa" },
+               { "id":"flist-select-5","name":"select-5",
+                 "label":"Topology", "value":"ctpo",
+                 calback: "color",
+                 "color":"#aaaaaa" },
+               { "id":"flist-select-6","name":"select-6",
+                 "label":"SecStruc",
+                 callback: "color",
+                 "value":"sstr",
+                 "color":"#aaaaaa" }
+             ],
 
     nglexport: [
         { "id":"ngl-export-1","name":"ngl-export-1",
@@ -147,7 +285,7 @@ BKDnodeFeatures = {
           "label":"Export", "value":"help-ngl-export" }          
     ],
     
-      
+    /*      
     fcolor:   { "pathogenic":"#d04030",
                 "likely pathogenic":"#e0B0B0",
                 "uncertain":"#b0b0b0",
@@ -156,7 +294,7 @@ BKDnodeFeatures = {
                 "likely benign":"#30a0e0",
                 "benign":"#2161b0"                              
               },
-    
+    */
     nodeAnchor: null,
     srcAnchor: null,
     fdata: [],
@@ -272,7 +410,10 @@ BKDnodeFeatures = {
             "<table border='1' width='100%'>" +
                 " <tr>"+
                 "  <td id='flist' width='900' colspan='1' rowspan='1' valign='top' align='center'>"+
-                "   <div id='flist-source' class='bkd-select-panel'></div>"+ 
+                "   <div id='flist-source' class='bkd-select-panel'></div>"+
+                "   <div id='flist-lollipop-1-help' class='bkd-select-help'>"+
+                "    Click on a lollipop to see variants at that position. Click Help for more details."+
+                "   </div>"+ 
                 "   <div id='flist-lollipop-1' class='bkd-select-panel'></div>"+ 
                 "  </td>"+                                            
                 "  <td valign='top' align='center'>"+
@@ -282,8 +423,8 @@ BKDnodeFeatures = {
                 "     <td id='homo-tab-panther' class='bkd-feat-tab-off homo-tab' title='Source: UCSC Genome Browser' >Homology&nbsp;(G)</td>"+
                 "     <td id='homo-tab-ucsc' class='bkd-feat-tab-off homo-tab' title='Source: PantherDB'>Homology&nbsp;(P)</td>"+
                 "     <td id='topo-tab' class='bkd-feat-tab-off topo-tab'>Membrane&nbsp;Topology</td>"+
-                "     <td id='swm-tab' class='bkd-feat-tab-off swm-tab'>SwissModel</td>"+
-                "     <td id='str-tab' class='bkd-feat-tab-off str-tab'>Structure</td>"+
+                "     <td id='swm-tab' class='bkd-feat-tab-off swm-tab'>Structure(pred)</td>"+
+                "     <td id='str-tab' class='bkd-feat-tab-off str-tab'>Structure(expt)</td>"+
                 "    </tr>"+
                 "    <tr>"+
                 "     <td id='flist-view' align='center' valign='top' colspan='6'></td>"+
@@ -318,7 +459,7 @@ BKDnodeFeatures = {
                      + "</table>");
 
         $('#flist-source table tr td:first-of-type')
-            .append('Sequence: &nbsp;&nbsp;'
+            .append('Transcript: &nbsp;&nbsp;'
                     + '<select id="iseq" name="iseq"></select>');
         
         // determine order: mane -> canon -> alphabetical 
@@ -419,6 +560,7 @@ BKDnodeFeatures = {
                          new BkdLollipop(
                              { anchor: "flist-lollipop-1",
                                id: "lpanel-1",
+                               seqname: "my prot mame",
                                dset:{ default:"clinvar",
                                       conf:{
                                           clinvar:{
@@ -643,7 +785,11 @@ BKDnodeFeatures = {
                     BKDnodeFeatures.data.sequence);
         console.log("BKDnodeFeatures.init(detailtable): ",
                     this.config.lollipanel.detailtable);
-        
+
+        console.log("BKDnodeFeatures.init(data): ",
+                    BKDnodeFeatures.data);
+
+
         var flurl = BKDnodeView.myurl + "&detail=FEATL";
         var fdurl = BKDnodeView.myurl + "&fpos=";
 
@@ -655,6 +801,7 @@ BKDnodeFeatures = {
         var loli1 = new BkdLollipop(
             { anchor: "flist-lollipop-1",
               id: "lpanel-1",
+              seqname: BKDnodeFeatures.data.label+"/(transcript)",
               dset:{ default:"clinvar",
                      conf:{
                          clinvar:{
@@ -750,6 +897,11 @@ BKDnodeFeatures = {
                           getpois: BKDnodeFeatures.buildpoilist, 
                           options: BKDnodeFeatures.vclass },
                   menu:[
+                      { name: "str",
+                        label: "Structure",
+                        type: "radio",                            
+                        options: BKDnodeFeatures.predlst },
+
                       { name: "sel",
                         label: "Select",
                         type: "cbox",                            
@@ -789,42 +941,65 @@ BKDnodeFeatures = {
         
         // structure pane
         //---------------
-        /*
+       
         var strUrl = BKDnodeFeatures.siteurl + "str-pdb/"
             + BKDnodeFeatures.data.ac  + ".pdb"; 
         
-            BKDnodeFeatures.nglSTR = BKDnodeFeatures.nglpane(
+        BKDnodeFeatures.nglSTR = BKDnodeFeatures.nglpane(
             {  anchor: "#str-port",
                name: "str",
                url: strUrl,               
-               controls: [
-               
-                   { name: "vcls",
-                     label: "Variant:", 
-                     type: "checkbox",
-                     getvcls: BKDnodeFeatures.buildvclist,  // varaint classes
-                     getsels: BKDnodeFeatures.buildlslist,  // lolipop selects
-                     options: BKDnodeFeatures.vclass },
-                     
-        { name: "sel",
-                     label: "Select:",
-                     type: "checkbox",                            
-                     options: BKDnodeFeatures.swmsels },
-                   
-                   { name: "col",
-                     label: "Color By:",
-                     type: "radio-off",
-                     options: BKDnodeFeatures.swmcols }   
-               ],
-               poiColor: "#B71DDE"   // "#B7A4BD"               
+               controls: {
+                   vcls: { name: "vcls",
+                           label: "Variant", 
+                           type: "checkbox",
+                           
+                           // variant classes
+                           getvcls: BKDnodeFeatures.buildvclist,
+                           
+                           // lolipop selects
+                           getsels: BKDnodeFeatures.buildlslist,
+
+                           // poi selects
+                           getpois: BKDnodeFeatures.buildpoilist, 
+                           options: BKDnodeFeatures.vclass },
+                   menu:[
+                      { name: "str",
+                        label: "Structure",
+                        type: "radio",                            
+                        options: BKDnodeFeatures.exptlst },                       
+                      { name: "sel",
+                        label: "Select",
+                        type: "cbox",                            
+                        options: BKDnodeFeatures.strsels },
+                  
+                      { name: "col",
+                        label: "Color By",
+                        type: "radio-off",
+                        options: BKDnodeFeatures.strcols },
+                      
+                      { name: "exp",
+                        label: "Export",
+                        type: "list",
+                        options: BKDnodeFeatures.nglexport },
+                      
+                      { name: "help",
+                        label: "Help",
+                        type: "list",
+                        options: BKDnodeFeatures.nglhelp }
+                       
+                   ] },
+               poiColor: "#B71DDE"   // "#B7A4BD"
             },
             BKDnodeFeatures,
             [ {base:BKDnodeView, key:"mymsa2a"},
               {base:BKDnodeView, key:"mymsa2b"},
-              {base:BKDnodeView, key:"mymsa"}]
-            ]
-           );
-        */
+              {base:BKDnodeView, key:"mymsa"}],
+            
+            { base: BKDnodeFeatures.lollipanels,
+              key: "loli1" }
+            
+        );       
     },
 
     nglpane: function( config, data, msa, lollipop){

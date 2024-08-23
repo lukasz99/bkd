@@ -36,7 +36,10 @@
     <spring.version>5.1.9.RELEASE</spring.version>
     <aspectj.version>1.9.4</aspectj.version>
     <cglib.version>3.3.0</cglib.version>
-    <cxf.version>3.5.0</cxf.version>
+    <cxf.version>3.5.0</cxf.version> 
+
+<!--    <cxf.version>3.6.2</cxf.version> -->
+    
     <slf4j.version>1.7.28</slf4j.version>
     <!--
     <hibernate.version>6.1.6.Final</hibernate.version>

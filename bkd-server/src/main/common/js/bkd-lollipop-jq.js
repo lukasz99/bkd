@@ -18,13 +18,15 @@ class BkdLollipop{
         } else {
             console.log("BkdLollipop(DEFAULT)-> ", this.conf );
             this.conf = {   // defaults
+                
                 dset:{
                     select:"all",
                     conf:{
                         all:{
                             url: ""
                         }
-                    }
+                    },  
+                    seqname: "my protein"    
                 },
                 sftr:{
                     url: null
@@ -73,6 +75,9 @@ class BkdLollipop{
         console.log( "BkdLollipop: initialize");
         console.log( "BkdLollipop.init: ", init );
         console.log( "BkdLollipop.conf: ", this.conf );
+        console.log( "BkdLollipop.data: ", this.data );
+        
+         this.data.seqname=this.conf.seqname;
 
         for( var dts in this.conf.dset.conf ){            
             this.data.dset[dts] = null;  // dataset data goes here
@@ -330,6 +335,8 @@ class BkdLollipop{
         
     buildPanel(){
 
+        console.log("buildPanel:", this.data);
+
         var mutation_data = this.data.plist;
                 
         var mutation_data_default_settings = {
@@ -348,7 +355,7 @@ class BkdLollipop{
                     "pfam_ac":"PF08563",
                     "pfam_start":1,
                     "pfam_end":this.data.sequence.length,
-                    "pfam_id":"my protein"
+                    "pfam_id":this.data.seqname
                 }
             ]
         }; 

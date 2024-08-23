@@ -7,4 +7,5 @@
 <script src="js/bkd-usermgr-jq.js" type="text/javascript" language="JavaScript"></script>
 <script src="js/bkd-useredit-jq.js" type="text/javascript" language="JavaScript"></script>
 <script src="js/bkd-userprefmgr-jq.js" type="text/javascript" language="JavaScript"></script>
+<script src="js/bkd-stat.js" type="text/javascript" language="JavaScript"></script>
 <!-- common-js.jsp:END -->

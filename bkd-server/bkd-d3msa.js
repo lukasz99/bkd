@@ -1,7 +1,7 @@
 console.log("bkd-d3msa: common");
   
 class BkdMSA {
-     
+    
     constructor( config ){
         this._conf = {   // defaults
             navig: true,
@@ -46,16 +46,16 @@ class BkdMSA {
             };
         }
 
-        this._data = { dtrac:[] };
+        this._data = {dtrac:[]};
         
         this._view = { target: null,
                        anchor: null,
                        select: {},
-                       poi: {elem: null, pos: [] },
                        rngOn: false,
                        sindex: 0 };
         
-        this._data.iid = this.getUniqueID();  // generate iid        
+        this._data.iid = this.getUniqueID();  // generate iid
+        
     }
 
     get conf(){
@@ -107,18 +107,18 @@ class BkdMSA {
                 }
                 msa._data.msaHead = msaHead;
                 msa._data.msaSeq = msaSeq;
-
-                msa._view._brl = msa._conf.brushLimit;   // shortest brush range
+                                
+                msa._view._brl = msa._conf.brushLimit;    // shortest brush range
                 
                // brush range corresponding to longest aa step (aaMaxStep)
                 
                 var brlimit = msa._conf._msaW/msa._conf.aaMaxStep;
-                brlimit = brlimit/msa._data.msaSeq[0].length*msa._conf._msaW; 
+                brlimit = brlimit / msa._data.msaSeq[0].length * msa._conf._msaW; 
                 
-                if( brlimit >msa._conf.brushLimit){  // no slope modification
+                if( brlimit >msa._conf.brushLimit){  // no slope modification                  
                     msa._view._brl = Math.floor( brlimit ); 
                 }
-                msa._initMSA();
+
                 msa._initViz();                
                 msa._render();                
             }
@@ -129,24 +129,49 @@ class BkdMSA {
         $.ajax({ url: this._data.url,
                  beforeSend: function( xhr ) {
                      xhr.overrideMimeType("text/plain; charset=x-user-defined");
-                 },
-                 error: function( xhr, textStatus, errorThrown ){
-                     console.log( "ajax error: ", xhr, textStatus, errorThrown );
                  }
-               
                }).done( callback( this ) );
 
+    }
 
+    _initViz(){
+
+        // calculate positions/sizes
+
+        this._view.svgWidth = this._conf.width;
+        this._view.navWidth = this._conf.width-50-172;
+        
+        this._view.svgHeight = this._conf.height - 0;
+
+        var target = null;
+        
+        if( !this._view.target ){
+            
+            target = this._conf.viewId + "_" + this.iid;            
+            d3.select( this._view.anchor )
+                .append( "div" )
+                .attr( "id", target );            
+        }
+        
+        var svg = d3.select( "#" + target ).append("svg");
+        svg.attr( "width", this._view.svgWidth )
+            .attr( "height", this._view.svgHeight )
+            .attr( "xmlns", "http://www.w3.org/2000/svg" )
+            .attr( "xmlns:xlink", "http://www.w3.org/1999/xlink" );
+        
+        svg.classed( this._conf.className, true)        
+            .attr("id", target + "_svg"  )
+            .style("background-color", this._conf.background||"transparent");
+
+        this._view.target = target;
+        this._view.svg = svg;
         
     }
-        
-    _initMSA(){
 
-        // MSA<->seq pos mapping
-        //----------------------
+    _render(){
 
         // map sequences to MSA position
-        // msaSeq  - msa sequences (with gaps) as strings 
+        //  msaSeq  - msa sequences (with gaps) as strings 
 
         var C = this._conf;
         var V = this._view;
@@ -210,339 +235,6 @@ class BkdMSA {
             }
         }
 
-        console.log( "_initMSA:",D.msaMap );
-        
-        // domain/feature position remapping
-        //----------------------------------
-
-        // Note: Assumes domain positions correspond
-        //       to the position in the first (msaSeq[0]) sequence   
-        //       if needed, add seq selection parameter   
-        
-        for( var t=0; t < D.dtrac.length; t++ ){
-            console.log("INITMSA:", t, ctrac);
-
-            var ctrac = D.dtrac[t]; 
-            var name = ctrac.name;
-            var dpos = ctrac.dpos;
-            
-            for( var d=0; d < dpos.length; d++ ){
-                
-                var cbeg = dpos[d].beg;  // in msaSeq[0]
-                var cend = dpos[d].end;  // in msaSeq[0]
-
-                console.log("INITMSA: beg,end", cbeg, cend); 
-                dpos[d].beg = this.getMsaPos2( cbeg, 0 );
-                dpos[d].end = this.getMsaPos2( cend, 0 );
-            }
-        }
-        
-
-        // variability statistics/scores
-        //------------------------------
-        
-        var AA= '-ACDEFGHIKLMNPQRSTVWY';
-        
-        var dms = D.msaSeq;
-        
-        D.msaCnt = [];  // AA counts at each position
-        D.msaEnt = [];  // entropy at each position
-
-        var tcnt = {};
-        
-        for( var p = 0; p < dms[0].length; p ++){
-            var pcnt = {};
-
-            for( var s in dms ){  // go over sequences
-                //console.log("initMSA", s, p, dms[s][p]);
-                if( pcnt[ dms[s][p] ] == undefined  ){
-                    pcnt[ dms[s][p] ] = 1;
-                } else {
-                    pcnt[ dms[s][p] ] += 1;
-                }
-                
-                if( tcnt[ dms[s][p] ] == undefined  ){
-                    tcnt[ dms[s][p] ] = 1;
-                } else {
-                    tcnt[ dms[s][p] ] += 1;
-                }                
-            }
-            
-            D.msaCnt.push( pcnt );
-            //console.log("initMSA -> pcnt",pcnt);
-            var ent = 0;
-            for( var aa in AA){
-                if( pcnt[AA[aa]] != undefined ){ 
-                    ent -= pcnt[ AA[aa] ]*Math.log2( pcnt[ AA[aa] ]/dms.length);
-                }
-            }
-            ent = ent/dms.length;
-            D.msaEnt.push(ent);
-        }
-
-        // normalize (Gerstein&Altman 1995; PMID: 7643385)
-
-        var rent = 0;
-        for(var k in tcnt){
-            var rf = tcnt[k]/(dms[0].length*dms.length); 
-            rent +=  rf * Math.log(rf);
-        }
-        
-        for(var i=0; i < D.msaEnt.length; i++ ){
-            D.msaEnt[i] += rent;
-        }        
-    }
-
-    getMsaPos2( pos, ref ){
-
-                
-        var msaMap = this._data.msaMap;
-        var msal = msaMap[0].length;
-
-        console.log("getMsaPos2:msaMap:", msaMap);
-        console.log("getMsaPos2: pos, ref", pos,ref);
-
-
-        var slimit = 32;
-        
-        // MSA  position corresponding to pos in ref sequence 
-
-        if( ref == undefined ){  // ref -> pos in MSA
-            return pos;
-        }
-        
-        if( pos < msaMap[ref][0]
-            || pos > msaMap[ref][msal] ){
-
-            return null;
-        }
-       
-        var pmin = 0;
-        var pmax = msaMap[ref].length - 1;
-
-        var pcur = Math.trunc( (pmax - pmin)/2 );
-        
-        if( pos == msaMap[ref][msal] ) {  // last pos
-
-            var cpos = 0;
-            while( pmax - pmin > 1){
-                cpos = Math.trunc( (pmin + pmax )/2 );
-                
-                if( msaMap[ref][cpos] < pos ){
-                    pmin = cpos;
-                }else{
-                    pmax = cpos;
-                }
-                slimit-=1;
-                if( slimit < 0 ){
-                    console.log( "(1) pos, ref :: pmin,pmax,cpos: ",
-                                 "msaMap[ref][cpos]",
-                                 pos, ref, "::", pmin, pmax, cpos,
-                                 msaMap[ref][cpos] );
-                    break;
-                }                
-            }            
-            cpos +=1;
-        } else {
-            
-            while( pmin < pmax ){
-                cpos = Math.trunc( ( pmin + pmax )/2 );
-
-                if( msaMap[ref][cpos] > pos){
-                    pmax = cpos;                    
-                }else{
-                    pmin = cpos;
-                }
-                
-                if( pmax-pmin == 1 && msaMap[ref][cpos] == pos ){
-                    break;
-                }
-
-                slimit-=1;
-                if( slimit < 0 ){
-                    console.log( "(2) pos, ref :: pmin,pmax,cpos:",
-                                 "msaMap[ref][cpos]",
-                                 pos, ref, "::", pmin, pmax, cpos,
-                                 msaMap[ref][cpos] );
-                    break;
-                }
-            }
-        }
-        return cpos;        
-    }
-
-    getTgtSeqSelStr( nseq, ntgt=0 ){ 
-        var selStr = "";
-
-        var msaMap = this._data.msaMap[ntgt];
-        
-        // get MSA segments
-        
-        var segl = this.getMsaSeqSel( nseq );
-
-        // convert msa pos -> nref pos 
-
-        for( var i = 0; i < segl.length; i++){
-            var cbeg = msaMap[segl[i][0]]; 
-            var cend = msaMap[segl[i][1]]; 
-            selStr += " " + cbeg.toString() + "-" + cend.toString() + " or";
-        }
-        return selStr.substring(0,selStr.length-3);
-    }
-    
-    getMsaSeqSel( nseq=0 ){  // MSA ranges with non-empty nseq
-        var segl = [];
-        var msaSeq = this._data.msaSeq;
-        var msaMap = this._data.msaMap;
-        var msal = msaMap[0].length;
-
-        var cbeg = -10;
-        var cend = -10;
-        var match = false;
-        
-        for( var p = 0; p < msal; p++){ 
-            if( msaSeq[nseq][p] == '-' ){  // gap
-                match = false;                    
-                if( p == cend + 1){ // end of segment
-                    console.debug("segment:", cbeg, "<->", cend );
-                    segl.push([cbeg,cend]);
-                }
-            } else {     // match
-                if( match ){    // extend match
-                    cend = p;
-                } else {        // start new match
-                    cbeg = p;
-                    cend = p;
-                    match = true;
-                }                                    
-            }
-        }
-        if( match ){  // finish last segment
-            console.debug("segment(last):", cbeg, "<->", cend );
-            segl.push([cbeg,cend]);
-        }
-        return segl;        
-    }
-    
-    getSeqPos( pos, ref ){   
-        // sequence positions corresponding to pos in ref sequence 
-
-        var plst = [];
-        var msaSeq = this._data.msaSeq;
-        var msaMap = this._data.msaMap;
-        var msal = msaMap[0].length;
-            
-        if( ref == undefined ){  // ref -> pos in MSA
-            for(var i = 0; i < msaMap.length; i ++){
-                if( msaSeq[i][pos] == '-' ){
-                    plst.push(0);
-                } else {
-                    plst.push(msaMap[i][pos]);
-                }                             
-            }
-            return plst;
-        }
-        
-        if( pos < msaMap[ref][0]
-            || pos > msaMap[ref][msal] ){
-
-            return null;
-        }
-       
-        var pmin = 0;
-        var pmax = msaMap[ref].length - 1;
-        var pcur = Math.trunc( (pmax - pmin)/2 );
-        
-        if( pos == msaMap[ref][msal] ) {  // last pos
-
-            var cpos = 0;
-            while( pmax - pmin > 1){
-                cpos = Math.trunc( (pmin + pmax )/2 );
-                
-                if( msaMap[ref][cpos] < pos ){
-                    pmin = cpos;
-                }else{
-                    pmax = cpos;
-                }
-            }            
-            cpos +=1;
-        } else {
-            
-            while( pmin < pmax ){
-                cpos = Math.trunc( ( pmin + pmax )/2 );
-
-                if( msaMap[ref][cpos] > pos){
-                    pmax = cpos;                    
-                }else{
-                    pmin = cpos;
-                }
-                
-                if( pmax-pmin == 1 && msaMap[ref][cpos] == pos ){
-                    break;
-                }                       
-            }
-        }
-
-        for(var i = 0; i < msaMap.length; i ++){
-            if( msaSeq[i][cpos] == '-' ){
-                plst.push(0);
-            } else {
-                plst.push(msaMap[i][cpos]);
-            }                             
-        }
-        return plst;
-    }
-    
-    getEnt(){
-        return this._data.msaEnt;
-    }
-    getVCnt(){
-        return this._data.msaCnt;
-    }
-
-    getMSA(){
-        return this._data.msaSeq;
-    }
-    
-    _initViz(){
-
-        // calculate positions/sizes
-
-        this._view.svgWidth = this._conf.width;
-        this._view.navWidth = this._conf.width-50-172;
-        
-        this._view.svgHeight = this._conf.height - 0;
-
-        var target = null;
-        
-        if( !this._view.target ){            
-            target = this._conf.viewId + "_" + this.iid;            
-            d3.select( this._view.anchor )
-                .append( "div" )
-                .attr( "id", target );            
-        }
-        
-        var svg = d3.select( "#" + target ).append("svg");
-        svg.attr( "width", this._view.svgWidth )
-            .attr( "height", this._view.svgHeight )
-            .attr( "xmlns", "http://www.w3.org/2000/svg" )
-            .attr( "xmlns:xlink", "http://www.w3.org/1999/xlink" );
-        
-        svg.classed( this._conf.className, true)        
-            .attr("id", target + "_svg"  )
-            .style("background-color", this._conf.background||"transparent");
-
-        this._view.target = target;
-        this._view.svg = svg;
-        
-    }
-
-    _render(){
-       
-        var C = this._conf;
-        var V = this._view;
-        var D = this._data;
-
         // offsets
         
         V.offsetY = 10;
@@ -605,8 +297,7 @@ class BkdMSA {
                 msa._view.displayend
                     = msa._view.brushRight / msa._view.navWidth*100;
                 
-                msa.updatePolygon( msa._view.brushLeft/msa._view.navWidth*100,
-                                   msa._view.brushRight/msa._view.navWidth*100 );
+                msa.updatePolygon();
                 msa.updateMSA();              
                 msa.updateSelect();                
                 msa.getViewportParams();
@@ -636,8 +327,7 @@ class BkdMSA {
                 msa._view.displayend
                     = msa._view.brushRight / msa._view.navWidth*100;
                 
-                msa.updatePolygon( msa._view.brushLeft/msa._view.navWidth*100,
-                                   msa._view.brushRight/msa._view.navWidth*100);
+                msa.updatePolygon();
                 msa.updateMSA();              
                 msa.updateSelect();                
                 msa.getViewportParams();
@@ -667,8 +357,7 @@ class BkdMSA {
                 msa._view.displayend
                     = msa._view.brushRight / msa._view.navWidth*100;
                 
-                msa.updatePolygon(msa._view.brushLeft / msa._view.navWidth*100,
-                                  msa._view.brushRight / msa._view.navWidth*100);
+                msa.updatePolygon();
                 msa.updateMSA();              
                 msa.updateSelect();                
                 msa.getViewportParams();
@@ -695,8 +384,7 @@ class BkdMSA {
                 msa._view.displayend
                     = msa._view.brushRight / msa._view.navWidth*100;
 
-                msa.updatePolygon(msa._view.brushLeft / msa._view.navWidth*100,
-                                  msa._view.brushRight / msa._view.navWidth*100);
+                msa.updatePolygon();
                 msa.updateMSA();              
                 msa.updateSelect();                
                 msa.getViewportParams();
@@ -737,8 +425,7 @@ class BkdMSA {
                 msa._view.displayend
                     = msa._view.brushRight / msa._view.navWidth*100;
 
-                msa.updatePolygon(msa._view.brushLeft / msa._view.navWidth*100,
-                                  msa._view.brushRight / msa._view.navWidth*100);
+                msa.updatePolygon();
                 msa.updateMSA();              
                 msa.updateSelect();                
                 msa.getViewportParams();
@@ -747,10 +434,9 @@ class BkdMSA {
             }            
         }
         
-        var _full =  this.navButton( this._view.svg,
-                                     this._view.target + "_full",
-                                     this._view.svgWidth-40,
-                                     13, 32, 20, "Full", "14px")
+        var _full =  this.navButton(this._view.svg,
+                                    this._view.target + "_full",
+                                    this._view.svgWidth-40, 13, 32, 20, "Full", "14px")
             .on( "click", _fullCB( this ) );
         
         var _navG = this._view.svg.append("g")
@@ -772,94 +458,18 @@ class BkdMSA {
         
         var _brushCB = function(msa){
             return function( event ){
-
                 console.log("_brushCB called:", event.selection);
-
-                //var dstart = event.selection[0];
-                //if(dstart < 0) dstart = 0;
-                //if(dstart > 100) dstart = 100;
-
-                //var dend= event.selection[0];
-                //if(dend < 0) dend = 0;
-                //if(dend > 100) dend = 100;
-                                
-                // set V.brushLeft/V.brushRight 
-                msa.setNavBrush( event.selection[0],event.selection[1] ); 
-
-                // get aaStep
-                //-----------
+                msa.setNavBrush( event.selection[0], event.selection[1]);
                 
-                var V = msa._view;
-                var C = msa._conf;
-                var D = msa._data;
+                msa._view.displaystart
+                    = msa._view.brushLeft / msa._view.navWidth*100;
+
+                msa._view.displayend
+                    = msa._view.brushRight / msa._view.navWidth*100;
+
                 
-                var brLeft = V.brushLeft;   // not modified, msaW units
-                var brRight = V.brushRight; 
-                var brWdth = brRight-brLeft;
-                
-                // max coverage (fract)
-
-                var fr_cover_max = 1;  
-
-                // min coverage (fract)
-                var fr_cover_min = V.navWidth/C.aaMaxStep/D.msaSeq[0].length;
-                              
-                var fr_aaa = (fr_cover_max -fr_cover_min)/
-                    (V.navWidth-C.brushLimit);
-
-                var fr_bbb = fr_cover_max - fr_aaa * V.navWidth;
-
-                V.fr_alpha= fr_aaa;
-                V.fr_beta = fr_bbb;
-        
-                V.fr_cover = fr_bbb + fr_aaa * brWdth;
-                V.aaStep = V.navWidth/V.fr_cover/D.msaSeq[0].length;
-
-                console.debug( "V.fr_alpha",V.fr_alpha,"V.fr_beta",V.fr_beta,
-                               "V.navWidth/V.aaStep=",V.navWidth/V.aaStep,
-                               "brwdth=", brWdth,"V.fr_cover=",V.fr_cover,
-                               "fr_cover_min=",fr_cover_min );
-                
-                var brCntr_raw = (brLeft+brRight)/2;
-                
-                var fr_brCntr_raw = (brLeft+brRight)/2/
-                    V.navWidth; //*D.msaSeq[0].length;
-                    
-                var aa_brCntr_raw = (brLeft+brRight)/2/
-                    V.navWidth*D.msaSeq[0].length;
-
-                var brCntr_alpha = 1/( V.navWidth - C.brushLimit );
-                var brCntr_beta = -0.5 * C.brushLimit * brCntr_alpha; 
-
-                var fr_brCntr = (brCntr_alpha * brCntr_raw + brCntr_beta);
-                var aa_brCntr = (brCntr_alpha * brCntr_raw + brCntr_beta)*
-                    D.msaSeq[0].length;
-
-                console.debug( "fr_brCntr_raw=",fr_brCntr_raw,
-                               "fr_brCntr=",fr_brCntr);
-                
-                V.displaystart = (aa_brCntr - 0.5 *  V.navWidth/V.aaStep)/
-                    D.msaSeq[0].length * 100;
-                V.displayend = (aa_brCntr + 0.5 *  V.navWidth/V.aaStep)/
-                    D.msaSeq[0].length * 100;
-                
-                if( V.displaystart < 0 ){
-                    V.displayend = V.displayend - V.displaystart;
-                    V.displaystart = 0;
-                }
-                if( V.displayend > 100 ){
-                    V.displaystart = V.displaystart - ( V.displayend - 100);
-                    V.displayend = 100;
-                }
-                    
-                console.debug("V.displaystart=",V.displaystart,
-                              "V.displayend=",V.displayend,
-                              "delta=",V.displayend-V.displaystart);
-                
-                console.debug("brush disp(for poly):",
-                              msa._view.displaystart, msa._view.displayend);
-                msa.updatePolygon( msa._view.brushLeft/msa._view.navWidth*100,
-                                   msa._view.brushRight/msa._view.navWidth*100);
+                console.log("brush disp(for poly):", msa._view.displaystart, msa._view.displayend);
+                msa.updatePolygon();
                 msa.updateMSA();  // calls msa.getViewportParams();
                 msa.updateDtracDoms();
                 msa.updateSelect();                
@@ -884,9 +494,8 @@ class BkdMSA {
             .attr('class', 'zoom-polygon')
             .attr('fill', '#777')
             .attr('fill-opacity','0.3');
-        
-        this.updatePolygon( this._view.brushLeft / this._view.navWidth*100,
-                            this._view.brushRight / this._view.navWidth*100);
+
+        this.updatePolygon();
     }
 
     renderMSA(){
@@ -913,7 +522,7 @@ class BkdMSA {
         
         var _seqMSA = this._view.svg.append("g")
             .attr( "id", this._view.target + "_seq" )
-            .attr("transform", "translate(0, " + ( this._view.offsetY) + ")");
+            .attr("transform", "translate(0, " + ( this._view.offsetY) + ")");        
 
         _seqMSA.append("clipPath")
             .attr("id", this._view.target + "_seq_clip")
@@ -1096,15 +705,11 @@ class BkdMSA {
         this._view.rectPos = new Array(this._data.msaSeq[0].length);
 
         var jmin= parseInt(this._view.aaOffset/this._view.aaStep + 1/2);
-        var jmax= parseInt((this._view.navWidth+this._view.aaOffset)/
-                           this._view.aaStep - 1/2);
+        var jmax= parseInt((this._view.navWidth+this._view.aaOffset)/this._view.aaStep - 1/2);
 
         if( jmin < 0 ) jmin = 0;
-        //if( jmax >= this._data.msaSeq[0].length )
-        //  jmax = this._data.msaMap[i].length-1;
-        
-        if( jmax >= this._data.msaSeq[0].length )
-            jmax = this._data.msaSeq[0].length-1;
+        //if( jmax >= this._data.msaSeq[0].length ) jmax = this._data.msaMap[i].length-1;
+        if( jmax >= this._data.msaSeq[0].length ) jmax = this._data.msaSeq[0].length-1;
 
         var frMsaPos = new Array( jmax-jmin+1 );
         var frRectPos = new Array( jmax-jmin+1 );
@@ -1122,16 +727,13 @@ class BkdMSA {
             this._view.msaMax[i] = this._data.msaMap[i][jmax];
         }
 
-        for( var j = 0; j <this._view.msaPos.length; j++ ){
-            // j - sequence position
+        for( var j = 0; j <this._view.msaPos.length; j++ ){   // j - sequence position
             this._view.msaPos[j] = -100;
             this._view.rectPos[j] = -100;
         }
 
-        for( var j = jmin; j <=jmax; j++ ){
-            // j - sequence position
-            var pos = 0.5 * this._view.aaStep +
-                j*this._view.aaStep-this._view.aaOffset;
+        for( var j = jmin; j <=jmax; j++ ){   // j - sequence position
+            var pos = 0.5 * this._view.aaStep + j * this._view.aaStep - this._view.aaOffset;
             this._view.msaPos[j] = pos;
             this._view.rectPos[j] = pos - 0.5 * this._view.aaStep;
 
@@ -1141,14 +743,12 @@ class BkdMSA {
 
         for( var i = 0; i <this._data.msaHead.length; i++ ){                     
             if(this._view.msaMin){                
-                d3.select( "#" + this._view.target + "_seq_head_" +
-                           i.toString() + " .msa-min")
+                d3.select( "#" + this._view.target + "_seq_head_" + i.toString() + " .msa-min")
                     .text( this._view.msaMin[i] );
                 }
             
             if(this._view.msaMax){
-                d3.select( "#" +this._view.target + "_seq_head_" +
-                           i.toString() + " .msa-max")
+                d3.select( "#" +this._view.target + "_seq_head_" + i.toString() + " .msa-max")
                     .text( this._view.msaMax[i] );
             }                       
         }
@@ -1183,7 +783,7 @@ class BkdMSA {
                         .attr( "height", C.msaBoxY )
                         .attr( "class", "msa-rect")
                         .style( "fill", C._palette1[ aa ] )
-                        .attr( "fill-opacity", V.aaStep > 16 ? 0.5 : 1 )
+                        .attr( "fill-opacity", V.aaStep > 16 ? 0.5 : 1 )                        
                         .append("title").text(aa + (D.msaMap[j][i]));
                     
                     // letter 
@@ -1206,8 +806,7 @@ class BkdMSA {
         
         for( var i = 0; i < D.msaHead.length; i++ ){
             for( var j = 0; j < D.msaSeq[i].length; j++){
-                d3.select( "#" + V.target + "_seq_seq_" + i.toString()
-                           +"bk rect[i='"+j+"']")
+                d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"bk rect[i='"+j+"']")
                     .attr( "fill-opacity", V.msaOpa)
                     .attr( "x", V.rectPos[j] )
                     .attr( "width", V.aaStep );
@@ -1216,8 +815,7 @@ class BkdMSA {
         
         for( var i = 0; i < D.msaHead.length; i++ ){
             for( var j = 0; j < D.msaSeq[i].length; j++){            
-                d3.select( "#" + V.target + "_seq_seq_" + i.toString()
-                           +"aa text[i='"+j+"']")
+                d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"aa text[i='"+j+"']")
                     .attr( "x", V.msaPos[j])
                     .attr( "fill-opacity", function (d) {
                         if( V.aaStep > 16 ){
@@ -1251,19 +849,18 @@ class BkdMSA {
         //                     "rectPos": frRectPos
         //                    };
 
-        for( var i = 0; i < D.msaHead.length; i++ ){
-            // box
-            d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"bk ")  
+        for( var i = 0; i < D.msaHead.length; i++ ){        
+            d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"bk ")  // box
                 .attr( "style", "visibility: visible;" );
-            //letter
-            d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"aa ")
+            d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"aa ") // letter 
                 .attr( "style", "visibility: visible;" ); 
         }
         
         var msaVonCurrent = [];
-        
+
         var oonmin = -1;
         var oonmax = -1;
+
         
         for( var i = 0; i < V.rectPos.length; i++ ){
             msaVonCurrent.push( V.rectPos[i] < -V.aaStep  ||
@@ -1303,8 +900,7 @@ class BkdMSA {
                             
                             var aa =  D.msaSeq[i][j];
                             
-                            d3.select( "#" + V.target + "_seq_seq_" +
-                                       i.toString() +"bk")  // box
+                            d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"bk")  // box
                                 .append( "rect" )                
                                 .attr( "i", j )
                                 .attr( "x", V.rectPosOld[j] )
@@ -1317,8 +913,7 @@ class BkdMSA {
                                 .attr( "fill-opacity", V.aaStep > 16 ? 0.5:1 )
                                 .append("title").text(aa+(D.msaMap[i][j+joff]));
                             
-                            d3.select( "#" + V.target + "_seq_seq_" +
-                                       i.toString() +"aa") // letter 
+                            d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"aa") // letter 
                                 .append( "text" )
                                 .attr( "class", "msa-aa" )
                                 .style( "font", C.msaFont)  
@@ -1332,12 +927,9 @@ class BkdMSA {
                                 .append("title").text(aa + (D.msaMap[i][j]));
                         }                        
                         
-                    } else { // drop AA/box
-                        
-                        d3.selectAll( "#" + V.target +
-                                      "_seq_view text[i='"+j+"']").remove();
-                        d3.selectAll( "#" + V.target +
-                                      "_seq_view rect[i='"+j+"']").remove();
+                    } else { // drop AA/box                    
+                        d3.selectAll( "#" + V.target + "_seq_view text[i='"+j+"']").remove();
+                        d3.selectAll( "#" + V.target + "_seq_view rect[i='"+j+"']").remove();                    
                     }
                 }
             }
@@ -1395,12 +987,10 @@ class BkdMSA {
         
         for( var i = 0; i < D.msaHead.length; i++ ){
             // over sequences
-            // box
-            d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"bk")  
-                .attr( "style", "visibility: hidden;" );
             
-            // letter 
-            d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"aa")
+            d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"bk")  // box
+                .attr( "style", "visibility: hidden;" );
+            d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"aa") // letter 
                 .attr( "style", "visibility: hidden;" ); 
         }
     }
@@ -1412,38 +1002,38 @@ class BkdMSA {
         var D = this._data;
 
         var range = D.rngSeg;
-
+        
+        //console.log("d3msa: range", range);
+        
+        d3.selectAll( ".bkd-msa-range" ).remove();
+        
         var opq = Math.min( 1, 1 - V.aaStep**1.5
                             / (C.aaMaxStep - V.aaStep*0.99)**2);
         
         for( var i = 0; i <range.length; i++ ){
-            var s = "#" + V.target +"_seq_seq_" + i.toString() +"rn";
-            d3.selectAll( s + " .bkd-msa-range" ).remove();
-            
             for( var j = 0; j <range[i].beg.length; j++ ){
                 var bPos =  range[i].beg[j] * V.aaStep - V.aaOffset;
                 var ePos =  range[i].end[j] * V.aaStep - V.aaOffset;
                 
-                var r = d3.select( s )
+                var r = d3.select( "#" + V.target +"_seq_seq_" + i.toString() +"rn")
                     .append( "rect" )
                     .attr( "class", "bkd-msa-range")
                     .style( "fill", "#D3D3D3" )
                     .attr( "x", bPos )
                     .attr( "y", C.msaBoxYOff )
                     .attr( "width", ePos - bPos + V.aaStep)
-                    .attr( "height", C.msaBoxY );
+                    .attr( "height", C.msaBoxY );            
             }
             if( opq > 0 ){
                 d3.select( "#" + V.target + "_seq_seq_" + i.toString() +"rn")
                     .attr( "fill-opacity", opq )
                     .style("visibility", "visible");
             } else {
-                d3.select( "#" + V.target + "_seq_seq_" + i.toString() + "rn")
-                //  .bkd-msa-range")
+                d3.select( "#" + V.target + "_seq_seq_" + i.toString() + "rn") //  .bkd-msa-range")
                     .attr( "fill-opacity", 0)
                     .style("visibility", "hidden");
             }
-        }        
+        }
     }
     
     updateRange(){
@@ -1456,7 +1046,7 @@ class BkdMSA {
         
         var opq = Math.min( 1, 1 - V.aaStep**1.5
                             / (C.aaMaxStep - V.aaStep*0.99)**2);
-
+        console.log("range opq:", opq);
         for( var i = 0; i <range.length; i++ ){
             for( var j = 0; j <range[i].beg.length; j++ ){
                 var bPos =  range[i].beg[j] * V.aaStep - V.aaOffset;
@@ -1484,11 +1074,8 @@ class BkdMSA {
         var C = this._conf;
         var V = this._view;
         
-        var _dtrMSA = this._view.svg
-            .append("g")
-            .attr( "id", V.target + "_dtr" )
+        var _dtrMSA = this._view.svg.append("g").attr( "id", V.target + "_dtr" )
             .attr("transform", "translate(0, " + ( V.offsetDtrY) + ")");        
-
         _dtrMSA.append( "clipPath" )
             .attr("id", V.target + "_dtr_clip")
             .append("rect")
@@ -1497,19 +1084,14 @@ class BkdMSA {
             .attr("width", V.navWidth) // TODO
             .attr("height", C.msaDY*(this._data.dtrac.length+1));
         
-        var _dtrMSA_head = _dtrMSA
-            .append("g")
-            .attr( "id", V.target + "_dtr_head" );
+        var _dtrMSA_head = _dtrMSA.append("g").attr( "id", V.target + "_dtr_head" );
         
-        var _dtrMSA_port = _dtrMSA
-            .append("g")
-            .attr( "id", V.target + "_dtr_port" )
+        var _dtrMSA_port = _dtrMSA.append("g").attr( "id", V.target + "_dtr_port" )
             .attr("clip-path", "url(#"+ V.target + "_dtr_clip)" )
-            .attr("transform", "translate(172, 0)");
+            .attr("transform", "translate(100, 0)");
         
-        var _dtrMSA_view = _dtrMSA_port
-            .append("g")
-            .attr( "id", V.target + "_dtr_view" );
+        var _dtrMSA_view
+            = _dtrMSA_port.append("g").attr( "id", V.target + "_dtr_view" );
         
         this.renderDtracHead();
         this.renderDtracDoms();
@@ -1559,11 +1141,10 @@ class BkdMSA {
                 }
             }
             
-            var _seqSG = d3.select("g[id='"+ V.target + "_dtr_view']")
-                .append("g")
+            var _seqSG = d3.select("g[id='"+ V.target + "_dtr_view']").append("g")
                 .attr( "id", ssid + i.toString() )
                 .attr( "transform", "translate( 0, "+ (i+1)*C.msaDY + ")" );
-            
+
             d3.select("#"+ ssid + i.toString() )
                 .append("g")
                 .attr( "id", ssid + i.toString() );
@@ -1588,8 +1169,8 @@ class BkdMSA {
             
             for( var d=0; d < dpos.length; d++ ){
                 
-                var pbeg = (dpos[d].beg - 0) * V.aaStep - V.aaOffset;
-                var pend = (dpos[d].end - 0) * V.aaStep - V.aaOffset;
+                var pbeg = (dpos[d].beg - 1) * V.aaStep - V.aaOffset;
+                var pend = (dpos[d].end - 1) * V.aaStep - V.aaOffset;
                 var dcol = dpos[d].color;
                 console.log("col",dcol);
                 
@@ -1605,7 +1186,7 @@ class BkdMSA {
 
                 if( dpos[d].name != undefined){
                     if( dpos[d].name.length >0 ){
-                        r.append("title").text(dpos[d].name);
+                        r.append("title").text(dpos[d].name);                     
                     }
                 }
             }
@@ -1626,8 +1207,8 @@ class BkdMSA {
             
             for( var d=0; d < dpos.length; d++ ){
                 
-                var pbeg = (dpos[d].beg - 0) * V.aaStep - V.aaOffset;
-                var pend = (dpos[d].end - 0) * V.aaStep - V.aaOffset;
+                var pbeg = (dpos[d].beg - 1) * V.aaStep - V.aaOffset;
+                var pend = (dpos[d].end - 1) * V.aaStep - V.aaOffset;
                 
                 d3.select( "#" + V.target + "_dtr_dom_" + t.toString() +" " +
                            "rect[d='"+(d)+"']" )
@@ -1659,15 +1240,9 @@ class BkdMSA {
         //var brMin = C.brushLimit;
         var brMin = V._brl;
 
-        // max coverage (fract)
-        var fr_cover_max = 1;
+        var fr_cover_max = 1;                                          // max coverage (fract)
+        var fr_cover_min = V.navWidth/C.aaMaxStep/D.msaSeq[0].length;  // min coverage (fract)
 
-        // min coverage (fract)
-        //var fr_cover_min = V.navWidth/C.aaMaxStep/D.msaSeq[0].length;
-
-        // min coverage (fract)
-        var fr_cover_min = V.navWidth/C.aaMaxStep/D.msaSeq[0].length;
-                                            
         var fr_aaa = (fr_cover_max -fr_cover_min)/(V.navWidth-C.brushLimit);
         var fr_bbb = fr_cover_max - fr_aaa * V.navWidth;
 
@@ -1677,24 +1252,17 @@ class BkdMSA {
         V.fr_cover = fr_bbb + fr_aaa * brWdth;
         V.aaStep = V.navWidth/V.fr_cover/D.msaSeq[0].length;
         
-        console.debug( "V.fr_alpha",V.fr_alpha,"V.fr_beta",V.fr_beta,
-                       "brwdth=", brWdth,"V.fr_cover=",V.fr_cover,
-                       "fr_cover_min=",fr_cover_min );
-        console.debug( "V.displaystart=", V.displaystart,
-                       "V.displayend=",V.displayend);
-        
-        console.debug("br_center[fr]:", (V.displaystart + V.displayend)/2);
-        console.debug("br_center[aa]:", (V.displaystart + V.displayend)/200*
-                      D.msaSeq[0].length);
+        console.log( "V.fr_alpha",V.fr_alpha,"V.fr_beta",V.fr_beta,"brwdth=", brWdth,"V.fr_cover=",V.fr_cover );
+
+        console.log("br_center[fr]:", (V.displaystart + V.displayend)/2);
+        console.log("br_center[aa]:", (V.displaystart + V.displayend)/200*D.msaSeq[0].length);
 
         var aa_ctr=  (V.displaystart + V.displayend)/2*D.msaSeq[0].length/100;
 
         V.aaOffset =  V.aaStep * aa_ctr - msaW/2;
 
-        console.debug( "V.fr_alpha=",V.fr_alpha," V.fr_beta=",V.fr_beta,
-                       "brWdth=",brWdth,"aaStep=",V.aaStep);
-        console.debug( "V.aaOffset=",aa_ctr, V.aaStep*aa_ctr, V.aaOffset,
-                       V.aaStep*aa_ctr-V.aaOffset );
+        console.log( "V.fr_alpha=",V.fr_alpha," V.fr_beta=",V.fr_beta, "brWdth=",brWdth,"aaStep=",V.aaStep);
+        console.log( "V.aaOffset=",aa_ctr, V.aaStep*aa_ctr, V.aaOffset, V.aaStep*aa_ctr-V.aaOffset );
         
         V.msaOpa = 0.5;
         if( V.aaStep <= 16 ){
@@ -1703,8 +1271,7 @@ class BkdMSA {
     }
     
     dropAllSelect(){
-        console.log("dropAllSelect:", "#" + this._view.target +
-                    "_seq_view_select");
+        console.log("dropAllSelect:", "#" + this._view.target + "_seq_view_select");
         d3.select( "#" + this._view.target + "_seq_view_select").remove();
         d3.select( "#" + this._view.target + "_seq_view" )
             .append( "g" )
@@ -1714,13 +1281,9 @@ class BkdMSA {
 
     setSelectMap( smap, rseq ){
         for( var pc of this._view.select ){ // go over existing elements
-            
-
-            if( pc in Object.keys(smap) ){
-                // no selection change, remove from smap                
+            if( pc in Object.keys(smap) ){ // no selection change, remove from smap                
                 smap.delete( pc );                 
-            } else {
-                // drop selection
+            } else { // drop selection
                 this._view.select[pc].remove(); // drop rectangle
                 delete this._view.select[pc];  // drop from map   
             }
@@ -1729,48 +1292,25 @@ class BkdMSA {
         for( var pc of Object.keys(smap) ){
             var pcl = pc.split(":");
             this._view.select[pc] =
-                this.addSelect( Number(pcl[0]), pcl[1], smap[pc].name, rseq);
+                this.addSelect( Number(pcl[0]), pcl[1], smap[pc].name, rseq);            
         }
     }
 
-    setSelectList( slist, rseq, rcol, cseq, ccol, poi ){
-        // slist = [pos:color,pos:color,...]
-        // rseq = sequence name
-        // rcol = name column (in msaHeader)
+    setSelectList( slist, rseq ){
 
-        // cseq = canonocal sequence name
-        // ccol = canonical name column (in msaHeader)
-
-        // position of interest (or null)
-        
-        console.debug("setSelectList:",slist, rseq, rcol,  );
         var sindex = 0;
-        var cindex = 0;
 
         if( this._data.msaHead  == undefined) return;
-
-        console.debug("setSelectList: msaHead", this._data.msaHead);
-
-        if( cseq !== undefined && ccol !== undefined ){
-            for( var i =0; i < this._data.msaHead.length; i++){
-                if(this._data.msaHead[i][ccol] == cseq){
-                    cindex = i;
-                    break;
-                }
-            }
-        }
         
         for( var i =0; i < this._data.msaHead.length; i++){
-            if( this._data.msaHead[i][rcol] == rseq ){
+            if( this._data.msaHead[i][1] == rseq ){
                 sindex = i;
                 break;
             }
         }
-        
         this._view.sindex = sindex;
-        console.debug("setSelectList:",sindex, this._data.msaHead[sindex][rcol]);
         
-        var smap = this._data.msaMap[ sindex ]; //         
+        var smap = this._data.msaMap[ sindex ];
         
         for( var pc in this._view.select ){ // go over existing elements
             if( pc in slist ){ // no selection change, remove from slist
@@ -1785,37 +1325,19 @@ class BkdMSA {
                 delete this._view.select[pc];  // drop from map   
             }
         }
-
-        var clist = [];
         
         for( var i = 0 ; i < slist.length; i++){
             var pcl = slist[i].split(":");
             this._view.select[ slist[i] ]
-                = this.addSelect( Number(pcl[0]), pcl[1], pcl[0], sindex );
-
-            if( cseq !== undefined && ccol != undefined ){
-            
-                var msapos =  this._data.msaRMap[sindex][Number(pcl[0])];
-                var canpos = this._data.msaMap[0][msapos];
-
-                console.debug("msapos",msapos,"canpos",canpos);
-                clist.push(canpos+":"+pcl[1]);
-            }
-        }
-
-        console.debug("this.updateRange called");
-        this.renderRange();
-        console.debug("this.updateRange done");
-        
-        return clist;
-        
+                = this.addSelect( Number(pcl[0]), pcl[1], pcl[0], sindex );            
+        }        
     }
     
     updateSelect(){
         var sindex = this._view.sindex;
         for( var k in this._view.select ){
             var kl = k.split(":");
-            console.log(kl);
+            
             var mp = this._data.msaRMap[sindex][ Number( kl[0] ) ];
             var pos = mp * this._view.aaStep - this._view.aaOffset;
             
@@ -1823,9 +1345,6 @@ class BkdMSA {
                 .attr( "x", pos)
                 .attr( "width", this._view.aaStep );                        
         }
-
-        this.updatePOI();
-        
     }
     
     addSelect( pos, color, name, sindex ){
@@ -1841,8 +1360,7 @@ class BkdMSA {
             .append( "rect" )
             .style( "fill", color )
             .style( "fill-opacity", 0.25)
-        //.style( "stroke", color )
-            .style( "stroke", "#000000" )
+            .style( "stroke", color )
             .attr( "x", x )
             .attr( "y", 0 )
             .attr( "width", V.aaStep )
@@ -1854,88 +1372,8 @@ class BkdMSA {
     }
 
 
-    updatePOI(){
-        var sindex = this._view.sindex;
-        for( var k in this._view.poi.pos ){
-            var p = this._view.poi.pos[k];
-            var rpoi = p.rect;
-            var ppoi = p.sqpos;
-            var spoi = p.spoi;
-            
-            var mp = this._data.msaRMap[spoi][ Number( ppoi ) ];
-            var pos = mp * this._view.aaStep - this._view.aaOffset;
-            
-            //this._view.select[k]
-            rpoi.attr( "x", pos)
-                .attr( "width", this._view.aaStep );                        
-        }
-    }
-
-    setPOI( poi ){
-
-        console.log( "setPOI", poi );
-
-        var C = this._conf;
-        var D = this._data;
-        var V = this._view;
-
-        var sindex = 0;
-
-        var poi_view = d3.select( "#" + this._view.target + "_seq_view_poi");
-        
-        if(  poi_view.node() == null ){
-            console.log("POI: null")
-            poi_view = d3.select( "#" + this._view.target + "_seq_view" )
-                .append( "g" )
-                .attr("id", this._view.target + "_seq_view_poi");
-            this._view.poi.elem  = poi_view;
-        } else {
-            console.log("POI:", poi_view.node());
-        }
-        
-        // drop current poi
-        
-        d3.select( "#" + this._view.target + "_seq_view_poi .msa-poi").remove();
-        V.poi.pos= [];
-
-        // set new poi
-        
-        for( var i =0; i < poi.pos.length; i++){
-
-            
-            var mp = poi.pos[i];
-            
-            if( D.msaRMap != undefined ){
-
-                mp = D.msaRMap[ sindex ][ mp ];  
-                        
-                var x = mp * V.aaStep - V.aaOffset;
-
-                console.log( "poi.pos:", i, poi.pos[i], mp, x,
-                             "#" + this._view.target + "_seq_view_poi" );
-            
-                var rect = d3.select( "#"+this._view.target+"_seq_view_poi" )
-                    .append( "rect" )
-                    .style( "fill", poi.color )
-                    .style( "fill-opacity", 0.25)
-                //.style( "stroke", poi.color )
-                    .style( "stroke", "#000000" )
-                    .attr( "x", x )
-                    .attr( "y", 0 )
-                    .attr( "width", V.aaStep )
-                    .attr( "height", C.msaDY*(D.msaSeq.length + 0.5) )
-                    .attr( "class", "msa-poi");
-                console.log(rect);
-
-                V.poi.pos.push({ rect:rect, sqpos: poi.pos[i], spoi: sindex } );
-                rect.append("title").text( poi.pos[i] );                
-            }
-        }
-    }
-
-
-    getMsaPos(sindex,pos){
-        var msaMap = this._data.msaMap[sindex];  // msaMap[msa]=seq
+    getMsaPos(s,pos){
+        var msaMap = this._data.msaMap[s];  // msaMap[msa]=seq
         var lb = 0;
         var ub = msaMap.length-1;
         var ls = msaMap[0];
@@ -1967,15 +1405,14 @@ class BkdMSA {
     }
     
     setSelectView(){
-        var C = this._conf;
         var D = this._data;
         var V = this._view;
+
+        console.log(D.msaMap[0]);
         
         console.log("setSelectView");
         console.log( V.select);
-
-        console.log("setSelectView:msaMap[V.sindex]->",D.msaMap[V.sindex]);
-
+        
         var sel = Object.keys( V.select );
 
         if( sel.length > 0 ){
@@ -1990,96 +1427,63 @@ class BkdMSA {
                 if( mpos > maxSel) maxSel = mpos;                    
             }
             console.debug("minSel=",minSel,"maxSel=",maxSel);
-
-            // fractional AA port center (+1/2AA) 
-
-            var aaCntr = (maxSel+minSel + 1)/2/D.msaSeq[0].length;   
+            var aaCntr = (maxSel+minSel)/2/D.msaSeq[0].length;   // fractional AA port center 
             
             var port_pixel_width = V.navWidth;
                         
-            var aa_pixel_width =
-                V.navWidth/Math.max( 1, 1.05 * Math.abs(10 + maxSel-minSel));
-
-            var aaWdth = port_pixel_width/aa_pixel_width/D.msaSeq[0].length;
+            var aa_pixel_width = V.navWidth/Math.max( 1, 1.05 *Math.abs(10 +maxSel-minSel) );
+            var aaWdth = port_pixel_width/aa_pixel_width/D.msaSeq[0].length;            
             
             if( aa_pixel_width > this._conf.aaMaxStep ){ //if too wide
                 aa_pixel_width = this._conf.aaMaxStep;
-                // corrected fractional AA port width 
-                aaWdth = port_pixel_width/aa_pixel_width/D.msaSeq[0].length; 
+                aaWdth = port_pixel_width/aa_pixel_width/D.msaSeq[0].length; // corrected fractional AA port width 
             }
 
-            console.debug( "port_pixel_width=",port_pixel_width,
-                           "aa_pixel_width=",aa_pixel_width,
-                           "aaWdth=",aaWdth);
+            console.debug("port_pixel_width=",port_pixel_width,"aa_pixel_width=",aa_pixel_width,"aaWdth=",aaWdth);
             
             var port_pixel_center = aaCntr*D.msaSeq[0].length*aa_pixel_width;  
 
-            // fractional AA pos of left port
-            var port_left_aa = aaCntr - aaWdth/2;
-
-            // fractional AA pos of right port
-            var port_right_aa = aaCntr + aaWdth/2;
+            var port_left_aa = aaCntr - aaWdth/2;    // fractional AA pos of left port
+            var port_right_aa = aaCntr + aaWdth/2;   // fractional AA pos of right port
 
             console.debug("port[fr]", port_left_aa, '<->', port_right_aa,
-                          aaCntr);
+                        aaCntr);
+            console.debug("port[px]", port_left_aa*V.navWidth,"<->",port_right_aa*V.navWidth,
+                        aaCntr*V.navWidth);
+            console.debug("port[aa]", port_left_aa*D.msaSeq[0].length,"<->",port_right_aa*D.msaSeq[0].length,
+                        aaCntr*D.msaSeq[0].length);
             
-            console.debug("port[px]", port_left_aa*V.navWidth,"<->",
-                          port_right_aa*V.navWidth,
-                          aaCntr*V.navWidth);
-            
-            console.debug("port[aa]", port_left_aa*D.msaSeq[0].length,"<->",
-                          port_right_aa*D.msaSeq[0].length,
-                          aaCntr*D.msaSeq[0].length);
-            
-            // get brush position for port edges : FIX ME !!!
-            //-----------------------------------------------
+            // get brush position for port edges
+            //----------------------------------
             
             var br_pixel_width = (aaWdth-V.fr_beta)/V.fr_alpha;
              
-            //var br_left_pixel  = aaCntr*port_pixel_width - br_pixel_width/2; 
-            //var br_right_pixel = aaCntr*port_pixel_width + br_pixel_width/2;
+            var br_left_pixel  = aaCntr*port_pixel_width - br_pixel_width/2; 
+            var br_right_pixel = aaCntr*port_pixel_width + br_pixel_width/2;
 
-
-            var brCntr_alpha = 1/( V.navWidth - C.brushLimit );
-            var brCntr_beta = -0.5 * C.brushLimit * brCntr_alpha; 
-
-
-            var br_left_pixel  = ( port_left_aa - brCntr_beta )/brCntr_alpha; 
-            var br_right_pixel  = ( port_right_aa - brCntr_beta )/brCntr_alpha; 
-
-
-            
-            console.debug( "brush[px]", aa_pixel_width, br_pixel_width, ":",
-                           br_left_pixel,"<->",br_right_pixel);
-            
+            console.debug( "brush[px]", aa_pixel_width, br_pixel_width, ":", br_left_pixel,"<->",br_right_pixel);           
             console.debug( "SSS(+):",minSel, maxSel, ":",
-                           aaCntr,aaWdth,this._view._brl,":",
-                           V.brushLeft,V.brushRight);
+                           aaCntr,aaWdth,this._view._brl,":",V.brushLeft,V.brushRight);
 
-            if( (maxSel-minSel) < V.navWidth/this._conf.aaMaxStep ){
-                // AAs too wide
-                aaWdth = V.navWidth/this._conf.aaMaxStep;
+            if( (maxSel-minSel) < V.navWidth/this._conf.aaMaxStep ){  // AAs too wide
+                aaWdth = V.navWidth/this._conf.aaMaxStep;                                 
                 console.debug("SSS(adjust aaWdth): aa=", aaWdth);
             }
             
-            console.debug("SSS(+):",minSel, maxSel, aaCntr,aaWdth,
-                          V.brushLeft,V.brushRight);            
-            this.setNavBrush( br_left_pixel,br_right_pixel);
-            console.debug("SSS(+):",minSel, maxSel, aaCntr,aaWdth,
-                          V.brushLeft,V.brushRight);
+            console.debug("SSS(+):",minSel, maxSel, aaCntr,aaWdth, V.brushLeft,V.brushRight);            
+            this.setNavBrush( br_left_pixel,br_right_pixel);                        
+            console.debug("SSS(+):",minSel, maxSel, aaCntr,aaWdth, V.brushLeft,V.brushRight);
             
         } else {
             console.debug("SSS(-):",V.brushLeft,V.brushRight);
             this.setNavBrush( 0, V.navWidth);
             console.debug("SSS(-):",V.brushLeft,V.brushRight);
         }
-
-        //alert("**");
         
         V.navBrushG.call( V.viewport.move,
                           [V.brushLeft, V.brushRight])                
 
-        //alert("***");
+        
         
         console.debug("dips start/stop",V.displaystart, V.displayend);        
         console.debug( "setSelectView: done" );
@@ -2104,6 +1508,68 @@ class BkdMSA {
     slogoView(){
 
     }
+    /*
+    setNavBrush2( left, right ){
+
+        var center = ( left + right )/2;
+        
+        var brushLeft = left;
+        var brushRight = right;
+        var reset = false;
+
+        if( brushLeft < 0 ){
+            brushLeft  = 0;
+            left = brushLeft;
+            reset = true;
+        }
+
+        if( brushRight >  this._view.navWidth ){
+            brushRight = this._view.navWidth;
+            right = brushRight;
+            reset = true;
+        }
+
+        if( brushLeft > brushRight ){
+            var tmp = brushLeft;
+            brushLeft = brushRight;
+            left = brushRight;
+            brushRight = tmp;
+            right = brushRight;
+            reset = true;
+        }
+
+        //
+        
+        if( right - left <  this._view._brl ){
+            
+            var brushCenter = center; // 0.5 * (left + right);
+            
+            brushLeft = brushCenter - this._view._brl/2;
+            brushRight = brushCenter + this._view._brl/2;
+            
+            if( brushLeft < 1 ){
+                brushLeft  = 0;
+                brushRight = this._view._brl;  // /D3MSA3._brRatio;
+            }
+            
+            if( brushRight >  this._view.navWidth ){ 
+                brushLeft = this._view.navWidth - this._view._brl - 1; // /D3MSA3._brRatio - 1;
+                brushRight = this._view.navWidth ;                      
+            }
+            reset = true;                       
+        }
+
+
+        
+        if(reset){
+            this._view.navBrushG.call( this._view.viewport.move,
+                                       [brushLeft, brushRight] );                
+            
+        }
+        this._view.brushLeft = brushLeft;
+        this._view.brushRight = brushRight;     
+    }
+    */
     
     setNavBrush( left, right ){
         var brushLeft = left;
@@ -2141,12 +1607,11 @@ class BkdMSA {
             
             if( brushLeft < 1 ){
                 brushLeft  = 0;
-                brushRight = this._view._brl; // /D3MSA3._brRatio;
+                brushRight = this._view._brl;  // /D3MSA3._brRatio;
             }
             
             if( brushRight >  this._view.navWidth ){ 
-                brushLeft = this._view.navWidth - this._view._brl - 1;
-                // /D3MSA3._brRatio - 1;
+                brushLeft = this._view.navWidth - this._view._brl - 1; // /D3MSA3._brRatio - 1;
                 brushRight = this._view.navWidth ;                      
             }
             console.log("@@@", brushLeft,brushRight);
@@ -2154,7 +1619,7 @@ class BkdMSA {
         }        
         if(reset){
             this._view.navBrushG.call( this._view.viewport.move,
-                                       [brushLeft, brushRight] );
+                                       [brushLeft, brushRight] );                   
         }
         this._view.brushLeft = brushLeft;
         this._view.brushRight = brushRight;     
@@ -2164,19 +1629,14 @@ class BkdMSA {
 
     }
 
-    updatePolygon(dstart,dend){
+    updatePolygon(){
         var max = this._view.nawWidth;
-
-        if(dstart < 0) dstart = 0;
-        if(dstart > 100) dstart = 100;
-        if(dend < 0) dend = 0;
-        if(dend > 100) dend = 100;
         
         if (this._view.polygon)
             this._view.polygon.attr(
                 "points",
-                `${this._view.navScale(dstart)},10
-                 ${this._view.navScale(dend)},10
+                `${this._view.navScale(this._view.displaystart)},10
+                 ${this._view.navScale(this._view.displayend)},10
                  ${this._view.navWidth},25
                  0,25`
             );        

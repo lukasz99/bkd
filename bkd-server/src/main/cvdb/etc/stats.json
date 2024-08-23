@@ -1,0 +1,52 @@
+{ "url-pattern":"ss",
+  "url-id":"ID",
+  "group-list":[      
+      {"name":"Na-K pump",
+       "record-list":[
+           {"id":"ATP10A"},
+           {"id":"ATP10B"},
+           {"id":"ATP10D"},
+           {"id":"ATPIF1"}           
+       ]
+      },
+      {"name":"ATP_binding Casette",
+       "record-list":[
+           {"id":"ABCA1"},
+           {"id":"ABCA10"},
+           {"id":"ABCG8"}  
+       ]
+      },
+      {"name":"Solute Carriers",
+       "record-list":[
+           {"id":"SLC10A1"},
+           {"id":"SLC10A2"},
+           {"id":"SLCO6A1"}
+       ]
+      },      
+      {"name":"Channels",
+       "group-list":[     
+           {"name":"Calcium Channels",
+            "record-list":[
+                {"id":"SCN10A"},
+                {"id":"SCNN1G"}
+            ]
+           },
+           {"name":"Calcium Channels",
+            "record-list":[
+                {"id":"CACNA1A"},
+                {"id":"CACNG8"}
+            ]
+           },
+           {"name":"Potassium Channels",
+            "record-list":[
+                {"id":"CNA1"},
+                {"id":"CNA10"},
+                {"id":"CNV2"}
+            ]
+           }
+       ]
+      }
+  ]
+}
+
+
