@@ -1,4 +1,4 @@
-(function (global, factory) {
+(function (global, factory) { 
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3')) :
 	typeof define === 'function' && define.amd ? define(['exports', 'd3'], factory) :
 	(factory((global.g3 = global.g3 || {}),global.d3));
@@ -1130,11 +1130,13 @@ function Lollipop(target, chartType, width) {
         },
         brush: {
             enabled: true,
-            fill: "#666",
-            opacity: 0.2,
+            fill: "#fff",
+            opacity: 0.5,
             stroke: "#969696",
             strokeWidth: 1,
-            handler: "#666"
+            handler: "#aff",
+            hstroke: "#000",
+            
         },
         zoom: true,
     };
@@ -1331,9 +1333,9 @@ function Lollipop(target, chartType, width) {
     };
 
     var _domainBrushMove = function (event) {
-
+        
         if (event.sourceEvent && event.sourceEvent.type === "zoom") return;
-
+        
         let _selection = event.selection || _xScaleOrig.range();
         _xRange = _selection.map(_xScaleOrig.invert);
 
@@ -1351,6 +1353,56 @@ function Lollipop(target, chartType, width) {
                 d3.zoomIdentity
                     .scale(_mainW / (_selection[1] - _selection[0]))
                     .translate(-_selection[0], 0));
+        }
+
+        _updateX();
+    };
+
+    var _domainBrushDelta = function (tran,zoom) {
+
+        let _brRange = _xScaleOrig.range();
+
+        let _left = _prevXS0;
+        let _right = _prevXS1;
+
+        if( Math.abs(zoom < 0.001) ){ 
+           _left  =  _brRange[0];
+           _right =  _brRange[1];
+        } else {         
+        
+          let _width =  Math.abs(_prevXS1 - _prevXS0);
+          let _center = (_prevXS0 + _prevXS1)/2.0 + _width*tran;
+
+          if(  Math.abs(tran) < 0.001 ){
+             _center =  (_brRange[0] +  _brRange[1])/2.0;  
+          }
+          _left = _center - _width/2*zoom; 
+          _right = _center + _width/2*zoom; 
+        }
+
+        if( _left < _brRange[0])  _left = _brRange[0];
+        if( _right > _brRange[1])  _right = _brRange[1];
+        
+        if( Math.abs(_right-_left) < _seqW / sequenceOpt.maxzoom ){
+            _domainViz
+                .select(".domain-x-brush")
+                .call(_domainBrush.move, [_prevXS0, _prevXS1]);
+            return;    
+        } else {
+            _domainViz
+                .select(".domain-x-brush")
+                .call(_domainBrush.move, [_left, _right]);
+            //return;    
+        }
+        
+        _prevXS0 = _left;
+        _prevXS1 = _right;
+
+        if (domainOpt.zoom) {
+            _mainViz.select(".main-viz-zoom").call(_domainZoom.transform,
+                d3.zoomIdentity
+                    .scale(_mainW / (_right - _left))
+                    .translate(- _left, 0));
         }
 
         _updateX();
@@ -1601,7 +1653,8 @@ function Lollipop(target, chartType, width) {
                 .attr("stroke-width", domainOpt.brush.strokeWidth);
 
             _brush.selectAll("rect.handle")
-                .attr("fill", domainOpt.brush.handler);
+                .attr("fill", domainOpt.brush.handler)
+                .attr("stroke", domainOpt.brush.hstroke);
         }
         if (domainOpt.zoom) {
             _mainViz.append("rect")
@@ -2710,6 +2763,11 @@ function Lollipop(target, chartType, width) {
         this.draw();
     };
 
+    lollipop.domainBrushTransform = function( tran, zoom ) {
+        console.log("lollipop.setRange: tran->",tran, "zoom->",zoom);
+        _domainBrushDelta( tran, zoom);
+    };
+
     lollipop.data = {
         set snvData(_) { snvData = _; }, get snvData() { return snvData; },
         set domainData(_) { domainData = _; }, get domainData() { return domainData; },
@@ -2774,11 +2832,9 @@ function Lollipop(target, chartType, width) {
         _chartInit = true;
     };
 
-
     lollipop.updatePOI = function( poi ){
         _updatePOI( poi);        
     };
-
     
     return lollipop;
 }

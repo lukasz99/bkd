@@ -29,7 +29,7 @@ class BkdTopo{
         d3.select( anchor )
             .append("div")
             .attr("id", "topo-view")
-            .attr("class","xxbkd-topo-ovr xxbkd-stack-top");
+            .attr("class","bkd-topo-ovr bkd-stack-top");
 
         var curry = function( self, anchor, clist, cstate ){
             return function(){
@@ -191,19 +191,21 @@ class BkdTopo{
     }
     
     handleButtonZoom( e ){
-        
+
+        //console.log("handleButtonZoom:",BKDnodeFeatures.bkdtopo);
+
         if( this.id == 'zoom-reset'){
             d3.select('#topo-port svg')
                 .transition()
-                .call(BKDnodeFeatures.zoom.transform, d3.zoomIdentity);           
+                .call(BKDnodeFeatures.bkdtopo.zoom.transform, d3.zoomIdentity);           
         } else if( this.id == 'zoom-plus') {
             d3.select('#topo-port svg')
                 .transition()
-                .call(BKDnodeFeatures.zoom.scaleBy, 1.1);
+                .call(BKDnodeFeatures.bkdtopo.zoom.scaleBy, 1.1);
         } else if (this.id == 'zoom-minus') {
             d3.select('#topo-port svg')
                 .transition()
-                .call(BKDnodeFeatures.zoom.scaleBy, 0.9);
+                .call(BKDnodeFeatures.bkdtopo.zoom.scaleBy, 0.9);
         }                        
     }
 
@@ -211,15 +213,15 @@ class BkdTopo{
         if( this.id == 'pan-reset'){
             d3.select('#topo-port svg')
                 .transition()
-                .call(BKDnodeFeatures.zoom.transform, d3.zoomIdentity);           
+                .call(BKDnodeFeatures.bkdtopo.zoom.transform, d3.zoomIdentity);           
         } else if( this.id == 'pan-left') {
             d3.select('#topo-port svg')
                 .transition()
-                .call(BKDnodeFeatures.zoom.translateBy, -50, 0);
+                .call(BKDnodeFeatures.bkdtopo.zoom.translateBy, -50, 0);
         } else if (this.id == 'pan-right') {
             d3.select('#topo-port svg')
                 .transition()
-                .call(BKDnodeFeatures.zoom.translateBy, 50, 0);
+                .call(BKDnodeFeatures.bkdtopo.zoom.translateBy, 50, 0);
         }  
     }
 }

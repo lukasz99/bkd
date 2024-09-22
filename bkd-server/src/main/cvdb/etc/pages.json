@@ -348,10 +348,56 @@
                 viewtype:"file-html",
                 viewpath:"/pages/help-overview.html"
             },
+
+
+            "help-genome-browser":{
+                active:true,
+                title:"${bkd.pagetitleshort}: Overview",
+                menudef:"0:2:0",
+                menusel:"5:1:1",
+                viewtype:"file-html",
+                viewpath:"/pages/help-template.html"
+            },
+
+            "help-homology":{
+                active:true,
+                title:"${bkd.pagetitleshort}: Overview",
+                menudef:"0:2:0",
+                menusel:"5:1:1",
+                viewtype:"file-html",
+                viewpath:"/pages/help-template.html"
+            },
+
+            "help-topology":{
+                active:true,
+                title:"${bkd.pagetitleshort}: Overview",
+                menudef:"0:2:0",
+                menusel:"5:1:1",
+                viewtype:"file-html",
+                viewpath:"/pages/help-template.html"
+            },
+
+            "help-structure":{
+                active:true,
+                title:"${bkd.pagetitleshort}: Overview",
+                menudef:"0:2:0",
+                menusel:"5:1:1",
+                viewtype:"file-html",
+                viewpath:"/pages/help-template.html"
+            },
             
-            "help-lollipop":{
+            "help-features":{
                 active:true,
                 title:"${bkd.pagetitleshort}: Feature Panel",
+                menudef:"0:2:0",
+                menusel:"5:1:1",
+                viewtype:"file-html",
+                viewpath:"/pages/help-features.html"
+            },
+
+            "help-lollipop":{
+                active:true,
+                title:"${bkd.pagetitleshort}: Lollipop Panel",
                 menudef:"0:2:0",
                 menusel:"5:1:1",
                 viewtype:"file-html",

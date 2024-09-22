@@ -12,6 +12,9 @@ class BkdLollipop{
                 this.conf.anchor = "#" + this.conf.anchor;
             }
             this.conf.spinner = this.conf.anchor + "-spinner-" + this.UIDTag;
+            this.conf.lnavig = this.conf.anchor + "-navig-" + this.UIDTag;
+            this.conf.lzoom = this.conf.anchor + "-zoom-" + this.UIDTag;
+            this.conf.lpan = this.conf.anchor + "-pan-" + this.UIDTag;            
             this.conf.lpanel = this.conf.anchor + "-panel-" + this.UIDTag;
             this.conf.details = this.conf.anchor + "-details-" + this.UIDTag;
 
@@ -104,6 +107,8 @@ class BkdLollipop{
                 + "<img src='img/spinner.gif' class='bkd-spinner'>"
                 + "</div>");
         $(this.conf.anchor).append(
+            "<div id='" + this.conf.lnavig.replace("#","") + "'"
+                + " class='bkd-lollipop-navig'></div>" +
             "<div id='" + this.conf.lpanel.replace("#","") + "'"
                 + " class='bkd-lollipop-panel'></div>");
 
@@ -195,8 +200,10 @@ class BkdLollipop{
         $( this.conf.spinner ).hide();
         
         // bulid lollipop panel
-        //--------------------
-        
+        //---------------------
+
+        this.buildNavig();
+
         this.buildPanel();
         
         console.log( "BkdLollipop.buildView() DONE");
@@ -332,7 +339,105 @@ class BkdLollipop{
         
 
     }
+
+    buildNavig(){
+        console.log("buildNavig:", "#"+this.conf.lnavig.replace("#",""));
         
+        $("#"+this.conf.lnavig.replace("#",""))
+            .html( '<table class="bkd-lollipop-navig-table" width="100%" align="center">'
+                   + '<tr><td colspan="2">Click on a lollipop to see variants at that position. '
+                   + 'Click on <a id="bkd-lollipop-help-1" html="">Help</a>'
+                   + '<a id="bkd-lollipop-help-2" html="">'
+                   + '<img title="Help" width="16" height="16" src="img/icons8-info.svg"/></a>'
+                   + ' for more details.</td></tr>'
+                   + '<tr><td id="'+this.conf.lzoom.replace("#",'')+'"></td>'
+                   + '<td id="'+this.conf.lpan.replace("#",'')+'"></td></tr>'
+                   + '</table>'
+                   + '</div>'
+                 );
+
+        BKDmodal.init( '#bkd-modal-div',
+                       '#bkd-lollipop-help-1',
+                       'page?id=help-lollipop&ret=body' ); 
+
+        BKDmodal.init( '#bkd-modal-div',
+                       '#bkd-lollipop-help-2',
+                       'page?id=help-lollipop&ret=body' ); 
+
+
+        this.buildCtrl( this.conf.lzoom, this.conf.lpan, this.zoomaction, this.panaction);
+    }
+
+    buildCtrl( zoomanchor, pananchor, zoomaction, panaction ){
+
+        zoomanchor = '#' + zoomanchor.replace("#",'')
+        pananchor = '#' + pananchor.replace("#",'')
+
+        console.log('buildCtrl:',zoomanchor, pananchor)
+
+        if( ! d3.select( zoomanchor  ).empty() ){                    
+            d3.select( zoomanchor + " *" ).remove();
+        }
+
+        if( ! d3.select( pananchor  ).empty() ){                    
+            d3.select( pananchor + " *" ).remove();
+        }
+
+        d3.select( zoomanchor )
+            .html( '<input type="button" id="bkd-lollipop-zoom-plus" name="plus" value="+">'
+                   + '&nbsp;'
+                   + '<input type="button" id="bkd-lollipop-zoom-reset" name="zreset" value="Zoom reset">'
+                   + '&nbsp;'       
+                   + '<input type="button" id="bkd-lollipop-zoom-minus" name="minus" value="-">');
+                                
+        d3.select( pananchor )
+            .html( '<input type="button" id="bkd-lollipop-pan-left" name="plus" value="<">'
+                   + '&nbsp;'
+                   + '<input type="button" id="bkd-lollipop-pan-reset" name="preset" value="Center">'
+                   + '&nbsp;'       
+                   + '<input type="button" id="bkd-lollipop-pan-right" name="minus" value=">">');                        
+
+
+        var curry = function(self, action, value){
+              return function(e){
+                     return action(self,e,value);
+              }
+        }
+
+        d3.select( "#bkd-lollipop-zoom-plus").on('click', curry(this,zoomaction,'+' ));
+        d3.select( "#bkd-lollipop-zoom-reset").on('click', curry(this,zoomaction,'r'));
+        d3.select( "#bkd-lollipop-zoom-minus").on('click', curry(this,zoomaction,'-'));
+
+        d3.select( "#bkd-lollipop-pan-left").on('click', curry(this,panaction,'+'));
+        d3.select( "#bkd-lollipop-pan-reset").on('click', curry(this,panaction,'r'));
+        d3.select( "#bkd-lollipop-pan-right").on('click', curry(this,panaction,'-'));
+        
+    }
+
+    zoomaction( self, e, val ){
+        if( val == '+' ){
+           self.lollipop.domainBrushTransform(0,0.95);  // (translate,zoom)
+        }                                            
+        if( val == '-' ){
+           self.lollipop.domainBrushTransform(0,1.05);  // (translate,zoom)
+        }                                            
+        if( val == 'r' ){
+           self.lollipop.domainBrushTransform(0,0);  // (translate,zoom)
+        }                                            
+    }   
+
+     panaction(self,e,val){
+        if( val == '+' ){
+           self.lollipop.domainBrushTransform(-0.05,1.0);  // (translate,zoom)
+        }                                            
+        if( val == '-' ){
+           self.lollipop.domainBrushTransform(0.05,1.0);  // (translate,zoom)
+        }                                            
+        if( val == 'r' ){
+           self.lollipop.domainBrushTransform(0,1.0);  // (translate,zoom)
+        }                                            
+     }   
+
     buildPanel(){
 
         console.log("buildPanel:", this.data);
@@ -444,7 +549,8 @@ class BkdLollipop{
         // draw lollipops
         //---------------
         
-        lollipop.draw();                        
+        lollipop.draw();
+        lollipop.domainBrushTransform(0,0.98);  // initial zoom
     }
     
     buildFDets( show, data, options ){

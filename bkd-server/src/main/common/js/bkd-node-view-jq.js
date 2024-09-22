@@ -455,7 +455,7 @@ BKDnodeView = {
                         
                         $( "#bkd-nv-" + cid + "_head" )
                             .append( " | <a id='bkd-nv-" + cid + "_head_help' "
-                                     + " href='"+help_url+"'>Help</a>" );
+                                     + " href='"+help_url+"'><img title='Help' width='16' height='16' src='img/icons8-info.svg'/></a>" );
                         
                         BKDmodal.init( help_anchor, show_anchor, help_url );
                     }

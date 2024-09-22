@@ -407,24 +407,21 @@ BKDnodeFeatures = {
         //-------------
         
         $( tgt ).append(
-            "<table border='1' width='100%'>" +
+            "<table border='0' width='100%'>" +
                 " <tr>"+
                 "  <td id='flist' width='900' colspan='1' rowspan='1' valign='top' align='center'>"+
-                "   <div id='flist-source' class='bkd-select-panel'></div>"+
-                "   <div id='flist-lollipop-1-help' class='bkd-select-help'>"+
-                "    Click on a lollipop to see variants at that position. Click Help for more details."+
-                "   </div>"+ 
+                "   <div id='flist-source' class='bkd-select-panel'></div>"+ 
                 "   <div id='flist-lollipop-1' class='bkd-select-panel'></div>"+ 
                 "  </td>"+                                            
                 "  <td valign='top' align='center'>"+
-                "   <table id='flist-tabs' style='border-spacing: 0px;' width='100%'>"+
+                "   <table id='flist-tabs' width='100%'>"+
                 "    <tr>"+
-                "     <td id='track-tab' class='bkd-feat-tab-on track-tab'>Genome&nbsp;Viewer</td>"+
-                "     <td id='homo-tab-panther' class='bkd-feat-tab-off homo-tab' title='Source: UCSC Genome Browser' >Homology&nbsp;(G)</td>"+
-                "     <td id='homo-tab-ucsc' class='bkd-feat-tab-off homo-tab' title='Source: PantherDB'>Homology&nbsp;(P)</td>"+
-                "     <td id='topo-tab' class='bkd-feat-tab-off topo-tab'>Membrane&nbsp;Topology</td>"+
-                "     <td id='swm-tab' class='bkd-feat-tab-off swm-tab'>Structure(pred)</td>"+
-                "     <td id='str-tab' class='bkd-feat-tab-off str-tab'>Structure(expt)</td>"+
+                "     <td id='track-tab' class='bkd-feat-tab-on track-tab'>Genome&nbsp;Viewer&nbsp;<a id='bkd-genome-browser-help' html=''><img title='Help' width='16' height='16' src='img/icons8-info.svg'/></a></td>"+
+                //"     <td id='homo-tab-panther' class='bkd-feat-tab-off homo-tab' title='Source: UCSC Genome Browser' >Homology&nbsp;(G)&nbsp;<a id='bkd-homology-help' html=''><img title='Help' width='16' height='16' src='img/icons8-info.svg'/></a></td>"+
+                "     <td id='homo-tab-ucsc' class='bkd-feat-tab-off homo-tab' title='Source: PantherDB'>Sequence&nbsp;Homology&nbsp;<a id='bkd-homology-help' html=''><img title='Help' width='16' height='16' src='img/icons8-info.svg'/></a></td>"+
+                "     <td id='topo-tab' class='bkd-feat-tab-off topo-tab'>Membrane&nbsp;Topology&nbsp;<a id='bkd-topology-help' html=''><img title='Help' width='16' height='16' src='img/icons8-info.svg'/></a></td>"+
+                "     <td id='swm-tab' class='bkd-feat-tab-off swm-tab'>Structure&nbsp;<a id='bkd-sequence-help' html=''><img title='Help' width='16' height='16' src='img/icons8-info.svg'/></a></td>"+
+                //"     <td id='str-tab' class='bkd-feat-tab-off str-tab'>Structure(expt)</td>"+
                 "    </tr>"+
                 "    <tr>"+
                 "     <td id='flist-view' align='center' valign='top' colspan='6'></td>"+
@@ -435,7 +432,25 @@ BKDnodeFeatures = {
                 "</table>" );
 
         tconf = this.config.tabs;
-            
+
+        BKDmodal.init( '#bkd-modal-div',
+                       '#bkd-genome-browser-help',
+                       'page?id=help-genome-browser&ret=body' ); 
+
+        BKDmodal.init( '#bkd-modal-div',
+                       '#bkd-homology-help',
+                       'page?id=help-homology&ret=body' );
+                       
+        BKDmodal.init( '#bkd-modal-div',
+                       '#bkd-topology-help',
+                       'page?id=help-topology&ret=body' );
+                       
+        BKDmodal.init( '#bkd-modal-div',
+                       '#bkd-structure-help',
+                       'page?id=help-structure&ret=body' ); 
+
+
+
         for( var i = 0; i< tconf.tablist.length; i++ ){
         tid = tconf.tablist[i]["tab-id"];
             vid = tconf.tablist[i]["view-id"];
@@ -761,12 +776,12 @@ BKDnodeFeatures = {
         });
 
         $('#flist-source table tr td:last-of-type')
-            .append("<a id='bkd-lollipop-help' "
-                    + "href='page?id=help-lollipop'>Help</a>" );
+            .append("<a id='bkd-features-help' "
+                    + "href='page?id=help-features'><img title='Help' width='16' height='16' src='img/icons8-info.svg'/></a>" );
         
         BKDmodal.init( '#bkd-modal-div',
-                       '#bkd-lollipop-help',
-                       'page?id=help-lollipop&ret=body' ); 
+                       '#bkd-features-help',
+                       'page?id=help-features&ret=body' ); 
         
         // lollipop panel 
         //---------------
@@ -851,14 +866,14 @@ BKDnodeFeatures = {
         // homology panel(s)
         //------------------
 
-        try{
-            BKDnodeFeatures.homologpane1( '#homo-port-panther', data );
-        } catch( err){
-            console.log(err);
-        }
+        //try{
+        //    BKDnodeFeatures.homologpane1( '#homo-port-panther', data );
+        //} catch( err){
+        //    console.log(err);
+        //}
         
         try{
-            BKDnodeFeatures.homologpane2( '#homo-port-ucsc', data );
+            BKDnodeFeatures.homologpaneSet( '#homo-port-ucsc', data );
         } catch( err){
             console.log(err);
         }
@@ -942,64 +957,64 @@ BKDnodeFeatures = {
         // structure pane
         //---------------
        
-        var strUrl = BKDnodeFeatures.siteurl + "str-pdb/"
-            + BKDnodeFeatures.data.ac  + ".pdb"; 
+        //var strUrl = BKDnodeFeatures.siteurl + "str-pdb/"
+        //    + BKDnodeFeatures.data.ac  + ".pdb"; 
         
-        BKDnodeFeatures.nglSTR = BKDnodeFeatures.nglpane(
-            {  anchor: "#str-port",
-               name: "str",
-               url: strUrl,               
-               controls: {
-                   vcls: { name: "vcls",
-                           label: "Variant", 
-                           type: "checkbox",
-                           
-                           // variant classes
-                           getvcls: BKDnodeFeatures.buildvclist,
-                           
-                           // lolipop selects
-                           getsels: BKDnodeFeatures.buildlslist,
+        //BKDnodeFeatures.nglSTR = BKDnodeFeatures.nglpane(
+        //    {  anchor: "#str-port",
+        //       name: "str",
+        //       url: strUrl,               
+        //       controls: {
+        //           vcls: { name: "vcls",
+        //                   label: "Variant", 
+        //                   type: "checkbox",
+        //                   
+        //                   // variant classes
+        //                   getvcls: BKDnodeFeatures.buildvclist,
+        //                   
+        //                   // lolipop selects
+        //                   getsels: BKDnodeFeatures.buildlslist,
 
-                           // poi selects
-                           getpois: BKDnodeFeatures.buildpoilist, 
-                           options: BKDnodeFeatures.vclass },
-                   menu:[
-                      { name: "str",
-                        label: "Structure",
-                        type: "radio",                            
-                        options: BKDnodeFeatures.exptlst },                       
-                      { name: "sel",
-                        label: "Select",
-                        type: "cbox",                            
-                        options: BKDnodeFeatures.strsels },
+        //                   // poi selects
+        //                   getpois: BKDnodeFeatures.buildpoilist, 
+        //                   options: BKDnodeFeatures.vclass },
+        //           menu:[
+        //              { name: "str",
+        //                label: "Structure",
+        //                type: "radio",                            
+        //                options: BKDnodeFeatures.exptlst },                       
+        //              { name: "sel",
+        //                label: "Select",
+        //                type: "cbox",                            
+        //                options: BKDnodeFeatures.strsels },
                   
-                      { name: "col",
-                        label: "Color By",
-                        type: "radio-off",
-                        options: BKDnodeFeatures.strcols },
+        //              { name: "col",
+        //                label: "Color By",
+        //                type: "radio-off",
+        //                options: BKDnodeFeatures.strcols },
                       
-                      { name: "exp",
-                        label: "Export",
-                        type: "list",
-                        options: BKDnodeFeatures.nglexport },
+        //              { name: "exp",
+        //                label: "Export",
+        //                type: "list",
+        //                options: BKDnodeFeatures.nglexport },
                       
-                      { name: "help",
-                        label: "Help",
-                        type: "list",
-                        options: BKDnodeFeatures.nglhelp }
+        //              { name: "help",
+        //                label: "Help",
+        //                type: "list",
+        //                options: BKDnodeFeatures.nglhelp }
                        
-                   ] },
-               poiColor: "#B71DDE"   // "#B7A4BD"
-            },
-            BKDnodeFeatures,
-            [ {base:BKDnodeView, key:"mymsa2a"},
-              {base:BKDnodeView, key:"mymsa2b"},
-              {base:BKDnodeView, key:"mymsa"}],
+        //           ] },
+        //       poiColor: "#B71DDE"   // "#B7A4BD"
+        //    },
+        //    BKDnodeFeatures,
+        //    [ {base:BKDnodeView, key:"mymsa2a"},
+        //      {base:BKDnodeView, key:"mymsa2b"},
+        //      {base:BKDnodeView, key:"mymsa"}],
             
-            { base: BKDnodeFeatures.lollipanels,
-              key: "loli1" }
+        //    { base: BKDnodeFeatures.lollipanels,
+        //      key: "loli1" }
             
-        );       
+        //);       
     },
 
     nglpane: function( config, data, msa, lollipop){
@@ -1554,6 +1569,152 @@ BKDnodeFeatures = {
         d3.select( anchor )
             .html( '<div id="' + msaid
                    + '" class="bkd-msa" style="background-color: black;">'
+                   + '</div>' );
+        
+        BKDnodeView.mymsa2b.initialize( { "anchor": '#' + msaid,
+                                          "url": msaurl });
+    },
+
+    homologpaneSet: function( anchor, data ){
+        console.log("homologpaneSet:"+anchor);
+        $( "#"+anchor.replace("#","") ).append("<div id='homology-select' class='bkd-select-panel'></div>");
+        $( "#homology-select" )
+            .append( 'Sequence Alignment Source:&nbsp;&nbsp;'
+                     + '<input type="radio" id="pantherFlag" name="homologyflag"'
+                     + ' value="panther">')
+            .append('<label for="Pantherlag">PantherDB</label>'
+                    +'&nbsp;&nbsp;&nbsp;&nbsp;');
+        $( "#pantherFlag" ).prop( "checked", true );
+
+        $( '#homology-select' )
+            .append('<input type="radio" id="ucscFlag" '
+                    + ' name="homologyflag" value="ucsc">')
+            .append('<label for="ucscFlag">UCSC Genome Browser</label>'
+                    + '&nbsp;&nbsp;&nbsp;&nbsp;');
+        $( "#ucscFlag" ).prop( "checked", false );
+
+        
+
+        $('#pantherFlag').click(function(){                      
+            //$( '#seq-viewer-2b' ).hide();                  
+            //$( '#seq-viewer-2a' ).show();
+
+            $( '#port-anchor-b' ).hide();                         
+            $( '#port-anchor-a' ).show();                  
+
+        });
+
+        $('#ucscFlag').click(function(){                    
+            //$( '#seq-viewer-2a' ).hide();           
+            //$( '#seq-viewer-2b' ).show();                  
+            $( '#port-anchor-a' ).hide();           
+            $( '#port-anchor-b' ).show();                  
+        });
+        
+        $( "#"+anchor.replace("#","") ).append("<div id='port-anchor-a'></div>");
+        $( "#"+anchor.replace("#","") ).append("<div id='port-anchor-b'></div>");
+        var portAnchorA='#port-anchor-a';        
+        var portAnchorB='#port-anchor-b';        
+
+        $( '#port-anchor-b' ).hide();                         
+        $( '#port-anchor-a' ).show();                  
+
+        // PANE-A
+
+        //msaid = anchor.replace("#","") + "-msa";
+        msaid = "seq-viewer-2a";
+        msaurl = "msa-ucscgb/" + BKDnodeFeatures.data.ac + ".fasta";
+
+        var msaConfig = {
+            "width": 650,
+            "height":625,
+            "header":{
+                "label":[1],
+                "popup":[]
+            },
+            
+            "taxname": {'9606': 'Human',
+                        '9598': 'Chimpanzee',
+                        '9595': 'Gorilla',
+                        '9601': 'Orangutan',
+                        '9544': 'Rhesus',
+                        '10090': 'Mouse',
+                        '10116': 'Rat',
+                        '10141': 'Guinea pig',
+                        '9986': 'Rabbit',
+                        '9615': 'Dog',
+                        '9031': 'Chicken',
+                        '8364': 'Xenopus',
+                        '7955': 'Zebrafish',
+                        '9557':'Baboon',
+                        '10029':'Hamster',
+                        '9986':'Rabbit',
+                        '9823':'Pig',
+                        '9913':'Cow',
+                        '9685':'Cat',
+                        '9796':'Horse',
+                        '9940':'Sheep',
+                        '13616':'Opossum',
+                        '9258':'Platypus'
+                       }
+        };
+
+        BKDnodeView.mymsa2a = new BkdMSA( msaConfig );
+        
+        d3.select( portAnchorA )
+            .html( '<div id="' + msaid
+                   + '" class="bkd-msa">'
+                   +'</div>' );
+        
+        BKDnodeView.mymsa2a.initialize( { "anchor": '#' + msaid,
+                                          "url": msaurl });     
+
+
+
+
+        //msaid = anchor.replace("#","") + "-msa";
+        msaid = "seq-viewer-2b";
+        msaurl = "msa-panther/" + BKDnodeFeatures.data.ac + ".fasta";
+
+        var msaConfig = {
+            "width": 650,
+            "height":625,
+            "header":{
+                "label":[1],
+                "popup":[]
+            },
+            
+            "taxname": {'9606': 'Human',
+                        '9598': 'Chimpanzee',
+                        '9595': 'Gorilla',
+                        '9601': 'Orangutan',
+                        '9544': 'Rhesus',
+                        '10090': 'Mouse',
+                        '10116': 'Rat',
+                        '10141': 'Guinea pig',
+                        '9986': 'Rabbit',
+                        '9615': 'Dog',
+                        '9031': 'Chicken',
+                        '8364': 'Xenopus',
+                        '7955': 'Zebrafish',
+                        '9557':'Baboon',
+                        '10029':'Hamster',
+                        '9986':'Rabbit',
+                        '9823':'Pig',
+                        '9913':'Cow',
+                        '9685':'Cat',
+                        '9796':'Horse',
+                        '9940':'Sheep',
+                        '13616':'Opossum',
+                        '9258':'Platypus'
+                       }
+        };
+
+        BKDnodeView.mymsa2b = new BkdMSA( msaConfig );
+        
+        d3.select( portAnchorB )
+            .html( '<div id="' + msaid
+                   + '" class="bkd-msa">'
                    + '</div>' );
         
         BKDnodeView.mymsa2b.initialize( { "anchor": '#' + msaid,

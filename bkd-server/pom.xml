@@ -568,6 +568,15 @@
                 <include>*.svg</include>                   
               </includes>
             </resource>
+
+            <resource>
+              <directory>${basedir}/src/main/common/img</directory>
+              <targetPath>img</targetPath>
+              <filtering>true</filtering>
+              <includes>
+                <include>*.gif</include>                   
+              </includes>
+            </resource>
  
             <resource>
               <directory>${basedir}/src/main/${db.ver}/tiles</directory>
@@ -698,8 +707,8 @@
          <artifactId>jetty-maven-plugin</artifactId>
 <!--         <version>9.4.19.v20190610</version> -->     
 <!--         <version>9.4.39.v20210325</version> -->
-          <version>9.4.45.v20220203</version> 
-
+<!--          <version>9.4.45.v20220203</version>  -->
+         <version>10.0.23</version>
          <configuration>
            <webApp>
              <!-- contextPath>/bkd-server</contextPath -->
