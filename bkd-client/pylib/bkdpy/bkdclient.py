@@ -6,7 +6,10 @@ import ssl
 from requests import Session
 from requests.auth import HTTPBasicAuth
 
-from zeep import Client as zClient, Settings as zSettings
+#import zeep as Z
+
+from zeep import Client as zClient
+from zeep import Settings as zSettings
 from zeep.transports import Transport
 
 from lxml import etree as ET
@@ -23,12 +26,12 @@ class BkdClient():
         self.mode = mode
         self.debug = debug    
         
-        url = 'https://imexcentral.org/bkdev/services/soap?wsdl'
- 
+        #url = 'https://imexcentral.org/bkdev/services/soap?wsdl'
+        url = 'http://10.1.7.200:9999/cvdbdev0/services/soap?wsdl' 
         if mode == 'dev':
             #url = 'https://imexcentral.org/bkdev/services/soap?wsdl'
             #url = 'http://localhost:9999/bkdev/services/soap?wsdl'
-            url = 'http://10.1.7.100:9999/cvdbdev0/services/soap?wsdl'
+            url = 'http://10.1.7.200:9999/cvdbdev0/services/soap?wsdl'
             #url = 'http://10.1.7.100:9999/dipdev0/services/soap?wsdl'
              
         if self.debug:
@@ -189,11 +192,12 @@ class BkdClient():
         if zdtsnode is not None:
             client = self._zclient
             #try:
-
+            
             if debug:
                 print( ET.tostring(client.create_message(client.service,'setNode', dataset= zdtsnode, mode="add"), pretty_print=True ).decode()  )
             else:
                 with client.settings(raw_response=True):
+                    print("$$$",mode)
                     res = client.service.setNode( zdtsnode, mode )
                     restree = ET.fromstring(res.text)
                     #print("RES",res.text)

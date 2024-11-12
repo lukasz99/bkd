@@ -21,7 +21,8 @@ class CV():
 
 class MI(CV):
     def __init__(self):
-        CV.__init__(self,'https://www.ebi.ac.uk/ols/ontologies/mi/download')
+        #CV.__init__(self,'https://www.ebi.ac.uk/ols/ontologies/mi/download')
+        CV.__init__(self,'http://purl.obolibrary.org/obo/mi.obo')
                 
         for t in self.ontology:
             syn = self.ontology[t].synonyms

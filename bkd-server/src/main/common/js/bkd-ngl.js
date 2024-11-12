@@ -176,7 +176,8 @@ class BkdNGL{
                  );
 
         console.log("BkdNGL: controls->", config.controls);
-
+        var cname = this.pfx + "-controls";
+        
         var row = d3.select( this.anchor + " .bkd-ngl-controls-table")
             .append("tr");
         
@@ -290,102 +291,15 @@ class BkdNGL{
         var menu = [];
         
         for( var i in config.controls.menu){
-            var mitem = {children:[]};
-            menu.push(mitem);            
-            var cname = this.pfx + "-controls-" + config.controls.menu[i].name;
 
-            mitem.title = config.controls.menu[i].label;
-            var osel = this.anchor + " .bkd-ngl-controls-table ." + cname;
+            var itemdef = config.controls.menu[i];
+            var mitem =  BkdNGL.buildHAMitem(itemdef, this);
             
-            var cctrl = config.controls.menu[i].name;
-            var ctype = config.controls.menu[i].type;
-                
-            for( var j in config.controls.menu[i].options ){
-                var copt = config.controls.menu[i].options[j];  // eg: swmsel
-                               
-                var title = function( ictrl, iopt, itype, iself  ){
-                    return function(d){                        
-                        var prefix ="";
-                        var label = iopt.label;
-                        if( ictrl in iself.state ){
-                            var icst = iself.state[ictrl][iopt.value];
-                            
-                            if(itype == "cbox"){
-                                if( icst ){                                
-                                    prefix = "&#9745; ";
-                                } else {
-                                    prefix = "&#9744; ";
-                                }
-                            }
-                            
-                            if(itype == "radio" || itype == "radio-off"){
-                                if( icst ){                                
-                                    prefix = "&#9673; "; // fisheye
-                                } else {
-                                    prefix = "&#9678; "; // bullseye;
-                                    // "&#8857; ";  // dotted dircle
-                                }
-                            }
-                        }
-                        
-                        return prefix + label;                        
-                    }                    
-                }( cctrl, copt, ctype, this );
-                
-                var callback = function( ictrl, iopt, itype, iself ){
-                    return function(d) {
-                        console.log( "HAM: callback:", ictrl, iopt, itype );
-                        
-                        if( ictrl in iself.state ){
-                            var icst = iself.state[ictrl][iopt.value];
-                            
-                            if( itype== "radio"  ){ // ON: always one
-
-                                if( iself.state[ictrl][iopt.value] == false ){
-                                    // toggle only to true
-                                    iself.state[ictrl][iopt.value] =
-                                        !(iself.state[ictrl][iopt.value]);
-                                    for( var k in iself.state[ictrl]){
-                                        if( k != iopt.value ){
-                                            iself.state[ictrl][k] = false;
-                                        }
-                                    }                                    
-                                }
-                                
-                            } else if( itype == "radio-off" ) {
-                                // ON: none or one
-
-                                // always toggle
-                                iself.state[ictrl][iopt.value] =
-                                    !(iself.state[ictrl][iopt.value]);
-                                
-                                if( iself.state[ictrl][iopt.value] == true ){
-                                    // toggle others
-                                    for( var k in iself.state[ictrl]){
-                                        if( k != iopt.value ){
-                                            iself.state[ictrl][k] = false;
-                                        }
-                                    }                                    
-                                }
-                              
-                            } else {
-                                // checkbox: ON: any  
-                                iself.state[ictrl][iopt.value] =
-                                    !(iself.state[ictrl][iopt.value]);
-                            }
-                            console.log( "HAM: statefull: ", ictrl ); 
-                        } else {
-                            console.log( "HAM: stateless" );
-                        }
-                        iself.menucallback(d, ictrl, iopt, iself);
-                    }
-                }( cctrl, copt, ctype, this );
-                                
-                mitem.children.push( { title: title,
-                                       action: callback
-                                     } );
-            }                
-        }    
+            //var mitem =  {children:[]};
+            menu.push(mitem);            
+        }
+        
+        console.log("HAM:",menu);
         
         d3.select("#" + this.pfx + "controls-ham")
             .on('click', d3.contextMenu(menu));
@@ -401,11 +315,11 @@ class BkdNGL{
         console.log( "BkdNGL: PDB load:" + config.url );
         
         var loadCallback = function( args ){
-
+            
             console.log( "BkdNGL: currying loadCallback -> args:",args);
             
             return function( o ){            
-
+                
                 console.log( "BkdNGL: loadCallback -> args:",args);
                 
                 args.self.nglcomp = o;
@@ -414,7 +328,7 @@ class BkdNGL{
                 var selQCut = args.cutQC;
                 
                 var rmap = {};  //  eg rmap[A][123];
-            
+                
                 o.structure.eachAtom( function(atom) {
                     var bf = atom.bfactor;
                     var cnm = atom.chainname;                   
@@ -443,7 +357,7 @@ class BkdNGL{
                 //var swmrmap = rmap;
                 var rk = Object.keys( rmap );
                 //console.log("#### RK:", rk);
-
+                
                 //var ckl = [];
                 for( var c in rk ){    // chains
                     //console.log("#### RM:",rk[c], rmap[rk[c]]);
@@ -479,8 +393,8 @@ class BkdNGL{
                         prev = nc;
                     }
                 }
-
-
+            
+            
                 args.self.rsel.hiqc = sel;
                 args.self.rsel.all = "all";
                 
@@ -491,10 +405,137 @@ class BkdNGL{
                 console.log( "BkdNGL: loaded");
             };            
         }
-
+        
         this.nglstage.loadFile(  config.url ) 
             .then( loadCallback( { self: this,
                                    cutQC: 0.5 }));        
+        
+    }
+    
+    static buildHAMitem( idef, iself ){
+        
+        var mitem = {};
+        mitem.title = idef.label;
+        
+        var cname = this.pfx + "-controls-" + idef.name;
+        var osel = this.anchor + " .bkd-ngl-controls-table ." + cname;
+        
+        var cctrl = idef.name;
+        var ctype = idef.type;
+        var clist= [];
+
+        if( ctype == "list" ){
+        
+            for( var j in idef.options ){
+                clist.push( BkdNGL.buildHAMitem( idef.options[j],
+                                                 iself)
+                          );    
+            }
+            
+            if( clist.length > 0 ) mitem.children=clist;
+            return mitem;
+        }
+
+        if( ctype == "pdb-list" ){
+            
+            console.log("HAM: URL:",idef.url);
+            //for( var j in idef.options ){
+            //    clist.push( BkdNGL.buildHAMitem( idef.options[j],
+            //                                     iself)
+            //);    
+            //}
+            if( clist.length > 0 ) mitem.children=clist;
+            return mitem;
+        }
+        
+        mitem.children=clist;
+        for( var j in idef.options ){
+            var copt = idef.options[j];  // eg: swmsel
+            
+            var title = function( ictrl, iopt, itype, iself  ){
+                return function(d){                        
+                    var prefix ="";
+                    var label = iopt.label;
+                    if( ictrl in iself.state ){
+                        var icst = iself.state[ictrl][iopt.value];
+                        
+                        if(itype == "cbox"){
+                            if( icst ){                                
+                                prefix = "&#9745; ";
+                            } else {
+                                prefix = "&#9744; ";
+                            }
+                        }
+                        
+                        if(itype == "radio" || itype == "radio-off"){
+                            if( icst ){                                
+                                prefix = "&#9673; "; // fisheye
+                            } else {
+                                prefix = "&#9678; "; // bullseye;
+                                // "&#8857; ";  // dotted dircle
+                            }
+                        }
+                    }
+                    
+                    return prefix + label;                        
+                }                    
+            }( cctrl, copt, ctype, iself );
+            
+            var callback = function( ictrl, iopt, itype, iself ){
+                return function(d) {
+                    console.log( "HAM: callback:", ictrl, iopt, itype );
+                    
+                    if( ictrl in iself.state ){
+                        var icst = iself.state[ictrl][iopt.value];
+                        
+                        if( itype== "radio"  ){ // ON: always one
+                            
+                            if( iself.state[ictrl][iopt.value] == false ){
+                                // toggle only to true
+                                iself.state[ictrl][iopt.value] =
+                                    !(iself.state[ictrl][iopt.value]);
+                                for( var k in iself.state[ictrl]){
+                                    if( k != iopt.value ){
+                                        iself.state[ictrl][k] = false;
+                                    }
+                                }                                    
+                            }
+                            
+                        } else if( itype == "radio-off" ) {
+                            // ON: none or one
+                            
+                            // always toggle
+                            iself.state[ictrl][iopt.value] =
+                                !(iself.state[ictrl][iopt.value]);
+                            
+                            if( iself.state[ictrl][iopt.value] == true ){
+                                // toggle others
+                                for( var k in iself.state[ictrl]){
+                                    if( k != iopt.value ){
+                                        iself.state[ictrl][k] = false;
+                                    }
+                                }                                    
+                            }
+                            
+                        } else {
+                            // checkbox: ON: any  
+                            iself.state[ictrl][iopt.value] =
+                                !(iself.state[ictrl][iopt.value]);
+                        }
+                        console.log( "HAM: statefull: ", ictrl ); 
+                    } else {
+                        console.log( "HAM: stateless" );
+                    }
+                    iself.menucallback(d, ictrl, iopt, iself);
+                }
+            }( cctrl, copt, ctype, iself );
+            
+            clist.push( { title: title,
+                          action: callback
+                        } );
+        }            
+        
+        return mitem;        
     }
     
     rerender(){        

@@ -376,7 +376,7 @@ public class BkdPortImpl implements BkdPort {
                  java.lang.String mode ){
         
         Logger log = LogManager.getLogger( BkdPortImpl.class );	
-        log.info( "setNode" );
+        log.info( "sBkdPortImpl:setNode mode=" + mode );
         
         List<edu.ucla.mbi.dxf20.NodeType> nList = dataset.getNode();
         List<edu.ucla.mbi.dxf20.NodeType> rList = new <edu.ucla.mbi.dxf20.NodeType>ArrayList();    
@@ -392,7 +392,7 @@ public class BkdPortImpl implements BkdPort {
             //String ns = ntp.getNs();
             
             String ac = ntp.getAc();
-            log.info( "setNode: node type: " + ntp.getName() );
+            log.info( "BkdPortImpl.setNode: node type: " + ntp.getName() + ":" + ac);
             
             edu.ucla.mbi.dxf20.NodeType rnode = null;
             

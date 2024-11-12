@@ -170,6 +170,93 @@ class DxfUtils():
         
         return zdts
 
+
+    def buildSimpleZnode( self, snode, ns="", ac="", cid = 1 ):
+      
+        ntype = self.getTypeDefType( "protein" )
+        
+        print( snode["ac"] ) # ac
+
+        print( snode["organism"]["taxid"] ) # taxid 
+        print( snode["organism"]["sci-name"] ) # sci name 
+        print( snode["organism"]["com-name"] ) # common name                
+        
+        print( snode["name"] ) # name   1,2,3,... aliases        
+        
+        nns = snode["ns"]
+        nac = snode["ac"]
+            
+        nlabel = snode["label"]
+        nname = snode["name"]
+        ntaxid = snode["organism"]["taxid"]
+        ntxlabel = snode["organism"]["sci-name"] 
+        ntxname = snode["organism"]["com-name"] 
+        print("L:",ntxlabel,"N:",ntxname)
+        #
+
+        
+        znode = self.zdxf.nodeType( ns=nns, ac=nac, type=ntype, id=1,
+                                    label=nlabel, name=nname,
+                                    featureList = None,
+                                    xrefList = {'xref':[]},
+                                    attrList = {'attr':[]} )
+
+        idxref = self.zdxf.xrefType( type = "identical-to",
+                                     typeNs = "dxf",
+                                     typeAc = "dxf:0009",
+                                     node = xsd.SkipValue,
+                                     ns = nns,
+                                     ac = nac )
+        znode.xrefList.xref.append(idxref)
+        
+        ntxtype = self.getTypeDefType( "taxon" )
+        txnode = self.zdxf.nodeType( ns="taxid", ac=ntaxid, type=ntxtype, id=1,
+                                     label=ntxlabel, name=ntxname)        
+        
+        txref = self.zdxf.xrefType( typeNs = "dxf", typeAc ="dxf:0007",
+                                    type = "produced-by",
+                                    node = txnode,
+                                    ns = "taxid", ac = ntaxid )
+        
+        znode.xrefList.xref.append(txref)        
+
+        if 'sequence' in snode:
+            if znode.attrList is None:
+                znode.attrList = {'attr':[]}
+                
+            sequence = snode['sequence']
+            
+            cattr = self.zdxf.attrType( name = "sequence", value = sequence, ns ="dxf", ac="dxf:0071" )
+            znode.attrList['attr'].append( cattr )
+
+        if 'comment' in snode:
+            if znode.attrList is None:
+                znode.attrList = {'attr':[]}
+                
+            comment = snode['comment']
+            
+            cattr = self.zdxf.attrType( name = "comment", value = comment, ns ="dxf", ac="dxf:0087" )
+            znode.attrList['attr'].append( cattr )
+            
+        if 'structure-descriptor-list' in snode:
+            if znode.attrList is None:
+                znode.attrList = {'attr':[]}
+                
+            sdl = snode['structure-descriptor-list']
+            
+            cattr = self.zdxf.attrType( name = "structure-descriptor-list", value = sdl, ns ="dxf", ac="dxf:0000" )
+            znode.attrList['attr'].append( cattr )
+            
+            
+                    
+        zdts = self.zdxf.datasetType([znode])
+        zdts['level']= "2"
+        zdts['version']= "0"
+        
+        return zdts
+
+
+
     
     def buildUniprotZnode( self, node, ns="", ac="", cid = 1 ):
        
@@ -209,7 +296,7 @@ class DxfUtils():
         #  <xref type="encoded-by"  typeNs="dxf" typeAc="dxf:0022" ns="embl"    ac="NM_000000.1"/>
         # </xrefList>
         #</node>
-        
+         
         print(type(node))
         ntype = self.getTypeDefType( "protein" )
 
@@ -787,9 +874,5 @@ class DxfUtils():
                                            name="linked-node" )
             
         return ntype
-
-
-        
-   
     
 print("DxfUtils: import")

@@ -157,6 +157,10 @@ class BkdLollipop{
         }
     }
 
+
+    setSeqName(name){   // #########################
+        $('.g3_lollipop_domain text').text(name);
+    }
     
     // redisplay after datasets change
     //--------------------------------

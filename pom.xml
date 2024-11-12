@@ -67,7 +67,7 @@
 
     <c3p0.version>0.9.5.4</c3p0.version>
     <postgresql.version>42.2.6</postgresql.version>
-    <json.version>20210307</json.version>
+    <json.version>20240303</json.version>
 
     <commons-logging.version>1.2</commons-logging.version>    
     <log4j.version>2.16.0</log4j.version>
@@ -243,4 +243,18 @@
    </plugins>
   </build>
 
+  <distributionManagement>
+
+    <repository>
+      <id>internal</id>
+      <url>https://imex.mbi.ucla.edu/archiva/repository/internal/</url>
+    </repository>
+
+    <snapshotRepository>
+      <id>snapshots</id>
+      <url>https://imex.mbi.ucla.edu/archiva/repository/snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  
 </project>

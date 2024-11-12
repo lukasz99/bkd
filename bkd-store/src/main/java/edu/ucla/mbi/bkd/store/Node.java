@@ -314,6 +314,10 @@ public class Node implements Comparable<Node>{
         if( this.cvtype != null){
             map.put( "type-name", this.cvtype.getName());
             map.put( "type-cv", this.cvtype.getAc());
+        } else {
+            
+            Logger log = LogManager.getLogger( this.getClass() );
+            log.info("cvtype: " + this.cvtype);
         }
         
         if(this.getComment().length() > 0){
@@ -361,6 +365,9 @@ public class Node implements Comparable<Node>{
             map.put("feature",this.getFeats() );
         }
         */
+
+        map.putAll(this.getJvalMap());
+               
         return map;
     }
     

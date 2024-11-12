@@ -89,23 +89,23 @@ BKDnodeFeatures = {
                              }
                  }
              }],
-    
+
     exptlst:[{ id:"flist-select-e-0",name:"select-e-0",
-                 label:"PDB", value:"hiqc",                
-                 labelOn: "PDB", labelOff: "PDB",
-                 mode: "bcut" , bval: 0.5, 
-                 color:"#aaaaaa",
-                 callback: "struct",
-                 opt:{
-                     style: "cbox", default: "off",
-                     mode: "chn",
-                     states: { on: { mode: "step", val: "bfact", vcut: 0.5,
-                                     colLo: "green", opaqLo: 1.0, 
-                                     colHi: "gray", opaqHi: 0.6   },
-                               off: { mode: "solid", color: "green", opaq: 1.0 }
-                             }
-                 }
-               }],
+               label:"PDB", value:"hiqc",                
+               labelOn: "PDB", labelOff: "PDB",
+               mode: "bcut" , bval: 0.5, 
+               color:"#aaaaaa",
+               callback: "struct",
+               opt:{
+                   style: "cbox", default: "off",
+                   mode: "chn",
+                   states: { on: { mode: "step", val: "bfact", vcut: 0.5,
+                                   colLo: "green", opaqLo: 1.0, 
+                                   colHi: "gray", opaqHi: 0.6   },
+                             off: { mode: "solid", color: "green", opaq: 1.0 }
+                           }
+               }
+             }],
     
     swmsels: [ { id:"flist-select-1",name:"select-1",
                  label:"HiQC", value:"hiqc",                
@@ -147,6 +147,80 @@ BKDnodeFeatures = {
                  style: "rbox", default: "A",
                  mode: "chn",
                  opt: {} } ],
+    
+    strlst:[
+        { "id":"ngl-str-exp-1",
+          "name":"ngl-str-exp-1",
+          "label":"Experimental",
+          "type":"pdb-list",
+          "url":"node?ns=CVDB&ac=CVDB14P&format=json&detail=STRL&src=expt&ret=data",
+          "options": [
+              { id:"flist-select-e-0",name:"select-e-0",
+                label:"PDB", value:"hiqc",                
+                labelOn: "PDB", labelOff: "PDB",
+                mode: "bcut" , bval: 0.5, 
+                color:"#aaaaaa",
+                callback: "struct",
+                opt:{
+                    style: "cbox", default: "off",
+                    mode: "chn",
+                    states: { on: { mode: "step", val: "bfact", vcut: 0.5,
+                                    colLo: "green", opaqLo: 1.0, 
+                                    colHi: "gray", opaqHi: 0.6   },
+                              off: { mode: "solid", color: "green", opaq: 1.0 }
+                            }
+                }
+              }]
+        },
+        { "id":"ngl-str-prd-1",
+          "name":"ngl-str-prd-1",
+          "label":"Predicted",
+          "type":"pdb-list",
+          "url":"node?node?ns=CVDB&ac=CVDB14P&format=json&detail=STRL&src=pred&ret=data",
+          "options": [
+              { id:"flist-select-1",name:"select-1",
+                label:"HiQC", value:"hiqc",                
+                labelOn: "HiQC", labelOff: "All",
+                mode: "bcut" , bval: 0.5, 
+                color:"#aaaaaa",
+                callback: "select",
+                opt:{
+                    style: "cbox", default: "off",
+                    mode: "chn",
+                    states: { on: { mode: "step", val: "bfact", vcut: 0.5,
+                                    colLo: "green", opaqLo: 1.0, 
+                                    colHi: "gray", opaqHi: 0.6   },
+                              off: { mode: "solid", color: "green", opaq: 1.0 }
+                            }
+                }
+              },
+              { id: "flist-select-2","name":"select-2",
+                label: "Current Sequence", "value":"smsa",
+                labelOn: "Canonical", labelOff: "Current Sequence",
+                color: "#aaaaaa",
+                callback: "select",
+                style: "cbox", default: "off",
+                mode: "chn",
+                opt: {
+                    style: "cbox", default: "off",
+                    mode: "smsa",
+                    states: { on: { mode: "msa", msa: 2, sref: 0, ssel: 1 },
+                              off: { mode: "msa", msa: 2, sref: 0, ssel: 0 }
+                             }
+                }
+              },
+              
+              { id: "flist-select-3","name":"select-2",
+                label: "Monomer", "value":"chain",
+                labelOn: "Monomer", labelOff: "All",
+                color: "#aaaaaa",
+                callback: "select",
+                style: "rbox", default: "A",
+                mode: "chn",
+                opt: {} } ]
+        }
+    ],
+    
     
     swmcols: [ { id:"flist-select-0",name:"select-0",
                  label:"Position",
@@ -914,8 +988,8 @@ BKDnodeFeatures = {
                   menu:[
                       { name: "str",
                         label: "Structure",
-                        type: "radio",                            
-                        options: BKDnodeFeatures.predlst },
+                        type: "list",                            
+                        options: BKDnodeFeatures.strlst },
 
                       { name: "sel",
                         label: "Select",

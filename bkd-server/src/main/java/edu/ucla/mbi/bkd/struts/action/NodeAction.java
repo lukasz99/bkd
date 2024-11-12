@@ -43,12 +43,15 @@ public class NodeAction extends PortalSupport{
     
     public String execute() throws Exception {
 
-        Logger log = LogManager.getLogger( ReportAction.class );
+        Logger log = LogManager.getLogger( NodeAction.class );
         log.debug( " MenuContext: " + super.getMenuContext() );
 
-        log.info("NS/AC: " + this.getNs() + "/" + this.getAc());
+        log.info( "NS/AC: " + this.getNs()
+                  + "/" + this.getAc() 
+                  + " DET: " +this.detail );
         log.info("Ret: " + this.getRet() + " Format: " + this.getFormat());
         log.info("fset: " + this.getFset() + " fpos: " + this.getFpos());
+
         
         return dispatch();
     }
@@ -59,6 +62,8 @@ public class NodeAction extends PortalSupport{
     //-----------
 
     public String dispatch() throws Exception {
+
+        Logger log = LogManager.getLogger( NodeAction.class );
         
         if( this.getNs() != null && this.getNs().length() > 0 &&
             this.getAc() != null && this.getAc().length() > 0 ){
@@ -66,8 +71,7 @@ public class NodeAction extends PortalSupport{
             if( this.fpos != null ){  // single feature request
                 int pos = 0;
                 try{
-
-                    Logger log = LogManager.getLogger( ReportAction.class );
+                    
                     log.info("  fpos= " + this.fpos );
                     pos = Integer.parseInt( fpos );
                     node = manager.buildNodeFeature( ns, ac, pos, this.iso );
@@ -79,26 +83,43 @@ public class NodeAction extends PortalSupport{
                 this.setRet("data");
                 return JSON;
             }
-            
-                
+                            
             if( "FEATL".equals( this.detail ) ){
-                // strip feature details: to be replaced by index search                
-                node = manager.buildNodeFeatLstMap( (Node) manager.getNode( ac, "FEAT") ,
-                                                    "ALL",
-                                                    this.iso,
-                                                    this.dts );
+                // strip feature details: to be replaced by index search
+                node = manager
+                    .buildNodeFeatLstMap( (Node) manager.getNode( ac, "FEAT"),
+                                          "ALL",
+                                          this.iso,
+                                          this.dts );
+                
             } else if( "FEATS".equals( this.detail )){
-                // strip feature details: to be replaced by index search                
-                node = manager.buildNodeFeatLstMap( (Node) manager.getNode( ac, "FEAT") ,
-                                                    "SHORT",
-                                                    this.iso,
-                                                    this.dts );
+                // strip feature details: to be replaced by index search        
+                node = manager
+                    .buildNodeFeatLstMap( (Node) manager.getNode( ac,
+                                                                  "FEAT"),
+                                          "SHORT",
+                                          this.iso,
+                                          this.dts );
+            } else if( "STRL".equals( this.detail )){
+                // strip feature details: to be replaced by index search
+                node = manager
+                    .buildNodeStructureLstMap( (Node) manager
+                                               .getNode( ns,
+                                                         ac,
+                                                         Node.STUB ),
+                                               "SHORT",
+                                               this.iso,
+                                               this.dts );
                 
             } else {
                 if( manager.getBkdConfig().getPrefix().equalsIgnoreCase(ns) ){
-                    node = manager.getNode( ac, this.detail ).toMap();  // native record
+                    log.info("  native... " + ns);
+                    node = manager
+                        .getNodeMap( ac, this.detail ); //.toMap();  // native record
                 } else {
-                    node = manager.getNode( ns, ac, this.detail ).toMap();   
+                    log.info("  non-native... " + ns );
+                    node = manager
+                        .getNode( ns, ac, this.detail ).toMap();   
                 }
             }                                      
         }
@@ -106,6 +127,7 @@ public class NodeAction extends PortalSupport{
         if ( getRet() == null || getRet().equals( "view" ) ) {    
             return SUCCESS;
         } else if( getRet().equals( "data" ) ) {
+            log.info("NODE: " + node );            
             return JSON;
         }
         return SUCCESS;
@@ -204,7 +226,7 @@ public class NodeAction extends PortalSupport{
 
     //--------------------------------------------------------------------------
     
-    String dts = ""; // feature dataset
+    String dts = ""; // dataset (features, structures, etc)
     public void setDts( String dts ){
         this.dts = dts;
     }

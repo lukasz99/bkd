@@ -102,23 +102,29 @@ public class BkdRecordManager {
         
     }
 
-    public Object getNodeMap( String acc, String depth ) {
-	
+    public Map<String, Object> getNodeMap( String acc, String depth ) {
+        
         Logger log = LogManager.getLogger( this.getClass() );
-        log.info( " get node(2) -> ac=" + acc );
+        log.info( "getNodeMap -> acc=" + acc + " :: " + depth );
         
-        Node node = daoContext.getNodeDao().getByAcc( acc, depth );            
-        return node;
         
+        
+        Map<String, Object> map =
+            daoContext.getNodeDao().getByAcc( acc, depth ).toMap();        
+        
+        if(map == null ) return  new HashMap<String,Object>();
+        
+        return map;
     }
 
+    
     public Node getNode( int id, String depth ) {
 	
         Logger log = LogManager.getLogger( this.getClass() );
         log.info( " get node -> nac(int)=" + id );
         
         try{
-            Node node = daoContext.getNodeDao().getByNac( id, depth );            
+            Node node = daoContext.getNodeDao().getByNac( id, depth );
             return node;
         } catch( Exception ex ) {
             log.error(ex);
@@ -147,15 +153,20 @@ public class BkdRecordManager {
 
         try{
             if( bkdconf.getPrefix().equalsIgnoreCase( ns ) ){
-                return daoContext.getNodeDao().getByAcc( acc, depth );            
+                return daoContext.getNodeDao().getByAcc( acc, depth );
             } else {
-                return daoContext.getNodeDao().getById( ns, acc, depth );            
+                return daoContext.getNodeDao().getById( ns, acc, depth );
             }            
         } catch( Exception ex ) {
             log.error(ex);
             return null;
         }
     }
+
+
+
+
+
     
     public Object buildNodeFeature( String ns, String ac, int pos, String iso ){
 
@@ -203,6 +214,36 @@ public class BkdRecordManager {
         
         return rmap;
     }
+
+
+    public Object buildNodeStructureLstMap( Node node,
+                                            String mode, 
+                                            String isoform,
+                                            String dataset ){
+
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( "buildNodeStructureLst: mode->" + mode );
+        log.info( "buildNodeStructureLst: isof->" + isoform );
+        log.info( "buildNodeStructureLst: dtst->" + dataset );
+        
+        Map rnode = new HashMap();
+        rnode.put("ns", node.getNs());
+        rnode.put("ac", node.getAc());
+        rnode.put("label", node.getLabel());
+        
+        List slst = new ArrayList();
+        rnode.put("structure", slst);
+
+        Map<String,Map<String,String>> jval = node.getJvalMap();
+
+        for( Map.Entry<String, Map<String,String>> entry : jval.entrySet()){
+            log.info( "buildNodeStructureLst: key->" + entry.getKey() );
+            log.info( "buildNodeStructureLst: jval(key)->" + entry.getValue() );
+            
+        }        
+        return rnode;
+    }
+
 
     public Object buildNodeFeatLstMap( Node node,
                                        String mode, 
@@ -333,6 +374,9 @@ public class BkdRecordManager {
                     .getTaxonDao().updateTaxon( node.getTaxon() );
             }
             node.setTaxon( ntaxon );
+
+            // node add/update
+            //----------------
             
             node = daoContext.getNodeDao().updateNode( node );
 
@@ -796,6 +840,24 @@ public class BkdRecordManager {
         }
     }
 
+
+
+    public Node updateNode( Node node, List<NodeFeat> nflist ) {
+        
+        Logger log = LogManager.getLogger( this.getClass() );
+        log.info( " update node -> node=" + node.toString() );
+
+        if( node.getNacc() == 0 ){ 
+            int nid = daoContext.getIdGenDao().getNextId( Node.generator() );
+            node.setNacc( nid );	    
+        }
+
+        node.setPrefix( bkdconf.getPrefix() );
+
+        return node;
+    }
+
+    
     //---------------------------------------------------------------------
     // Source management
     //------------------
@@ -1149,6 +1211,7 @@ public class BkdRecordManager {
             
         return report;
     }
+    
     
     public  Map<String, Object> getReportMap( String ns, String ac ) {
 

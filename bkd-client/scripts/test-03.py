@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import os
 import sys
 import argparse
@@ -18,7 +18,7 @@ print(sys.path)
 import bkdpy as BK
 
 bc = BK.BkdClient()
-du = BK.DxfUtils('http://localhost:9999/bkdev/services/soap?wsdl')
+du = BK.DxfUtils('http://10.1.7.200:9999/cvdbdev0/services/soap?wsdl')
 
 node = { "type":"protein","name":"actin","label":"Act1",
          "alias":["actin","","actin1"],
@@ -50,9 +50,13 @@ node = { "type":"protein","name":"actin","label":"Act1",
          "comment":"my comment",
          "source":{"type":"online-resource","name":"UniprotKB:60010.178","label":"UniprotKB","ns":"upr","ac":"P60010.178","url":"https://uniprot.org/uniprot/P60010"}}
 
+
+
+print(du)
+
 znode = du.buildznode(node)
 
 print("ZNODE",znode)
 
 #zres = bc.setnode(znode, mode="add", debug=True)
-zres = bc.setnode(znode, mode="add", debug=False)
+#zres = bc.setnode(znode, mode="add", debug=False)

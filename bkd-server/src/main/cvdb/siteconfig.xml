@@ -31,6 +31,11 @@
         <value>dxf:0138</value>
       </list>
     </property>
+    <property name="storedJValAcList">
+      <list>
+        <value>dxf:0000</value>
+      </list>
+    </property>
     <property name="featureXrefList">                                    
       <list>
         <value>dbsnp</value>

@@ -27,6 +27,18 @@ public class BkdConfig{
             this.attrAcList = new ArrayList<String>();
         return this.attrAcList;        
     }
+    
+    List<String> jvalAcList  = null;
+
+    public void setStoredJValAcList(List<String> aclist){
+        this.jvalAcList=aclist;        
+    }
+    
+    public List<String> getStoredJValAcList(){
+        if( this.jvalAcList == null )
+            this.jvalAcList = new ArrayList<String>();
+        return this.jvalAcList;        
+    }
 
     List<String> aliasAcList = null;
     public void setStoredAliasAcList(List<String> aclist){

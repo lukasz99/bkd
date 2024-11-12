@@ -66,6 +66,32 @@
           </attr>
         </attrList>
       </attr>
+      <attr name="structure-descriptor-list" ns="dxf" ac="dxf:0000">
+        <value>
+           [{"type":"expt","src-file":"expt/1abc.pdb","chain":"ABCD","sequence":"P60010-2"},
+            {"type":"expt","src-file":"expt/1cdf.pdb","chain":"ABCD","sequence":"P60010-2"},
+            {"type":"pred","src-file":"pred/pred1.pdb","chain":"ABCD_EFGH","sequence":"P60010-1"},
+            {"type":"pred","src-file":"pred/pred2.pdb","chain":"ABCD_EFGH","sequence":"P60010-2"}]
+        </value>
+      </attr>
+      <attr name="structure-descriptor-list" ns="dxf" ac="dxf:0000">
+       <attr name="structure-descriptor" ns="dxf" ac="dxf:0000">
+         <value>  
+           {"type":"expt","src-file":"expt/1abc.pdb","chain":"ABCD","sequence":"P60010-2"}
+         </value>
+        </attr>
+        <attr name="structure-descriptor" ns="dxf" ac="dxf:0000">
+         <value>               
+            {"type":"pred","src-file":"pred/pred1.pdb","chain":"ABCD_EFGH","sequence":"P60010-1"}
+         </value>
+        </attr>
+        <attr name="structure-descriptor" ns="dxf" ac="dxf:0000">
+         <value>  
+            {"type":"pred","src-file":"pred/pred2.pdb","chain":"ABCD_EFGH","sequence":"P60010-2"}]
+         </value>
+        </attr>
+       <attrList>  
+      </attr>
     </attrList>
   </node>
 </dataset>

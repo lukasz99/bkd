@@ -343,7 +343,7 @@ public class BkdNodeManager {
         ProteinNode curNode = new ProteinNode();
         
         ProteinNode oldNode =
-            (ProteinNode) recordManager.getNode( ns, ac ); 
+            (ProteinNode) recordManager.getNode( ac, Node.STUB ); 
 
         log.info("Old Node:" + ns + " :: " + ac + " ::" + oldNode);
         
@@ -351,17 +351,125 @@ public class BkdNodeManager {
             curNode = oldNode;
             
             if( mode.equalsIgnoreCase( "add" ) ){
-                return this.toDxfProteinNode( oldNode, new ArrayList<NodeFeat>() );  // LS: Fix me ? 
+                // LS: aod node exists -> add returnes old version 
+                return this.toDxfProteinNode( oldNode,
+                                              new ArrayList<NodeFeat>() );
+            }            
+            if( mode.equalsIgnoreCase( "update" ) ){
+                // LS: updated node exists -> updates selected fields
+                log.info("Updating Old Node:" + ns + " :: " + ac ); 
+                String uName = node.getName();
+                String uLabel = node.getLabel();
+                       
+                // old/new jVals
+                
+                JSONObject oldJVal = new JSONObject();
+                
+                JSONObject updJVal = new JSONObject();
+                
+                try{
+                    oldJVal = new JSONObject(oldNode.getJval());
+
+                } catch( JSONException jx ){
+                    // Should not happen
+                }
+                log.info("    Old Node->oldJVal: " + oldNode.getJval() ); 
+                
+                for( AttrType att: node.getAttrList().getAttr() ){
+            
+                    String aval = null;
+                    if( att.getValue() != null ){
+                        aval = att.getValue().getValue();
+                    }
+                    NodeType anode = att.getNode();
+                    TypeDefType atype = att.getType();
+            
+                    String attNs = att.getNs();
+                    String attAc = att.getAc();
+                    
+                    if( att.getName().equalsIgnoreCase("sequence")
+                        && aval != null ){
+                        // sequence                     
+                        oldNode.setSequence( aval );
+                    } else if( att.getAc().equalsIgnoreCase("dxf:0087") ){
+                        // comment
+                        oldNode.setComment(aval);
+                        
+                    } else if( recordManager.getBkdConfig()
+                               .getStoredJValAcList()
+                               .contains( att.getAc() ) ){
+                        
+                        // stored jval
+                        
+                        JSONObject ujval= new JSONObject();
+                        
+                        try{
+                            ujval.put("ns",att.getNs());
+                        }  catch(JSONException jx){
+                            // shouldn't happen
+                        }
+
+                        try{
+                            ujval.put("ac",att.getAc());
+                            if( aval != null) {
+                            ujval.put("value",aval);
+                            } else {
+                                ujval.put("value","");
+                            }
+                            updJVal.put(att.getName(),ujval);
+                            
+                        } catch(JSONException jx){
+                            // shouldn't happen
+                        }
+                    }                    
+                }
+
+                log.debug("    Old Node->updJVal: " + updJVal );
+                log.debug( updJVal.getClass().getCanonicalName() );
+                log.debug( JSONObject.getNames(updJVal) );
+                
+                log.debug("    Old Node->oldJVal: " + oldJVal );
+                log.debug( oldJVal.getClass().getCanonicalName() );
+                log.debug( JSONObject.getNames(oldJVal) );
+                
+                try{
+
+                    // retain unmodified
+                    //------------------
+
+                    if(JSONObject.getNames(oldJVal) != null){
+                        for( String k: JSONObject.getNames(oldJVal) ){
+                            if( ! Arrays.asList(JSONObject.getNames(updJVal)).contains(k) ){
+                                updJVal.put(k, oldJVal.get(k));
+                            }
+                        }
+                    }
+                    // drop empty vals
+                    //----------------
+                
+                    for(  String k: JSONObject.getNames(updJVal) ){
+                        if( updJVal.getJSONObject(k)
+                            .getString("value").length() == 0){
+                            updJVal.remove(k);
+                        }
+                    }
+                } catch(JSONException jx){
+                    // shouldn't happen                    
+                                    
+                }
+                
+                log.debug("    Old Node->updJVal: " + updJVal );                                 
+                log.debug("ujval: " + updJVal.toString() );
+                
+                oldNode.setJval( updJVal.toString() );
+
+                oldNode = (ProteinNode)
+                    recordManager.addNode( oldNode,
+                                           new ArrayList<NodeFeat>() );
+                return this.toDxfProteinNode( oldNode,
+                                              new ArrayList<NodeFeat>() );
             }
 
-            if( mode.equalsIgnoreCase( "add" ) ){
-                return this.toDxfProteinNode( oldNode, new ArrayList<NodeFeat>() );  // LS: Fix me ? 
-            }
-            
-            if( mode.equalsIgnoreCase( "update" ) ){
-                //return this.toDxfProteinNode( oldNode );
-            }
-            //return this.toDxfProteinNode( oldNode );	    
         } else {
             try{
                 
@@ -1206,7 +1314,10 @@ public class BkdNodeManager {
         //  <xref type="produced-by" typeAc="dxf:0007" typeNs="dxf" ac="4932" ns="taxid"/>
         // </xrefList>
         //</node>
-		
+
+        Logger log = LogManager.getLogger( BkdNodeManager.class );
+        log.info("BkdNodeManager.toDxfProteinNode");
+
         NodeType dxfNode = dxfFactory.createNodeType();
         
         TypeDefType dxfType = dxfFactory.createTypeDefType();
@@ -1319,8 +1430,7 @@ public class BkdNodeManager {
                                     xt.getAttrList().getAttr().add(jvAttr);                                    
                                 }
                                 
-                            } catch( JSONException jx ){
-                                Logger log = LogManager.getLogger( BkdNodeManager.class );
+                            } catch( JSONException jx ){                               
                                 log.info( "JSONException: ", ax.getJval() );                                
                             }
 
@@ -1331,6 +1441,45 @@ public class BkdNodeManager {
 
                 }
                 dxfNode.getAttrList().getAttr().add(da);
+            }
+        }
+        
+        if(node.getJval() != null && node.getJval().length() > 0 ){
+            
+            log.info("node feature: jval->" + node.getJval());
+            try{
+
+                JSONObject nJVal = new JSONObject(node.getJval());
+
+                if( nJVal.length() > 0){
+                    if(dxfNode.getAttrList() == null){
+                        dxfNode.setAttrList(dxfFactory.createNodeTypeAttrList() );
+                    }
+                }
+                
+                Iterator<String> njvk = nJVal.keys();
+                while( njvk.hasNext() ){
+                    String janame = njvk.next();                        
+                    JSONObject jatt = (JSONObject) nJVal.get(janame);
+                        
+                    AttrType djatt = dxfFactory.createAttrType();
+                    djatt.setName(janame);
+                    djatt.setNs(jatt.getString("ns"));
+                    djatt.setAc(jatt.getString("ac"));
+                    djatt.setValue( dxfFactory.createAttrTypeValue());
+                    djatt.getValue().setValue(jatt.getString("value"));
+                    if(jatt.has("vns")){
+                        djatt.getValue().setNs(jatt.getString("vns"));
+                    }
+                    if(jatt.has("vac")){
+                        djatt.getValue().setAc(jatt.getString("vac"));
+                    }
+                    dxfNode.getAttrList().getAttr().add(djatt);                                                
+                }
+
+            } catch( JSONException jx){
+                // shouldn't happen
+                log.info(jx);
             }
         }
 
@@ -1404,8 +1553,8 @@ public class BkdNodeManager {
             }
             
             if(f.getJval() != null){
-                System.out.println("node feature: jval->");
-                System.out.println(f.getJval());
+                //System.out.println("node feature: jval->");
+                //System.out.println(f.getJval());
                 try{
                     JSONObject jval = new JSONObject(f.getJval());
 
