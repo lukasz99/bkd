@@ -490,11 +490,15 @@ BKDnodeFeatures = {
                 "  <td valign='top' align='center'>"+
                 "   <table id='flist-tabs' width='100%'>"+
                 "    <tr>"+
-                "     <td id='track-tab' class='bkd-feat-tab-on track-tab'>Genome&nbsp;Viewer&nbsp;<a id='bkd-genome-browser-help' html=''><img title='Help' width='16' height='16' src='img/icons8-info.svg'/></a></td>"+
+                "     <td id='track-tab' class='bkd-feat-tab-on track-tab'>Genome&nbsp;Viewer&nbsp;<a id='bkd-genome-browser-help' html=''>"+
+                "       <img title='Help' width='16' height='16' src='img/icons8-info.svg'/></a></td>\n"+
                 //"     <td id='homo-tab-panther' class='bkd-feat-tab-off homo-tab' title='Source: UCSC Genome Browser' >Homology&nbsp;(G)&nbsp;<a id='bkd-homology-help' html=''><img title='Help' width='16' height='16' src='img/icons8-info.svg'/></a></td>"+
-                "     <td id='homo-tab-ucsc' class='bkd-feat-tab-off homo-tab' title='Source: PantherDB'>Sequence&nbsp;Homology&nbsp;<a id='bkd-homology-help' html=''><img title='Help' width='16' height='16' src='img/icons8-info.svg'/></a></td>"+
-                "     <td id='topo-tab' class='bkd-feat-tab-off topo-tab'>Membrane&nbsp;Topology&nbsp;<a id='bkd-topology-help' html=''><img title='Help' width='16' height='16' src='img/icons8-info.svg'/></a></td>"+
-                "     <td id='swm-tab' class='bkd-feat-tab-off swm-tab'>Structure&nbsp;<a id='bkd-sequence-help' html=''><img title='Help' width='16' height='16' src='img/icons8-info.svg'/></a></td>"+
+                "     <td id='homo-tab-ucsc' class='bkd-feat-tab-off homo-tab'>Sequence&nbsp;Homology&nbsp;<a id='bkd-homology-help' html=''>"+
+                "       <img title='Help' width='16' height='16' src='img/icons8-info.svg'/></a></td>\n"+
+                "     <td id='topo-tab' class='bkd-feat-tab-off topo-tab'>Membrane&nbsp;Topology&nbsp;<a id='bkd-topology-help' html=''>"+
+                "       <img title='Help' width='16' height='16' src='img/icons8-info.svg'/></a></td>\n"+
+                "     <td id='swm-tab' class='bkd-feat-tab-off swm-tab'>Structure&nbsp;<a id='bkd-structure-help' html=''>"+
+                "       <img title='Help' width='16' height='16' src='img/icons8-info.svg'/></a></td>\n"+
                 //"     <td id='str-tab' class='bkd-feat-tab-off str-tab'>Structure(expt)</td>"+
                 "    </tr>"+
                 "    <tr>"+

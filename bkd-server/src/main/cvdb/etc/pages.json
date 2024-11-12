@@ -356,7 +356,7 @@
                 menudef:"0:2:0",
                 menusel:"5:1:1",
                 viewtype:"file-html",
-                viewpath:"/pages/help-template.html"
+                viewpath:"/pages/help-genome-browser.html"
             },
 
             "help-homology":{
@@ -365,7 +365,7 @@
                 menudef:"0:2:0",
                 menusel:"5:1:1",
                 viewtype:"file-html",
-                viewpath:"/pages/help-template.html"
+                viewpath:"/pages/help-homology.html"
             },
 
             "help-topology":{
@@ -374,7 +374,7 @@
                 menudef:"0:2:0",
                 menusel:"5:1:1",
                 viewtype:"file-html",
-                viewpath:"/pages/help-template.html"
+                viewpath:"/pages/help-topology.html"
             },
 
             "help-structure":{
@@ -383,7 +383,16 @@
                 menudef:"0:2:0",
                 menusel:"5:1:1",
                 viewtype:"file-html",
-                viewpath:"/pages/help-template.html"
+                viewpath:"/pages/help-structure.html"
+            },
+            
+            "help-color-scheme":{
+                active:true,
+                title:"${bkd.pagetitleshort}: Overview",
+                menudef:"0:2:0",
+                menusel:"5:1:1",
+                viewtype:"file-html",
+                viewpath:"/pages/help-color-scheme.html"
             },
             
             "help-features":{
