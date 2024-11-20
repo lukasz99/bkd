@@ -1,7 +1,7 @@
 console.log("bkd-ngl: common");
   
 class BkdNGL{
-    
+     
     constructor( config, data, msa, lpop ){
 
         console.log(" BkdNGL: new-> ", config );
@@ -10,7 +10,7 @@ class BkdNGL{
         this.name = config.name;
         
         this._data = data;  // BKDnodeFeatures
-
+        this._ham  = [];
         // msa: base + key list
         //   for now  [ {base: BkdView, key:'mymsa2a'},
         //              {base: BkdView, key:'mymsa2b'},
@@ -96,7 +96,7 @@ class BkdNGL{
                   on: false, rep: [] },
             
             chn:{ style: "cartoon", scale: 10.0, color: "solid",
-
+                  
                   cselect:{
                       all:   { mode:"all" },
                       chain: { mode:"chain", clist:['A'] },                      
@@ -110,52 +110,69 @@ class BkdNGL{
                   },
                   
                   cstyle: {
-                      "solid": {mode: "solid", color:"green", opaq: 1.0 },
-                            
-                      "cdef": {mode: "grad", opaq: 1.0, val: "atomindex" },
-
-                      "cpos": {mode: "grad", opaq: 1.0, val: "atomindex" },
-
-                      "cchn": {mode: "solid", opaq: 1.0,
-                               clist:[ "#46AB21", "#80B192",
-                                       "#6A8D92","#646890"] },
-                      
+                      "solid": { mode: "solid", color:"green", opaq: 1.0,
+                                 legend: "Solid Legend"
+                               },                            
+                      "cdef": { mode: "grad", opaq: 1.0, val: "atomindex",
+                                legend: "Solid Legend"
+                              },
+                      "cpos": { mode: "grad", opaq: 1.0, val: "atomindex",
+                                legend: "Solid"
+                              },
+                      "cchn": { mode: "solid", opaq: 1.0,
+                                clist:[ "#46AB21", "#80B192",
+                                        "#6A8D92","#646890"],
+                                legend: "Color By Chain Legend"
+                              },
                       "cmsa": { mode: "grad", // valLo: 0, valHi: 1.0, 
                                 colHi: "magenta", colLo:"gray",
                                 //cbasis: ["red","yellow","blue"],
                                 gamma: 4.8, opaq: 1.0,
-                                msaNo: 0, msaSq: 0, val: "ent" },
-                                   
+                                msaNo: 0, msaSq: 0, val: "ent",
+                                legend: "Color By Conservation(MSA) Legend"
+                              },            
                       "csnp": {mode: "grad", variant: "dbsnp", 
                                colHi: "cyan", colLo: "gray",
                                //cbasis: ["magenta","gray","white"],
-                               gamma: 4.0, opaq: 1.0, val: "ent" },
-                      
+                               gamma: 4.0, opaq: 1.0, val: "ent",
+                               legend: "Color By Conservation(SNP) Legend"
+                              },                      
                       "ctpo": { mode: "grad", // valLo: 0, valHi: 1.0, 
                                 colLo: "magenta", colHi:"#808080",
                                 gamma: 4.8, opaq: 1.0,
                                 trsel:{ "Extracellular": { "color":"#00cc66" },
                                         "Cytoplasmic": { "color":"#99ccff" },
                                         "Membrane": { "color":"#ffb266" } },
-                                msaNo: 2, msaSq: 0, val: "track" },
-                      
+                                legend: "<table width='70%'><tr>"
+                                +"<td width='10%' class='legend-cright'>Ribbon&nbsp;color:</td>"
+                                +"<td width='20%' class='legend-cright'>Cytoplasm:</td><td width='8%' class='legend-cleft'><img width='50px' height='15px' src='img/10x10topoGreen.png'></td>"
+                                +"<td width='21%' class='legend-cright'>Membrane:</td><td width='8%' class='legend-cleft'> <img width='50px' height='15px' src='img/10x10topoYellow.png'></td>"
+                                +"<td width='20%' class='legend-cright'>Exstracellular:</td><td width='8%' class='legend-cleft'> <img width='50px' height='15px' src='img/10x10topoBlue.png'></td>"
+                                +"</tr></table>",
+                                msaNo: 2, msaSq: 0, val: "track"
+                              },                      
                       "cbfc": {mode: "grad",valLo: 0, valHi: 1.0, 
                                colLo: "grey", colHi:"magenta",
                                cbasis: ["red","white","blue"],
-                               gamma: 10.0, opaq: 1.0, val: "bfact" },
-                      
+                               gamma: 10.0, opaq: 1.0, val: "bfact",
+                               legend: "Color By Topology Legend"
+                              },
                       "squal": {mode: "grad", valLo: 0, valHi: 1.0, 
                                 colLo: "grey", colHi:"magenta",
                                 cbasis: ["red","white","blue"],
-                                gamma: 2.2, opaq: 1.0, val: "bfact" },
-                      
+                                gamma: 2.2, opaq: 1.0, val: "bfact",
+                                legend: "Color By Prediction Quality Legend"
+                               },                      
                       "strsqS": {mode: "step", val: "bfact", vcut: 0.5,
                                  colLo: "green", opaqLo: 1.0, 
-                                 colHi: "gray", opaqHi: 1.0 },
-                      
+                                 colHi: "gray", opaqHi: 1.0,
+                                 legend: "Color By Bfactor(S) Legend"
+                                },
                       "strsqT": {mode: "step", val: "bfact", vcut: 0.5,
                                  colLo: "green", opaqLo: 1.0, 
-                                 colHi: "gray", opaqHi:0.6 }
+                                 colHi: "gray", opaqHi:0.6,
+                                 legend: "Color By Bfactor(T) Legend"
+                                }
                   }, 
                   on: true, rep: [] }
         }
@@ -164,42 +181,42 @@ class BkdNGL{
             .html( '<div id="'+ this.pfx + '-controls" '
                    + ' class="bkd-ngl-controls" '
                    + ' style="background-color: black; color: white;">'
-                   + '<table class="bkd-ngl-controls-table" width="100%"'
-                   + ' align="center"></table>'
+                   + ' <table class="bkd-ngl-controls-table" width="100%"'
+                   + '  align="center"></table>'
                    + '</div>'
+                   + '<div id="'+ this.pfx + '-legend" '
+                   + ' class="bkd-ngl-lengend" '
+                   + ' style="background-color: black; color: white;">'
+                   + ' <table class="bkd-ngl-legend-table" width="100%"'
+                   + '  align="center"></table>'                   
+                   +' </div>'                  
                    + '<div id="'+ this.pfx + '-view" '
                    + ' class="bkd-ngl-view"></div>'
-                   + '<div id="'+ this.pfx + '-legend" '
-                   + ' class="bkd-ngl-controls" '
-                   + ' style="background-color: black; color: white;">'
-                   + ' legend </div>'
                  );
 
         console.log("BkdNGL: controls->", config.controls);
         var cname = this.pfx + "-controls";
         
-        var row = d3.select( this.anchor + " .bkd-ngl-controls-table")
+        var crow = d3.select( this.anchor + " .bkd-ngl-controls-table")
             .append("tr");
         
-        row.append("td")
+        crow.append("td")
             .attr("class", cname)
             .attr("colspan","1")
             .attr("align","left")            
-        //.style("padding-left","3px")
-        //.style("padding-top","3px")
             .append("img")
             .attr("src","img/hamburger-menu-white.svg")
             .attr("id", this.pfx + "controls-ham")
             .classed("bkd-ngl-icon",true);
         
-        row.append("td")
+        crow.append("td")
             .attr("class", cname)
             .attr("colspan","1")
             .attr("width","95%")
             .attr("align", "center")
             .attr("id",this.pfx + '-controls-var');
         
-        row.append("td")
+        crow.append("td")
             .attr("class", cname)
             .attr("colspan","1")
             .attr("align","right")
@@ -210,6 +227,44 @@ class BkdNGL{
             .attr("id", this.pfx + "controls-detail")
             .classed("bkd-ngl-icon",true);
 
+        var lname = this.pfx + "-legend";
+        var lrow1 = d3.select( this.anchor + " .bkd-ngl-legend-table")
+            .append("tr")
+            .attr("class", lname + "-1" );
+        
+        lrow1.append("td")
+            .attr("class", lname)
+            .attr("colspan","1")
+            .attr("width","40%")
+            .attr("align","left")
+            .attr("id",this.pfx + '-legend-src')
+            .html("Source: Experiment(xray)");
+            
+        lrow1.append("td")
+            .attr("class", lname)
+            .attr("colspan","1")
+            .attr("align","left")
+            .attr("id",this.pfx + '-legend-str')
+            .html("Structure: <a href=''>def</a> (Chain: A)");
+            
+        lrow1.append("td")
+            .attr("class", lname)
+            .attr("colspan","1")
+            .attr("width","33%")
+            .attr("align","right")
+            .attr("id",this.pfx + '-legend-seq')
+            .html("Sequence: <a href=''>def</a>");
+        
+        var lrow2 = d3.select( this.anchor + " .bkd-ngl-legend-table")
+            .append("tr")
+            .attr("class", lname+"-2");
+       
+        lrow2.append("td")
+            .attr("class", lname)
+            .attr("colspan","3")
+            .attr("align","center")
+            .html("Default Color Scheme Legend");
+                
         $( "#" + this.pfx + "controls-detail")
             .on( 'click',
                  { self: this },
@@ -298,118 +353,140 @@ class BkdNGL{
             //var mitem =  {children:[]};
             menu.push(mitem);            
         }
-        
+        this._ham = menu;
         console.log("HAM:",menu);
+
+        var buildHAM = function( args ){
+            console.log( "BkdNGL: currying buildHAM:" + args.menu );
+            
+            return function( o ){
+                console.log( "BkdNGL: curried buildHAM(menu)", args.menu );
+                console.log( "BkdNGL: curried buildHAM(this):", args.iself );
+                
+                var ham = d3.contextMenu(args.menu);
+                ham(o);               
+            }
+        }
         
+        //d3.select("#" + this.pfx + "controls-ham")
+        //    .on('click', d3.contextMenu(menu));
+
         d3.select("#" + this.pfx + "controls-ham")
-            .on('click', d3.contextMenu(menu));
+            .on('click', buildHAM({menu: this._ham, iself: this}));
         
         $( this.anchor ).show();
         
         var phght = $( this.anchor ).height();
         var chght = $( '#' + this.pfx+'-controls' ).height();
         $( '#' + this.pfx + '-view' ).height( phght - chght - 0 );
+
+
         this.nglstage = new NGL.Stage( this.pfx + '-view' );
         $( this.anchor ).hide();
         
+        // Load PDB
+        //---------
+        
         console.log( "BkdNGL: PDB load:" + config.url );
         
-        var loadCallback = function( args ){
+        this.nglstage.loadFile(  config.url ) 
+            .then( this.loadCallback( { self: this,
+                                        cutQC: 0.5 }));                
+    }
+    
+    loadCallback( args ){
             
-            console.log( "BkdNGL: currying loadCallback -> args:",args);
-            
-            return function( o ){            
+        console.log( "BkdNGL: currying loadCallback -> args:",args);
+
+        var self = this;
+        
+        return function( o ){            
                 
-                console.log( "BkdNGL: loadCallback -> args:",args);
+            console.log( "BkdNGL: loadCallback -> args:",args);
                 
-                args.self.nglcomp = o;
+            self.nglcomp = o;
                 
-                var selStr = "";
-                var selQCut = args.cutQC;
+            var selStr = "";
+            var selQCut = args.cutQC;
                 
-                var rmap = {};  //  eg rmap[A][123];
+            var rmap = {};  //  eg rmap[A][123];
                 
-                o.structure.eachAtom( function(atom) {
-                    var bf = atom.bfactor;
-                    var cnm = atom.chainname;                   
-                    var rno = atom.resno;
-                    
-                    if( bf > selQCut) {
-                        if( rmap[cnm]  == undefined ) rmap[cnm] = {};
-                        if( rmap[cnm][rno] == undefined ){
-                            rmap[cnm][rno] = true;
-                        }
-                    }
-                    
-                    if( cnm in args.self.view.chains ){
-                        //console.log( "ZZZZ: chain(o):",
-                        //             cnm, args.self.view.chains);
-                    } else {
-                        args.self.view.chains[cnm] = false;
-                        //console.log( "ZZZZ: chain(+):",
-                        //             cnm, args.self.view.chains);
-                    }
-                    
-                    //console.log(cnm,rno,bf);                    
-                });
+            o.structure.eachAtom( function(atom) {
+                var bf = atom.bfactor;
+                var cnm = atom.chainname;                   
+                var rno = atom.resno;
                 
-                
-                //var swmrmap = rmap;
-                var rk = Object.keys( rmap );
-                //console.log("#### RK:", rk);
-                
-                //var ckl = [];
-                for( var c in rk ){    // chains
-                    //console.log("#### RM:",rk[c], rmap[rk[c]]);
-                    var ckl = Object.keys( rmap[rk[c]] );
-                    ckl.sort(function(a,b) { Number(a) > Number(b) } );
-                    //console.log("####:: ",rk[c], ":",ckl);                    
-                };
-                
-                var sel = "";
-                var prev = Number(ckl[0]);
-                var lop = "";
-                for( var c in ckl ){
-                    var nc = Number( ckl[c] );
-                    //console.log("#### nc: ",nc, prev, nc - prev);
-                    if( nc > prev ){
-                        if( nc - prev == 1 ){ // seq
-                            if( lop != "-"){
-                                lop = "-";
-                                sel = sel + "-";
-                            }
-                            prev = nc;
-                        } else {  // cont or gap                            
-                            if( lop == "-" ){ // gap starts
-                                lop = "";
-                                sel = sel + prev + " or " + nc;
-                            } else{  // next gap 
-                                sel = sel + " or " + nc;
-                            }
-                            prev = nc;
-                        }                            
-                    } else {
-                        sel = String(nc);
-                        prev = nc;
+                if( bf > selQCut) {
+                    if( rmap[cnm]  == undefined ) rmap[cnm] = {};
+                    if( rmap[cnm][rno] == undefined ){
+                        rmap[cnm][rno] = true;
                     }
                 }
+                
+                if( cnm in self.view.chains ){
+                    //console.log( "ZZZZ: chain(o):",
+                    //             cnm, args.self.view.chains);
+                } else {
+                    self.view.chains[cnm] = false;
+                    //console.log( "ZZZZ: chain(+):",
+                    //             cnm, args.self.view.chains);
+                }
+                
+                //console.log(cnm,rno,bf);                    
+            } );
             
             
-                args.self.rsel.hiqc = sel;
-                args.self.rsel.all = "all";
-                
-                o.setSelection( args.self.rsel.all );
-                
-                args.self.rerender();
-                o.autoView( "all" );
-                console.log( "BkdNGL: loaded");
-            };            
-        }
-        
-        this.nglstage.loadFile(  config.url ) 
-            .then( loadCallback( { self: this,
-                                   cutQC: 0.5 }));        
-        
+            //var swmrmap = rmap;
+            var rk = Object.keys( rmap );
+            //console.log("#### RK:", rk);
+            
+            //var ckl = [];
+            for( var c in rk ){    // chains
+                //console.log("#### RM:",rk[c], rmap[rk[c]]);
+                var ckl = Object.keys( rmap[rk[c]] );
+                ckl.sort(function(a,b) { Number(a) > Number(b) } );
+                //console.log("####:: ",rk[c], ":",ckl);                    
+            };
+            
+            var sel = "";
+            var prev = Number(ckl[0]);
+            var lop = "";
+            for( var c in ckl ){
+                var nc = Number( ckl[c] );
+                //console.log("#### nc: ",nc, prev, nc - prev);
+                if( nc > prev ){
+                    if( nc - prev == 1 ){ // seq
+                        if( lop != "-"){
+                            lop = "-";
+                            sel = sel + "-";
+                        }
+                        prev = nc;
+                    } else {  // cont or gap                            
+                        if( lop == "-" ){ // gap starts
+                            lop = "";
+                            sel = sel + prev + " or " + nc;
+                        } else{  // next gap 
+                            sel = sel + " or " + nc;
+                        }
+                        prev = nc;
+                    }                            
+                } else {
+                    sel = String(nc);
+                    prev = nc;
+                }
+            }            
+            
+            self.rsel.hiqc = sel;
+            self.rsel.all = "all";
+            
+            o.setSelection( self.rsel.all );
+            
+            self.rerender();
+            o.autoView( "all" );
+
+            console.log( "BkdNGL: loadCallback -> state:",self.state);
+            console.log( "BkdNGL: loaded");
+        };            
     }
     
     static buildHAMitem( idef, iself ){
@@ -438,13 +515,102 @@ class BkdNGL{
 
         if( ctype == "pdb-list" ){
             
-            console.log("HAM: URL:",idef.url);
-            //for( var j in idef.options ){
-            //    clist.push( BkdNGL.buildHAMitem( idef.options[j],
-            //                                     iself)
-            //);    
-            //}
-            if( clist.length > 0 ) mitem.children=clist;
+            //console.log("HAM: URL:",idef.url);            
+            //console.log("HAM: URL(ns):",iself._data.data.ns);
+            //console.log("HAM: URL(ac):",iself._data.data.ac);
+            //console.log("HAM: iself:",iself);
+            
+            var curl=idef.url
+                .replace('%%NS%%',iself._data.data.ns)
+                .replace('%%AC%%',iself._data.data.ac);
+            console.log("HAM: cURL:",curl);
+            
+            var buildPDBlist = function( args ){
+                
+                //console.log("HAM: buildPDBlist->args:",args);
+                
+                return function( data, textStatus, jqXHR ){
+                    
+                    var mode = args.mode;
+                    var pfx = args.self.pfx;
+                    var clist = [];
+                    var mitem = args.mitem;
+                    var strl = data.node.structure;
+
+                    var buildPDBaction = function( aargs ){
+                        return function(arg){
+                            console.log( "BkdNGL: PDBaction -> args:",args);
+                            //console.log( "BkdNGL: PDBaction -> arg:",arg);
+
+                            var mode = aargs.mode; 
+                            var method = aargs.method; 
+                            var cchn = aargs.chain.split('_');
+                            cchn = cchn[0].replace( new RegExp("[a-z]","g"),'');
+                            var curl = aargs.url.split('/');
+                            
+                            var src = "Source: ";
+                            if( mode == 'expt' ){
+                                src += "Experiment";
+                            } else {
+                                src += "Prediction";
+                            }
+                            src += '('+ method +')';
+                            
+                            var str = 'Structure: '+
+                                '<a href="'+aargs.url+'">'
+                                + curl[curl.length-1].replace('.pdb','')
+                                + '</a>';
+                            str += ' (Chain:'+cchn[0]+')';
+                            
+                            var seq = 'Sequence: ';
+                            seq += '<a href="'+aargs.sequence+'">'
+                                + aargs.sequence
+                                + '</a>';
+                            
+                            d3.select( "#" + pfx + '-legend-src' )
+                                .html( src );
+                            d3.select( "#" + pfx + '-legend-str' )
+                                .html( str );
+                            d3.select( "#" + pfx + '-legend-seq' )
+                                .html( seq );
+
+                            // load new structure
+                            //-------------------
+                            
+                            if( args.self.nglstage != undefined ){
+                                args.self.nglstage.removeAllComponents();
+                                args.self.view.chn.rep = [];      
+                                
+                                args.self.nglstage.loadFile( aargs.url ) 
+                                    .then( args.self.loadCallback( { self: args.self,
+                                                                     cutQC: 0.5 }));                                
+                            }
+                        }
+                    }
+                    
+                    for( var s in strl){
+                        console.log( "BkdNGL: buildPDBlist -> str:",strl[s]);
+                        
+                        var cstr =strl[s];
+
+                        if(cstr.mode == mode){
+
+                            var curl = cstr.url.split('/');
+                            var title = curl[curl.length-1].replace('.pdb','')
+                                +'('+cstr.method+'/'+cstr.sequence+')';
+                            
+                            clist.push( { title: title,
+                                          action: buildPDBaction( cstr ) });
+                        }
+                    }
+                    if( clist.length > 0 ) mitem.children=clist;
+                }
+            }
+            
+            $.ajax( { url: curl} )
+                .done( buildPDBlist( { "self": iself,
+                                       "mode": idef.mode,
+                                       "mitem": mitem } ));
             return mitem;
         }
         
@@ -483,7 +649,8 @@ class BkdNGL{
             
             var callback = function( ictrl, iopt, itype, iself ){
                 return function(d) {
-                    console.log( "HAM: callback:", ictrl, iopt, itype );
+                    console.log( "HAMcallback:", ictrl, iopt, itype );
+                    console.log( "HAMcallback: ictrl->", ictrl, ictrl in iself.state, iself.state );
                     
                     if( ictrl in iself.state ){
                         var icst = iself.state[ictrl][iopt.value];
@@ -522,7 +689,9 @@ class BkdNGL{
                             iself.state[ictrl][iopt.value] =
                                 !(iself.state[ictrl][iopt.value]);
                         }
-                        console.log( "HAM: statefull: ", ictrl ); 
+                        console.log( "HAMcallback statefull: ", ictrl ); 
+                        iself.setStateLegend();
+                        
                     } else {
                         console.log( "HAM: stateless" );
                     }
@@ -537,9 +706,38 @@ class BkdNGL{
         
         return mitem;        
     }
+
+
+    setStateLegend(){
+        console.log("HAMcallback: setStateLegend: ",this.state);
+        
+        var legend = 'Default';
+        var cscheme ="";
+        for( var s in this.state.col ){
+            console.log( "HAMcallback:  s-> " + s + ":", this.state.col[s]);
+            if( this.state.col[s] ){
+                cscheme = s;
+                console.log("HAMcallback: set->", cscheme);
+            }
+        }
+        
+        if( cscheme in this.view.chn.cstyle){
+            console.log("setStateLegend: ",
+                        this.view.chn.cstyle[cscheme].legend);
+            legend = this.view.chn.cstyle[cscheme].legend;
+        }
+
+        console.log("HAMcallback: setStateLegend: legend-> ",legend);
+        d3.select( this.anchor + " ."+this.pfx+"-legend-2")
+            .html('<td colspan=3 align="center">'
+                  + legend
+                  +'</td>');        
+    }
     
     rerender(){        
         console.log("HAM rerender called");
+
+        this.setStateLegend();
         this.setHamStyle("vcls",undefined, null);
         console.log("HAM rerender DONE");
     }
@@ -1480,6 +1678,9 @@ class BkdNGL{
         
         // render: poi
         //------------
+
+        console.log( "HAM view.poi.on:", view.poi.on );
+        console.log( "HAM view.poi.rep:", view.poi.rep );
 
         if( view.poi.on && op == "change" ){
             

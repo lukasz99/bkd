@@ -222,9 +222,9 @@ public class BkdRecordManager {
                                             String dataset ){
 
         Logger log = LogManager.getLogger( this.getClass() );
-        log.info( "buildNodeStructureLst: mode->" + mode );
-        log.info( "buildNodeStructureLst: isof->" + isoform );
-        log.info( "buildNodeStructureLst: dtst->" + dataset );
+        log.debug( "buildNodeStructureLst: mode->" + mode );
+        log.debug( "buildNodeStructureLst: isof->" + isoform );
+        log.debug( "buildNodeStructureLst: dtst->" + dataset );
         
         Map rnode = new HashMap();
         rnode.put("ns", node.getNs());
@@ -237,9 +237,40 @@ public class BkdRecordManager {
         Map<String,Map<String,String>> jval = node.getJvalMap();
 
         for( Map.Entry<String, Map<String,String>> entry : jval.entrySet()){
-            log.info( "buildNodeStructureLst: key->" + entry.getKey() );
-            log.info( "buildNodeStructureLst: jval(key)->" + entry.getValue() );
+            log.debug( "buildNodeStructureLst: key->"
+                      + entry.getKey() );
+            log.debug( "buildNodeStructureLst: jval(key)->"
+                      + entry.getValue() );
+            log.debug( "buildNodeStructureLst: jval ns->"
+                      + entry.getValue().get("ns" ) );
+            log.debug( "buildNodeStructureLst: jval ac->"
+                      + entry.getValue().get("ac" ) );
+            log.debug( "buildNodeStructureLst: jval value->"
+                      + entry.getValue().get("value" ) );
             
+            if( "structure-descriptor-list".equals( entry.getKey() ) ){
+                log.debug( "structure-descriptor-list:  value-> "
+                          + entry.getValue().get("value" ) );
+                try{
+                    JSONArray sdl = new JSONArray(entry.getValue().get("value" ));
+                    for( int i=0; i < sdl.length(); i++){
+                        if( sdl.get(i).getClass()==JSONObject.class ){
+                            JSONObject sd = sdl.getJSONObject(i);
+                            Map sdmap = new HashMap();
+                            for( Iterator<String> sdi = sd.keys(); sdi.hasNext();){
+                                String sdk = sdi.next();
+                                String sdv = sd.getString(sdk);
+                                sdmap.put(sdk,sdv);
+                            }
+                            slst.add(sdmap);
+                        }                        
+                    }
+                } catch(JSONException jx){
+                    log.info("Processing ERROR: structure-descriptor-list: "
+                             + "value-> " + entry.getValue().get("value" ));
+                    // should not happen
+                }                                
+            }            
         }        
         return rnode;
     }

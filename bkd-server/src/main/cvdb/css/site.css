@@ -501,7 +501,6 @@ td .page-static {
     font-style: italic;
 }
 
-
 #homology-select {
   border-width: 0px !important;
 }
@@ -514,7 +513,6 @@ td .page-static {
     border-color: #a8a8a8;
     margin-top: 1px;
 }
-
     
 #flist-view  {
     height: 800px;
@@ -528,3 +526,39 @@ td .page-static {
 #swm-port {
     padding: 2px;
 }
+
+.bkd-ngl-legend-table {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.bkd-ngl-legend-table a:link{
+    color: #8BB8E8;
+}
+
+.bkd-ngl-legend-table a:visited{
+    color: #8BB8E8;
+}
+
+.bkd-ngl-legend-table a:hoover{
+    color: #8BB8E8;
+}
+
+.bkd-ngl-legend-table a:inactive{
+    color: #8BB8E8;
+}
+
+.bkd-ngl-controls-table {
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+.legend-cleft{
+    vertical-align: middle;
+    text-align: left;
+}
+.legend-cright{
+    vertical-align: middle;
+    text-align: right;
+}
+    

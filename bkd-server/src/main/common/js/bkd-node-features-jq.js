@@ -153,7 +153,8 @@ BKDnodeFeatures = {
           "name":"ngl-str-exp-1",
           "label":"Experimental",
           "type":"pdb-list",
-          "url":"node?ns=CVDB&ac=CVDB14P&format=json&detail=STRL&src=expt&ret=data",
+          "mode":"expt",
+          "url":"node?ns=%%NS%%&ac=%%AC%%&format=json&detail=STRL&ret=data",
           "options": [
               { id:"flist-select-e-0",name:"select-e-0",
                 label:"PDB", value:"hiqc",                
@@ -176,7 +177,8 @@ BKDnodeFeatures = {
           "name":"ngl-str-prd-1",
           "label":"Predicted",
           "type":"pdb-list",
-          "url":"node?node?ns=CVDB&ac=CVDB14P&format=json&detail=STRL&src=pred&ret=data",
+          "mode":"pred",
+          "url":"node?ns=%%NS%%&ac=%%AC%%&format=json&detail=STRL&ret=data",
           "options": [
               { id:"flist-select-1",name:"select-1",
                 label:"HiQC", value:"hiqc",                
@@ -350,7 +352,7 @@ BKDnodeFeatures = {
           "label":"View Control", "value":"help-ngl-viewcontrol" },
 
         { "id":"ngl-help-2","name":"ngl-help-2",
-          "label":"Color Contorl", "value":"help-ngl-colorcontrol" },
+          "label":"Color Control", "value":"help-ngl-colorcontrol" },
 
         { "id":"ngl-help-3","name":"ngl-help-3",
           "label":"Detail View", "value":"help-ngl-detailview" },

@@ -137,8 +137,9 @@
 	padding: 4px 0;
 	position: absolute;
 	top: 0;
-	width: 100%;
+	
 }
+/* width: 100%; */
 
 .d3-context-menu-theme li.is-parent:hover > ul.is-children {
 	display: block;

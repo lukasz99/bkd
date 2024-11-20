@@ -106,7 +106,7 @@ public class NodeAction extends PortalSupport{
                     .buildNodeStructureLstMap( (Node) manager
                                                .getNode( ns,
                                                          ac,
-                                                         Node.STUB ),
+                                                         Node.BASE ),
                                                "SHORT",
                                                this.iso,
                                                this.dts );
