@@ -17,7 +17,9 @@ BKDnodeView = {
     poi: { pos:[], color: "#674B70",stroke: "#000000", report: false },
     //poi: { pos:[], color: "#B7A4BD" },
     config: {},
-      
+    screen: null,
+    emsize: null,
+    
     init: function( ns, ac , srcAnchor, srcViewAnchor, nodeAnchor,
                     flist, mode, state ){
         console.log( "bkd-node-view-jq: BKDnodeView.init" );
@@ -61,6 +63,11 @@ BKDnodeView = {
         console.log( "bkd-node-view-jq: BKDnodeView.view" );
         this.data = data;
         
+        this.screen = screen;
+        var div = document.getElementById("size-div");
+        div.style.height = '1em';
+        this.emsize = div.offsetHeight;
+                
         if(data == null ){
             $( this.nodeAnchor ).hide();            
             BKDnodeSearch.search( data, node.srcAnchor );
@@ -514,7 +521,10 @@ BKDnodeView = {
                             break;
                         case "feature":
                             console.log("TOPO: feature pane", BKDnodeView.mymsa);
-                            BKDnodeFeatures.init( "#bkd-nv-"+cid, cfield, data );
+                            
+                            BKDnodeFeatures.init( "#bkd-nv-"+cid, cfield, data,
+                                                  this.screen, this.emsize );
+                            
                             console.log("TOPO: feature pane DONE", BKDnodeView.mymsa);
 
                             break;
@@ -1350,7 +1360,6 @@ BKDnodeView = {
                                       dpos: ipro[i].segs } );
                     }
                 }
-
                                
                 var msaurl =  "msa-iso/" + BKDnodeView.data.ac + ".fasta";
                 console.log("TOPO: showseq: new BkdMSA")

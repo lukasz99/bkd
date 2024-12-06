@@ -1,4 +1,4 @@
- console.log("bkd-node-features-jq: common");
+console.log("bkd-node-features-jq: common");
         
 BKDnodeFeatures = {
     myurl: "",
@@ -426,10 +426,24 @@ BKDnodeFeatures = {
                 BKDnodeFeatures.view(tgt, format, data ) });               
     },
     
-    init: function( tgt, format, data, myurl ){
+    init: function( tgt, format, data, myscreen, myemsize ){
 
         this.format = format;
         this.data_base = data;
+        this.screen = myscreen;
+        this.emsize = myemsize;
+
+        this.hHeight=$("#header").height();
+        this.fHeight=$("#footer").height();
+        
+        this.flistWidth = (this.screen.availWidth*0.90-this.emsize*7)*0.60;
+        this.chartWidth = (this.screen.availWidth*0.90-this.emsize*7)*0.55;
+        this.ftabsWidth = (this.screen.availWidth*0.90-this.emsize*7)*0.45;
+        this.nglWidth = (this.screen.availWidth*0.90-this.emsize*7)*0.45;
+        this.nglHeight = this.screen.availHeight*0.90-this.hHeight-this.fHeight-this.emsize*5;
+
+        console.log( "Features: size ", this.chartWidth, this.ngvWidth);
+        
         this.myurl = BKDnodeView.myurl + "&detail=FULL";
         this.flview="#track-tab";  // default on
 
@@ -485,23 +499,21 @@ BKDnodeFeatures = {
         $( tgt ).append(
             "<table border='0' width='100%'>" +
                 " <tr>"+
-                "  <td id='flist' width='900' colspan='1' rowspan='1' valign='top' align='center'>"+
+                "  <td id='bkd-flist' colspan='1' rowspan='1' valign='top' align='center'>"+
                 "   <div id='flist-source' class='bkd-select-panel'></div>"+ 
                 "   <div id='flist-lollipop-1' class='bkd-select-panel'></div>"+ 
                 "  </td>"+                                            
-                "  <td valign='top' align='center'>"+
+                "  <td id='bkd-ftabs' valign='top' align='center'>"+
                 "   <table id='flist-tabs' width='100%'>"+
                 "    <tr>"+
                 "     <td id='track-tab' class='bkd-feat-tab-on track-tab'>Genome&nbsp;Viewer&nbsp;<a id='bkd-genome-browser-help' html=''>"+
                 "       <img title='Help' width='16' height='16' src='img/icons8-info.svg'/></a></td>\n"+
-                //"     <td id='homo-tab-panther' class='bkd-feat-tab-off homo-tab' title='Source: UCSC Genome Browser' >Homology&nbsp;(G)&nbsp;<a id='bkd-homology-help' html=''><img title='Help' width='16' height='16' src='img/icons8-info.svg'/></a></td>"+
                 "     <td id='homo-tab-ucsc' class='bkd-feat-tab-off homo-tab'>Sequence&nbsp;Homology&nbsp;<a id='bkd-homology-help' html=''>"+
                 "       <img title='Help' width='16' height='16' src='img/icons8-info.svg'/></a></td>\n"+
                 "     <td id='topo-tab' class='bkd-feat-tab-off topo-tab'>Membrane&nbsp;Topology&nbsp;<a id='bkd-topology-help' html=''>"+
                 "       <img title='Help' width='16' height='16' src='img/icons8-info.svg'/></a></td>\n"+
                 "     <td id='swm-tab' class='bkd-feat-tab-off swm-tab'>Structure&nbsp;<a id='bkd-structure-help' html=''>"+
                 "       <img title='Help' width='16' height='16' src='img/icons8-info.svg'/></a></td>\n"+
-                //"     <td id='str-tab' class='bkd-feat-tab-off str-tab'>Structure(expt)</td>"+
                 "    </tr>"+
                 "    <tr>"+
                 "     <td id='flist-view' align='center' valign='top' colspan='6'></td>"+
@@ -511,6 +523,28 @@ BKDnodeFeatures = {
                 " </tr>"+
                 "</table>" );
 
+
+        $("#flist-view")
+            .height( screen.height*0.9
+                     -$("#header").height()
+                     -$("#footer").height()
+                     -this.emsize*4.8);
+
+        $("#bkd-flist")
+            .width(this.flistWidth)
+            .height( screen.height*0.9
+                     -$("#header").height()
+                     -$("#footer").height()
+                     -this.emsize*5);
+        
+        $("#bkd-ftabs").width(this.ftabsWidth);
+        
+        $("#flist-lollipop-1")
+            .height( screen.height*0.9
+                     -$("#header").height()
+                     -$("#footer").height()
+                     -this.emsize*5);
+        
         tconf = this.config.tabs;
 
         BKDmodal.init( '#bkd-modal-div',
@@ -629,7 +663,8 @@ BKDnodeFeatures = {
                  },
                  function( event ){
                      var parent = event.data.parent;
-                     console.log( event.data );
+                     console.log( "BKDnodeFeatures: seqchange parent -> ",
+                                  parent );
                      console.log( $('#flist-source #iseq').val() );
                      var sqsel = $('#flist-source #iseq').val();  
                      var cseq = null;
@@ -649,13 +684,19 @@ BKDnodeFeatures = {
                          .remove();                                          
 
                      var flurl = parent.myurl.replace("FULL","FEATL");
-                     var fdurl = parent.myurl.replace("detail=FULL","fpos=");
+                     var fdurl = parent.myurl.replace("detail=FULL","fpos=");  
 
+                     console.log( "BkdLol: -> reload" );
+
+                     // reload lollipops
+                     //-----------------
+                     
                      var nloli =
                          new BkdLollipop(
                              { anchor: "flist-lollipop-1",
                                id: "lpanel-1",
-                               seqname: "my prot mame",
+                               chartWidth: parent.chartWidth,
+                               seqname: parent.data.label+"/("+sqsel+")",
                                dset:{ default:"clinvar",
                                       conf:{
                                           clinvar:{
@@ -690,7 +731,12 @@ BKDnodeFeatures = {
                          vsel: $('#iseq').val(),
                          vseq: vseq ,
                          sequence: cseq } );
-                     
+
+                     // notify BkdNGL
+                     //--------------
+                     if( BKDnodeFeatures.nglSWM  != null ){
+                         BKDnodeFeatures.nglSWM.setSelSeqID( $('#iseq').val() );
+                     }
                      
                      //loli1.initialize ( { vsel: $('#iseq').val(),
                      //        vseq: vseq ,
@@ -896,7 +942,8 @@ BKDnodeFeatures = {
         var loli1 = new BkdLollipop(
             { anchor: "flist-lollipop-1",
               id: "lpanel-1",
-              seqname: BKDnodeFeatures.data.label+"/(transcript)",
+              chartWidth: this.chartWidth,
+              seqname: BKDnodeFeatures.data.label+"/("+BKDnodeFeatures.iseq[ci].upr+")",
               dset:{ default:"clinvar",
                      conf:{
                          clinvar:{
@@ -973,10 +1020,16 @@ BKDnodeFeatures = {
         var swmUrl = BKDnodeFeatures.siteurl + "swissmodel/"
             + BKDnodeFeatures.data.ac  + "-1_swm.pdb"; 
         
+        var msaUrl = BKDnodeFeatures.siteurl + "msa-iso/"
+            + BKDnodeFeatures.data.ac + ".fasta";
+        
         BKDnodeFeatures.nglSWM = BKDnodeFeatures.nglpane(
             { anchor: "#swm-port",
+              width: this.nglWidth,
+              height: this.nglHeight,
               name: "swm",
               url: swmUrl,
+              msaUrl: msaUrl,
               controls:{
                   vcls: { name: "vcls",
                           label: "Variant", 
@@ -1031,73 +1084,11 @@ BKDnodeFeatures = {
 
         console.log( "TOPO:", BKDnodeView.mymsa2a,
                      BKDnodeView.mymsa2b,
-                     BKDnodeView.mymsa);
-        
-        
-        // structure pane
-        //---------------
-       
-        //var strUrl = BKDnodeFeatures.siteurl + "str-pdb/"
-        //    + BKDnodeFeatures.data.ac  + ".pdb"; 
-        
-        //BKDnodeFeatures.nglSTR = BKDnodeFeatures.nglpane(
-        //    {  anchor: "#str-port",
-        //       name: "str",
-        //       url: strUrl,               
-        //       controls: {
-        //           vcls: { name: "vcls",
-        //                   label: "Variant", 
-        //                   type: "checkbox",
-        //                   
-        //                   // variant classes
-        //                   getvcls: BKDnodeFeatures.buildvclist,
-        //                   
-        //                   // lolipop selects
-        //                   getsels: BKDnodeFeatures.buildlslist,
-
-        //                   // poi selects
-        //                   getpois: BKDnodeFeatures.buildpoilist, 
-        //                   options: BKDnodeFeatures.vclass },
-        //           menu:[
-        //              { name: "str",
-        //                label: "Structure",
-        //                type: "radio",                            
-        //                options: BKDnodeFeatures.exptlst },                       
-        //              { name: "sel",
-        //                label: "Select",
-        //                type: "cbox",                            
-        //                options: BKDnodeFeatures.strsels },
-                  
-        //              { name: "col",
-        //                label: "Color By",
-        //                type: "radio-off",
-        //                options: BKDnodeFeatures.strcols },
-                      
-        //              { name: "exp",
-        //                label: "Export",
-        //                type: "list",
-        //                options: BKDnodeFeatures.nglexport },
-                      
-        //              { name: "help",
-        //                label: "Help",
-        //                type: "list",
-        //                options: BKDnodeFeatures.nglhelp }
-                       
-        //           ] },
-        //       poiColor: "#B71DDE"   // "#B7A4BD"
-        //    },
-        //    BKDnodeFeatures,
-        //    [ {base:BKDnodeView, key:"mymsa2a"},
-        //      {base:BKDnodeView, key:"mymsa2b"},
-        //      {base:BKDnodeView, key:"mymsa"}],
-            
-        //    { base: BKDnodeFeatures.lollipanels,
-        //      key: "loli1" }
-            
-        //);       
+                     BKDnodeView.mymsa);       
     },
 
     nglpane: function( config, data, msa, lollipop){
+        //d3.select(config.anchor).attr("style","background: black;");
         var ngl  = new BkdNGL( config, data, msa, lollipop );
         return ngl;
     },

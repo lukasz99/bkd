@@ -254,20 +254,23 @@ public class BkdRecordManager {
                 try{
                     JSONArray sdl = new JSONArray(entry.getValue().get("value" ));
                     for( int i=0; i < sdl.length(); i++){
-                        if( sdl.get(i).getClass()==JSONObject.class ){
+                        if( sdl.get(i).getClass() == JSONObject.class ){
                             JSONObject sd = sdl.getJSONObject(i);
                             Map sdmap = new HashMap();
                             for( Iterator<String> sdi = sd.keys(); sdi.hasNext();){
                                 String sdk = sdi.next();
-                                String sdv = sd.getString(sdk);
+                                
+                                Object sdv = sd.get(sdk);
                                 sdmap.put(sdk,sdv);
                             }
                             slst.add(sdmap);
                         }                        
                     }
                 } catch(JSONException jx){
+                    jx.printStackTrace();
                     log.info("Processing ERROR: structure-descriptor-list: "
                              + "value-> " + entry.getValue().get("value" ));
+                    log.info(slst);
                     // should not happen
                 }                                
             }            

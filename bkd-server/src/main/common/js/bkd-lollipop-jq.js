@@ -39,6 +39,7 @@ class BkdLollipop{
                 id: "lpanel-0",
                 format: {},
                 fcolor: {},
+                chartWidth: 950,
                 detailcbl: []
             };
         }
@@ -444,7 +445,7 @@ class BkdLollipop{
 
     buildPanel(){
 
-        console.log("buildPanel:", this.data);
+        console.log("BkdLol: buildPanel -> data", this.data);
 
         var mutation_data = this.data.plist;
                 
@@ -479,6 +480,7 @@ class BkdLollipop{
             }
         };
         console.log( "this.conf.lpanel-> ",this.conf.lpanel.replace("#","") );
+        console.log( "this.conf-> ",this.conf );
 
         // cleanup
         
@@ -498,7 +500,11 @@ class BkdLollipop{
         lollipop.options.titleAlignment = "middle";
         lollipop.options.titleDy = "0.3em";
         lollipop.options.legendTitle = "Clinical Significance";
-        lollipop.options.chartWidth = 950;
+
+        
+        console.log( "BkdLol: this.conf-> ",this.conf );
+        
+        lollipop.options.chartWidth = this.conf.chartWidth;
         //lollipop.options.chartHeight = 200;
         lollipop.options.chartType = "pie";
         lollipop.options.tooltip = false;

@@ -421,7 +421,7 @@ div.msa_tooltip {
 }
 
 .bkd-feat-tab-port {
-    width: 650px;
+    
     height: 625px;
     background: #ffffff;
 }
@@ -514,13 +514,6 @@ td .page-static {
     margin-top: 1px;
 }
     
-#flist-view  {
-    height: 800px;
-}
-
-#flist-lollipop-1  {
-    height: 780px;
-}
 
 
 #swm-port {
@@ -556,9 +549,22 @@ td .page-static {
 .legend-cleft{
     vertical-align: middle;
     text-align: left;
+    white-space: nowrap;
 }
 .legend-cright{
     vertical-align: middle;
     text-align: right;
+    white-space: nowrap;
+
+}
+.legend-ccenter{
+    vertical-align: middle;
+    text-align: center;
+    white-space: nowrap;
+
 }
     
+.g3-chart {
+    display: block;
+    margin: auto;
+}

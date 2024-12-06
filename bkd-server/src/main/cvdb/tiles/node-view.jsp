@@ -190,6 +190,7 @@
    <div id="bkd-modal-div" class='bkd-modal-anchor'>
   </div>    
   </div>
+  <div id="size-div" style="height:0;width:0;outline:none;border:none;padding:none;margin:none;box-sizing:content-box;"></div>
 <s:if test="big">
   <t:insertTemplate template="/tiles/footer.jsp" flush="true"/>
 </s:if>

@@ -5,9 +5,13 @@ class BkdNGL{
     constructor( config, data, msa, lpop ){
 
         console.log(" BkdNGL: new-> ", config );
+        this.loaded = false;
         this._conf = config;
         this.anchor = config.anchor;
         this.name = config.name;
+        this.width = config.width;
+        this.height = config.height;
+        this.msaUrl = config.msaUrl;
         
         this._data = data;  // BKDnodeFeatures
         this._ham  = [];
@@ -27,7 +31,9 @@ class BkdNGL{
         this.pfx = "bkd-ngl-" + this.name;
         console.log("BkdNGL: prefix->", this.pfx );
         this._view = {};
-        
+        this.spectral = [ "#9e0142", "#d53e4f", "#f46d43", "#fdae61",
+                          "#fee08b", "#ffffbf", "#e6f598", "#abdda4",
+                          "#66c2a5", "#3288bd", "#5e4fa2" ];
         this.currep = [];
         
         this.rsel = { all: "all", hiqc: "all", chain: "all", aset: "all" };
@@ -117,12 +123,52 @@ class BkdNGL{
                                 legend: "Solid Legend"
                               },
                       "cpos": { mode: "grad", opaq: 1.0, val: "atomindex",
-                                legend: "Solid"
+                                legend: function(args){
+                                    return "<table width='70%'><tr>"
+                                        +"<td width='10%' class='legend-cright'>Ribbon&nbsp;color:</td>"
+                                        +"<td width='15%' class='legend-cright'>N-term</td>"
+                                        +"<td width='60%' class='legend-ccenter'><img width='250px' height='15px' src='img/100x400rainbow.png'></td>"
+                                        +"<td width='15%' class='legend-cleft'>C-term</td>"
+                                        +"</tr></table>";
+                                }
+                              },
+                      "rain": { mode: "grad", opaq: 1.0, val: "atomindex",
+                                legend: "<table width='70%'><tr>"
+                                +"<td width='10%' class='legend-cright'>Ribbon&nbsp;color:</td>"
+                                +"<td width='10%' class='legend-cright'>N-term</td>"
+                                +"<td width='70%' class='legend-ccenter'><img width='300px' height='15px' src='img/100x400rainbow.png'></td>"
+                                +"<td width='10%' class='legend-cleft'>C-term</td>"
+                                +"</tr></table>"
                               },
                       "cchn": { mode: "solid", opaq: 1.0,
                                 clist:[ "#46AB21", "#80B192",
                                         "#6A8D92","#646890"],
-                                legend: "Color By Chain Legend"
+                                legend: function(args){
+
+                                    var legend = "<table width='70%'><tr>"
+                                        +"<td width='10%' class='legend-cright'>Ribbon&nbsp;color:</td>";
+
+                                    if( args.header !==undefined ){
+                                        legend+="<td width='15%' class='legend-center'>"+args.header+"</td>";
+                                    }
+                                    for( var i in args.chains ){
+                                        legend+= "<td width='10%' class='legend-cright'>"+args.chains[i]+"</td>";
+                                        legend+= "<td width='5%' class='legend-cleft'>"+
+                                            "<svg width = '15px' height = '15px'>"
+                                            + "<rect x='0' y='0' width ='15px' height='15px' fill='"+args.colors[i]+"'></rect>"
+                                            +"</svg></td>";                                        
+                                    }
+                                        
+                                    legend+="</tr></table>";
+                                    
+                                    //return "<table width='70%'><tr>"
+                                    //    +"<td width='10%' class='legend-cright'>Ribbon&nbsp;color:</td>"
+                                    //    +"<td width='90%' class='legend-ccenter'>By Chain</td>"
+                                    //    +"</tr></table>";
+
+                                    return legend;
+                                    
+                                }
                               },
                       "cmsa": { mode: "grad", // valLo: 0, valHi: 1.0, 
                                 colHi: "magenta", colLo:"gray",
@@ -378,8 +424,14 @@ class BkdNGL{
         
         var phght = $( this.anchor ).height();
         var chght = $( '#' + this.pfx+'-controls' ).height();
-        $( '#' + this.pfx + '-view' ).height( phght - chght - 0 );
+        var lhght = $( '#' + this.pfx+'-legend' ).height();
+        //$( '#' + this.pfx + '-view' ).height( phght - chght - 0 );
+        $( '#' + this.pfx + '-view' ).height( this.height - chght) - lhght;
 
+        console.log( "BkdNGL: view -> ", d3.select( '#' + this.pfx + '-view' ));
+        console.log( "BkdNGL: view -> ", '#' + this.pfx + '-view' ); 
+        console.log( "BkdNGL: view.width->", $( '#' + this.pfx + '-view' ).width() ); 
+        console.log( "BkdNGL: view.height->", $( '#' + this.pfx + '-view' ).height() );
 
         this.nglstage = new NGL.Stage( this.pfx + '-view' );
         $( this.anchor ).hide();
@@ -397,13 +449,58 @@ class BkdNGL{
     loadCallback( args ){
             
         console.log( "BkdNGL: currying loadCallback -> args:",args);
-
+        console.log( "BkdNGL: div:","#"+this.pfx + '-view div' );
+        
         var self = this;
         
         return function( o ){            
                 
-            console.log( "BkdNGL: loadCallback -> args:",args);
+            console.log( "BkdNGL: loadCallback -> args:", args );
+            console.log( "BkdNGL: loadCallback -> msaUrl:", self.msaUrl );
+            
+            if( self.msaUrl != null ){
                 
+                var msaCallback = function( bkdngl ){
+                    return function( data, textStatus, jqXHR) {
+                
+                        var msaHead = [];
+                        var msaSeq = [];
+                
+                        var lines = data.split('\n');
+                
+                        for( var i=0; i < lines.length; i++ ){
+                            if( lines[i].startsWith('>') ){
+                                var hcols = lines[i].replace(">","").split(";")
+                                msaHead.push( hcols );
+                                msaSeq.push("");
+                            } else {
+                                msaSeq[msaSeq.length-1]+= lines[i];
+                            }
+                        }
+                        bkdngl.msaHead = msaHead;
+                        bkdngl.msaSeq = msaSeq;
+                        
+                        console.log( "BkdNGL: msaCallback: msaHead ->",
+                                     bkdngl.msaHead );
+                        
+                        bkdngl.setSelSeqID( null );
+                        
+                    }
+                };
+                
+                // load remote msa fasta       
+        
+                $.ajax({ url: self.msaUrl,
+                         beforeSend: function( xhr ) {
+                             xhr.overrideMimeType("text/plain; charset=x-user-defined");
+                         },
+                         error: function( xhr, textStatus, errorThrown ){
+                             console.log( "ajax error: ", xhr, textStatus, errorThrown );
+                         }
+                         
+                       }).done( msaCallback( self ) );               
+            }
+            
             self.nglcomp = o;
                 
             var selStr = "";
@@ -484,7 +581,10 @@ class BkdNGL{
             self.rerender();
             o.autoView( "all" );
 
-            console.log( "BkdNGL: loadCallback -> state:",self.state);
+            d3.select( "#"+self.pfx + '-view div')
+                .attr( "style",'position: relative; background: black;' );
+
+            self.loaded = true;
             console.log( "BkdNGL: loaded");
         };            
     }
@@ -707,7 +807,6 @@ class BkdNGL{
         return mitem;        
     }
 
-
     setStateLegend(){
         console.log("HAMcallback: setStateLegend: ",this.state);
         
@@ -724,7 +823,17 @@ class BkdNGL{
         if( cscheme in this.view.chn.cstyle){
             console.log("setStateLegend: ",
                         this.view.chn.cstyle[cscheme].legend);
-            legend = this.view.chn.cstyle[cscheme].legend;
+
+            if( typeof this.view.chn.cstyle[cscheme].legend == 'string'){
+                legend = this.view.chn.cstyle[cscheme].legend;
+            } else {
+                legend = this.view.chn.cstyle[cscheme]
+                    .legend({
+                        header: 'Chain:',
+                        chains: ['A','B','C','D'],
+                        colors: this.spectral
+                    });
+            }
         }
 
         console.log("HAMcallback: setStateLegend: legend-> ",legend);
@@ -743,7 +852,7 @@ class BkdNGL{
     }
 
     setPOI( poi ){
-        console.log("ZZZZ setPOI called");
+        console.log("HAM: setPOI called");
         this.poi = poi;
 
         if( this.poi.pos.length > 0){
@@ -766,8 +875,19 @@ class BkdNGL{
         }                       
         
         this.setHamStyle( 'poi', this.poi, null );
-        console.log("ZZZZ setPOI DONE");
+        console.log("HAM: setPOI DONE");
     }
+
+    setSelSeqID(seqID){
+        console.log("BkdNGL: setSelSeqID -> id", seqID);
+        console.log("BkdNGL: setSelSeqID -> msaUrl", this.msaUrl);
+        console.log("BkdNGL: setSelSeqID -> loaded:", this.loaded);
+        console.log("BkdNGL: setSelSeqID -> loaded:", this.strSeq);
+        console.log("BkdNGL: setSelSeqID -> loaded:", this.selSeq);
+        
+        
+    }
+        
     
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
@@ -1439,7 +1559,6 @@ class BkdNGL{
             });
             console.log("BFL:", bfl);
         }
-
         
         if( state.col.cmsa ){
 
@@ -1532,7 +1651,6 @@ class BkdNGL{
             }            
         }
         
-
         if( state.col.cbfc ){  // bfactor
 
             var cmax = ccs.valHi;
@@ -1578,8 +1696,12 @@ class BkdNGL{
             opacity: 1.0
         };
 
+
+        console.log("HAM: chnColLst->", chnColLst);
+        
         if( chnColLst.length > 0){ 
 
+            
             repParam.color = NGL.ColormakerRegistry
                 .addSelectionScheme( chnColLst,
                                      "chnColScheme" );                
@@ -1592,7 +1714,8 @@ class BkdNGL{
                                          "chnColScheme" );
             }                        
         }
-
+        console.log( "HAM: repParam->", repParam );
+        
         // main chain: render
         //-------------------
 
