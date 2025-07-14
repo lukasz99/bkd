@@ -15,3 +15,5 @@ from .refsnp import *
 from .clinvar import *
 from .refseq import *
 from .gnomad import *
+
+print("import icclient: done")

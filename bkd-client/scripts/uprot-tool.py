@@ -32,7 +32,7 @@ bkd_dest = {
     "dip2-local":"http://10.1.7.102:9999/dipdev2",
     "dip2-public":"https://dip.mbi.ucla.edu/dipdev2",
     "cvdb-local":"http://10.1.8.201:8080/cvdb",
-    "cvdb0-local":"http://10.1.7.100:9999/cvdbdev0",
+    "cvdb0-local":"http://10.1.7.200:9999/cvdbdev0",
     "cvdb0-public":"https://dip.mbi.ucla.edu/cvdbdev0",
     "cvdb2-local":"http://10.1.7.102:9999/cvdbdev2",
 "cvdb2-public":"https://dip.mbi.ucla.edu/cvdbdev2" }
@@ -82,7 +82,7 @@ parser.add_argument('--annotation-file', '-af', dest="afile", type=str,
                     help='Annotation file.')
 
 parser.add_argument('--mode', '-m', dest="mode", type=str,
-                    required=False, default='get',
+                    required=False, default='get', choices=['get','set','msa'],
                     help='Mode.')
 
 parser.add_argument('--setac', dest="setac", type=str,
@@ -759,6 +759,7 @@ uzeep = BKD.UniZeep( srvUrl )
 
 
 if args.mode == "get":
+    print("uprot-tool->get:", args.ns, args.ac)
     zres = uzeep.getnode( args.ns, args.ac )
     
     if len(args.out)  > 0:
@@ -771,8 +772,17 @@ if args.mode == "get":
     else:
         print(ET.tostring(zres, pretty_print=True).decode() )
         print()
-        
-elif args.mode == "set":
+
+    sys.exit()
+
+if args.mode == "msa":
+
+
+    
+    sys.exit()
+
+    
+if args.mode == "set":
     
     annot = {}
     

@@ -745,7 +745,7 @@ class UniZeep(BKD.BkdZeep):
     def appendDsnFeature( self, dsn, rsc, gnxrefList, seqvar, debug = 'False' ):
         
         if debug =='True':
-            print( '\DEBUG: appendDsnFeature(s):\n', json.dumps(dsn, indent=3))
+            print( '\nDEBUG: appendDsnFeature(s):\n', json.dumps(dsn, indent=3))
             print( "DEBUG: gnxList",  json.dumps(gnxrefList,indent=3) )
             print( "DEBUG: RSC::", rsc)
             print( "DEBUG: seqvar::", json.dumps(seqvar,indent=3) )

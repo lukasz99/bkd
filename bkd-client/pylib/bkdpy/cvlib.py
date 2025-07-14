@@ -1,8 +1,12 @@
-from pronto import Ontology
-
+try:
+    from pronto import Ontology
+except:
+    print("pronto: module missing")
+    
 class CV():
 
     def __init__(self, url):
+        print(url)
         self.ontology = Ontology(url)
         self.byName = {}
         for t in self.ontology:

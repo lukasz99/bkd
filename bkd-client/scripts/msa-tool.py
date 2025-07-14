@@ -40,9 +40,10 @@ sys.path.insert(0, "/home/lukasz/git/bkd/bkd-client/pylib" )
 
 import pymex
 
-upr_loc ={"local":"/mnt/mirrors/uniprotkb/records"}
+upr_loc ={"local":"/mnt/mirrors/uniprotkb/records",
+          "local7.100":"/mnt/zuniprot_records"}
 
-upr_path = "/mnt/mirrors/uniprotkb/records"
+upr_path = "/mnt/zuniprot_records"
 panther_path = "/mnt/mirrors/panther/ortho"
 
 purl = "http://www.pantherdb.org/services/oai/pantherdb/ortholog/matchortho"
@@ -53,7 +54,8 @@ def acc2path( dir, acc ):
     lacc="0000000000" + acc
     rdir = dir;
     for d in range(5,1,-1):
-        rdir += "/" + lacc[-3*d:-3*(d-1)] 
+        rdir += "/" + lacc[-3*d:-3*(d-1)]
+    #print(rdir + "/" + acc + ".xml")
     return rdir + "/" + acc + ".xml"
 
 #-H  "accept: application/json"
@@ -80,6 +82,10 @@ parser.add_argument('--taxid', '-t', dest="taxid", type=str,
                     required=False, default='9606',
                     help='UniprotKB accession.')
 
+parser.add_argument('--pdb', '-p', dest="pdb", type=str,
+                    required=False, default='',
+                    help='pdb_chain:pdb_chain....')
+
 #spyder hack: add '-i' option only if present (as added by spyder)
 
 if '-i' in sys.argv:
@@ -91,7 +97,7 @@ if '-i' in sys.argv:
 
 args = parser.parse_args()
     
-print(args.upr, args.taxid, args.file)
+print(args.upr, args.taxid, args.file,args.pdb)
 
 
 uprList = []
@@ -147,10 +153,11 @@ for (id,upr) in uprList:
 
             swpath = acc2path( uloc + "/swissprot", upr)
             trpath = acc2path( uloc + "/trembl", upr)
-
+                        
             if os.path.isfile(swpath):
+                
                 ufile = swpath
-            elif os.path.isfile(trpath):
+            elif os.path.isfile(trpath):                
                 ufile = trpath
             else:
                 print( "ERROR: no uniprot file", upr )

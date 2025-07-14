@@ -31,7 +31,8 @@
    <script src="js/ngl.js"></script> 
    <script src="js/igv.js" type="text/javascript" charset="utf-8"></script>
    
-   <script src="js/bkd-d3msa.js"></script>  
+   <script src="js/bkd-msa.js"></script>  
+   <script src="js/bkd-msaview.js"></script>  
    <script src="js/bkd-ngl.js"></script>  
    <script src="js/bkd-topo.js"></script>  
 

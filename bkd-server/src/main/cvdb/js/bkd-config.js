@@ -773,11 +773,16 @@ BKDconf = {
                      query_postlabel: " position of interest",
                      query_tp: "type_set_clear",
                      query_vtype: "%%int%%",
-                     query_vlen: 10,
+                     query_vlen: 5,
                      query_tlist: [
                          { label: "Protein", value: "protein" },
-                         { label: "Genome", value: "genome" } ]
-
+                         { label: "Genome", value: "genome" } ],
+                     query2_id: "seq",
+                     query2_prelabel: " |",
+                     query2_postlabel: " Sequence ",
+                     query2_tp: "text_search",
+                     query2_vtype: "%%text%%",
+                     query2_vlen: 13,
                      /*
                      query_val:[
                          //{ label: "All",

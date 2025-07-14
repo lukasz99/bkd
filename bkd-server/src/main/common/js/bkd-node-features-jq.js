@@ -1,4 +1,4 @@
-console.log("bkd-node-features-jq: common");
+ console.log("bkd-node-features-jq: common");
         
 BKDnodeFeatures = {
     myurl: "",
@@ -9,6 +9,7 @@ BKDnodeFeatures = {
     cgurl: "https://reg.clinicalgenome.org/redmine/projects/registry/genboree_registry/by_canonicalid?canonicalid=",
     ucscPosUrl: "https://genome.ucsc.edu/cgi-bin/hgTracks?db=%BID%&position=%CID%%3A%SID%-%EID%",
     ucscSrcUrl: "https://genome.ucsc.edu/cgi-bin/hgSearch?db=%BID%&search=%SRC%",
+    strlUrl: "./node?ns=%%NS%%&ac=%%AC%%&format=json&detail=STRL&ret=data",
     /*
     fcolor:   { "pathogenic":"#d04030",
                 "likely pathogenic":"#e0B0B0",
@@ -28,11 +29,17 @@ BKDnodeFeatures = {
                 "benign":"#80ff80"                              
               },
     
-    sigtag: { ben: "benign", lben: "likely benign",
+    sigtag: { unc:"uncertain", ben: "benign", lben: "likely benign",
               pat: "pathogenic", lpat: "likely pathogenic",
               cevd: "conflicting evidence"}, 
     
-    vclass: [ { "id":"flist-color-1","name":"color-1",
+    vclass: [ { "id":"flist-color-0","name":"color-0",
+                "label":"Uncertain", "value":"unc",
+                //"color":"#3171c0" },
+                //"color":"#80d0ff" },
+                "color":"#aaaaaa" },
+
+              { "id":"flist-color-1","name":"color-1",
                 "label":"Benign", "value":"ben",
                 //"color":"#3171c0" },
                 //"color":"#80d0ff" },
@@ -106,7 +113,57 @@ BKDnodeFeatures = {
                            }
                }
              }],
+
+/*
+               { "id":"flist-select-1","name":"select-1",
+                 "label":"Chain",
+                 callback: "color",
+                 "value":"cchn",
+                 chainmode: "group",                 
+                 "color":"#aaaaaa" },
+*/
     
+    swmview: [ { id:"view-select-1",name:"vsel-1",
+                 label:"All Chains", value:"call",                
+                 labelOn: "All Chains", labelOff: "All Chains",
+                 mode: "bcut" , bval: 0.5, 
+                 color:"#aaaaaa",
+                 callback: "vselect",
+                 opt:{
+                     style: "radio", default: "on",
+                     mode: "chn",
+                     states: { on: { mode: "step", val: "bfact", vcut: 0.5,
+                                     colLo: "green", opaqLo: 1.0, 
+                                     colHi: "gray", opaqHi: 0.6   },
+                               off: { mode: "solid", color: "green", opaq: 1.0 }
+                             }
+                 }
+               },
+               { id: "view-select-2","name":"vsel-2",
+                 label: "Identical Chains", "value":"cident",
+                 labelOn: "Identical Chains", labelOff: "Identical Chains",
+                 color: "#aaaaaa",
+                 callback: "vselect",
+                 style: "radio", default: "off",
+                 mode: "chn",
+                 opt: {
+                     style: "cbox", default: "off",
+                     mode: "smsa",
+                     states: { on: { mode: "msa", msa: 2, sref: 0, ssel: 1 },
+                               off: { mode: "msa", msa: 2, sref: 0, ssel: 0 }
+                             }
+                 }
+               },
+               
+               { id: "view-select-3","name":"vsel-3",
+                 label: "Single Chain", "value":"cmono",
+                 labelOn: "Single Chain", labelOff: "Single Chain",
+                 color: "#aaaaaa",
+                 callback: "vselect",
+                 style: "radio", default: "off",
+                 mode: "chn",
+                 opt: {} } ],
+
     swmsels: [ { id:"flist-select-1",name:"select-1",
                  label:"HiQC", value:"hiqc",                
                  labelOn: "HiQC", labelOff: "All",
@@ -154,7 +211,7 @@ BKDnodeFeatures = {
           "label":"Experimental",
           "type":"pdb-list",
           "mode":"expt",
-          "url":"node?ns=%%NS%%&ac=%%AC%%&format=json&detail=STRL&ret=data",
+          "url":"node?ns=%%NS%%&ac=%%AC%%&format=json&detail=STRL&ret=data",          
           "options": [
               { id:"flist-select-e-0",name:"select-e-0",
                 label:"PDB", value:"hiqc",                
@@ -229,34 +286,53 @@ BKDnodeFeatures = {
                  callback: "color",
                  value:"rain",
                  mode: "rainbow",
+                 chainmode: "main",
                  "color":"#aaaaaa" },
                { "id":"flist-select-1","name":"select-1",
                  "label":"Chain",
                  callback: "color",
                  "value":"cchn",
+                 chainmode: "group",                 
                  "color":"#aaaaaa" },
                { "id":"flist-select-2","name":"select-2",
                  "label":"Conservation(MSA)",
                  callback: "color",
                  "value":"cmsa",
+                 chainmode: "main",
                  "color":"#aaaaaa" },
                { "id":"flist-select-3","name":"select-3",
-                 "label":"Conservation(SNP)",
+                 "label":"Variability(MSA)",
                  callback: "color",
-                 "value":"csnp",
+                 "value":"vmsa",
+                 chainmode: "main",
                  "color":"#aaaaaa" },
                { "id":"flist-select-4","name":"select-4",
+                 "label":"Conservation(Variants)",
+                 callback: "color",
+                 "value":"csnp",
+                 chainmode: "main",
+                 "color":"#aaaaaa" },
+               { "id":"flist-select-5","name":"select-5",
+                 "label":"Variability(Variants)",
+                 callback: "color",
+                 "value":"vsnp",
+                 chainmode: "main",
+                 "color":"#aaaaaa" },
+               { "id":"flist-select-6","name":"select-6",
                  "label":"Prediction QScr",
                  callback: "color",
                  "value":"cbfc",
+                 chainmode: "group",
                  "color":"#aaaaaa" },
-               { "id":"flist-select-5","name":"select-5",
+               { "id":"flist-select-7","name":"select-7",
                  "label":"Topology", "value":"ctpo",
                  calback: "color",
+                 chainmode: "group",
                  "color":"#aaaaaa" },
-               { "id":"flist-select-6","name":"select-6",
+               { "id":"flist-select-8","name":"select-8",
                  "label":"SecStruc",
                  callback: "color",
+                 chainmode: "group",
                  "value":"sstr",
                  "color":"#aaaaaa" }
              ],
@@ -283,7 +359,7 @@ BKDnodeFeatures = {
                  color: "#aaaaaa",
                  callback: "select",
                  style: "cbox", default: "off",
-                 mode: "chn",
+                  mode: "chn",
                  opt: {
                      style: "cbox", default: "off",
                      mode: "smsa",
@@ -396,11 +472,16 @@ BKDnodeFeatures = {
     state: { fsel:{ topo:{}, swm:{}, str:{} },
              seqvar: null,
              swm: {},
-             str:{}
+             str:{},
+             hpanelCallback: []
            },
     
     lollipanels:{},
 
+    getSeqSel: function(){
+        return $('#flist-source #iseq').val()
+    },
+    
     // data value finder
    
     getVal: function( data, path ){ 
@@ -426,13 +507,19 @@ BKDnodeFeatures = {
                 BKDnodeFeatures.view(tgt, format, data ) });               
     },
     
-    init: function( tgt, format, data, myscreen, myemsize ){
+    init: function( tgt, format, data, myscreen, myemsize, getbkdmsa ){
 
         this.format = format;
         this.data_base = data;
         this.screen = myscreen;
         this.emsize = myemsize;
+        this.bkdmsa = getbkdmsa();
+        this.getkdmsa = getbkdmsa;
 
+        console.log("Features: getbkdmsa:" + getbkdmsa);
+        console.log("Features: bkdmsa:" + this.bkdmsa);
+        
+        
         this.hHeight=$("#header").height();
         this.fHeight=$("#footer").height();
         
@@ -443,14 +530,15 @@ BKDnodeFeatures = {
         this.nglHeight = this.screen.availHeight*0.90-this.hHeight-this.fHeight-this.emsize*5;
 
         console.log( "Features: size ", this.chartWidth, this.ngvWidth);
+        console.log( "Features: mybkdmsa ", this.bkdmsa);
         
         this.myurl = BKDnodeView.myurl + "&detail=FULL";
         this.flview="#track-tab";  // default on
 
-        console.log("Features: format:" + JSON.stringify(this.format));
+        //console.log("Features: format:" + JSON.stringify(this.format));
         this.config  = this.format['config'];
-        console.log( "Features -> detailtable: "
-                     + JSON.stringify( this.config.lollipanel.detailtable ) );
+        //console.log( "Features -> detailtable: "
+        //             + JSON.stringify( this.config.lollipanel.detailtable ) );
         console.log( "Features: format: DONE");
         BKDnodeFeatures.format = format;
         BKDnodeFeatures.data = data;       
@@ -465,7 +553,7 @@ BKDnodeFeatures = {
                            'canonical-sequence',
                            'alternate-sequence' ];
 
-        console.log("Features DATA:",data);
+        //console.log("Features DATA:",data);
         
         for( var i =0; i < data.attr.length;i++ ){
             var catt = data.attr[i];            
@@ -665,11 +753,11 @@ BKDnodeFeatures = {
                      var parent = event.data.parent;
                      console.log( "BKDnodeFeatures: seqchange parent -> ",
                                   parent );
-                     console.log( $('#flist-source #iseq').val() );
-                     var sqsel = $('#flist-source #iseq').val();  
+                     console.log("BKDnodeFeatures: seqchange new ->", $('#flist-source #iseq').val() );
+                     var sqsel = $('#flist-source #iseq').val();   // new sequence variant (state.seqvar)
                      var cseq = null;
 
-                     BKDnodeFeatures.state.seqvar
+                     BKDnodeFeatures.state.seqvar 
                          = $('#flist-source #iseq').val();
 
                      for(var i = 0; i < parent.iseq.length; i ++ ){
@@ -686,8 +774,10 @@ BKDnodeFeatures = {
                      var flurl = parent.myurl.replace("FULL","FEATL");
                      var fdurl = parent.myurl.replace("detail=FULL","fpos=");  
 
+                     var ostate = parent.lollipanels[ 'loli1' ].state;
                      console.log( "BkdLol: -> reload" );
-
+                     console.log( "BkdLol: -> state", ostate);
+                     
                      // reload lollipops
                      //-----------------
                      
@@ -700,12 +790,17 @@ BKDnodeFeatures = {
                                dset:{ default:"clinvar",
                                       conf:{
                                           clinvar:{
-                                              url: flurl+"&dts=clinvar" },
+                                              url: flurl+"&dts=clinvar",
+                                              state: ostate.dsel['clinvar']
+                                          },
                                           dbsnp: {
-                                              url:flurl+"&dts=dbsnp"
+                                              url:flurl+"&dts=dbsnp",
+                                              state: ostate.dsel['dbsnp']
                                           },
                                           bkdrep:{
-                                              url:flurl+"&dts=bkdrep" }
+                                              url:flurl+"&dts=bkdrep",
+                                              state: ostate.dsel['bkdrep']
+                                          }
                                       }
                                     },
                                fdet:{ url: fdurl }, 
@@ -730,7 +825,24 @@ BKDnodeFeatures = {
                      nloli.initialize ( {
                          vsel: $('#iseq').val(),
                          vseq: vseq ,
-                         sequence: cseq } );
+                         sequence: cseq,
+                         dset:{ default:"clinvar",
+                                conf:{
+                                    clinvar:{
+                                        url: flurl+"&dts=clinvar",
+                                        state: ostate.dsel['clinvar']
+                                    },
+                                    dbsnp: {
+                                        url:flurl+"&dts=dbsnp",
+                                        state: ostate.dsel['dbsnp']
+                                    },
+                                    bkdrep:{
+                                        url:flurl+"&dts=bkdrep",
+                                        state: ostate.dsel['bkdrep']
+                                    }
+                                }
+                              }                                                 
+                     } );
 
                      // notify BkdNGL
                      //--------------
@@ -758,25 +870,11 @@ BKDnodeFeatures = {
                     +' &nbsp;&nbsp;&nbsp;&nbsp;');
         
         $("#cvflag").prop( "checked", true );
+
         $("#cvflag").click( function(){
             
             // reset selections
             //-----------------
-            /*    
-            
-            BKDnodeFeatures.fstate = {};
-            var ftslist = BKDnodeFeatures.getfselist( BKDnodeFeatures.ftypesel );
-
-            BKDnodeFeatures.setNGLColScheme( BKDnodeFeatures.swmComp,
-                                             BKDnodeFeatures.fstate, ftslist );
-            BKDnodeFeatures.setNGLColScheme( BKDnodeFeatures.strComp,
-                                             BKDnodeFeatures.fstate, ftslist );
-            BKDnodeFeatures.setTopoSelScheme( BKDnodeFeatures.strComp,
-                                              BKDnodeFeatures.fstate, ftslist );
-            $( '#fdet-table' ).remove();
-            BKDnodeFeatures.lolipanel( null );
-            */
-            
             
             BKDnodeFeatures.lollipanels['loli1']
                 .state.datasrc.cvflag = $('#cvflag').is(':checked');
@@ -811,26 +909,7 @@ BKDnodeFeatures = {
         $( "#snflag" ).prop( "checked", false );
         
         $('#snflag').click(function(){
-            /*
-            // reset selections
-            //-----------------
             
-            BKDnodeFeatures.fstate = {};
-            var ftslist = BKDnodeFeatures.getfselist( BKDnodeFeatures.ftypesel );
-            
-            BKDnodeFeatures.setNGLColScheme( BKDnodeFeatures.swmComp,
-                                             BKDnodeFeatures.fstate,
-                                             ftslist );
-            BKDnodeFeatures.setNGLColScheme( BKDnodeFeatures.strComp,
-                                             BKDnodeFeatures.fstate,
-                                             ftslist );
-            BKDnodeFeatures.setTopoSelScheme( BKDnodeFeatures.strComp,
-                                              BKDnodeFeatures.fstate, ftslist );
-
-            $( '#fdet-table' ).remove();
-            BKDnodeFeatures.lolipanel( null );
-            */
-
             var lpan1 = BKDnodeFeatures.lollipanels['loli1'];
             
             lpan1.state.datasrc.snflag = $('#snflag').is(':checked');
@@ -947,12 +1026,14 @@ BKDnodeFeatures = {
               dset:{ default:"clinvar",
                      conf:{
                          clinvar:{
-                             url: flurl+"&dts=clinvar" },
+                             url: flurl+"&dts=clinvar",
+                             state: true},
                          dbsnp: {
-                             url:flurl+"&dts=dbsnp"
-                         },
+                             url:flurl+"&dts=dbsnp",
+                             state: false},
                          bkdrep:{
-                             url:flurl+"&dts=bkdrep" }
+                             url:flurl+"&dts=bkdrep",
+                             state: false}
                      }
                    },
               fdet:{ url:fdurl },                                      
@@ -978,7 +1059,23 @@ BKDnodeFeatures = {
         
         loli1.initialize ( { vsel: $('#iseq').val(),
                              vseq: vseq ,
-                             sequence: cseq });
+                             sequence: cseq,
+                             dset:{ default:"clinvar",
+                                    conf:{
+                                        clinvar:{
+                                            url: flurl+"&dts=clinvar",
+                                            state: true
+                                        },
+                                        dbsnp: {
+                                            url:flurl+"&dts=dbsnp",
+                                            state: false
+                                        },
+                                        bkdrep:{
+                                            url:flurl+"&dts=bkdrep",
+                                            state: false
+                                        }
+                                    }
+                                  }});
         this.lollipanels['loli1'] = loli1;
         
         // genome viewer panel
@@ -1020,8 +1117,15 @@ BKDnodeFeatures = {
         var swmUrl = BKDnodeFeatures.siteurl + "swissmodel/"
             + BKDnodeFeatures.data.ac  + "-1_swm.pdb"; 
         
-        var msaUrl = BKDnodeFeatures.siteurl + "msa-iso/"
+        var msaUrl = BKDnodeFeatures.siteurl + "msa-str/"
             + BKDnodeFeatures.data.ac + ".fasta";
+
+        // NS cvdb AC CVDB111P
+        var strlUrl = BKDnodeFeatures.strlUrl
+            .replace('%%NS%%',BKDnodeFeatures.data.ns)
+            .replace('%%AC%%',BKDnodeFeatures.data.ac);
+        
+
         
         BKDnodeFeatures.nglSWM = BKDnodeFeatures.nglpane(
             { anchor: "#swm-port",
@@ -1029,7 +1133,12 @@ BKDnodeFeatures = {
               height: this.nglHeight,
               name: "swm",
               url: swmUrl,
+              strseq: "",
               msaUrl: msaUrl,
+              //strlUrl:  "node?ns=%%NS%%&ac=%%AC%%&format=json&detail=STRL&ret=data",\
+              strlUrl:  strlUrl,
+              getbkdmsa: BKDnodeView.getMsaView,
+              getseqsel: BKDnodeFeatures.getSeqSel,
               controls:{
                   vcls: { name: "vcls",
                           label: "Variant", 
@@ -1049,6 +1158,11 @@ BKDnodeFeatures = {
                         label: "Structure",
                         type: "list",                            
                         options: BKDnodeFeatures.strlst },
+
+                      { name: "cview",
+                        label: "Chains",
+                        type: "radio",                            
+                        options: BKDnodeFeatures.swmview },
 
                       { name: "sel",
                         label: "Select",
@@ -1076,20 +1190,25 @@ BKDnodeFeatures = {
             BKDnodeFeatures,
             [ {base:BKDnodeView, key:"mymsa2a"},
               {base:BKDnodeView, key:"mymsa2b"},
-              {base:BKDnodeView, key:"mymsa"}],
+              {base:BKDnodeView, key:"myMsaView"}],
 
             { base: BKDnodeFeatures.lollipanels,
               key: "loli1" }
         );
+        
+        BKDnodeFeatures.nglSWM
+            .setSelSeqID( $('#flist-source #iseq').val()  );         
 
         console.log( "TOPO:", BKDnodeView.mymsa2a,
                      BKDnodeView.mymsa2b,
-                     BKDnodeView.mymsa);       
+                     BKDnodeView.myMsaView);       
     },
 
     nglpane: function( config, data, msa, lollipop){
         //d3.select(config.anchor).attr("style","background: black;");
         var ngl  = new BkdNGL( config, data, msa, lollipop );
+
+        BKDnodeFeatures.homologpaneCallbackAdd(ngl.setMsaCB(ngl));
         return ngl;
     },
     
@@ -1287,7 +1406,7 @@ BKDnodeFeatures = {
     //--------------------------------------------
 
     setNGLColScheme: function( bkdngl ){
-        
+        console.log("setNGLColScheme(bkdngl):", bkdngl);
         if( bkdngl !== undefined && bkdngl != null ){
             //bkdngl.rerender();
             bkdngl.setHamStyle( 'poi', this.poi, null );
@@ -1584,7 +1703,7 @@ BKDnodeFeatures = {
                        }
         };
 
-        BKDnodeView.mymsa2a = new BkdMSA( msaConfig );
+        BKDnodeView.mymsa2a = new BkdViewMSA( msaConfig );
         
         d3.select( anchor )
             .html( '<div id="' + msaid
@@ -1635,7 +1754,7 @@ BKDnodeFeatures = {
                        }
         };
 
-        BKDnodeView.mymsa2b = new BkdMSA( msaConfig );
+        BKDnodeView.mymsa2b = new BkdViewMSA( msaConfig );
         
         d3.select( anchor )
             .html( '<div id="' + msaid
@@ -1646,9 +1765,16 @@ BKDnodeFeatures = {
                                           "url": msaurl });
     },
 
+    homologpaneCallbackAdd(callback){
+        BKDnodeFeatures.state.hpanelCallback.push(callback);
+        console.log("BKDnodeFeatures: hpanelCallback->",BKDnodeFeatures.state.hpanelCallback);
+        
+    },
+    
     homologpaneSet: function( anchor, data ){
         console.log("homologpaneSet:"+anchor);
-        $( "#"+anchor.replace("#","") ).append("<div id='homology-select' class='bkd-select-panel'></div>");
+        $( "#"+anchor.replace("#","") )
+            .append("<div id='homology-select' class='bkd-select-panel'></div>");
         $( "#homology-select" )
             .append( 'Sequence Alignment Source:&nbsp;&nbsp;'
                      + '<input type="radio" id="pantherFlag" name="homologyflag"'
@@ -1665,21 +1791,21 @@ BKDnodeFeatures = {
         $( "#ucscFlag" ).prop( "checked", false );
 
         
-
         $('#pantherFlag').click(function(){                      
-            //$( '#seq-viewer-2b' ).hide();                  
-            //$( '#seq-viewer-2a' ).show();
-
             $( '#port-anchor-b' ).hide();                         
-            $( '#port-anchor-a' ).show();                  
+            $( '#port-anchor-a' ).show();
 
+            for(var c in BKDnodeFeatures.state.hpanelCallback){
+                BKDnodeFeatures.state.hpanelCallback[c](BKDnodeView.mymsa2a);
+            }            
         });
 
         $('#ucscFlag').click(function(){                    
-            //$( '#seq-viewer-2a' ).hide();           
-            //$( '#seq-viewer-2b' ).show();                  
             $( '#port-anchor-a' ).hide();           
-            $( '#port-anchor-b' ).show();                  
+            $( '#port-anchor-b' ).show();
+            for(var c in BKDnodeFeatures.state.hpanelCallback){
+                BKDnodeFeatures.state.hpanelCallback[c](BKDnodeView.mymsa2b);
+            }
         });
         
         $( "#"+anchor.replace("#","") ).append("<div id='port-anchor-a'></div>");
@@ -1729,8 +1855,8 @@ BKDnodeFeatures = {
                         '9258':'Platypus'
                        }
         };
-
-        BKDnodeView.mymsa2a = new BkdMSA( msaConfig );
+        console.log("BkdViewMSA: mymsa2a");
+        BKDnodeView.mymsa2a = new BkdViewMSA( msaConfig );
         
         d3.select( portAnchorA )
             .html( '<div id="' + msaid
@@ -1781,7 +1907,9 @@ BKDnodeFeatures = {
                        }
         };
 
-        BKDnodeView.mymsa2b = new BkdMSA( msaConfig );
+        console.log("BkdViewMSA: mymsa2b");
+
+        BKDnodeView.mymsa2b = new BkdViewMSA( msaConfig );
         
         d3.select( portAnchorB )
             .html( '<div id="' + msaid
@@ -1864,7 +1992,10 @@ BKDnodeFeatures = {
     
     buildvclist: function( ftypesel ){
 
+        console.log("buildvclist-> ftypesel:", ftypesel);
+        
         var plist = BKDnodeFeatures.lollipanels['loli1'].data.plist;
+        console.log("buildvclist-> plist:", plist);
         
         var tcnt = 0;
         for( var t in ftypesel.vcls ){            
@@ -1889,7 +2020,10 @@ BKDnodeFeatures = {
                 
                 if( sigtag != undefined ){
                     for( var i in plist ){  
-                        if( plist[i].significance == sigtag ){
+                        if( plist[i].significance == sigtag ||
+                            plist[i].clinsig == sigtag  ){
+
+                            console.log("buildvclist -> p:",plist[i].pos);
                             if( tcnt == 1 && ccol == "#808080" ){            
                                 for( var k in BKDnodeFeatures.vclass){
                                     if( BKDnodeFeatures
@@ -1908,6 +2042,7 @@ BKDnodeFeatures = {
                 }
             }
         }
+        console.log("buildvclist-> pdict:", pdict);
         return pdict;        
     }
 };

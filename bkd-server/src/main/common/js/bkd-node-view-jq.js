@@ -19,6 +19,11 @@ BKDnodeView = {
     config: {},
     screen: null,
     emsize: null,
+
+    getMsaView: function(){
+        console.log("BKDnodeView.myMsaView:", BKDnodeView.myMsaView);
+        return BKDnodeView.myMsaView;
+    },
     
     init: function( ns, ac , srcAnchor, srcViewAnchor, nodeAnchor,
                     flist, mode, state ){
@@ -56,7 +61,7 @@ BKDnodeView = {
             $.ajax( { url: this.myurl, context: this} )
                 .done( function(data, textStatus, jqXHR){                  
                     BKDnodeView.view( data.node, BKDconf["node"], mode) } );
-        }               
+        }
     },
 
     view: function( data, flist, mode ){
@@ -87,7 +92,37 @@ BKDnodeView = {
         $(nodeViewAnchor).empty();
         $(nodeViewAnchor).append( "<div id='bkd-hv-field'></div>"
                                   +"<div id='bkd-nv-field'></div>" );
-    
+
+        var dal = data.attr;
+        var mane = null;
+        var cano = null;
+        var strseq = null;
+
+        for(var da in dal){            
+            if(dal[da]['type-name'] == "mane-sequence"){
+                for(var x in dal[da].xref){
+                    if(dal[da].xref[x].ns=="upr" && dal[da].xref[x]["type-name"]=="identical-to"){
+                        mane=dal[da].xref[x].ac;
+                    }
+                }
+            }
+            if(dal[da]['type-name'] == "canonical-sequence"){
+                for(var x in dal[da].xref){
+                    if(dal[da].xref[x].ns=="upr" && dal[da].xref[x]["type-name"]=="identical-to"){
+                        cano=dal[da].xref[x].ac;
+                    }
+                }
+            }                
+        }
+        
+        if( mane !== null ){
+            strseq = mane;
+        } else {
+            if( cano !== null ) strseq=cano; 
+        }
+
+        this.data.strseq = strseq;
+        
         // view type
         //----------
 
@@ -134,11 +169,12 @@ BKDnodeView = {
 
         // fields (if present)
         //--------------------
-    
+        console.log("FIELDS: start"); 
+        
         if( format.field != null){
             for( var f = 0; f<format.field.length; f++){
                 var cfield = format.field[f];
-                //console.log("FIELD: " + cfield.name + ": " + cfield.type);
+                console.debug("FIELD: " + cfield.name + ": " + cfield.type, data);
                 
                 switch( cfield.type ){
                 case "text":
@@ -158,16 +194,18 @@ BKDnodeView = {
                     break;
                     
                 case "sequence":
-                    console.log("TOPO: sequence field", BKDnodeView.mymsa);
+                    console.debug("FIELD: sequence", BKDnodeView.getMsaView());
                     this.showSequence( "#bkd-hv-field", cfield, data );
-                    console.log("TOPO: sequence field DONE", BKDnodeView.mymsa);
+                    console.debug("FIELD: sequence DONE", BKDnodeView.getMsaView());
                     break;
                 case "feature":
-                    console.log("TOPO: feature field", BKDnodeView.mymsa);
+                    console.log("FIELD: feature", BKDnodeView.myMsaView);
                     BKDnodeFeatures.init( "#bkd-hv-field", cfield,
-                                          this.data, this.myurl );
-                    console.log("TOPO: feature field DONE", BKDnodeView.mymsa);
-                    
+                                          this.data,
+                                          this.myurl );  
+                    console.log("FIELD: feature DONE", BKDnodeView.myMsaView);
+
+                                                       
                     break;
                     
                 default:
@@ -176,11 +214,15 @@ BKDnodeView = {
             }
         }
 
+        console.log("FIELDS: DONE"); 
+        
         // panels/sidebar
         //---------------
 
         if( format.pane != null && format.pane.length > 0){  
 
+            console.log("PANES: start"); 
+                        
             BKDnodeView.paneon = format.defpane;
 
             //add pane/sidebar entries
@@ -189,6 +231,9 @@ BKDnodeView = {
             for(var i=0; i< format.pane.length; i++ ){
                 var cid = format.pane[i].id;
                 var clbl = format.pane[i].label;
+                
+                console.log("PANE: id-> ",cid, " label->", clbl);
+
                 
                 $("#bkd-sidebar").append( "<div id='bkd-sb-" + cid + "'" +
                                           " class='sidebar-entry'>"+
@@ -347,6 +392,51 @@ BKDnodeView = {
                                 }                                
                             }
                         }
+                        
+                        if( hconf.query2_tp == "text_search" ){
+
+                            $( "#bkd-nv-" + cid + "_head" )
+                                .append( "<input id='" + hconf.query2_id +
+                                         "-vtype' type='hidden' "
+                                         + "value='" + hconf.query2_vtype + "'/>");
+                            
+                            // prelabel
+                            
+                            if( hconf.query2_prelabel.length > 0 ){
+                                $( "#bkd-nv-" + cid + "_head" )
+                                    .append(hconf.query2_prelabel);
+                                }
+
+                            // postlabel
+                            
+                            if( hconf.query2_postlabel.length > 0 ){
+                                $( "#bkd-nv-" + cid + "_head" )
+                                    .append(hconf.query2_postlabel);
+                                }
+
+                            // value
+                            
+                            if( hconf.query2_vtype == '%%text%%' ||
+                                hconf.query2_vtype == '%%int%%' ){
+                                $( "#bkd-nv-" + cid + "_head" )
+                                    .append( "<input type='text' " +
+                                             " style='margin: 2px;'" +
+                                             " size='" + hconf.query2_vlen+"'" +
+                                             " id='"+hconf.query2_id +"-val'>");
+                                
+                            }
+                            
+                            // Search button
+
+                            $( "#bkd-nv-" + cid + "_head" )
+                                .append( " <input id='" + hconf.query2_id + "-search'"
+                                         + " type='button' value='Search'>" );
+                            
+                            etg[ 'input[id='+ hconf.query2_id +'-set]' ]
+                                = hconf.query2_id + "-set";
+                            
+                        }
+
 
                         for( var k in etg ){
                             console.log("KKK:" + k);
@@ -403,8 +493,8 @@ BKDnodeView = {
                                     BKDnodeView.poi.pos = [];
                                 }
                                 
-                                if( BKDnodeView.mymsa !== undefined ){
-                                    BKDnodeView.mymsa.setPOI( BKDnodeView.poi );
+                                if( BKDnodeView.myMsaView !== undefined ){
+                                    BKDnodeView.myMsaView.setPOI( BKDnodeView.poi );
                                 }
                                 if( BKDnodeView.mymsa2a !== undefined ){
                                     BKDnodeView.mymsa2a.setPOI( BKDnodeView.poi );
@@ -514,18 +604,18 @@ BKDnodeView = {
                             this.showText( "#bkd-nv-"+cid, cfield, data );    
                             break;
                         case "sequence":
-                            console.log("TOPO: feature pane", BKDnodeView.mymsa);
+                            console.log("PANE: sequence", BKDnodeView.getMsaView());
                             this.showSequence( "#bkd-nv-"+cid, cfield, data );
-                            console.log("TOPO: feature pane DONE", BKDnodeView.mymsa);
-
+                            console.log("PANE: sequence DONE", BKDnodeView.getMsaView());
                             break;
                         case "feature":
-                            console.log("TOPO: feature pane", BKDnodeView.mymsa);
+                            console.log("PANE: feature", BKDnodeView.myMsaView);
                             
                             BKDnodeFeatures.init( "#bkd-nv-"+cid, cfield, data,
-                                                  this.screen, this.emsize );
-                            
-                            console.log("TOPO: feature pane DONE", BKDnodeView.mymsa);
+                                                  this.screen, this.emsize,
+                                                  BKDnodeView.getMsaView );
+                            BKDnodeView.myMsaView
+                            console.log("PANE: feature DONE", BKDnodeView.myMsaView);
 
                             break;
                         case "xref":
@@ -546,11 +636,17 @@ BKDnodeView = {
                     $( "#bkd-sb-" + cid ).addClass("bkd-sb-entry-off");
                 }
             }
+
+        console.log("PANE: DONE"); 
+            
             
         } else {
             // no panels: hide sidepanel
         }
-        
+
+
+        console.log("FLIST: start"); 
+
         var flist = []
 
         // go over configuration
@@ -1153,8 +1249,9 @@ BKDnodeView = {
     showSequence: function( tgt, format, data ){
        
         var seq = this.getVal( data, format.vpath);
-        console.log("TOPO: SHOWSEQUENCE: START:", seq);
-        console.log("ABC: showSequence: format", format);
+        console.log("BkdNodeView(showSequence): format", format);
+        console.log("BkdNodeView(showSequence): vpath:", format.vpath);
+        console.log("BkdNodeView(showSequence): START:", seq);
         
         $( tgt ).append( "<div id='seq-viewer-1' style='width:1640px;'></div>" );
        
@@ -1162,7 +1259,7 @@ BKDnodeView = {
         $.ajax( { url: myurl, context: this} )
             .done( function(data, textStatus, jqXHR){                  
                 
-                console.log( "showSequence:", this.config );
+                console.log( "BkdNodeView(showSequence): config", this.config );
                 
                 var anchor = "#seq-viewer-1";
                 var msaConfig = {};
@@ -1183,12 +1280,11 @@ BKDnodeView = {
                 var extra = [];
 
                 var topology = [];
-                
-                
+                                
                 var structure = [];
                 var ipro = [];  // one track per ipro domain
                 
-                console.log("DATA:", data.node);
+                console.log("BkdNodeView(showSequence) DATA:", data.node);
                 if( data.node.feature != undefined ){
                     var flst= data.node.feature; 
                     for(var f in flst){
@@ -1363,13 +1459,13 @@ BKDnodeView = {
                                
                 var msaurl =  "msa-iso/" + BKDnodeView.data.ac + ".fasta";
                 console.log("TOPO: showseq: new BkdMSA")
-                BKDnodeView.mymsa = new BkdMSA( msaConfig );
+                BKDnodeView.myMsaView = new BkdViewMSA( msaConfig );
 
                 console.log("DTRAK:", dtrak);
                 
-                BKDnodeView.mymsa.initialize( { "anchor": anchor,  // '#'+msaid,
-                                                "url": msaurl,
-                                                "dtrak": dtrak} );
+                BKDnodeView.myMsaView.initialize( { anchor: anchor,  // '#'+msaid,
+                                                    url: msaurl,
+                                                    dtrac: dtrak} );
                 
                 console.log( "SHOWSEQUENCE: DONE" );                
                 

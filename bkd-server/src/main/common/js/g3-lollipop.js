@@ -1501,7 +1501,7 @@ function Lollipop(target, chartType, width) {
             .selectAll(lollipopOpt.lollipopClassName.line)
             .data(_seqAxis.lblPos ).enter()
             .append("line")
-            .attr("x1", function (d) { console.log( "lolli1:", d, _xScale(d) );
+            .attr("x1", function (d) { console.debug( "lolli1:", d, _xScale(d) );
                                        return _xScale(d); } )
             .attr("x2", function (d) { return _xScale(d); })
             .attr("y1", function (d) { return sequenceOpt.margin.top + 12; } )
@@ -1527,7 +1527,7 @@ function Lollipop(target, chartType, width) {
             .selectAll(lollipopOpt.lollipopClassName.line)
             .data(_seqAxis.tlblPos ).enter()
             .append("line")
-            .attr("x1", function (d) { console.log( "lolli1:", d, _xScale(d) );
+            .attr("x1", function (d) { console.debug( "lolli1:", d, _xScale(d) );
                                        return _xScale(d); } )
             .attr("x2", function (d) { return _xScale(d); } )
             .attr("y1", function (d) { return sequenceOpt.margin.top + 12; } )

@@ -1,6 +1,6 @@
 console.log("bkd-d3msa: common");
   
-class BkdMSA {
+class BkdViewMSA {
      
     constructor( config ){
         this._conf = {   // defaults
@@ -120,7 +120,13 @@ class BkdMSA {
                 }
                 msa._initMSA();
                 msa._initViz();                
-                msa._render();                
+                msa._render();
+
+                console.log("D3MSA: init ", msa._view.anchor, msa._view.msaHeigth);
+                
+                d3.select( "#" + msa._view.anchor )
+                    .style( "height", msa._view.msaHeigth )
+                
             }
         };
     
@@ -513,6 +519,15 @@ class BkdMSA {
         
         this._view.svgHeight = this._conf.height - 0;
 
+        var msaHeight = 10;
+        
+        if( this._conf.navig ) msaHeight += 30;
+        if( this._conf.slogo ) msaHeight += 50;
+        msaHeight += this._conf.msaDY*( this._data.msaHead.length +
+                                        this._data.dtrac.length+1.25);
+                 
+        this._view.msHeight = msaHeight;
+        
         var target = null;
         
         if( !this._view.target ){            
@@ -524,7 +539,8 @@ class BkdMSA {
         
         var svg = d3.select( "#" + target ).append("svg");
         svg.attr( "width", this._view.svgWidth )
-            .attr( "height", this._view.svgHeight )
+        //.attr( "height", this._view.svgHeight )
+            .attr( "height", this._view.msaHeight )
             .attr( "xmlns", "http://www.w3.org/2000/svg" )
             .attr( "xmlns:xlink", "http://www.w3.org/1999/xlink" );
         

@@ -6,7 +6,7 @@ class BkdLollipop{
         this.UIDTag = this.getUniqueID();
         
         if( conf !== undefined ){
-            console.log("BkdLollipop(conf)-> ", conf );
+            console.log("BkdLol(conf)-> ", conf );
             this.conf = conf;
             if( ! this.conf.anchor.startsWith("#") ){
                 this.conf.anchor = "#" + this.conf.anchor;
@@ -19,7 +19,7 @@ class BkdLollipop{
             this.conf.details = this.conf.anchor + "-details-" + this.UIDTag;
 
         } else {
-            console.log("BkdLollipop(DEFAULT)-> ", this.conf );
+            console.log("BkdLol(DEFAULT)-> ", this.conf );
             this.conf = {   // defaults
                 
                 dset:{
@@ -66,26 +66,33 @@ class BkdLollipop{
             dsel:{},
             vsel: null,
             feat:{},
+            fload: {},
             
             datasrc:{ cvflag: true,     // ClinVar
                       snflag: false,    // dbSNP
                       bkflag: false },  // BKD
             fstate: {},
-            ftypesel: {}
+            ftypesel: {},
+            listener:[]
         };         
     }
 
-    initialize( init ){
-        console.log( "BkdLollipop: initialize");
-        console.log( "BkdLollipop.init: ", init );
-        console.log( "BkdLollipop.conf: ", this.conf );
-        console.log( "BkdLollipop.data: ", this.data );
+    initialize( init ){       
+        console.log( "BkdLol.init: ", init );
+        console.log( "BkdLol.conf: ", this.conf );
+        console.log( "BkdLol.data: ", this.data );
         
          this.data.seqname=this.conf.seqname;
 
         for( var dts in this.conf.dset.conf ){            
             this.data.dset[dts] = null;  // dataset data goes here
-            this.state.dsel[dts] = false; // selected datasets
+            if(init != undefined
+               && init.dset != undefined
+               && init.dset.conf != undefined){
+                this.state.dsel[dts] = init.dset.conf[dts].state;
+            } else {
+                this.state.dsel[dts] = false; // selected datasets
+            }
         }        
         
         if( init != undefined ){
@@ -131,20 +138,34 @@ class BkdLollipop{
         //}
 
         var dsconf = this.conf.dset;
-        var dsurl = dsconf.conf[dsconf.default].url;
-        this.state.dsel[dsconf.default] = true; 
 
-        console.log( "BkdLollipop.state: ", this.state );
+        var dsurl = null;
+        for(var dst in dsconf.conf){
+            if( dsconf.conf[dst].state ){
+                dsurl = dsconf.conf[dst].url;                
+                this.state.dsel[dst] = true;
                 
-        $.ajax( { url: dsurl} )
-            .done( function(target){ return function( data,
-                                                      textStatus,
-                                                      jqXHR ){
-                
-                target.data.dset[target.conf.dset.default] = data.node.feature;
-                //target.prepareData(...);
-                
-                target.buildView(); } }( this ) );        
+                if( dsurl != null ){
+                    console.log( "BkdLollipop: initialize dsurl->: ", dsurl );
+                    this.state.fload[dst]=true;
+                    $.ajax( { url: dsurl} )
+                        .done( function(target,dst){ return function( data,
+                                                                       textStatus,
+                                                                       jqXHR ){
+                            
+                            console.log( "BkdLollipop: init : td->", target.data ); 
+                            target.data.dset[dst] = data.node.feature;
+                            target.state.fload[dst]= false;
+                            //target.prepareData(...);
+                            
+                            target.buildView(); } }( this, dst ) );
+                }
+            }
+        }
+
+        // NOTE: possible race condition here... 
+        
+        this.buildView();
     }
 
     setPOI( poi ){
@@ -157,9 +178,8 @@ class BkdLollipop{
             this.lollipop.updatePOI( this.poi_data );
         }
     }
-
-
-    setSeqName(name){   // #########################
+    
+    setSeqName(name){
         $('.g3_lollipop_domain text').text(name);
     }
     
@@ -167,16 +187,38 @@ class BkdLollipop{
     //--------------------------------
     
     rebuildView(){
-        console.log("rebuildView() called");
+        console.log("BkdLol: rebuildView() called");
 
-        for( var s in this.state.dsel){
-            console.log( "BkdLollipop.rebuildView()", s,
-                         "dsel->", this.state.dsel[s], 
-                         "dset->", this.data.dset[s] ); 
+        for( var dst in this.state.dsel){
+            console.log( "BkdLol.rebuildView()", dst,
+                         "dsel->", this.state.dsel[dst], 
+                         "dset->", this.data.dset[dst] ); 
             
-            if( this.state.dsel[s] == false
-                || this.data.dset[s] != null ) continue;            
+            if( this.state.dsel[dst] == false) continue;
+            if( this.data.dset[dst] == null ){
+                
+                var dsconf = this.conf.dset;
+                var dsurl =  dsconf.conf[dst].url;
+                
+                if( dsurl != null ){
+                    console.log( "BkdLol: load dsurl->: ", dsurl );
+                    this.state.fload[dst]=true;
+                    $.ajax( { url: dsurl} )
+                        .done( function(target,dst){ return function( data,
+                                                                      textStatus,
+                                                                       jqXHR ){
+                            
+                            console.log( "BkdLollipop: init : td->", target.data ); 
+                            target.data.dset[dst] = data.node.feature;
+                            target.state.fload[dst]= false;
+                            //target.prepareData(...);
+                            
+                            target.buildView(); } }( this, dst ) );
+                }
+            }
         }
+
+        // NOTE: possible race condition here...         
         this.buildView();        
     }
 
@@ -210,9 +252,23 @@ class BkdLollipop{
         this.buildNavig();
 
         this.buildPanel();
-        
+
+        // call listeners
+
+        console.log( "BkdLollipop: listeners->", this.state.listener); 
+        for( var l in this.state.listener){
+            console.log( "BkdLollipop: listener ->",l);
+            console.log( "BkdLollipop: state.listener ->",this.state.listener);
+            
+            this.state.listener[l]();
+        }
         console.log( "BkdLollipop.buildView() DONE");
         
+    }
+
+    addListener(l){
+        console.log( "BkdLollipop: addListener: listener->", l);
+        this.state.listener.push(l);
     }
     
     getVal( data, path ){ 
@@ -321,15 +377,25 @@ class BkdLollipop{
 
     getVarCnt(vnme){
         console.log("CSNP: getVarCnt -> vname:", vnme);
-        console.log("CSNP: getVarCnt -> dset:", this.data.dset[vnme]);
+
+        var cnt = new Array(this.data.sequence.length)
+            .fill( 0, 0, this.data.sequence.length);
+        
+        if(vnme == 'cvar'){
+            // current varaints
+            
+            var dset = this.data.plist;
+
+            for(var i in dset){
+                cnt[dset[i].pos]+=1;
+            }
+            return cnt;
+        }
 
         var dset = this.data.dset[vnme];
         
         //var cmap = new Map();
-
-        var cnt = new Array(this.data.sequence.length)
-            .fill( 1, 0, this.data.sequence.length);
-
+        
         console.log("CSNP: len->", dset.length);
         console.log("CSNP: getVarCnt -> cnt(init):", cnt);
                 
