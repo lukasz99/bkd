@@ -34,8 +34,9 @@ class BkdZeep():
 
         self._zsession = Session()        
         self._zsession.verify = False
-        # self._zsession.auth = HTTPBasicAuth(self.user, self.password) 
-
+        # self._zsession.auth = HTTPBasicAuth(self.user, self.password)
+        if self._debug:
+            print("WSDL URL:", self._zeepWsdlUrl)
         self._zclient = zClient(self._zeepWsdlUrl,
                                settings=self._zsettings,
                                transport=Transport(session=self._zsession))
